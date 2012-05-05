@@ -45,7 +45,7 @@ FILES="Makefile pdf2jpg_dummy.sh flashcards.cls"
 
 # get current versions of files 
 for thing in $FILES; do
-	cp $WD/.TexFlasher/$thing $folder/Karteikarten/
+	cp $WD/.TexFlasher/tools/$thing $folder/Karteikarten/
 done
 
  

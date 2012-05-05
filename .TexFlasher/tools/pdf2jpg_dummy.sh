@@ -18,5 +18,5 @@
 #     along with TexFlasher  If not, see <http://www.gnu.org/licenses/>.
 
 # forward the call
-bash ../../.TexFlasher/pdf2jpg.sh $PWD/$1
+bash ../../.TexFlasher/scripts/pdf2jpg.sh $PWD/$1
 
