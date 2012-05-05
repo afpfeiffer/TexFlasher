@@ -28,13 +28,33 @@ if [ -f run-TexFlasher.sh ]; then
 	rm run-TexFlasher.sh
 fi
 
-echo "Begin installation."
-echo -n "Please enter the .tex editor of your choice: "
-read TEXEDITOR
+echo "Installation ..."
+echo
+TEXEDITOR=""
+# check for default editor
+which kile > /dev/null
+if [ $? -eq 0 ]; then
+	echo "default latex editor: kile"
+	echo -n "Press <Return> to accept or enter name of latex editor: "
+	read ANSWER
+	if [ "$ANSWER" == "" ]; then
+		TEXEDITOR=`which kile`
+	else
+		TEXEDITOR=$ANSWER
+	fi
+else
+	echo -n "Please enter the .tex editor of your choice: "
+	read ANSWER
+	if [ "$ANSWER" == "" ]; then
+		TEXEDITOR=`which gedit`
+	else
+		TEXEDITOR=$ANSWER
+	fi
+fi
 
-echo -n "selected editor: "
-which $TEXEDITOR 
+echo "latex editor: $TEXEDITOR "
 
+which $TEXEDITOR > /dev/null
 if [ ! $? -eq 0 ]; then
 	echo
 	echo "#####################################################"
@@ -70,7 +90,17 @@ echo "#along with TexFlasher  If not, see <http://www.gnu.org/licenses/>.">> run
 # 	echo "bash .TexFlasher/checkForSourceUpdate.sh &" >> run-TexFlasher.sh
 # fi
 
+echo "username: $USER"
+echo -n "Press <Return> to accept or enter new username: "
+read ANSWER
 
+USERNAME=""
+if [ "$ANSWER" == "" ]; then
+	USERNAME=$USER
+else
+	USERNAME=$ANSWER
+fi
+echo "username: $USERNAME"
 
 echo "clear" >> run-TexFlasher.sh
 echo "TEXFLASHDIR=$PWD" >> run-TexFlasher.sh
@@ -92,33 +122,36 @@ echo "echo \"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\"" >>
 echo "echo \"GNU General Public License for more details.\"" >> run-TexFlasher.sh
 echo "echo \"\"">> run-TexFlasher.sh
 
-echo "python \$TEXFLASHDIR/.TexFlasher/leitner.py $TEXEDITOR \$1" >> run-TexFlasher.sh
+echo "python \$TEXFLASHDIR/.TexFlasher/leitner.py $TEXEDITOR $USERNAME" >> run-TexFlasher.sh
 
 chmod a+x run-TexFlasher.sh
 chmod a+x .TexFlasher/leitner.py
 
-echo "creating link on Desktop"
+echo -n "Would you like to create a desktop shortcut? (Y/n):"
+read ANSWER
+if [ "$ANSWER" != "n" ]; then
+	echo "creating link on Desktop"
 
 
-if [ -f TexFlasher.desktop ]; then
-	rm TexFlasher.desktop
+	if [ -f TexFlasher.desktop ]; then
+		rm TexFlasher.desktop
+	fi
+
+	echo "[Desktop Entry]" >> TexFlasher.desktop
+	echo "Version=6.0" >> TexFlasher.desktop
+	echo "Type=Application" >> TexFlasher.desktop
+	echo "Terminal=false" >> TexFlasher.desktop
+	echo "Exec=$PWD/run-TexFlasher.sh" >> TexFlasher.desktop
+	echo "Name=TexFlasher" >> TexFlasher.desktop
+	echo "Icon=$PWD/.TexFlasher/icon.png" >> TexFlasher.desktop
+	chmod a+x  TexFlasher.desktop
+
+	mv TexFlasher.desktop ~/Desktop/
+	
 fi
 
-echo "[Desktop Entry]" >> TexFlasher.desktop
-echo "Version=6.0" >> TexFlasher.desktop
-echo "Type=Application" >> TexFlasher.desktop
-echo "Terminal=false" >> TexFlasher.desktop
-echo "Exec=$PWD/run-TexFlasher.sh" >> TexFlasher.desktop
-echo "Name=TexFlasher" >> TexFlasher.desktop
-echo "Icon=$PWD/.TexFlasher/icon.png" >> TexFlasher.desktop
-chmod a+x  TexFlasher.desktop
 
-mv TexFlasher.desktop ~/Desktop/
-
-echo "done."
-echo 
-
-
+echo
 echo -n "Would you like to start TexFlasher now? (Y/n): "
 read ANSWER
 
@@ -127,6 +160,11 @@ if [ "$ANSWER" != "n" ]; then
 else
   echo "please run TexFlasher by typing \"./run-TexFlasher.sh\" in your bash."
 fi
+
+echo
+echo "done."
+echo 
+
  
 exit 0
 
