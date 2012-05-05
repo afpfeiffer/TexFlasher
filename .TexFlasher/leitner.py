@@ -1159,6 +1159,7 @@ def checkForUpdate():
 def checkIfNeedToSave( files ):
 	process = subprocess.Popen(['bash', '.TexFlasher/checkIfNeedToSave.sh', files], stdout=subprocess.PIPE)
 	output  = process.stdout.read()
+	print output
 	
 	if str(output) == "":
 		return False

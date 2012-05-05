@@ -22,9 +22,6 @@
 
 files=$*
 
-# check if svn is available in subfolder
-svn info $file > /dev/null
-HAVESVN=$?
 
 for thing in $files; do
   svn add $thing 2> /dev/null  

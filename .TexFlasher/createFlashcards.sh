@@ -28,8 +28,8 @@ filebase=$(basename $file)
 purefilebase=${filebase%\.*}  
 
 # check if svn is available in subfolder
-svn info $file > /dev/null
-HAVESVN=$?
+# svn info $file > /dev/null
+# HAVESVN=$?
  
 # # check if Karteikarten - folder exists, otherwise create it
 # if [ ! -d "$folder/Karteikarten" ]; then
@@ -51,9 +51,9 @@ done
 
 
 # get latest version of file (if file is under revision control)
-if [ $HAVESVN -eq 0 ]; then
-	svn up $file
-fi
+# if [ $HAVESVN -eq 0 ]; then
+# 	svn up $file
+# fi
 
 if [[ ! -f $folder/Karteikarten/$purefilebase.bak ]]; then
    touch $folder/Karteikarten/$purefilebase.bak
