@@ -1372,7 +1372,7 @@ user=commands.getoutput("echo $USER")
 if( len(sys.argv) > 2 ):
 	user=sys.argv[2]
 
-version="TexFlasher Beta 6"
+version="TexFlasher unstable build"
 top = Tk()
 
 WIDTH=800
