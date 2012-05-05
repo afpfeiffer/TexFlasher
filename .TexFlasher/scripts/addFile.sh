@@ -39,5 +39,5 @@ if [ ! $texfiles -eq 1 ]; then
   exit 1
 fi
 
-bash ./.TexFlasher/createFlashcards.sh $file
+bash ./.TexFlasher/scripts/createFlashcards.sh $file
 
