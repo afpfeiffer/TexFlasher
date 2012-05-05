@@ -1373,7 +1373,7 @@ version="TexFlasher unstable build"
 top = Tk()
 
 WIDTH=800
-HEIGHT=int(WIDTH*0.6) +160
+HEIGHT=int(WIDTH*0.6) +170
 
 BD=2
 

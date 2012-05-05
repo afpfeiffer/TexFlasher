@@ -17,11 +17,11 @@
 #     You should have received a copy of the GNU General Public License
 #     along with TexFlasher  If not, see <http://www.gnu.org/licenses/>.
 echo
-echo "              OOOOO OOOO O   O   OOOO O     OOO  OOOO O  O OOOO OOOO"
-echo "                O   O     O O    O    O    O   O O    O  O O    O  O"
-echo "                O   OOO    O     OOO  O    OOOOO OOOO OOOO OOO  OOOO"
-echo "                O   O     O O    O    O    O   O    O O  O O    O O"
-echo "                O   OOOO O   O   O    OOOO O   O OOOO O  O OOOO O  O"
+echo "                    OOOOO OOOO O   O   OOOO O     OOO  OOOO O  O OOOO OOOO"
+echo "                      O   O     O O    O    O    O   O O    O  O O    O  O"
+echo "                      O   OOO    O     OOO  O    OOOOO OOOO OOOO OOO  OOOO"
+echo "                      O   O     O O    O    O    O   O    O O  O O    O O"
+echo "                      O   OOOO O   O   O    OOOO O   O OOOO O  O OOOO O  O"
 echo
 echo
 echo "(Re-)Compiling flashcards."

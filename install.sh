@@ -30,27 +30,28 @@ fi
 
 echo "Installation ..."
 echo
-TEXEDITOR=""
 # check for default editor
+TEXEDITOR="none"
 which kile > /dev/null
 if [ $? -eq 0 ]; then
-	echo "default latex editor: kile"
+	TEXEDITOR="`which kile`"
+fi
+echo "default latex editor: $TEXEDITOR"
+while [ 1 -eq 1 ]; do
 	echo -n "Press <Return> to accept or enter name of latex editor: "
 	read ANSWER
 	if [ "$ANSWER" == "" ]; then
-		TEXEDITOR=`which kile`
+		TEXEDITOR=$TEXEDITOR
+		break
+	elif [ "$ANSWER" == "vi" ]; then
+		echo "Warning: vi not supported."
+	elif [ "$ANSWER" == "vim" ]; then
+		echo "Warning: vim not supported."
 	else
 		TEXEDITOR=$ANSWER
+		break
 	fi
-else
-	echo -n "Please enter the .tex editor of your choice: "
-	read ANSWER
-	if [ "$ANSWER" == "" ]; then
-		TEXEDITOR=`which gedit`
-	else
-		TEXEDITOR=$ANSWER
-	fi
-fi
+done
 
 echo "latex editor: $TEXEDITOR "
 
@@ -159,11 +160,11 @@ if [ "$ANSWER" != "n" ]; then
 	bash run-TexFlasher.sh
 else
   echo "please run TexFlasher by typing \"./run-TexFlasher.sh\" in your bash."
+	echo
+	echo "done."
 fi
 
-echo
-echo "done."
-echo 
+
 
  
 exit 0
