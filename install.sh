@@ -17,6 +17,7 @@
 #     You should have received a copy of the GNU General Public License
 #     along with TexFlasher  If not, see <http://www.gnu.org/licenses/>.
 
+
 clear
 
 python .TexFlasher/credits.py
