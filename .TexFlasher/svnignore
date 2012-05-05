@@ -1,0 +1,19 @@
+*.ind
+*.ilg
+*.aux
+*.log
+*.out
+*.idx
+*.backup
+*.tmp
+*.dvi
+*.jpg
+*.d
+*.pdf
+*.bak
+config.xml
+run-TexFlasher.sh
+Template.Vorbereitung.pdf
+Vorbereitung.pdf
+
+# Befehl: svn propset svn:ignore -F svnignore .

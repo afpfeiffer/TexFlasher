@@ -1,0 +1,62 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage[german]{babel}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{amsfonts}
+\usepackage{makeidx}
+\usepackage{hyperref}
+\usepackage{color} 
+\usepackage[colorinlistoftodos]{todonotes} 
+
+\newenvironment{fc}[1][optional]{}{}
+
+\newtheorem{sat}{Satz}[section]
+\newtheorem{bem}[sat]{Bemerkung}
+\newtheorem{lem}[sat]{Lemma}
+\newtheorem{defi}[sat]{Definition}
+\newtheorem{ax}[sat]{Axiom}
+\newtheorem{folg}[sat]{Folgerung}
+\newtheorem{prop}[sat]{Proposition}
+
+
+\newcommand{\TODO}[1]{\mbox{\fcolorbox{black}{red}{\textcolor{white}
+{\textbf{TODO: }}}\fcolorbox{black}{white}{\textcolor{red}{\textbf{#1}}}}}
+\let\Oldtodo\todo
+\newcommand{\inlinetodo}[1]{ \TODO{#1} }
+\renewcommand{\todo}[1]{\Oldtodo{#1} \\[0.2cm]}
+
+
+\newcommand{\beachte}[1]{\parbox{300\unitlength}{\textbf{Beachte: }\textbf{#1}}}
+
+
+\author{Can "Ozmen und Axel Pfeiffer}
+
+\title{Zusammenfassungen}
+
+\makeindex
+
+\begin{document}
+
+%###% end header 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section{This is a regular .tex file}
+\subsection{Howto write Flashcards}
+
+%fc=ExampleFlashCard
+\begin{bem}[You have to fill in this field. It will be shown on the front of the flashcard.]
+ Simply place the flashcard marker ``fc=\textbf{tag}'' in front of the theorem and 
+ come up with a \textbf{tag} for it.
+ The marker is invisible in the compiled pdf file.
+ \index{Flashcard marker} % works fine!
+\end{bem}
+
+
+
+
+
+
+\printindex
+\end{document}
