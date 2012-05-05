@@ -24,21 +24,17 @@ echo "                O   O     O O    O    O    O   O    O O  O O    O O"
 echo "                O   OOOO O   O   O    OOOO O   O OOOO O  O OOOO O  O"
 echo
 echo
-echo "Saving files on server."
+echo "Updating files."
 echo
-#save files on server
 
 files=$*
 
 for thing in $files; do
 	echo "processing: $thing"
-  svn add $thing 2> /dev/null  
 	svn info $thing > /dev/null
 	HAVESVN=$?
 	if [ $HAVESVN -eq 0 ]; then
-# 		echo "svn available for this file"
 		svn up $thing 
-		svn commit $thing -m "save learning progress"
 		echo
 	else
 		echo "svn unavailable"

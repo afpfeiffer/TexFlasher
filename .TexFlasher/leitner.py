@@ -1165,7 +1165,7 @@ def checkIfNeedToSave( files ):
 	else:
 		return True
 		
-def executeCommand( command ,wait=False):
+def executeCommand( command ,wait=True):
 
 	
 	win = Toplevel()
@@ -1190,10 +1190,7 @@ def clear_search(event):
 
 
 def update_texfile( fname ):	
-	executeCommand( "svn up "+os.path.dirname(fname)+"/Users/"+user+".xml; svn up "+fname, True )
-	# NOTE individual hack that saves me some conflicts, we can discuss that tomorrow
-	#os.system( "svn up "+os.path.dirname(fname)+"/Users/"+user+".xml > /dev/null"  )
-	#os.system( "svn up "+fname+" > /dev/null" )
+	executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+os.path.dirname(fname)+"/Users/"+user+".xml "+fname, True )
 	os.system("rm "+os.path.dirname(fname)+"/Karteikarten/UPDATE 2>/dev/null")
 	create_flashcards( fname )
 
