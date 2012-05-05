@@ -1372,6 +1372,7 @@ if( len(sys.argv) > 2 ):
 version="TexFlasher unstable build"
 top = Tk()
 
+
 WIDTH=800
 HEIGHT=int(WIDTH*0.6) +170
 
