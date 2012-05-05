@@ -799,7 +799,7 @@ def save_edit(b_image,edit_cancel,edit_save,edit_text,dir,fc_tag,theorem_type,ma
 			for elem in config_xml.childNodes:
 				if os.path.dirname(elem.getAttribute('filename'))==dir:
 					change_latex(elem.getAttribute('filename'),fc_tag,content,theorem_type)				
-					executeCommand("bash .TexFlasher/recompileFlashcards.sh "+elem.getAttribute('filename'), True)
+					executeCommand("bash .TexFlasher/scripts/recompileFlashcards.sh "+elem.getAttribute('filename'), True)
 					image = Image.open(os.path.dirname(elem.getAttribute('filename'))+"/Karteikarten/"+fc_tag+"-1.jpg")
 					image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
 					flashcard = ImageTk.PhotoImage(image)
@@ -1140,9 +1140,9 @@ def show_log(filedir):
 
 
 def saveFiles( files ):
-	executeCommand( "bash .TexFlasher/save.sh "+ files, True )
+	executeCommand( "bash .TexFlasher/scripts/save.sh "+ files, True )
 	menu()
-	#os.system("bash .TexFlasher/save.sh "+ files )
+	#os.system("bash .TexFlasher/scripts/save.sh "+ files )
 
 def checkForUpdate():
 	files=""
@@ -1153,11 +1153,11 @@ def checkForUpdate():
 			if elem.tagName=="FlashFolder" and not elem.getAttribute('filename')=="":
 				files += str(elem.getAttribute('filename')) + " "
 				#files += str(os.path.dirname(elem.getAttribute('filename'))+"/Users/"+user+".xml ")
-	os.system( "bash .TexFlasher/checkForUpdate.sh "+ files + "&")
+	os.system( "bash .TexFlasher/scripts/checkForUpdate.sh "+ files + "&")
 	
 
 def checkIfNeedToSave( files ):
-	process = subprocess.Popen(['bash', '.TexFlasher/checkIfNeedToSave.sh', files], stdout=subprocess.PIPE)
+	process = subprocess.Popen(['bash', '.TexFlasher/scripts/checkIfNeedToSave.sh', files], stdout=subprocess.PIPE)
 	output  = process.stdout.read()
 	
 	if str(output) == "":
@@ -1200,8 +1200,8 @@ def update_texfile( fname ):
 
 def create_flashcards( filename ):
 	update_config(filename)
-	#os.system("bash .TexFlasher/createFlashcards.sh "+ filename)
-	executeCommand("bash .TexFlasher/createFlashcards.sh "+ filename, True)
+	#os.system("bash .TexFlasher/scripts/createFlashcards.sh "+ filename)
+	executeCommand("bash .TexFlasher/scripts/createFlashcards.sh "+ filename, True)
 	menu()
 	#run_flasher(dir_name,top)
 
