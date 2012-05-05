@@ -127,7 +127,7 @@ def load_agenda(ldb,dir,now=datetime.now()):
 				lastReviewed_time=datetime(*(strptime(lastReviewed, "%Y-%m-%d %H:%M:%S")[0:6]))
 				level=elem.getAttribute('level')
 				dt = lastReviewed_time + timedelta(days=int(level))		
-				if datetime.now() + timedelta(hours=int(24 - datetime.now().hour + 3))>=dt:
+				if now + timedelta(hours=int(24 - now.hour + 3))>=dt:
 					diff=now-dt
 					local_agenda[elem.tagName]=diff.days * seconds_in_a_day + diff.seconds
 	except:

@@ -81,8 +81,6 @@ echo "python .TexFlasher/credits.py" >> run-TexFlasher.sh
 echo
 echo "echo" >> run-TexFlasher.sh
 
-echo "echo \"This file is part of TexFlasher.\"" >> run-TexFlasher.sh
-echo "echo \"\"" >> run-TexFlasher.sh
 echo "echo \"TexFlasher is free software: you can redistribute it and/or modify\"">> run-TexFlasher.sh
 echo "echo \"it under the terms of the GNU General Public License as published by\"">> run-TexFlasher.sh
 echo "echo \"the Free Software Foundation, either version 3 of the License, or\"">> run-TexFlasher.sh
