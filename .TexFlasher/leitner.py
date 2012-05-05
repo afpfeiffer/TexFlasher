@@ -1278,13 +1278,13 @@ def menu():
 				#open folder
 				if todo-new>0:
 					exec('button_' + str(row_start)+'_open =create_image_button(Menu,"./.TexFlasher/pictures/Flashcard_folder_red.png",60,60)')
-					exec('button_' + str(row_start)+'_open.configure(border='+str(bordersize)+',width=70,state='+button_status+',command=lambda:run_flasher("'+os.path.dirname(l.getAttribute('filename'))+'", True))')	
+					exec('button_' + str(row_start)+'_open.configure(width=70,state='+button_status+',command=lambda:run_flasher("'+os.path.dirname(l.getAttribute('filename'))+'", True))')	
 				elif new >0:
 					exec('button_' + str(row_start)+'_open =create_image_button(Menu,"./.TexFlasher/pictures/Flashcard_folder_yellow.png",60,60)')
-					exec('button_' + str(row_start)+'_open.configure(border='+str(bordersize)+',width=70,state='+button_status+',command=lambda:run_flasher("'+os.path.dirname(l.getAttribute('filename'))+'", True))')
+					exec('button_' + str(row_start)+'_open.configure(width=70,state='+button_status+',command=lambda:run_flasher("'+os.path.dirname(l.getAttribute('filename'))+'", True))')
 				else:
 					exec('button_' + str(row_start)+'_open =create_image_button(Menu,"./.TexFlasher/pictures/Flashcard_folder.png",60,60)')
-					exec('button_' + str(row_start)+'_open.configure(border='+str(bordersize)+',width=70,state='+button_status+',command=lambda:run_flasher("'+os.path.dirname(l.getAttribute('filename'))+'", False))')
+					exec('button_' + str(row_start)+'_open.configure(width=70,state='+button_status+',command=lambda:run_flasher("'+os.path.dirname(l.getAttribute('filename'))+'", False))')
 									
 				exec('button_' + str(row_start)+'_open.grid(row='+str(row_start)+',sticky=N+W+S+E,column='+str(start_column)+')')
 				#folder desc
@@ -1297,29 +1297,29 @@ def menu():
 					update_image="./.TexFlasher/pictures/update.png"
 				if l.getAttribute('lastReviewed')==l.getAttribute('created'):
 					exec('button_' + str(row_start)+'_update=create_image_button(Menu,"./.TexFlasher/pictures/update_now.png",'+button_size+','+button_size+')')
-					exec('button_' + str(row_start)+'_update.configure(border='+str(bordersize)+',command=lambda:update_texfile("'+l.getAttribute('filename')+'"))')
+					exec('button_' + str(row_start)+'_update.configure(command=lambda:update_texfile("'+l.getAttribute('filename')+'"))')
 					exec('button_' + str(row_start)+'_update.grid(row='+str(row_start)+',column='+str(start_column+2)+',sticky=W+N+S+E)')
 					new_status="DISABLED"
 				else:
 					exec('button_' + str(row_start)+'_update=create_image_button(Menu,"'+update_image+'",'+button_size+','+button_size+')')
-					exec('button_' + str(row_start)+'_update.configure(border='+str(bordersize)+',command=lambda:update_texfile("'+l.getAttribute('filename')+'"))')
+					exec('button_' + str(row_start)+'_update.configure(command=lambda:update_texfile("'+l.getAttribute('filename')+'"))')
 					exec('button_' + str(row_start)+'_update.grid(row='+str(row_start)+',column='+str(start_column+2)+',sticky=W+N+S+E)')		
 
 				#stats	
 				exec('button_' + str(row_start)+'_stat=create_image_button(Menu,"./.TexFlasher/pictures/stat.png",'+button_size+','+button_size+')')
-				exec('button_' + str(row_start)+'_stat.configure(border='+str(bordersize)+',state='+button_status+',command=lambda:statistics_nextWeek("'+os.path.dirname(l.getAttribute('filename'))+'"))')
+				exec('button_' + str(row_start)+'_stat.configure(state='+button_status+',command=lambda:statistics_nextWeek("'+os.path.dirname(l.getAttribute('filename'))+'"))')
 				exec('button_' + str(row_start)+'_stat.grid(row='+str(row_start)+',column='+str(start_column+3)+',sticky=N+S+W+E)')
 				#open tex file
 				exec('button_' + str(row_start)+'_tex =create_image_button(Menu,"./.TexFlasher/pictures/latex.png",'+button_size+','+button_size+')')
-				exec('button_' + str(row_start)+'_tex.configure(border='+str(bordersize)+',command=lambda:open_tex("'+l.getAttribute('filename')+'"))')
+				exec('button_' + str(row_start)+'_tex.configure(command=lambda:open_tex("'+l.getAttribute('filename')+'"))')
 				exec('button_' + str(row_start)+'_tex.grid(row='+str(row_start)+',column='+str(start_column+4)+',sticky=W+N+S+E)')
 				#log
 				exec('button_' + str(row_start)+'_log=create_image_button(Menu,"./.TexFlasher/pictures/'+window_type+'.png",'+button_size+','+button_size+')')
-				exec('button_' + str(row_start) + '_log.configure(border='+str(bordersize)+',state='+new_status+',command=lambda:show_log("'+os.path.dirname(l.getAttribute('filename'))+'"))')
+				exec('button_' + str(row_start) + '_log.configure(state='+new_status+',command=lambda:show_log("'+os.path.dirname(l.getAttribute('filename'))+'"))')
 				exec('button_' + str(row_start)+'_log.grid(row='+str(row_start)+',column='+str(start_column+5)+',sticky=N+S+E+W)')
 				#reset
 				exec('button_' + str(row_start)+'_res=create_image_button(Menu,"./.TexFlasher/pictures/delete.png",'+button_size+','+button_size+')')
-				exec('button_' + str(row_start)+'_res.configure(border='+str(bordersize)+',state='+button_status+',command=lambda:reset_flash("'+l.getAttribute('filename')+'"))')
+				exec('button_' + str(row_start)+'_res.configure(state='+button_status+',command=lambda:reset_flash("'+l.getAttribute('filename')+'"))')
 				exec('button_' + str(row_start)+'_res.grid(row='+str(row_start)+',column='+str(start_column+7)+',sticky=N+S+E)')
 				saveString += " "+ os.path.dirname(l.getAttribute('filename'))+"/Users/"+user+".xml "
 				saveString += " "+ l.getAttribute('filename') 
@@ -1329,7 +1329,7 @@ def menu():
 
 	#create button
 	create=create_image_button(Menu,"./.TexFlasher/pictures/Flashcard_folder_add.png",60,60)
-	create.configure(border=bordersize,width=70,command=create_new) 
+	create.configure(width=70,command=create_new) 
 	if row_start > 3:
 		create.grid(row=1,column=0,sticky=W)
 		#search field
@@ -1343,7 +1343,7 @@ def menu():
 		default_search_value.set("query ...")
 		query.grid(row=1,column=1,sticky=E+W+N+S)
 		search_button=create_image_button(Menu,"./.TexFlasher/pictures/search.png",40,40)
-		search_button.configure(border=bordersize,command=search_flashcard)
+		search_button.configure(command=search_flashcard)
 		#print search_button['cursor']
 		search_button.grid(row=1,column=2,sticky=N+E+W,columnspan=2)		
 		v = IntVar()
@@ -1355,7 +1355,7 @@ def menu():
 		if checkIfNeedToSave( saveString ):
 			image_path="./.TexFlasher/pictures/upload_now.png"	
 		exec('save=create_image_button(Menu,"'+image_path+'",'+button_size+','+button_size+')')
-		exec('save.configure(border='+str(bordersize)+',command=lambda:saveFiles(saveString))')
+		exec('save.configure(command=lambda:saveFiles(saveString))')
 		exec('save.grid(row=1, column=4,sticky=W+N+S+E,columnspan=4)')	
 		Label(Menu,height=1).grid(sticky=E+W,row=2,columnspan=10)
 	else:
