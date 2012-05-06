@@ -25,7 +25,7 @@ import re
 import commands
 import xml.dom.minidom as xml
 from operator import itemgetter
-from time import gmtime, strftime, strptime, mktime, ctime, localtime
+from time import strftime, strptime, ctime, localtime
 from datetime import datetime, timedelta
 from Tkinter import *
 from math import *
@@ -35,10 +35,8 @@ import Image, ImageTk
 import tkFileDialog
 from difflib import get_close_matches
 import itertools, collections
-import glob
 
-
-######################################################################## leitner_db management ###########################################################
+######################################################################## leitner_db management ##############################################
 
 
 def load_leitner_db(leitner_dir,user):
@@ -127,7 +125,7 @@ def load_agenda(ldb,dir,now=datetime.now()):
 				lastReviewed_time=datetime(*(strptime(lastReviewed, "%Y-%m-%d %H:%M:%S")[0:6]))
 				level=elem.getAttribute('level')
 				dt = lastReviewed_time + timedelta(days=int(level))		
-				if datetime.now() + timedelta(hours=int(24 - datetime.now().hour + 3))>=dt:
+				if now + timedelta(hours=int(24 - now.hour + 3))>=dt:
 					diff=now-dt
 					local_agenda[elem.tagName]=diff.days * seconds_in_a_day + diff.seconds
 	except:
@@ -470,9 +468,6 @@ def get_fc_info(dir,tag,ldb=None):
 			return elem	
 			break
 
-
-
-	 
 def get_fc_desc(tex_file_path):
 	try:
 		tex_file=open(tex_file_path,"r")
@@ -503,8 +498,6 @@ def get_fc_desc(tex_file_path):
 			beg_con=False
 	return title,theorem_name,theorem_type,content
 		
-
-
 ############################################################### Search ###########################################
 				
 def search_flashcard(event="none"):
@@ -658,19 +651,16 @@ def display_mult_fcs(fcs,title,button_title,button_command,button_image): #Synta
 	exec('menu_button=create_image_button(top,"'+button_image+'",40,40)')
 	exec('menu_button.configure(text="%s",command=%s)'%(button_title,button_command))
 	exec('menu_button.grid(row=0,columnspan=2)')
-	#Label(top,height=1).grid(row=1,columnspan=2)	
 	vscrollbar = AutoScrollbar(top)
 	vscrollbar.grid(row=2, column=2, sticky=N+S)
 	search_canvas = Canvas(top,yscrollcommand=vscrollbar.set)
 	search_canvas.grid(row=2, column=0, sticky=N+S+E+W)
 	vscrollbar.config(command=search_canvas.yview)
 	Search_frame = Frame(search_canvas,border=10)
-	#Search_frame.rowconfigure(1, weight=1)
 	Search_frame.columnconfigure(0, weight=1)
 	Search_frame.grid(row=0,column=0)
 	Label(Search_frame,width=1).grid(column=2,rowspan=100)
 	i=0 #start at row	
-	 #width of the images
 	iterator=fcs.__iter__()
 	images_row=[1,3] # increaese number of images per row by adding [1,3,6,9, ...]
 	size=WIDTH/len(images_row)-40
@@ -704,58 +694,72 @@ def  disp_single_fc(image_path,title,tag):
 	win.title(title)
 	win.iconbitmap(iconbitmapLocation)
 	win.iconmask(iconbitmapLocation)
-	fc_image = Image.open(image_path)
-	fc_image = fc_image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
-	search_flashcard_1 = ImageTk.PhotoImage(fc_image)	
-	fc_image_b_1=Button(win,image=search_flashcard_1,command=win.destroy)
-	fc_image_b_1.img=search_flashcard_1
-	fc_image_b_1.grid(row=1,column=0,columnspan=2)	
+
+	c=Canvas(win,width=WIDTH,height=WIDTH*0.6)
+	c.grid(row=1,columnspan=2)
+	image = Image.open(image_path)
+	image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
+	flashcard = ImageTk.PhotoImage(image)
+	c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard)	
+	c.img=flashcard
+	
+ 	if os.path.isfile(os.path.dirname(image_path)+"/"+tag+"_comment.png"):
+ 		comment_image = Image.open(os.path.dirname(image_path)+"/"+tag+"_comment.png")
+ 		comment_image = ImageTk.PhotoImage(comment_image)
+		c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=comment_image)	
+		c.comment=comment_image
+
+	#c.bind("<Button-1>", lambda e: win.destroy())
+	edit_b=create_image_button(win,"./.TexFlasher/pictures/latex.png",40,40)
+#	edit_b.config(state=DISABLED)
+	edit_b.grid(row=1,column=1,sticky=N+E)
+
+	save_b=create_image_button(win,".TexFlasher/pictures/upload.png",40,40)
+	save_b.config(state=DISABLED)
+	save_b.grid(row=1, column=0,sticky=W+S)	
+	
+	clear_b=create_image_button(win,".TexFlasher/pictures/clear.png",40,40)
+	clear_b.configure(state=DISABLED)
+	clear_b.grid(row=1, column=1,sticky=E+S)		
+
+	edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,os.path.dirname(image_path)+"/../",tag,edit_b,save_b,clear_b))
+	save_b.configure(command=lambda:savefile(c,os.path.dirname(image_path)+"/../",tag,save_b))
+	clear_b.configure(command=lambda:clearall(c,os.path.dirname(image_path)+"/../",tag,save_b,clear_b))	
+	create_comment_canvas(c,os.path.dirname(image_path)+"/../",tag,save_b,clear_b)
 	ldb=load_leitner_db(os.path.dirname(image_path)+"/../",user)
 	fc_info=get_fc_info(os.path.dirname(image_path)+"/../",tag,ldb)
 
-	button=create_image_button(win,"./.TexFlasher/pictures/edit.png",40,40)
-	button.configure(command=lambda:edit_fc(fc_image_b_1,os.path.dirname(image_path).replace("/Karteikarten",""),tag,win))
-	button.grid(row=1,column=1,sticky=E+N)	
-	
-	comment_b=create_image_button(win,"./.TexFlasher/pictures/comment.png",40,40)
-	comment_b.configure(command=lambda:create_comment_canvas(fc_image_b_1,os.path.dirname(image_path).replace("/Karteikarten",""),tag,win))
-	comment_b.grid(row=1,column=0,sticky=N+W)
 	Label(win,height=1).grid(row=2,column=0)
-	reset_level=1
 	Label(win,text="Created: "+fc_info.getAttribute("created")+", Last Reviewed:"+fc_info.getAttribute("lastReviewed")).grid(row=0,columnspan=2)	
-#	if tag in changed:		
-#		button=Button(win,bd=BD,text="Set to Level %s"%reset_level,command=lambda:update_flashcard(tag,ldb,os.path.dirname(image_path)+"/../","Level",reset_level,strftime("%Y-%m-%d %H:%M:%S", gmtime(0)),True)).grid(row=3,column=1,sticky=W)
-
-
 
 
 ###############################################################  Edit fc ######################################################################
 
-def edit_fc(image_b,dir,fc_tag,window):
+def edit_fc(c,dir,fc_tag,edit_b,save_b,clear_b):
 	fc_name,theorem_name,theorem_type,content=get_fc_desc(dir+"/Karteikarten/"+fc_tag+".tex")
-
-	main_c = Canvas(window)
-	main_c.grid(row=1,rowspan=10,columnspan=10,sticky=N+E+W+S)
-
-	frame=Frame(main_c,border=10)
+	edit_b.config(state=DISABLED)
+	frame=Frame(c)
 	frame.columnconfigure(0, weight=1)
 	frame.columnconfigure(0, weight=1)	
 	frame.grid(sticky=E+W+N+S)
 
-	edit_text=Text(frame,width=int(WIDTH*0.139),height=int(WIDTH*0.045))
+	edit_text=Text(frame,width=int(WIDTH*0.143),height=int(WIDTH*0.040))
 	edit_text.insert(INSERT,content)
 	edit_text.grid(row=0,column=0,columnspan=2,sticky=N+W+E+S)
-	
-	edit_save=Button(frame,bd=BD)
-	edit_save.configure(text="Save",command=lambda:save_edit(image_b,edit_cancel,edit_save,edit_text,dir,fc_tag,theorem_type,main_c))
-	edit_save.grid(row=1,column=0,sticky=W+S)	
-	edit_cancel=Button(frame,bd=BD)
-	edit_cancel.configure(text="Cancel",command=lambda:cancel_edit(main_c))	
-	edit_cancel.grid(row=1,column=1,sticky=E+S)
+	clear_b.config(state=NORMAL)
+	save_b.config(state=NORMAL)
+	save_b.configure(command=lambda:save_edit(edit_text,dir,fc_tag,theorem_type,c))
+	clear_b.configure(text="Cancel",command=lambda:cancel_edit(c,dir,fc_tag,frame,edit_b,save_b,clear_b))	
 
 
-def cancel_edit(main_c):
-	main_c.grid_forget()	
+def cancel_edit(c,dir,tag,frame,edit_b,save_b,clear_b):
+	clear_b.config(state=DISABLED)
+	save_b.config(state=DISABLED)
+	edit_b.config(state=NORMAL)
+	edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,dir,tag,edit_b,save_b,clear_b))
+	save_b.configure(command=lambda:savefile(c,dir,tag,save_b))
+	clear_b.configure(command=lambda:clearall(c,dir,tag,save_b,clear_b))	
+	frame.grid_forget()
 
 
 def change_latex(file_path,fc_tag,content,theorem_type):
@@ -763,8 +767,8 @@ def change_latex(file_path,fc_tag,content,theorem_type):
 	tag=False
 	new_latex=[]
 
-	old_fcs=[]
-	new_fcs=[]
+	old_fcs=[] #for checking
+	new_fcs=[] # -%-
 
 	for line in file:
 		if re.compile("%fc=").findall(line):
@@ -782,7 +786,7 @@ def change_latex(file_path,fc_tag,content,theorem_type):
 	for line in new_latex:
 		if re.compile("%fc=").findall(line):
 			new_fcs.append(line)	
-	if old_fcs==new_fcs:
+	if old_fcs==new_fcs: #check if # of fcs has'nt changed
 		new_file=open(file_path,"w")
 		for line in new_latex:
 			new_file.writelines(line)
@@ -811,19 +815,16 @@ def save_edit(b_image,edit_cancel,edit_save,edit_text,dir,fc_tag,theorem_type,ma
 	cancel_edit(main_c)
 	
 ########################################################## Comment on fc ##############################################################
-
-def create_comment_canvas(image_b,dir,fc_tag,win):
-	
-        class RectTracker:	
-	  def __init__(self, canvas):
+class RectTracker:	
+	def __init__(self, canvas):
 		self.canvas = canvas
 		self.item = None
 		
-	  def draw(self, start, end, **opts):
+	def draw(self, start, end, **opts):
 		"""Draw the rectangle"""
-		return self.canvas.create_rectangle(*(list(start)+list(end)), **opts)
+		return self.canvas.create_rectangle(*(list(start)+list(end)),dash=[4,4], outline="red",**opts)
 		
-          def autodraw(self, **opts):
+	def autodraw(self, **opts):
 		"""Setup automatic drawing; supports command option"""
 		self.start = None
 		self.canvas.bind("<Button-1>", self.__update, '+')
@@ -833,7 +834,7 @@ def create_comment_canvas(image_b,dir,fc_tag,win):
 		self._command = opts.pop('command', lambda *args: None)
 		self.rectopts = opts
 		
-	  def __update(self, event):
+	def __update(self, event):
 		if not self.start:
 			self.start = [event.x, event.y]
 			return
@@ -843,155 +844,86 @@ def create_comment_canvas(image_b,dir,fc_tag,win):
 		self.item = self.draw(self.start, (event.x, event.y), **self.rectopts)
 		self._command(self.start, (event.x, event.y))
 		
-	  def __stop(self, event):
+	def __stop(self, event):
 		self.start = None
-		self.canvas.delete(self.item)
+		#self.canvas.delete(self.item)
 		self.item = None
+	
+
+def create_comment_canvas(c,dir,fc_tag,save,clear):
+	try:
+		c.rect
+	except:
+		c.rect=False
 		
+	if not c.rect:
+		rect = RectTracker(c)
+		c.rect=rect
+	else:
+		rect=c.rect
+	x, y = None, None
+	#def cool_design(event):
+	#	global x, y
+	#	kill_xy()		
+	#	dashes = [3, 2]
+	#	x = c.create_line(event.x, 0, event.x, 1000, dash=dashes, tags='no')
+	#	y = c.create_line(0, event.y, 1000, event.y, dash=dashes, tags='no')
+		
+	def kill_xy(event=None):
+		c.delete('no')
+	
+	#c.bind('<Motion>', cool_design, '+')	
+	# command
 
-        global b1, xold, yold,linestate
-	points = []
-	spline = 0
-	tag1 = "theline"
-	b1="up"
-	xold, yold = None, None
-	eraseswitch=0
-	x1=-1 
-	y1=-1
-	recswitch=0
-	r1=-1
-	r2=-1
-        linestate=1
-	main_c = Canvas(win)
-	main_c.grid(row=1,rowspan=10,columnspan=10,sticky=N+E+W+S)
-	frame=Frame(main_c)
-	frame.grid(row=0,columnspan=5,sticky=N+S+W+E)
-	c=Canvas(frame,width=WIDTH,height=WIDTH*0.6)
-
-	image = Image.open(dir+"/Karteikarten/"+fc_tag+"-1.jpg")
-	image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
-	flashcard = ImageTk.PhotoImage(image)
-	back_img=c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard)
-	c.img=flashcard	
-	c.grid(row=0,columnspan=5,sticky=N+E+W+S)
-        rect = RectTracker(c)
-        rect.autodraw(fill="", width=2, command=onDrag)
-
+	def onDrag(start,end):
+		global x,y
+		save.config(state=NORMAL)
+		clear.config(state=NORMAL)
 	if os.path.isfile(dir+"/Karteikarten/"+fc_tag+"_comment.png"):
-		im = Image.open(dir+"/Karteikarten/"+fc_tag+"_comment.png")
 		image = Image.open(dir+"/Karteikarten/"+fc_tag+"_comment.png")
 		comment = ImageTk.PhotoImage(image)		
 		c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=comment)
 		c.comment=comment	
+		clear.configure(state=NORMAL)
+					
+	rect.autodraw(fill="", width=2, command=onDrag)
 
-	
-        li =  Button (frame, text="paint", command=lambda: changelinestate(li))
-	w = Button (frame, text="save", command=lambda:savefile(main_c,c,dir,fc_tag))
-	v = Button (frame, text="clear all", command=lambda:clearall(c,dir,fc_tag,w))
-	cancel = Button (frame, text="Cancel", command=lambda:cancel_edit(main_c))
 
-	c.configure(cursor="spraycan")
-        li.grid(row=2,column=1)
-	w.grid(row=2, column=3)
-	v.grid(row=2, column=2)
-	cancel.grid(row=2,column=4)
-	c.bind("<Motion>", lambda event: motion(event,w,c))
-	c.bind("<ButtonPress-1>", b1down)
-	c.bind("<ButtonRelease-1>",b1up)
-		
-
-def onDrag(start, end):
-		global x,y
-		
-def kill_xy(c,event=None):
-		c.delete('no')
-
-def savefile(main,canvas,dir,tag):
+def savefile(canvas,dir,tag,save_b):
+	save_b.config(state=DISABLED)
 	canvas.img=None
-        canvas.delete('no')
 	canvas.postscript(file=dir+"/Karteikarten/"+tag+"_comment.eps")
-	os.popen("convert -resize 117.82% -verbose -colorspace RGB "+dir+"/Karteikarten/"+tag+"_comment.eps -fill none "+dir+"/Karteikarten/"+tag+"_comment.png")
-	cancel_edit(main)
+	os.popen("convert -verbose -colorspace RGB "+dir+"/Karteikarten/"+tag+"_comment.eps -fill none "+dir+"/Karteikarten/"+tag+"_comment.png")
+	
+	image = Image.open(dir+"/Karteikarten/"+tag+"-1.jpg")
+	image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
+	flashcard_image = ImageTk.PhotoImage(image)	
+	canvas.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard_image)	
+ 	canvas.img=flashcard_image
 
-def b1down(event):
- global b1
- b1="down"
-
-def b1up(event):
- global b1, xold, yold
- b1="up"
- xold= None
- yold= None
-
-def motion(event,w,c):
-  if b1 == "down":
-   global xold, yold,linestate
-   if linestate is 0 and (xold is not None and yold is not None):
-     event.widget.create_line(xold,yold,event.x,event.y,smooth=TRUE,fill="red",width=min(pow(abs(xold-event.x)^2+abs(yold-event.y)^2,0.5),5))
-     w.config(state=NORMAL)
-   elif (xold is not None and yold is not None):
-     event.widget.create_line(xold,yold,event.x,yold,smooth=TRUE,fill="blue",width=3)
-     w.config(state=NORMAL)
-   if linestate is 0:
-     xold = event.x
-     yold = event.y
-   else: 
-     xold = event.x
-     if yold is None:
-       yold = event.y
-  global x, y
-  kill_xy(c)
-  dashes = [3, 2]
-  x = c.create_line(event.x, 0, event.x, 1000, dash=dashes, tags='no')
-  y = c.create_line(0, event.y, 1000, event.y, dash=dashes, tags='no')
-
-def clearall(canvas,dir,fc_tag,w):
- canvas.delete("all")
- os.system("rm -f "+dir+"/Karteikarten/"+fc_tag+"_comment.eps")
- os.system("rm -f "+dir+"/Karteikarten/"+fc_tag+"_comment.png")
- canvas.create_image(int(WIDTH/2), int(WIDTH*0.3), image=canvas.img)
- w.config(state=DISABLED)
+ 	image = Image.open(dir+"/Karteikarten/"+tag+"_comment.png")
+	comment = ImageTk.PhotoImage(image)			
+ 	canvas.create_image(int(WIDTH/2), int(WIDTH*0.3), image=comment)
+ 	canvas.comment=comment
 
 
-def changelinestate(li):
- global linestate
- if linestate is 1:
-  linestate=0
-  li.config(relief=SUNKEN)
- else:
-   linestate=1
-   li.config(relief=RAISED)
-
-
-def eraseclick(event):
- global x1
- global y1
-
- if (eraseswitch is 1 and x1 is -1 and y1 is -1):
-   x1 = event.x
-   y1 = event.y
- elif (eraseswitch is 1 and x1 is not -1 and y1 is not -1):    
-   event.widget.create_oval(x1,y1,event.x,event.y,fill="white",width=0)
-   x1=-1
-   y1=-1   
-
-
- 
-def erase():
- global eraseswitch
- if eraseswitch is 0:
-  eraseswitch=1
-  r.config(relief=SUNKEN)
- else: 
-  eraseswitch=0
-  r.config(relief=RAISED)
- c.bind("<Button-1>", eraseclick)
-
-
+def clearall(canvas,dir,fc_tag,w,v):
+	canvas.delete("all")
+	if os.path.isfile(dir+"/Karteikarten/"+fc_tag+"_comment.eps"):
+		os.system("rm -f "+dir+"/Karteikarten/"+fc_tag+"_comment.eps")
+		os.system("rm -f "+dir+"/Karteikarten/"+fc_tag+"_comment.png")
+	image = Image.open(dir+"/Karteikarten/"+fc_tag+"-1.jpg")
+	image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
+	flashcard_image = ImageTk.PhotoImage(image)
+	canvas.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard_image)
+	canvas.img=flashcard_image 	 
+ 	w.config(state=DISABLED)
+ 	v.config(state=DISABLED)
 
 ############################################################### run flasher ###########################################################
+
 	
-def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,b_image):
+def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,edit_b,save_b,clear_b):
 	# this is always true except for the very first run!
 	if( listPosition >=0 ):
 		flashcard_name=agenda[listPosition][0]
@@ -1021,8 +953,14 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,b_
 	image = Image.open(selected_dir+"/Karteikarten/"+flashcard_name+"-0.jpg")
 	image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
 	flashcard_image = ImageTk.PhotoImage(image)
-	b_image.configure(image=flashcard_image,command=lambda:answer(selected_dir,agenda,ldb, flashcard_name, listPosition,b_true,b_false,b_image))
-	b_image.grid(row=1 , columnspan=2)
+	c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard_image)
+	c.img=flashcard_image
+	c.bind("<Button-1>", lambda e:answer(selected_dir,agenda,ldb, flashcard_name, listPosition,b_true,b_false,c,edit_b,save_b,clear_b))
+
+	edit_b.config(state=DISABLED)
+	save_b.config(state=DISABLED)
+	clear_b.config(state=DISABLED)
+
 	b_true.configure(state=DISABLED)
 	b_false.configure(state=DISABLED)
 	flashcardsTodo=len(agenda)
@@ -1037,22 +975,27 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,b_
 	mainloop()
 
 
-	
-def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,b_true,b_false,b_image):
+def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,b_true,b_false,c,edit_b,save_b,clear_b):
 	image = Image.open(selected_dir+"/Karteikarten/"+flashcard_tag+"-1.jpg")
 	image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
 	flashcard = ImageTk.PhotoImage(image)
-	b_image.configure(image=flashcard)
-	b_image.img=flashcard
+	c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard)	
+	c.img=flashcard
+ 	if os.path.isfile(selected_dir+"/Karteikarten/"+flashcard_tag+"_comment.png"):
+ 		comment_image = Image.open(selected_dir+"/Karteikarten/"+flashcard_tag+"_comment.png")
+ 		comment_image = ImageTk.PhotoImage(comment_image)
+		c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=comment_image)	
+		c.comment=comment_image
 
-	b_true.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,True, listPosition,b_true,b_false,b_image))
-	b_false.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,False, listPosition,b_true,b_false,b_image))
-	edit_b=create_image_button(top,"./.TexFlasher/pictures/edit.png",40,40)
-	edit_b.configure(command=lambda:edit_fc(b_image,selected_dir,flashcard_tag,top))
-	edit_b.grid(row=1,column=1,sticky=N+E)
-	comment_b=create_image_button(top,"./.TexFlasher/pictures/comment.png",40,40)
-	comment_b.configure(command=lambda:create_comment_canvas(b_image,selected_dir,flashcard_tag,top))
-	comment_b.grid(row=1,column=0,sticky=N+W)
+	c.unbind("<Button-1>")
+	edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,selected_dir,flashcard_tag,edit_b,save_b,clear_b))
+	save_b.configure(command=lambda:savefile(c,selected_dir,flashcard_tag,save_b))
+	clear_b.configure(command=lambda:clearall(c,selected_dir,flashcard_tag,save_b,clear_b))
+	
+	b_true.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,True, listPosition,b_true,b_false,c,edit_b,save_b,clear_b))
+	b_false.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,False, listPosition,b_true,b_false,c,edit_b,save_b,clear_b))
+	
+	create_comment_canvas(c,selected_dir,flashcard_tag,save_b,clear_b)
 
 	mainloop()
 
@@ -1070,16 +1013,31 @@ def run_flasher(selected_dir, stuffToDo=True ):
 		date = datetime.now()+timedelta(days=1000)
 		
 	agenda,new=load_agenda(ldb,selected_dir, date)
-	b_image=Button(top)
-	b_image.grid(row=1 , columnspan=2)
+	frame=Frame(top)
+	frame.grid(row=1,columnspan=2,sticky=N+S+W+E)
+	c=Canvas(frame,width=WIDTH,height=WIDTH*0.6)
+	c.grid(row=0,columnspan=2,sticky=N+E+W+S)
+
 	# true flase buttons
-	b_true=create_image_button(top,"./.TexFlasher/pictures/Flashcard_correct.png")
-	b_false=create_image_button(top,"./.TexFlasher/pictures/Flashcard_wrong.png")
-	b_true.configure(bd=BD) 
-	b_false.configure(bd=BD) 
+	b_true=create_image_button(top,"./.TexFlasher/pictures/Flashcard_correct.png",80,80)
+	b_false=create_image_button(top,"./.TexFlasher/pictures/Flashcard_wrong.png",80,80)
+
 	b_true.grid(row=2, column=0, pady=int(HEIGHT*0.02/7.) )
 	b_false.grid(row=2, column=1, pady=int(HEIGHT*0.02/7.) )
-	reactAndInit(selected_dir,agenda,ldb, True , -1 ,b_true,b_false,b_image)
+	
+	edit_b=create_image_button(top,"./.TexFlasher/pictures/latex.png",40,40)
+	edit_b.config(state=DISABLED)
+	edit_b.grid(row=1,column=1,sticky=N+E)
+
+	save_b=create_image_button(top,".TexFlasher/pictures/upload_now.png",40,40)
+	save_b.config(state=DISABLED)
+	save_b.grid(row=1, column=0,sticky=W+S)	
+	
+	clear_b=create_image_button(top,".TexFlasher/pictures/clear.png",40,40)
+	clear_b.configure(state=DISABLED)
+	clear_b.grid(row=1, column=1,sticky=E+S)		
+
+	reactAndInit(selected_dir,agenda,ldb, True , -1 ,b_true,b_false,c,edit_b,save_b,clear_b)
 
 ############################################################## Menu ####################################################################
 
@@ -1165,7 +1123,7 @@ def checkIfNeedToSave( files ):
 	else:
 		return True
 		
-def executeCommand( command ,wait=False):
+def executeCommand( command ,wait=True):
 
 	
 	win = Toplevel()
@@ -1190,10 +1148,7 @@ def clear_search(event):
 
 
 def update_texfile( fname ):	
-	executeCommand( "svn up "+os.path.dirname(fname)+"/Users/"+user+".xml; svn up "+fname, True )
-	# NOTE individual hack that saves me some conflicts, we can discuss that tomorrow
-	#os.system( "svn up "+os.path.dirname(fname)+"/Users/"+user+".xml > /dev/null"  )
-	#os.system( "svn up "+fname+" > /dev/null" )
+	executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+os.path.dirname(fname)+"/Users/"+user+".xml "+fname, True )
 	os.system("rm "+os.path.dirname(fname)+"/Karteikarten/UPDATE 2>/dev/null")
 	create_flashcards( fname )
 
@@ -1364,7 +1319,41 @@ def menu():
 	Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer").grid(row=3,columnspan=8,sticky=S)
 	mainloop()
 
+############################################################################3  Hover ###############################################
+class HoverInfo(Menu):
+	def __init__(self, parent, text, command=None):
+	   self._com = command
+	   Menu.__init__(self,parent, tearoff=0)
+	   if not isinstance(text, str):
+	      raise TypeError('Trying to initialise a Hover Menu with a non string type: ' + text.__class__.__name__)
+	   toktext=re.split('\n', text)
+	   for t in toktext:
+	      self.add_command(label = t)
+	   self._displayed=False
+	   self.master.bind("<Enter>",self.Display )
+    	   self.master.bind("<Leave>",self.Remove )
 
+	def __del__(self):
+	   self.master.unbind("<Enter>")
+	   self.master.unbind("<Leave>")
+
+	def Display(self,event):
+	   if not self._displayed:
+	      self._displayed=True
+	      self.post(event.x_root, event.y_root)
+	   if self._com != None:
+	      self.master.unbind_all("<Return>")
+	      self.master.bind_all("<Return>", self.Click)
+
+	def Remove(self, event):
+	 if self._displayed:
+	   self._displayed=False
+	   self.unpost()
+	 if self._com != None:
+	   self.unbind_all("<Return>")
+	
+	def Click(self, event):
+	   self._com()
 
 ##################################################################### Main ###############################################################################
 
@@ -1376,7 +1365,7 @@ version="TexFlasher unstable build"
 top = Tk()
 
 WIDTH=800
-HEIGHT=int(WIDTH*0.6) +160
+HEIGHT=int(WIDTH*0.6) +170
 
 BD=2
 

@@ -18,8 +18,6 @@
 #     along with TexFlasher  If not, see <http://www.gnu.org/licenses/>.
 
 
-#save files on server
-
 files=$*
 
 for thing in $files; do

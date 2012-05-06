@@ -16,14 +16,28 @@
 # 
 #     You should have received a copy of the GNU General Public License
 #     along with TexFlasher  If not, see <http://www.gnu.org/licenses/>.
-
-
+echo
+echo "                    OOOOO OOOO O   O   OOOO O     OOO  OOOO O  O OOOO OOOO"
+echo "                      O   O     O O    O    O    O   O O    O  O O    O  O"
+echo "                      O   OOO    O     OOO  O    OOOOO OOOO OOOO OOO  OOOO"
+echo "                      O   O     O O    O    O    O   O    O O  O O    O O"
+echo "                      O   OOOO O   O   O    OOOO O   O OOOO O  O OOOO O  O"
+echo
+echo
+echo "Saving files on server:"
+echo "_________________________________________________________________________________________________"
+echo
+echo "Please note: Your learning progress and changes, that you have made to the latex source files,"
+echo "             are constantly saved on your HD. This function is ONLY neccessary to upload these"
+echo "             changes onto the server(s), e.g. if you share latex sources with your friends."
+echo "_________________________________________________________________________________________________"
+echo 
 #save files on server
 
 files=$*
 
-
 for thing in $files; do
+	echo "processing: $thing"
   svn add $thing 2> /dev/null  
 	svn info $thing > /dev/null
 	HAVESVN=$?
@@ -31,9 +45,11 @@ for thing in $files; do
 # 		echo "svn available for this file"
 		svn up $thing 
 		svn commit $thing -m "save learning progress"
+		echo
+	else
+		echo "svn unavailable"
+		echo
 	fi
-# 	else
-# 		echo "svn unavailable"
 done
 
 exit 0
