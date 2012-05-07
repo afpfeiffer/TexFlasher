@@ -738,16 +738,20 @@ def  disp_single_fc(image_path,title,tag):
 ###############################################################  Edit fc ######################################################################
 
 def edit_fc(c,dir,fc_tag,edit_b,save_b,clear_b):
+	c_height=c.winfo_reqheight()
+	c_width=c.winfo_reqwidth()
+
 	fc_name,theorem_name,theorem_type,content=get_fc_desc(dir+"/Karteikarten/"+fc_tag+".tex")
 	edit_b.grid_remove()
-	frame=Frame(c)
-	frame.columnconfigure(0, weight=1)
-	frame.columnconfigure(0, weight=1)	
-	frame.grid(sticky=E+W+N+S)
 
-	edit_text=Text(frame,width=int(WIDTH*0.143),height=int(WIDTH*0.040))
+	frame=Frame(c)	
+	frame.grid(sticky=E+W+N+S)
+	#print c_width,c_height,WIDTH,HEIGHT,int(WIDTH*0.14256),int(WIDTH*0.043)
+	edit_text=Text(frame,width=int(WIDTH*0.14256),height=int(WIDTH*0.043)) #TODO fit ro canvas
 	edit_text.insert(INSERT,content)
-	edit_text.grid(row=0,column=0,columnspan=2,sticky=N+W+E+S)
+	edit_text.grid(sticky=N+W+E+S)
+
+
 	clear_b.config(state=NORMAL)
 	save_b.config(state=NORMAL)
 	save_b.configure(command=lambda:save_edit(c,frame,edit_text,dir,fc_tag,theorem_type,edit_b,save_b,clear_b))
@@ -866,12 +870,12 @@ def create_comment_canvas(c,dir,fc_tag,save,clear):
 	else:
 		rect=c.rect
 	x, y = None, None
-	#def cool_design(event):
-	#	global x, y
-	#	kill_xy()		
-	#	dashes = [3, 2]
-	#	x = c.create_line(event.x, 0, event.x, 1000, dash=dashes, tags='no')
-	#	y = c.create_line(0, event.y, 1000, event.y, dash=dashes, tags='no')
+	def cool_design(event):
+		global x, y
+		kill_xy()		
+		dashes = [3, 2]
+		x = c.create_line(event.x, 0, event.x, 1000, dash=dashes, tags='no')
+		y = c.create_line(0, event.y, 1000, event.y, dash=dashes, tags='no')
 		
 	def kill_xy(event=None):
 		c.delete('no')
