@@ -18,6 +18,8 @@
 #     You should have received a copy of the GNU General Public License
 #     along with TexFlasher  If not, see <http://www.gnu.org/licenses/>.
 
+
+
 import os
 import subprocess
 import sys
@@ -722,7 +724,7 @@ def  disp_single_fc(image_path,title,tag):
 	clear_b.configure(state=DISABLED)
 	clear_b.grid(row=1, column=1,sticky=E+S)		
 
-	edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,os.path.dirname(image_path)+"/../",tag,edit_b,save_b,clear_b))
+	edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,os.path.dirname(image_path).replace("/Karteikarten",""),tag,edit_b,save_b,clear_b))
 	save_b.configure(command=lambda:savefile(c,os.path.dirname(image_path)+"/../",tag,save_b))
 	clear_b.configure(command=lambda:clearall(c,os.path.dirname(image_path)+"/../",tag,save_b,clear_b))	
 	create_comment_canvas(c,os.path.dirname(image_path)+"/../",tag,save_b,clear_b)
@@ -737,7 +739,7 @@ def  disp_single_fc(image_path,title,tag):
 
 def edit_fc(c,dir,fc_tag,edit_b,save_b,clear_b):
 	fc_name,theorem_name,theorem_type,content=get_fc_desc(dir+"/Karteikarten/"+fc_tag+".tex")
-	edit_b.config(state=DISABLED)
+	edit_b.grid_remove()
 	frame=Frame(c)
 	frame.columnconfigure(0, weight=1)
 	frame.columnconfigure(0, weight=1)	
@@ -748,14 +750,14 @@ def edit_fc(c,dir,fc_tag,edit_b,save_b,clear_b):
 	edit_text.grid(row=0,column=0,columnspan=2,sticky=N+W+E+S)
 	clear_b.config(state=NORMAL)
 	save_b.config(state=NORMAL)
-	save_b.configure(command=lambda:save_edit(edit_text,dir,fc_tag,theorem_type,c))
+	save_b.configure(command=lambda:save_edit(c,frame,edit_text,dir,fc_tag,theorem_type,edit_b,save_b,clear_b))
 	clear_b.configure(text="Cancel",command=lambda:cancel_edit(c,dir,fc_tag,frame,edit_b,save_b,clear_b))	
 
 
 def cancel_edit(c,dir,tag,frame,edit_b,save_b,clear_b):
 	clear_b.config(state=DISABLED)
 	save_b.config(state=DISABLED)
-	edit_b.config(state=NORMAL)
+	edit_b.grid()
 	edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,dir,tag,edit_b,save_b,clear_b))
 	save_b.configure(command=lambda:savefile(c,dir,tag,save_b))
 	clear_b.configure(command=lambda:clearall(c,dir,tag,save_b,clear_b))	
@@ -794,7 +796,7 @@ def change_latex(file_path,fc_tag,content,theorem_type):
 	else:
 		raise	
 	
-def save_edit(b_image,edit_cancel,edit_save,edit_text,dir,fc_tag,theorem_type,main_c):
+def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type,edit_b,save_b,clear_b):
 	content=edit_text.get('1.0', END)
 	if os.path.isfile("./.TexFlasher/config.xml"):
 		try:
@@ -807,12 +809,14 @@ def save_edit(b_image,edit_cancel,edit_save,edit_text,dir,fc_tag,theorem_type,ma
 					image = Image.open(os.path.dirname(elem.getAttribute('filename'))+"/Karteikarten/"+fc_tag+"-1.jpg")
 					image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
 					flashcard = ImageTk.PhotoImage(image)
-					b_image.configure(image=flashcard)
-					b_image.img=flashcard					
+ 					c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard)
+ 					c.img=flashcard			
 					break
 		except:
 			tkMessageBox.showerror("Error","Fatal error while saving new content for %s!"%fc_tag)
-	cancel_edit(main_c)
+	else:
+		tkMessageBox.showerror("Error","Fatal error while saving new content for %s!"%fc_tag)
+	cancel_edit(c,dir,fc_tag,frame,edit_b,save_b,clear_b)
 	
 ########################################################## Comment on fc ##############################################################
 class RectTracker:	
