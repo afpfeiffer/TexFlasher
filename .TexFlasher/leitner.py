@@ -46,15 +46,15 @@ def load_leitner_db(leitner_dir,user):
 		print "No directory named Karteikarten found in "+leitner_dir
 		sys.exit()
 	#load old flashcards
-	if os.path.isfile(leitner_dir+"/Users/"+user+".xml"):
-		try:
-			old_ldb= xml.parse(leitner_dir+"/Users/"+user+".xml")
-		except:
-			pass
+	try:
+		doc= xml.parse(leitner_dir+"/Users/"+user+".xml")
+		ldb=doc.getElementsByTagName('ldb')[0]
+	except:
+		doc=xml.Document()
+		ldb = doc.createElement('ldb')
 	#create new flashcard xml
 	flashcards_dir=os.listdir(leitner_dir+"/Karteikarten")
-	doc=xml.Document()
-	ldb = doc.createElement('ldb')
+
 	for flashcard_file in flashcards_dir:
 		if flashcard_file.split(".")[-1]=="pdf":
 			flashcard_name=flashcard_file.split(".")[0]
@@ -62,11 +62,9 @@ def load_leitner_db(leitner_dir,user):
 			#mod_date=datetime(*(strptime(strftime("%Y-%m-%d %H:%M:%S",localtime(mod_sec)), "%Y-%m-%d %H:%M:%S")[0:6]))
 
 			try: 
-				flashcard_element=old_ldb.getElementsByTagName(flashcard_name)[0] #raises if old_ldb does not exist or not found
-				ldb.appendChild(flashcard_element)
+				flashcard_element=ldb.getElementsByTagName(flashcard_name)[0] #raises if old_ldb does not exist or not found
 			#		lastReviewed_date=datetime(*(strptime(flashcard_element.getAttribute('lastReviewed'), "%Y-%m-%d %H:%M:%S")[0:6])) #this raises if not reviewed yet	#		if mod_date>lastReviewed_date: 
 			#			changed.append(flashcard_element.tagName)
-
 			except:
 				#create new flashcard node
 				flashcard_element=doc.createElement(flashcard_name)
@@ -830,7 +828,7 @@ class RectTracker:
 		
 	def draw(self, start, end, **opts):
 		"""Draw the rectangle"""
-		return self.canvas.create_rectangle(*(list(start)+list(end)),dash=[4,4], outline="red",**opts)
+		return self.canvas.create_rectangle(*(list(start)+list(end)),dash=[4,4], tags="rect",outline="red",**opts)
 		
 	def autodraw(self, **opts):
 		"""Setup automatic drawing; supports command option"""
@@ -856,7 +854,46 @@ class RectTracker:
 		self.start = None
 		#self.canvas.delete(self.item)
 		self.item = None
+	def hit_test(self, start, end, tags=None, ignoretags=None, ignore=[]):
+		"""
+		Check to see if there are items between the start and end
+		"""
+		ignore = set(ignore)
+		ignore.update([self.item])
+		
+		# first filter all of the items in the canvas
+		if isinstance(tags, str):
+			tags = [tags]
+		
+		if tags:
+			tocheck = []
+			for tag in tags:
+				tocheck.extend(self.canvas.find_withtag(tag))
+		else:
+			tocheck = self.canvas.find_all()
+		tocheck = [x for x in tocheck if x != self.item]
+		if ignoretags:
+			if not hasattr(ignoretags, '__iter__'):
+				ignoretags = [ignoretags]
+			tocheck = [x for x in tocheck if x not in self.canvas.find_withtag(it) for it in ignoretags]
+		
+		self.items = tocheck
+		
+		# then figure out the box
+		xlow = min(start[0], end[0])
+		xhigh = max(start[0], end[0])
+		
+		ylow = min(start[1], end[1])
+		yhigh = max(start[1], end[1])
+		
+		items = []
+		for item in tocheck:
+			if item not in ignore:
+				x, y = average(groups(self.canvas.coords(item)))
+				if (xlow < x < xhigh) and (ylow < y < yhigh):
+					items.append(item)
 	
+		return items	
 
 def create_comment_canvas(c,dir,fc_tag,save,clear):
 	try:
@@ -899,33 +936,48 @@ def create_comment_canvas(c,dir,fc_tag,save,clear):
 
 def savefile(canvas,dir,tag,save_b):
 	save_b.config(state=DISABLED)
-	canvas.img=None
-	canvas.postscript(file=dir+"/Karteikarten/"+tag+"_comment.eps")
-	os.popen("convert -verbose -colorspace RGB "+dir+"/Karteikarten/"+tag+"_comment.eps -fill none "+dir+"/Karteikarten/"+tag+"_comment.png")
-	
-	image = Image.open(dir+"/Karteikarten/"+tag+"-1.jpg")
-	image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
-	flashcard_image = ImageTk.PhotoImage(image)	
-	canvas.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard_image)	
- 	canvas.img=flashcard_image
+	coords=[]
+	for item in canvas.find_withtag('rect'):
+	    coords.append(canvas.coords(item))
+	    if len(coords)>0:
+		try:
+			doc= xml.parse(dir+"/Users/"+user+"_comment.xml")
+			comments=doc.getElementsByTagName("comments")[0]
+		except:
+		  	doc=xml.Document()
+			comments = doc.createElement('comments')
 
- 	image = Image.open(dir+"/Karteikarten/"+tag+"_comment.png")
-	comment = ImageTk.PhotoImage(image)			
- 	canvas.create_image(int(WIDTH/2), int(WIDTH*0.3), image=comment)
- 	canvas.comment=comment
+	#create new flashcard xml
+		for rect in coords:
+			flashcard_element=doc.createElement(tag)
+			comments.appendChild(flashcard_element)
+			flashcard_element.setAttribute('startx', str(rect[0]))
+			flashcard_element.setAttribute('starty',str(rect[1]))
+			flashcard_element.setAttribute('endx', str(rect[2]))
+			flashcard_element.setAttribute('endy',str(rect[3]))			
+		xml_file = open(dir+"/Users/"+user+"_comment.xml", "w")
+		comments.writexml(xml_file)
+	#pretty_xml = ldb.toprettyxml()
+	#xml_file.writelines(pretty_xml)
+		xml_file.close()
+			#	print coords
+
 
 
 def clearall(canvas,dir,fc_tag,w,v):
-	canvas.delete("all")
-	if os.path.isfile(dir+"/Karteikarten/"+fc_tag+"_comment.eps"):
-		os.system("rm -f "+dir+"/Karteikarten/"+fc_tag+"_comment.eps")
-		os.system("rm -f "+dir+"/Karteikarten/"+fc_tag+"_comment.png")
-	image = Image.open(dir+"/Karteikarten/"+fc_tag+"-1.jpg")
-	image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
-	flashcard_image = ImageTk.PhotoImage(image)
-	canvas.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard_image)
-	canvas.img=flashcard_image 	 
- 	w.config(state=DISABLED)
+	for item in canvas.find_withtag('rect'):
+	  canvas.delete(item)
+	if os.path.isfile(dir+"/Users/"+user+"_comment.xml"):
+	  doc= xml.parse(dir+"/Users/"+user+"_comment.xml")
+	  rects=doc.getElementsByTagName(fc_tag)
+	  for rect in rects:
+	      rect.parentNode.removeChild(rect)
+	  xml_file = open(dir+"/Users/"+user+"_comment.xml", "w")
+	  doc.writexml(xml_file)
+	#pretty_xml = ldb.toprettyxml()
+	#xml_file.writelines(pretty_xml)
+	  xml_file.close()
+        w.config(state=DISABLED)
  	v.config(state=DISABLED)
 
 ############################################################### run flasher ###########################################################
@@ -988,13 +1040,13 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,b_true,b_false,c
 	image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
 	flashcard = ImageTk.PhotoImage(image)
 	c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard)	
-	c.img=flashcard
- 	if os.path.isfile(selected_dir+"/Karteikarten/"+flashcard_tag+"_comment.png"):
- 		comment_image = Image.open(selected_dir+"/Karteikarten/"+flashcard_tag+"_comment.png")
- 		comment_image = ImageTk.PhotoImage(comment_image)
-		c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=comment_image)	
-		c.comment=comment_image
-
+	c.img=flashcard	
+ 	if os.path.isfile(selected_dir+"/Users/"+user+"_comment.xml"):
+		doc= xml.parse(selected_dir+"/Users/"+user+"_comment.xml")
+		rects=doc.getElementsByTagName(flashcard_tag)
+		for rect in rects:
+		      c.create_rectangle(int(float(rect.getAttribute("startx"))),int(float(rect.getAttribute("starty"))),int(float(rect.getAttribute("endx"))),int(float(rect.getAttribute("endy"))),dash=[4,4], tags="rect",outline="red",fill="", width=2)
+		      clear_b.config(state=NORMAL)
 	c.unbind("<Button-1>")
 	edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,selected_dir,flashcard_tag,edit_b,save_b,clear_b))
 	save_b.configure(command=lambda:savefile(c,selected_dir,flashcard_tag,save_b))
