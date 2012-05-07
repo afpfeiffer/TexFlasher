@@ -703,18 +703,12 @@ def  disp_single_fc(image_path,title,tag):
 	c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard)	
 	c.img=flashcard
 	
- 	if os.path.isfile(os.path.dirname(image_path)+"/"+tag+"_comment.png"):
- 		comment_image = Image.open(os.path.dirname(image_path)+"/"+tag+"_comment.png")
- 		comment_image = ImageTk.PhotoImage(comment_image)
-		c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=comment_image)	
-		c.comment=comment_image
-
 	#c.bind("<Button-1>", lambda e: win.destroy())
 	edit_b=create_image_button(win,"./.TexFlasher/pictures/latex.png",40,40)
 #	edit_b.config(state=DISABLED)
 	edit_b.grid(row=1,column=1,sticky=N+E)
 
-	save_b=create_image_button(win,".TexFlasher/pictures/upload.png",40,40)
+	save_b=create_image_button(win,".TexFlasher/pictures/upload_now.png",40,40)
 	save_b.config(state=DISABLED)
 	save_b.grid(row=1, column=0,sticky=W+S)	
 	
@@ -729,6 +723,14 @@ def  disp_single_fc(image_path,title,tag):
 	ldb=load_leitner_db(os.path.dirname(image_path)+"/../",user)
 	fc_info=get_fc_info(os.path.dirname(image_path)+"/../",tag,ldb)
 
+ 	if os.path.isfile(os.path.dirname(image_path)+"/../Users/"+user+"_comment.xml"):
+		doc= xml.parse(os.path.dirname(image_path)+"/../Users/"+user+"_comment.xml")
+		rects=doc.getElementsByTagName(tag)
+		for rect in rects:
+		      c.create_rectangle(int(float(rect.getAttribute("startx"))),int(float(rect.getAttribute("starty"))),int(float(rect.getAttribute("endx"))),int(float(rect.getAttribute("endy"))),dash=[4,4], tags="rect",outline="red",fill="", width=2)
+		      clear_b.config(state=NORMAL)	
+	
+	
 	Label(win,height=1).grid(row=2,column=0)
 	Label(win,text="Created: "+fc_info.getAttribute("created")+", Last Reviewed:"+fc_info.getAttribute("lastReviewed")).grid(row=0,columnspan=2)	
 
@@ -817,7 +819,7 @@ def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type,edit_b,save_b,clear_b):
 		except:
 			tkMessageBox.showerror("Error","Fatal error while saving new content for %s!"%fc_tag)
 	else:
-		tkMessageBox.showerror("Error","Fatal error while saving new content for %s!"%fc_tag)
+		tkMessageBox.showerror("Error","Fatal error while saving new content for %s: no config found!"%fc_tag)
 	cancel_edit(c,dir,fc_tag,frame,edit_b,save_b,clear_b)
 	
 ########################################################## Comment on fc ##############################################################
@@ -946,7 +948,6 @@ def savefile(canvas,dir,tag,save_b):
 		except:
 		  	doc=xml.Document()
 			comments = doc.createElement('comments')
-
 	#create new flashcard xml
 		for rect in coords:
 			flashcard_element=doc.createElement(tag)
