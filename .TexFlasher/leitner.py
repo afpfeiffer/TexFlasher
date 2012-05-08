@@ -901,6 +901,8 @@ class RectTracker:
 		return items	
 
 def create_comment_canvas(c,dir,fc_tag,save,clear):
+	for item in c.find_withtag('rect'):
+	  c.delete(item)
 	try:
 		c.rect
 	except:
