@@ -737,13 +737,14 @@ def  disp_single_fc(image_path,title,tag):
 
 ###############################################################  Edit fc ######################################################################
 
-def edit_fc(c,dir,fc_tag,edit_b,save_b,clear_b):
+def edit_fc(c,dir,fc_tag,edit_b,save_b,clear_b,back_b=None):
 	c_height=c.winfo_reqheight()
 	c_width=c.winfo_reqwidth()
 
 	fc_name,theorem_name,theorem_type,content=get_fc_desc(dir+"/Karteikarten/"+fc_tag+".tex")
 	edit_b.grid_remove()
-
+	if back_b:
+	  back_b.grid_remove()
 	frame=Frame(c)	
 	frame.grid(sticky=E+W+N+S)
 	#print c_width,c_height,WIDTH,HEIGHT,int(WIDTH*0.14256),int(WIDTH*0.043)
@@ -754,14 +755,16 @@ def edit_fc(c,dir,fc_tag,edit_b,save_b,clear_b):
 
 	clear_b.config(state=NORMAL)
 	save_b.config(state=NORMAL)
-	save_b.configure(command=lambda:save_edit(c,frame,edit_text,dir,fc_tag,theorem_type,edit_b,save_b,clear_b))
-	clear_b.configure(text="Cancel",command=lambda:cancel_edit(c,dir,fc_tag,frame,edit_b,save_b,clear_b))	
+	save_b.configure(command=lambda:save_edit(c,frame,edit_text,dir,fc_tag,theorem_type,edit_b,save_b,clear_b,back_b))
+	clear_b.configure(text="Cancel",command=lambda:cancel_edit(c,dir,fc_tag,frame,edit_b,save_b,clear_b,back_b))	
 
 
-def cancel_edit(c,dir,tag,frame,edit_b,save_b,clear_b):
+def cancel_edit(c,dir,tag,frame,edit_b,save_b,clear_b,back_b=None):
 	clear_b.config(state=DISABLED)
 	save_b.config(state=DISABLED)
 	edit_b.grid()
+	if back_b:
+	    back_b.grid()
 	edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,dir,tag,edit_b,save_b,clear_b))
 	save_b.configure(command=lambda:savefile(c,dir,tag,save_b))
 	clear_b.configure(command=lambda:clearall(c,dir,tag,save_b,clear_b))	
@@ -800,7 +803,7 @@ def change_latex(file_path,fc_tag,content,theorem_type):
 	else:
 		raise	
 	
-def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type,edit_b,save_b,clear_b):
+def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type,edit_b,save_b,clear_b,back_b=None):
 	content=edit_text.get('1.0', END)
 	if os.path.isfile("./.TexFlasher/config.xml"):
 		try:
@@ -820,7 +823,7 @@ def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type,edit_b,save_b,clear_b):
 			tkMessageBox.showerror("Error","Fatal error while saving new content for %s!"%fc_tag)
 	else:
 		tkMessageBox.showerror("Error","Fatal error while saving new content for %s: no config found!"%fc_tag)
-	cancel_edit(c,dir,fc_tag,frame,edit_b,save_b,clear_b)
+	cancel_edit(c,dir,fc_tag,frame,edit_b,save_b,clear_b,back_b)
 	
 ########################################################## Comment on fc ##############################################################
 class RectTracker:	
@@ -984,9 +987,9 @@ def clearall(canvas,dir,fc_tag,w,v):
 ############################################################### run flasher ###########################################################
 
 	
-def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,edit_b,save_b,clear_b):
+def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,edit_b,save_b,clear_b,back_b,update=True):
 	# this is always true except for the very first run!
-	if( listPosition >=0 ):
+	if( listPosition >=0 and update):
 		flashcard_name=agenda[listPosition][0]
 		if status:
 			#print "answer correct"
@@ -1016,12 +1019,15 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,
 	flashcard_image = ImageTk.PhotoImage(image)
 	c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard_image)
 	c.img=flashcard_image
-	c.bind("<Button-1>", lambda e:answer(selected_dir,agenda,ldb, flashcard_name, listPosition,b_true,b_false,c,edit_b,save_b,clear_b))
+	c.bind("<Button-1>", lambda e:answer(selected_dir,agenda,ldb, flashcard_name, listPosition,b_true,b_false,c,edit_b,save_b,clear_b,back_b))
 
 	edit_b.config(state=DISABLED)
 	save_b.config(state=DISABLED)
 	clear_b.config(state=DISABLED)
+	back_b.config(state=DISABLED)
+	back_b.config(state=DISABLED,command=lambda:reactAndInit(selected_dir,agenda,ldb, True , listPosition-1 ,b_true,b_false,c,edit_b,save_b,clear_b,back_b,False))
 
+	
 	b_true.configure(state=DISABLED)
 	b_false.configure(state=DISABLED)
 	flashcardsTodo=len(agenda)
@@ -1036,7 +1042,7 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,
 	mainloop()
 
 
-def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,b_true,b_false,c,edit_b,save_b,clear_b):
+def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,b_true,b_false,c,edit_b,save_b,clear_b,back_b):
 	image = Image.open(selected_dir+"/Karteikarten/"+flashcard_tag+"-1.jpg")
 	image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
 	flashcard = ImageTk.PhotoImage(image)
@@ -1049,12 +1055,12 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,b_true,b_false,c
 		      c.create_rectangle(int(float(rect.getAttribute("startx"))),int(float(rect.getAttribute("starty"))),int(float(rect.getAttribute("endx"))),int(float(rect.getAttribute("endy"))),dash=[4,4], tags="rect",outline="red",fill="", width=2)
 		      clear_b.config(state=NORMAL)
 	c.unbind("<Button-1>")
-	edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,selected_dir,flashcard_tag,edit_b,save_b,clear_b))
+	edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,selected_dir,flashcard_tag,edit_b,save_b,clear_b,back_b))
 	save_b.configure(command=lambda:savefile(c,selected_dir,flashcard_tag,save_b))
 	clear_b.configure(command=lambda:clearall(c,selected_dir,flashcard_tag,save_b,clear_b))
-	
-	b_true.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,True, listPosition,b_true,b_false,c,edit_b,save_b,clear_b))
-	b_false.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,False, listPosition,b_true,b_false,c,edit_b,save_b,clear_b))
+	back_b.configure(state=NORMAL)
+	b_true.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,True, listPosition,b_true,b_false,c,edit_b,save_b,clear_b,back_b))
+	b_false.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,False, listPosition,b_true,b_false,c,edit_b,save_b,clear_b,back_b))
 	
 	create_comment_canvas(c,selected_dir,flashcard_tag,save_b,clear_b)
 
@@ -1094,11 +1100,14 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	save_b.config(state=DISABLED)
 	save_b.grid(row=1, column=0,sticky=W+S)	
 	
+	back_b=create_image_button(top,".TexFlasher/pictures/back.png",40,40)
+	back_b.grid(row=1, column=0,sticky=W+N)	
+	
 	clear_b=create_image_button(top,".TexFlasher/pictures/clear.png",40,40)
 	clear_b.configure(state=DISABLED)
 	clear_b.grid(row=1, column=1,sticky=E+S)		
 
-	reactAndInit(selected_dir,agenda,ldb, True , -1 ,b_true,b_false,c,edit_b,save_b,clear_b)
+	reactAndInit(selected_dir,agenda,ldb, True , -1 ,b_true,b_false,c,edit_b,save_b,clear_b,back_b)
 
 ############################################################## Menu ####################################################################
 
