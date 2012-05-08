@@ -901,8 +901,6 @@ class RectTracker:
 		return items	
 
 def create_comment_canvas(c,dir,fc_tag,save,clear):
-	for item in c.find_withtag('rect'):
-	  c.delete(item)
 	try:
 		c.rect
 	except:
@@ -960,7 +958,8 @@ def savefile(canvas,dir,tag,save_b):
 			flashcard_element.setAttribute('startx', str(rect[0]))
 			flashcard_element.setAttribute('starty',str(rect[1]))
 			flashcard_element.setAttribute('endx', str(rect[2]))
-			flashcard_element.setAttribute('endy',str(rect[3]))			
+			flashcard_element.setAttribute('endy',str(rect[3]))	
+			flashcard_element.setAttribute('created',strftime("%Y-%m-%d %H:%M:%S", localtime()))	
 		xml_file = open(dir+"/Users/"+user+"_comment.xml", "w")
 		comments.writexml(xml_file)
 	#pretty_xml = ldb.toprettyxml()
@@ -973,6 +972,8 @@ def savefile(canvas,dir,tag,save_b):
 def clearall(canvas,dir,fc_tag,w,v):
 	for item in canvas.find_withtag('rect'):
 	  canvas.delete(item)
+	for item in canvas.find_withtag('old'):
+	  canvas.delete(item)	  
 	if os.path.isfile(dir+"/Users/"+user+"_comment.xml"):
 	  doc= xml.parse(dir+"/Users/"+user+"_comment.xml")
 	  rects=doc.getElementsByTagName(fc_tag)
@@ -1050,11 +1051,15 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,b_true,b_false,c
 	flashcard = ImageTk.PhotoImage(image)
 	c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard)	
 	c.img=flashcard	
+	for item in c.find_withtag('old'):#first clear possible rects from canvas
+		c.delete(item)
+	for item in c.find_withtag('rect'):#first clear possible rects from canvas
+		c.delete(item)			
  	if os.path.isfile(selected_dir+"/Users/"+user+"_comment.xml"):
 		doc= xml.parse(selected_dir+"/Users/"+user+"_comment.xml")
 		rects=doc.getElementsByTagName(flashcard_tag)
 		for rect in rects:
-		      c.create_rectangle(int(float(rect.getAttribute("startx"))),int(float(rect.getAttribute("starty"))),int(float(rect.getAttribute("endx"))),int(float(rect.getAttribute("endy"))),dash=[4,4], tags="rect",outline="red",fill="", width=2)
+		      c.create_rectangle(int(float(rect.getAttribute("startx"))),int(float(rect.getAttribute("starty"))),int(float(rect.getAttribute("endx"))),int(float(rect.getAttribute("endy"))),dash=[4,4], tags="old",outline="red",fill="", width=2)
 		      clear_b.config(state=NORMAL)
 	c.unbind("<Button-1>")
 	edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,selected_dir,flashcard_tag,edit_b,save_b,clear_b,back_b))
@@ -1063,7 +1068,7 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,b_true,b_false,c
 	back_b.configure(state=NORMAL)
 	b_true.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,True, listPosition,b_true,b_false,c,edit_b,save_b,clear_b,back_b))
 	b_false.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,False, listPosition,b_true,b_false,c,edit_b,save_b,clear_b,back_b))
-	
+
 	create_comment_canvas(c,selected_dir,flashcard_tag,save_b,clear_b)
 
 	mainloop()
