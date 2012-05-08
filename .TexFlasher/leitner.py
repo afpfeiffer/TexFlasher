@@ -727,7 +727,7 @@ def  disp_single_fc(image_path,title,tag):
 		doc= xml.parse(os.path.dirname(image_path)+"/../Users/"+user+"_comment.xml")
 		rects=doc.getElementsByTagName(tag)
 		for rect in rects:
-		      c.create_rectangle(int(float(rect.getAttribute("startx"))),int(float(rect.getAttribute("starty"))),int(float(rect.getAttribute("endx"))),int(float(rect.getAttribute("endy"))),dash=[4,4], tags="rect",outline="red",fill="", width=2)
+		      c.create_rectangle(int(float(rect.getAttribute("startx"))),int(float(rect.getAttribute("starty"))),int(float(rect.getAttribute("endx"))),int(float(rect.getAttribute("endy"))),dash=[4,4], tags="old",outline="red",fill="", width=2)
 		      clear_b.config(state=NORMAL)	
 	
 	
@@ -944,6 +944,7 @@ def savefile(canvas,dir,tag,save_b):
 	coords=[]
 	for item in canvas.find_withtag('rect'):
 	    coords.append(canvas.coords(item))
+	    canvas.itemconfig(item, tags=("old"))
 	    if len(coords)>0:
 		try:
 			doc= xml.parse(dir+"/Users/"+user+"_comment.xml")
