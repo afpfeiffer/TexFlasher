@@ -499,6 +499,37 @@ def get_fc_desc(tex_file_path):
 	return title,theorem_name,theorem_type,content
 		
 ############################################################### Search ###########################################
+
+def suggest():
+	#global suggest_res
+	if not query.get()=="":
+		tree = xml.parse("./.TexFlasher/config.xml")
+		config_xml = tree.getElementsByTagName('config')[0]
+		results={}
+		max=1
+		for elem in config_xml.childNodes:
+			dir=elem.getAttribute('filename')
+			tex=open(dir,"r")
+			for line in tex:
+				for word in line.split(" "):
+					if word.lower().startswith(query.get().lower()):
+						results[word.replace(",","")]=dir
+					if len(results)>max:
+						break
+				if len(results)>max:
+					break		
+			if len(results)>max:
+				break	
+
+		
+		for res in results:
+			print res
+			break		
+	
+	#except:
+	#	pass
+#
+
 				
 def search_flashcard(event="none"):
 	search_query=query.get()
@@ -752,7 +783,6 @@ def edit_fc(c,dir,fc_tag,edit_b,save_b,clear_b,back_b=None):
 	edit_text.insert(INSERT,content)
 	edit_text.grid(sticky=N+W+E+S)
 
-
 	clear_b.config(state=NORMAL)
 	save_b.config(state=NORMAL)
 	save_b.configure(command=lambda:save_edit(c,frame,edit_text,dir,fc_tag,theorem_type,edit_b,save_b,clear_b,back_b))
@@ -992,6 +1022,11 @@ def clearall(canvas,dir,fc_tag,w,v):
 
 	
 def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,edit_b,save_b,clear_b,back_b,update=True):
+	if len(c.find_withtag('rect'))>0:
+		if tkMessageBox.askyesno("Reset", "Do you want to save your changes to this flashcard?"):
+			flashcard_tag=agenda[listPosition][0]
+			savefile(c,selected_dir,flashcard_tag,save_b)
+
 	# this is always true except for the very first run!
 	if( listPosition >=0 and update):
 		flashcard_name=agenda[listPosition][0]
@@ -1141,8 +1176,9 @@ def hide_FlashFolder(filename):
 
 def reset_flash(filename):
 	if tkMessageBox.askyesno("Reset", "Do you really want to delete all learning progress for %s?"% filename.split("/")[-2]):
-		file=open(os.path.dirname(filename)+"/Users/"+user+".xml","w")
-		file.close()
+		os.remove(os.path.dirname(filename)+"/Users/"+user+".xml")
+		os.remove(os.path.dirname(filename)+"/Users/"+user+"_comment.xml")
+
 		hide_FlashFolder(filename)
 	menu()
 
@@ -1280,6 +1316,7 @@ def menu():
 	Label(top,height=2,text="TexFlasher based on Leitner-Method",font=("Helvetica", 16)).grid(row=0,columnspan=8,sticky=E+W)
 	#if os.path.isfile("UPDATE"):
 		#Label(top,height=2,text="(update available)           ",fg="red",font=("Helvetica", 16)).grid(row=0,columnspan=2,sticky=E)
+	global Menu
 	Menu=Frame(top,border=10,width=int(WIDTH*1.005),height=HEIGHT*0.9)
 	Menu.grid_propagate(0)
 	Menu.grid(row=2,column=0,sticky=E+W)
@@ -1373,6 +1410,7 @@ def menu():
 		query = Entry(Menu,textvariable=default_search_value,bd =5,justify=CENTER)
 		query.bind('<Return>', search_flashcard)
 		query.bind("<Button-1>", clear_search)
+		#exec('query.bind("<Key>", lambda e:suggest())')	
 		default_search_value.set("query ...")
 		query.grid(row=1,column=1,sticky=E+W+N+S)
 		search_button=create_image_button(Menu,"./.TexFlasher/pictures/search.png",40,40)
@@ -1397,38 +1435,22 @@ def menu():
 	Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer").grid(row=3,columnspan=8,sticky=S)
 	mainloop()
 
-############################################################################3  Hover ###############################################
+############################################################################ Hover ###############################################
 class HoverInfo(Menu):
-	def __init__(self, parent, text, command=None):
-	   self._com = command
+	def __init__(self, parent, command=None):
+	   self._com = search_flashcard
 	   Menu.__init__(self,parent, tearoff=0)
-	   if not isinstance(text, str):
-	      raise TypeError('Trying to initialise a Hover Menu with a non string type: ' + text.__class__.__name__)
-	   toktext=re.split('\n', text)
-	   for t in toktext:
-	      self.add_command(label = t)
-	   self._displayed=False
-	   self.master.bind("<Enter>",self.Display )
-    	   self.master.bind("<Leave>",self.Remove )
+	   self.master.bind("<Key>",self.Display)
 
 	def __del__(self):
-	   self.master.unbind("<Enter>")
 	   self.master.unbind("<Leave>")
 
 	def Display(self,event):
-	   if not self._displayed:
-	      self._displayed=True
-	      self.post(event.x_root, event.y_root)
-	   if self._com != None:
-	      self.master.unbind_all("<Return>")
-	      self.master.bind_all("<Return>", self.Click)
+		   toktext=re.split('\n', suggest())
+		   for t in toktext:
+		      self.add_command(label = t)
+	      	   self.post(event.x_root, event.y_root)	
 
-	def Remove(self, event):
-	 if self._displayed:
-	   self._displayed=False
-	   self.unpost()
-	 if self._com != None:
-	   self.unbind_all("<Return>")
 	
 	def Click(self, event):
 	   self._com()
