@@ -1024,7 +1024,10 @@ def clearall(canvas,dir,fc_tag,w,v):
 def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,edit_b,save_b,clear_b,back_b,update=True):
 	if len(c.find_withtag('rect'))>0:
 		if tkMessageBox.askyesno("Reset", "Do you want to save your changes to this flashcard?"):
-			flashcard_tag=agenda[listPosition][0]
+			if not update:
+			  flashcard_tag=agenda[listPosition+1][0]
+			else:  
+			  flashcard_tag=agenda[listPosition][0]
 			savefile(c,selected_dir,flashcard_tag,save_b)
 
 	# this is always true except for the very first run!
