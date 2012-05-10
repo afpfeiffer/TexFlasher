@@ -758,7 +758,7 @@ def  disp_single_fc(image_path,title,tag):
 		doc= xml.parse(os.path.dirname(image_path)+"/../Users/"+user+"_comment.xml")
 		rects=doc.getElementsByTagName(tag)
 		for rect in rects:
-		      c.create_rectangle(int(float(rect.getAttribute("startx"))),int(float(rect.getAttribute("starty"))),int(float(rect.getAttribute("endx"))),int(float(rect.getAttribute("endy"))),dash=[4,4], tags="old",outline="red",fill="", width=2)
+		      c.create_rectangle(int(float(rect.getAttribute("startx"))),int(float(rect.getAttribute("starty"))),int(float(rect.getAttribute("endx"))),int(float(rect.getAttribute("endy"))),dash=[4,4], tags="old"+" "+rect.getAttribute("created"),outline="red",fill="", width=2)
 		      clear_b.config(state=NORMAL)	
 	
 	
@@ -863,7 +863,7 @@ class RectTracker:
 		
 	def draw(self, start, end, **opts):
 		"""Draw the rectangle"""
-		return self.canvas.create_rectangle(*(list(start)+list(end)),dash=[4,4], tags="rect",outline="red",**opts)
+		return self.canvas.create_rectangle(*(list(start)+list(end)),dash=[4,4], tags="rect"+" "+strftime("%Y-%m-%d %H:%M:%S", localtime()),outline="red",**opts)
 		
 	def autodraw(self, **opts):
 		"""Setup automatic drawing; supports command option"""
@@ -973,9 +973,10 @@ def savefile(canvas,dir,tag,save_b):
 	save_b.config(state=DISABLED)
 	coords=[]
 	for item in canvas.find_withtag('rect'):
-	    coords.append(canvas.coords(item))
-	    canvas.itemconfig(item, tags=("old"))
-	    if len(coords)>0:
+		tags=canvas.gettags(item)
+		coords.append(canvas.coords(item))
+		canvas.itemconfig(item, tags=("old"+" "+tags[1]+" "+tags[2]))
+	if len(coords)>0:
 		try:
 			doc= xml.parse(dir+"/Users/"+user+"_comment.xml")
 			comments=doc.getElementsByTagName("comments")[0]
@@ -990,7 +991,7 @@ def savefile(canvas,dir,tag,save_b):
 			flashcard_element.setAttribute('starty',str(rect[1]))
 			flashcard_element.setAttribute('endx', str(rect[2]))
 			flashcard_element.setAttribute('endy',str(rect[3]))	
-			flashcard_element.setAttribute('created',strftime("%Y-%m-%d %H:%M:%S", localtime()))	
+			flashcard_element.setAttribute('created',tags[1]+" "+tags[2])	
 		xml_file = open(dir+"/Users/"+user+"_comment.xml", "w")
 		comments.writexml(xml_file)
 	#pretty_xml = ldb.toprettyxml()
@@ -1001,35 +1002,51 @@ def savefile(canvas,dir,tag,save_b):
 
 
 def clearall(canvas,dir,fc_tag,w,v):
-	for item in canvas.find_withtag('rect'):
-	  canvas.delete(item)
-	for item in canvas.find_withtag('old'):
-	  canvas.delete(item)	  
-	if os.path.isfile(dir+"/Users/"+user+"_comment.xml"):
-	  doc= xml.parse(dir+"/Users/"+user+"_comment.xml")
-	  rects=doc.getElementsByTagName(fc_tag)
-	  for rect in rects:
-	      rect.parentNode.removeChild(rect)
-	  xml_file = open(dir+"/Users/"+user+"_comment.xml", "w")
-	  doc.writexml(xml_file)
-	#pretty_xml = ldb.toprettyxml()
-	#xml_file.writelines(pretty_xml)
-	  xml_file.close()
-        w.config(state=DISABLED)
- 	v.config(state=DISABLED)
-
+	rects={}
+	if len(canvas.find_withtag('rect'))>0:
+		for item in canvas.find_withtag('rect'):
+		  tags=canvas.gettags(item)
+		  rec_time=tags[1]+" "+tags[2]
+		  res_time=datetime(*(strptime(rec_time, "%Y-%m-%d %H:%M:%S")[0:6]))	
+		  rects[res_time]=item	
+		rect_del=sorted(rects.keys())[-1]
+		for rect in rects:
+			if rect==rect_del:
+				canvas.delete(rects[rect])
+				break 			
+	if len(canvas.find_withtag('rect'))==0 and len(canvas.find_withtag('old'))>0:
+		if os.path.isfile(dir+"/Users/"+user+"_comment.xml"):
+		  for item in canvas.find_withtag('old'):
+			  tags=canvas.gettags(item)
+			  rec_time=tags[1]+" "+tags[2]
+			  res_time=datetime(*(strptime(rec_time, "%Y-%m-%d %H:%M:%S")[0:6]))	
+			  rects[res_time]=item	
+		  rect_del=sorted(rects.keys())[-1]
+		  for rect in rects:
+		  	  if rect==rect_del:
+		  	  	canvas.delete(rects[rect])
+			  	break 
+		  doc= xml.parse(dir+"/Users/"+user+"_comment.xml")
+		  rects_xml=doc.getElementsByTagName(fc_tag)
+		  for rect in rects_xml:
+		  	  if datetime(*(strptime(rect.getAttribute('created'), "%Y-%m-%d %H:%M:%S")[0:6]))==rect_del:
+		        	rect.parentNode.removeChild(rect)
+		        	break
+	  	  xml_file = open(dir+"/Users/"+user+"_comment.xml", "w")
+	  	  doc.writexml(xml_file)
+	  	  xml_file.close()
+	        w.config(state=DISABLED)
+	if  len(canvas.find_withtag('old'))==0 and len(canvas.find_withtag('rect'))==0:
+ 		  v.config(state=DISABLED)
+ 		  w.config(state=DISABLED)
 ############################################################### run flasher ###########################################################
 
 	
 def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,edit_b,save_b,clear_b,back_b,update=True):
 	if len(c.find_withtag('rect'))>0:
 		if tkMessageBox.askyesno("Reset", "Do you want to save your changes to this flashcard?"):
-			if not update:
-			  flashcard_tag=agenda[listPosition+1][0]
-			else:  
-			  flashcard_tag=agenda[listPosition][0]
+			flashcard_tag=agenda[listPosition-1][0]
 			savefile(c,selected_dir,flashcard_tag,save_b)
-
 	# this is always true except for the very first run!
 	if( listPosition >=0 and update):
 		flashcard_name=agenda[listPosition][0]
@@ -1067,6 +1084,7 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,
 	save_b.config(state=DISABLED)
 	clear_b.config(state=DISABLED)
 	back_b.config(state=DISABLED)
+	
 	back_b.config(state=DISABLED,command=lambda:reactAndInit(selected_dir,agenda,ldb, True , listPosition-1 ,b_true,b_false,c,edit_b,save_b,clear_b,back_b,False))
 
 	
@@ -1098,7 +1116,7 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,b_true,b_false,c
 		doc= xml.parse(selected_dir+"/Users/"+user+"_comment.xml")
 		rects=doc.getElementsByTagName(flashcard_tag)
 		for rect in rects:
-		      c.create_rectangle(int(float(rect.getAttribute("startx"))),int(float(rect.getAttribute("starty"))),int(float(rect.getAttribute("endx"))),int(float(rect.getAttribute("endy"))),dash=[4,4], tags="old",outline="red",fill="", width=2)
+		      c.create_rectangle(int(float(rect.getAttribute("startx"))),int(float(rect.getAttribute("starty"))),int(float(rect.getAttribute("endx"))),int(float(rect.getAttribute("endy"))),dash=[4,4], tags="old"+" "+rect.getAttribute("created"),outline="red",fill="", width=2)
 		      clear_b.config(state=NORMAL)
 	c.unbind("<Button-1>")
 	edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,selected_dir,flashcard_tag,edit_b,save_b,clear_b,back_b))
