@@ -1043,10 +1043,10 @@ def clearall(canvas,dir,fc_tag,w,v):
 
 	
 def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,edit_b,save_b,clear_b,back_b,update=True):
-	if len(c.find_withtag('rect'))>0:
-		if tkMessageBox.askyesno("Reset", "Do you want to save your changes to this flashcard?"):
-			flashcard_tag=agenda[listPosition-1][0]
-			savefile(c,selected_dir,flashcard_tag,save_b)
+	#if len(c.find_withtag('rect'))>0:
+	#	if tkMessageBox.askyesno("Reset", "Do you want to save your changes to this flashcard?"):
+	#		flashcard_tag=agenda[listPosition-1][0]
+	#		savefile(c,selected_dir,flashcard_tag,save_b)
 	# this is always true except for the very first run!
 	if( listPosition >=0 and update):
 		flashcard_name=agenda[listPosition][0]
@@ -1170,6 +1170,10 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	clear_b=create_image_button(top,".TexFlasher/pictures/clear.png",40,40)
 	clear_b.configure(state=DISABLED)
 	clear_b.grid(row=1, column=1,sticky=E+S)		
+
+	#comment_b=create_image_button(top,".TexFlasher/pictures/comment.png",40,40)
+	#comment_b.configure()
+	#comment_b.grid(row=1, columnspan=2,sticky=E)
 
 	reactAndInit(selected_dir,agenda,ldb, True , -1 ,b_true,b_false,c,edit_b,save_b,clear_b,back_b)
 
