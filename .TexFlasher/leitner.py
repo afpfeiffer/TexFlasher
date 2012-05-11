@@ -500,7 +500,7 @@ def get_fc_desc(tex_file_path):
 		
 ############################################################### Search ###########################################
 tkinter_umlauts=['odiaeresis', 'adiaeresis', 'udiaeresis', 'Odiaeresis', 'Adiaeresis', 'Udiaeresis', 'ssharp']
-
+#http://tkinter.unpythonic.net/wiki/AutocompleteEntry
 class AutocompleteEntry(Entry):
         """
         Subclass of Tkinter.Entry that features autocompletion.
@@ -574,7 +574,7 @@ def create_completion_list():
 			for line in tex:
 				for word in line.split(" "):
 					try:
-						results.append(unicode(word.replace(",","").replace("}","").replace("]","").replace(".","").lower()))
+						results.append(unicode(word.replace(",","").replace("}","").replace("]","").replace(".","").replace("\n","").lower()))
 					except:
 						pass
 	return tuple(results)
