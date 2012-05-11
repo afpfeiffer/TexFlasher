@@ -563,20 +563,22 @@ class AutocompleteEntry(Entry):
 
 
 def create_completion_list():
-	tree = xml.parse("./.TexFlasher/config.xml")
-	config_xml = tree.getElementsByTagName('config')[0]
 	results=[]
-	max=1
-	for elem in config_xml.childNodes:
-		dir=elem.getAttribute('filename')
-		if len(dir)>0:
-			tex=open(dir,"r")
-			for line in tex:
-				for word in line.split(" "):
-					try:
-						results.append(unicode(word.replace(",","").replace("}","").replace("]","").replace(".","").replace("\n","").lower()))
-					except:
-						pass
+	if os.path.isfile("./.TexFlasher/config.xml"):
+		tree = xml.parse("./.TexFlasher/config.xml")
+		config_xml = tree.getElementsByTagName('config')[0]
+		max=1
+		for elem in config_xml.childNodes:
+			dir=elem.getAttribute('filename')
+			if len(dir)>0:
+				tex=open(dir,"r")
+				for line in tex:
+					for word in line.split(" "):
+						try:
+							results.append(unicode(word.replace(",","").replace("}","").replace("]","").replace(".","").replace("\n","").lower()))
+						except:
+							pass
+	
 	return tuple(results)
 
 				
