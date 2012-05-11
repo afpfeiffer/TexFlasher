@@ -122,7 +122,8 @@ include $(SRC:.tex=.d)
 
 # $(DEP) $(EPSPICS) $(BIBFILE)
 $(TRG)	: %.dvi : %.tex
-	  @$(run-latex)
+	@$(run-latex)
+	@for f in $(?); do bash dvi2png_dummy.sh $$f; done
 
 $(PSF)	: %.ps : %.dvi
 	  @$(DVIPS) $< -o $@
@@ -146,6 +147,9 @@ showps	: $(PSF)
 ps	: $(PSF) 
 
 pdf	: $(PDF) 
+
+images  : $(TRG)
+
 
 
 # TODO: This probably needs fixing

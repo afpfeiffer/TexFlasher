@@ -16,10 +16,7 @@
 # 
 #     You should have received a copy of the GNU General Public License
 #     along with TexFlasher  If not, see <http://www.gnu.org/licenses/>.
-
 FILENAME=${1%\.*}
-
 echo "compiled flashcard $FILENAME"
-convert -density 400 $FILENAME.pdf -quality 50 -crop 1910x1130+745+490 $FILENAME.jpg
-convert $FILENAME-0.jpg -quality 100 -resize 360x216 $FILENAME-thumb360x216.jpg
-
+dvipng -T tight -x 1900 -z 9 $FILENAME.dvi -o $FILENAME-%d.png
+convert $FILENAME-1.png -quality 100 -resize 360x216 $FILENAME-thumb360x216.png
