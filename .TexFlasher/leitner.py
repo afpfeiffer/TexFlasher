@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+# encoding: utf-8
 #     This file is part of TexFlasher.
 #     Copyright (c) 2012:
 #          Can Oezmen
@@ -499,36 +499,85 @@ def get_fc_desc(tex_file_path):
 	return title,theorem_name,theorem_type,content
 		
 ############################################################### Search ###########################################
+tkinter_umlauts=['odiaeresis', 'adiaeresis', 'udiaeresis', 'Odiaeresis', 'Adiaeresis', 'Udiaeresis', 'ssharp']
 
-def suggest():
-	#global suggest_res
-	if not query.get()=="":
-		tree = xml.parse("./.TexFlasher/config.xml")
-		config_xml = tree.getElementsByTagName('config')[0]
-		results={}
-		max=1
-		for elem in config_xml.childNodes:
-			dir=elem.getAttribute('filename')
+class AutocompleteEntry(Entry):
+        """
+        Subclass of Tkinter.Entry that features autocompletion.
+        
+        To enable autocompletion use set_completion_list(list) to define 
+        a list of possible strings to hit.
+        To cycle through hits use down and up arrow keys.
+        """
+        def set_completion_list(self, completion_list):
+                self._completion_list = completion_list
+                self._hits = []
+                self._hit_index = 0
+                self.position = 0
+                self.bind('<KeyRelease>', self.handle_keyrelease)               
+
+        def autocomplete(self, delta=0):
+                """autocomplete the Entry, delta may be 0/1/-1 to cycle through possible hits"""
+                if delta: # need to delete selection otherwise we would fix the current position
+                        self.delete(self.position, Tkinter.END)
+                else: # set position to end so selection starts where textentry ended
+                        self.position = len(self.get())
+                # collect hits
+                _hits = []
+                for element in self._completion_list:
+                        if element.startswith(self.get().lower()):
+                                _hits.append(element)
+                # if we have a new hit list, keep this in mind
+                if _hits != self._hits:
+                        self._hit_index = 0
+                        self._hits=_hits
+                # only allow cycling if we are in a known hit list
+                if _hits == self._hits and self._hits:
+                        self._hit_index = (self._hit_index + delta) % len(self._hits)
+                # now finally perform the auto completion
+                if self._hits:
+                        self.delete(0,END)
+                        self.insert(0,self._hits[self._hit_index])
+                        self.select_range(self.position,END)
+                        
+        def handle_keyrelease(self, event):
+                """event handler for the keyrelease event on this widget"""
+                if event.keysym == "BackSpace":
+                        self.delete(self.index(INSERT), END) 
+                        self.position = self.index(END)
+                if event.keysym == "Left":
+                        if self.position < self.index(END): # delete the selection
+                                self.delete(self.position, END)
+                        else:
+                                self.position = self.position-1 # delete one character
+                                self.delete(self.position, END)
+                if event.keysym == "Right":
+                        self.position = self.index(END) # go to end (no selection)
+                if event.keysym == "Down":
+                        self.autocomplete(1) # cycle to next hit
+                if event.keysym == "Up":
+                        self.autocomplete(-1) # cycle to previous hit
+                # perform normal autocomplete if event is a single key or an umlaut
+                if len(event.keysym) == 1 or event.keysym in tkinter_umlauts:
+                        self.autocomplete()
+
+
+def create_completion_list():
+	tree = xml.parse("./.TexFlasher/config.xml")
+	config_xml = tree.getElementsByTagName('config')[0]
+	results=[]
+	max=1
+	for elem in config_xml.childNodes:
+		dir=elem.getAttribute('filename')
+		if len(dir)>0:
 			tex=open(dir,"r")
 			for line in tex:
 				for word in line.split(" "):
-					if word.lower().startswith(query.get().lower()):
-						results[word.replace(",","")]=dir
-					if len(results)>max:
-						break
-				if len(results)>max:
-					break		
-			if len(results)>max:
-				break	
-
-		
-		for res in results:
-			print res
-			break		
-	
-	#except:
-	#	pass
-#
+					try:
+						results.append(unicode(word.replace(",","").replace("}","").replace("]","").replace(".","").lower()))
+					except:
+						pass
+	return tuple(results)
 
 				
 def search_flashcard(event="none"):
@@ -1296,6 +1345,7 @@ def create_flashcards( filename ):
 	update_config(filename)
 	#os.system("bash .TexFlasher/scripts/createFlashcards.sh "+ filename)
 	executeCommand("bash .TexFlasher/scripts/createFlashcards.sh "+ filename, True)
+	comp_list=create_completion_list()
 	menu()
 	#run_flasher(dir_name,top)
 
@@ -1432,19 +1482,24 @@ def menu():
 		global default_search_value
 		global check
 		default_search_value = StringVar()
-		query = Entry(Menu,textvariable=default_search_value,bd =5,justify=CENTER)
+
+		query=AutocompleteEntry(Menu)
+		query.set_completion_list(comp_list)
+		query.configure(textvariable=default_search_value,bd =5,bg=None,justify=CENTER)
 		query.bind('<Return>', search_flashcard)
 		query.bind("<Button-1>", clear_search)
-		#exec('query.bind("<Key>", lambda e:suggest())')	
 		default_search_value.set("query ...")
 		query.grid(row=1,column=1,sticky=E+W+N+S)
+
+
 		search_button=create_image_button(Menu,"./.TexFlasher/pictures/search.png",40,40)
 		search_button.configure(command=search_flashcard)
-		#print search_button['cursor']
+
 		search_button.grid(row=1,column=2,sticky=N+E+W,columnspan=2)		
 		v = IntVar()
 		check = Checkbutton(Menu, text="search content", variable=v)
     		check.var = v
+		v.set(1)
 		check.grid(row=1,column=2,sticky=S+E+W,columnspan=2)
 		#savebutton
 		image_path="./.TexFlasher/pictures/upload.png"	
@@ -1460,25 +1515,7 @@ def menu():
 	Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer").grid(row=3,columnspan=8,sticky=S)
 	mainloop()
 
-############################################################################ Hover ###############################################
-class HoverInfo(Menu):
-	def __init__(self, parent, command=None):
-	   self._com = search_flashcard
-	   Menu.__init__(self,parent, tearoff=0)
-	   self.master.bind("<Key>",self.Display)
 
-	def __del__(self):
-	   self.master.unbind("<Leave>")
-
-	def Display(self,event):
-		   toktext=re.split('\n', suggest())
-		   for t in toktext:
-		      self.add_command(label = t)
-	      	   self.post(event.x_root, event.y_root)	
-
-	
-	def Click(self, event):
-	   self._com()
 
 ##################################################################### Main ###############################################################################
 
@@ -1498,7 +1535,8 @@ BD=2
 
 top.bind("<Escape>", lambda e: top.quit()) # quits texflasher if esc is pressed
 
-
+global comp_list
+comp_list=create_completion_list()
 
 iconbitmapLocation = "@./.TexFlasher/pictures/icon2.xbm"
 top.iconbitmap(iconbitmapLocation)
