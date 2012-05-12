@@ -47,7 +47,7 @@ for thing in $files; do
 #	 		echo $serverRev
 			if [ "$serverRev" != "$ownRev" ]; then
 # 				echo svn info $server | grep "Last Changed Author:" | cut -d ":" -f 2 | cut -d " " -f 2 > $folder/Karteikarten/UPDATE
-				echo "`date`: revisions differ: $serverRev, $ownRev"
+# 				echo "`date`: revisions differ: $serverRev, $ownRev"
 				echo "" > $folder/Karteikarten/UPDATE
 			fi
 		fi
