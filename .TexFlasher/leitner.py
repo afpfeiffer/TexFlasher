@@ -636,7 +636,7 @@ def search_flashcard(event="none"):
 
 		elif len(search_results)==1:
 			for res in search_results:
-				disp_single_fc(search_results[res]['dir']+'/Karteikarten/'+search_results[res]['tag']+'-1.jpg',search_results[res]['tag']+" in "+search_results[res]['dir'].split("/")[-1]+' level '+search_results[res]['level'],search_results[res]['tag'])
+				disp_single_fc(search_results[res]['dir']+'/Karteikarten/'+search_results[res]['tag']+'-2.png',search_results[res]['tag']+" in "+search_results[res]['dir'].split("/")[-1]+' level '+search_results[res]['level'],search_results[res]['tag'])
 				default_search_value.set("query ...")	
 				break
 		else:
@@ -682,7 +682,7 @@ class AutoScrollbar(Scrollbar):
 def create_image_button(window,path,width=None,height=None):
 	button_image = Image.open(path)
 	if width and height:
-		STRS=path.partition("-0")
+		STRS=path.partition("-1")
 		thumbname=STRS[0]+"-thumb"+str(int(width))+"x"+str(int(height))+STRS[2]
 		if os.path.isfile(thumbname):
 			try:
@@ -753,8 +753,8 @@ def display_mult_fcs(fcs,title,button_title,button_command,button_image): #Synta
 					res=iterator.next()
 				except:
 					break
-			button=create_image_button(Search_frame,fcs[res]['dir']+"/Karteikarten/"+fcs[res]['tag']+"-0.jpg",size,int(size*0.6))
-			exec('button.configure(command=lambda:disp_single_fc("'+fcs[res]['dir']+"/Karteikarten/"+fcs[res]['tag']+"-1.jpg"+'","'+fcs[res]['tag']+' in '+fcs[res]['dir'].split("/")[-1]+' level '+fcs[res]['level']+'","'+fcs[res]['tag']+'"))')
+			button=create_image_button(Search_frame,fcs[res]['dir']+"/Karteikarten/"+fcs[res]['tag']+"-1.png",size,int(size*0.6))
+			exec('button.configure(command=lambda:disp_single_fc("'+fcs[res]['dir']+"/Karteikarten/"+fcs[res]['tag']+"-2.png"+'","'+fcs[res]['tag']+' in '+fcs[res]['dir'].split("/")[-1]+' level '+fcs[res]['level']+'","'+fcs[res]['tag']+'"))')
 			button.grid(row=str(i+1),column=colu)
 			exec("button.bind('<Button-4>', lambda event: search_canvas.yview_scroll(-1, UNITS))")
 			exec("button.bind('<Button-5>', lambda event: search_canvas.yview_scroll(1, UNITS)) ")
@@ -846,7 +846,7 @@ def cancel_edit(c,dir,tag,frame,edit_b,save_b,clear_b,back_b=None):
 	edit_b.grid()
 	if back_b:
 	    back_b.grid()
-	edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,dir,tag,edit_b,save_b,clear_b))
+	edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,dir,tag,edit_b,save_b,clear_b,back_b))
 	save_b.configure(command=lambda:savefile(c,dir,tag,save_b))
 	clear_b.configure(command=lambda:clearall(c,dir,tag,save_b,clear_b))	
 	frame.grid_forget()
@@ -894,7 +894,7 @@ def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type,edit_b,save_b,clear_b,ba
 				if os.path.dirname(elem.getAttribute('filename'))==dir:
 					change_latex(elem.getAttribute('filename'),fc_tag,content,theorem_type)				
 					executeCommand("bash .TexFlasher/scripts/recompileFlashcards.sh "+elem.getAttribute('filename'), True)
-					image = Image.open(os.path.dirname(elem.getAttribute('filename'))+"/Karteikarten/"+fc_tag+"-1.jpg")
+					image = Image.open(os.path.dirname(elem.getAttribute('filename'))+"/Karteikarten/"+fc_tag+"-2.png")
 					image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
 					flashcard = ImageTk.PhotoImage(image)
  					c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard)
@@ -1124,7 +1124,7 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,
 		#print "reached end of vector"
 		statistics_nextWeek(selected_dir)
 		sys.exit()
-	image = Image.open(selected_dir+"/Karteikarten/"+flashcard_name+"-0.jpg")
+	image = Image.open(selected_dir+"/Karteikarten/"+flashcard_name+"-1.png")
 	image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
 	flashcard_image = ImageTk.PhotoImage(image)
 	c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard_image)
@@ -1154,7 +1154,7 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,
 
 
 def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,b_true,b_false,c,edit_b,save_b,clear_b,back_b):
-	image = Image.open(selected_dir+"/Karteikarten/"+flashcard_tag+"-1.jpg")
+	image = Image.open(selected_dir+"/Karteikarten/"+flashcard_tag+"-2.png")
 	image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
 	flashcard = ImageTk.PhotoImage(image)
 	c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard)	

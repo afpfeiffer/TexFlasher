@@ -51,7 +51,7 @@ purefilebase=${filebase%\.*}
 #   fi
 # fi
 
-FILES="Makefile pdf2jpg_dummy.sh flashcards.cls"
+FILES="Makefile pdf2jpg_dummy.sh dvi2png_dummy.sh flashcards.cls"
 
 # get current versions of files 
 for thing in $FILES; do
@@ -103,7 +103,7 @@ else
         # (not even by identical file) in order to preserve the timestamp
         # which is important for the Makefile
         rm $folder/Karteikarten.tmp/$name
-        if [ ! -f $folder/Karteikarten/$purename.pdf ]; then
+        if [ ! -f $folder/Karteikarten/$purename.dvi ]; then
 					compilenumber=`echo $compilenumber + "1" | bc`
 				fi
 
@@ -118,7 +118,7 @@ else
       # delete files, that are no longer used!
       rm $folder/Karteikarten/old_$purename*
       rm $folder/Karteikarten/$purename.*
-      rm $folder/Karteikarten/$purename-*.jpg
+      rm $folder/Karteikarten/$purename-*.png
     fi
   done
 
@@ -140,7 +140,7 @@ else
     elif [ "`uname`" == "Darwin" ] ; then
       procs="`/usr/sbin/system_profiler -detailLevel full SPHardwareDataType | grep -i 'number of cores' | awk '{ print $5 }'`"
     fi
-  make -j$procs pdf 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log
+  make -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log
   cd $WD
     
   echo "done"
