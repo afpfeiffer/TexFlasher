@@ -1501,6 +1501,7 @@ def menu():
 				exec('button_' + str(row_start)+'_res.configure(state='+button_status+',command=lambda:reset_flash("'+l.getAttribute('filename')+'"))')
 				exec('button_' + str(row_start)+'_res.grid(row='+str(row_start)+',column='+str(start_column+7)+',sticky=N+S+E)')
 				saveString += " "+ os.path.dirname(l.getAttribute('filename'))+"/Users/"+user+".xml "
+				saveString += " "+ os.path.dirname(l.getAttribute('filename'))+"/Users/"+user+"_comment.xml "
 				saveString += " "+ l.getAttribute('filename') 
 				exec('Label(Menu,height=1).grid(row='+str(row_start+1)+')')
 				row_start+=2	
