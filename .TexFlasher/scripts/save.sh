@@ -37,18 +37,20 @@ echo
 files=$*
 
 for thing in $files; do
-	echo "processing: $thing"
-  svn add $thing 2> /dev/null  
-	svn info $thing > /dev/null
-	HAVESVN=$?
-	if [ $HAVESVN -eq 0 ]; then
-# 		echo "svn available for this file"
-		svn up $thing 
-		svn commit $thing -m "save learning progress"
-		echo
-	else
-		echo "svn unavailable"
-		echo
+	if [ -f $thing ]; then
+		echo "processing: $thing"
+		svn add $thing 2> /dev/null  
+		svn info $thing > /dev/null
+		HAVESVN=$?
+		if [ $HAVESVN -eq 0 ]; then
+#	 		echo "svn available for this file"
+			svn up $thing 
+			svn commit $thing -m "save learning progress"
+			echo
+		else
+			echo "svn unavailable"
+			echo
+		fi
 	fi
 done
 

@@ -23,14 +23,17 @@
 files=$*
 
 for thing in $files; do
-  svn info $thing > /dev/null
-	HAVESVN=$?
-	if [ $HAVESVN -eq 0 ]; then
-# 		echo "svn available for this file"
-		fulldiff="`svn diff $thing`" > /dev/null
-		if [ "$fulldiff" != "" ]; then
-			echo "Save"
-			exit 0
+	if [ -f $thing ]; then
+		svn add $thing 2> /dev/null  
+		svn info $thing > /dev/null
+		HAVESVN=$?
+		if [ $HAVESVN -eq 0 ]; then
+# 			echo "svn available for this file"
+			fulldiff="`svn diff $thing`" > /dev/null
+			if [ "$fulldiff" != "" ]; then
+				echo "Save"
+				exit 0
+			fi
 		fi
 	fi
 # 	else
