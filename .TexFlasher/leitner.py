@@ -56,7 +56,7 @@ def load_leitner_db(leitner_dir,user):
 	flashcards_dir=os.listdir(leitner_dir+"/Karteikarten")
 
 	for flashcard_file in flashcards_dir:
-		if flashcard_file.split(".")[-1]=="pdf":
+		if flashcard_file.split(".")[-1]=="dvi":
 			flashcard_name=flashcard_file.split(".")[0]
 			#mod_sec=os.stat(leitner_dir+"/Karteikarten/"+flashcard_file).st_mtime
 			#mod_date=datetime(*(strptime(strftime("%Y-%m-%d %H:%M:%S",localtime(mod_sec)), "%Y-%m-%d %H:%M:%S")[0:6]))
