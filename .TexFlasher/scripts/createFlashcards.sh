@@ -56,6 +56,7 @@ FILES="Makefile pdf2jpg_dummy.sh dvi2png_dummy.sh flashcards.cls"
 # get current versions of files 
 for thing in $FILES; do
 	cp $WD/.TexFlasher/tools/$thing $folder/Karteikarten/
+	cp $WD/.TexFlasher/tools/$thing $folder/Details/
 done
 
 
@@ -73,7 +74,7 @@ if [[ "`diff $folder/Karteikarten/$purefilebase.bak $file`" == "" ]]; then
   echo "flashcards up to date" 
   echo "done"
 else 
- 
+	cp $file $folder/Details/
 	# create a temprorary folder for flashcards. make sure its empty
 	if [ -d "$folder/Karteikarten.tmp" ]; then 
 		rm -rf $folder/Karteikarten.tmp
@@ -142,6 +143,9 @@ else
     fi
   make -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log
   cd $WD
+    
+  cd $folder/Details
+  make -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log
     
   echo "done"
 

@@ -56,6 +56,7 @@ FILES="Makefile pdf2jpg_dummy.sh dvi2png_dummy.sh flashcards.cls"
 # get current versions of files 
 for thing in $FILES; do
 	cp $WD/.TexFlasher/tools/$thing $folder/Karteikarten/
+	cp $WD/.TexFlasher/tools/$thing $folder/Details/
 done
 
  
@@ -63,7 +64,9 @@ done
 	if [ -d "$folder/Karteikarten.tmp" ]; then 
 		rm -rf $folder/Karteikarten.tmp
 	fi
-  
+
+	cp $file $folder/Details/	
+
 	mkdir $folder/Karteikarten.tmp
   
   echo "parsing ..." | tee  $folder/texFlasher.log
@@ -127,6 +130,10 @@ done
     fi
   make -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log
   cd $WD
+  
+  cd $folder/Details
+  make -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log
+
     
   echo "done"
 
