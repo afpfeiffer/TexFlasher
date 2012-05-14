@@ -27,6 +27,9 @@ echo
 if [ -f run-TexFlasher.sh ]; then
 	rm run-TexFlasher.sh
 fi
+if [ -f settings ]; then
+	rm settings
+fi
 
 echo "Installation ..."
 echo
@@ -128,7 +131,7 @@ echo "python \$TEXFLASHDIR/.TexFlasher/leitner.py $TEXEDITOR $USERNAME" >> run-T
 chmod a+x run-TexFlasher.sh
 chmod a+x .TexFlasher/leitner.py
 
-echo -n "Would you like to create a desktop shortcut? (Y/n):"
+echo -n "Would you like to create a desktop shortcut? (Y/n): "
 read ANSWER
 if [ "$ANSWER" != "n" ]; then
 	echo "creating link on Desktop"
@@ -156,6 +159,13 @@ echo
 echo -n "Would you like to start TexFlasher now? (Y/n): "
 read ANSWER
 
+
+echo
+echo "writing settings to HD"
+echo "username: $USERNAME" >> settings
+echo "editor: $TEXEDITOR" >> settings
+echo
+
 if [ "$ANSWER" != "n" ]; then
 	bash run-TexFlasher.sh
 else
@@ -163,7 +173,6 @@ else
 	echo
 	echo "done."
 fi
-
 
 
  
