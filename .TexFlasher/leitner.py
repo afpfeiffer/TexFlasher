@@ -950,9 +950,8 @@ class RectTracker:
 		   # self.canvas.create_text(event.x,event.y+7,text=user,fill="red",tags="qu"+" "+time+" elem")
 		   # self.canvas.create_text(event.x,event.y-26,text=strftime("%Y-%m-%d", localtime()),fill="red",tags="qu"+" "+time+" elem")
 
-		
-		if sqrt((self.start[0]-event.x)*(self.start[0]-event.x)+(self.start[1]-event.y)*(self.start[1]-event.y))<20:
-			if self.item is not None:
+		if self.item is not None:		
+			if sqrt((self.start[0]-event.x)*(self.start[0]-event.x)+(self.start[1]-event.y)*(self.start[1]-event.y))<20:
 				self.canvas.delete(self.item)		    
 		self.start = None
 		
