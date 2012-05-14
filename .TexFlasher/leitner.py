@@ -952,8 +952,8 @@ class RectTracker:
 
 		
 		if sqrt((self.start[0]-event.x)*(self.start[0]-event.x)+(self.start[1]-event.y)*(self.start[1]-event.y))<20:
-		    self.canvas.delete(self.item)
-		    
+			if self.item is not None:
+				self.canvas.delete(self.item)		    
 		self.start = None
 		
 
