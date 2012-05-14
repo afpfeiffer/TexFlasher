@@ -918,7 +918,7 @@ class RectTracker:
 		    return self.canvas.create_rectangle(*(list(start)+list(end)),dash=[4,4], tags="rect"+" "+strftime("%Y-%m-%d %H:%M:%S", localtime()),outline="grey",**opts)
 		    
 		else:
-		    return self.canvas.create_rectangle(*(list(start)+list(end)),dash=[4,4], tags="rect"+" "+strftime("%Y-%m-%d %H:%M:%S", localtime()),outline="red",**opts)
+		    return self.canvas.create_rectangle(*(list(start)+list(end)),dash=[4,4], tags="rect"+" "+strftime("%Y-%m-%d %H:%M:%S", localtime())+" elem",outline="red",**opts)
 		
 	def autodraw(self, **opts):
 		"""Setup automatic drawing; supports command option"""
@@ -943,12 +943,11 @@ class RectTracker:
 		
 	def __stop(self, event):
 		if self.start==[event.x,event.y]:
-		    self.canvas.create_image(event.x,event.y-10, image=self.canvas.question_image_now,tags="qu"+" "+strftime("%Y-%m-%d %H:%M:%S", localtime()))
-		    self.canvas.create_text(event.x,event.y+7,text=user,fill="red")
-		    self.canvas.create_text(event.x,event.y-26,text=strftime("%Y-%m-%d", localtime()),fill="red")
+		    time=strftime("%Y-%m-%d %H:%M:%S", localtime())
+		   # self.canvas.create_image(event.x,event.y-10, image=self.canvas.question_image_now,tags="qu"+" "+time+" elem")
+		   # self.canvas.create_text(event.x,event.y+7,text=user,fill="red",tags="qu"+" "+time+" elem")
+		   # self.canvas.create_text(event.x,event.y-26,text=strftime("%Y-%m-%d", localtime()),fill="red",tags="qu"+" "+time+" elem")
 
-
-		    #print self.start[0]-event.x
 		
 		if sqrt((self.start[0]-event.x)*(self.start[0]-event.x)+(self.start[1]-event.y)*(self.start[1]-event.y))<20:
 		    self.canvas.delete(self.item)
@@ -1020,22 +1019,25 @@ def create_comment_canvas(c,dir,fc_tag,save,clear):
 		global x, y
 		kill_xy()		
 		#dashes = [3, 2]
-		c.create_image(event.x,event.y-10, image=question_image,tags="question")	
-		c.question_image_now=question_image_now
+		#c.create_image(event.x,event.y-10, image=question_image,tags="question")	
+		#c.question_image_now=question_image_now
 #		x = c.create_line(event.x, 0, event.x, 1000, dash=dashes, tags='no')
 #		y = c.create_line(0, event.y, 1000, event.y, dash=dashes, tags='no')
 		
 	def kill_xy(event=None):
 		c.delete('question')
 	
-	c.bind('<Motion>', cool_design, '+')	
+	#c.bind('<Motion>', cool_design, '+')	
 	# command
 
 	def onDrag(start,end):
 		global x,y
 		if sqrt((start[0]-end[0])*(start[0]-end[0])+(start[1]-end[1])*(start[1]-end[1]))>=20:		
 		  save.config(state=NORMAL)
-		  clear.config(state=NORMAL)
+		  clear.config(state=NORMAL)		    
+		if len(c.find_withtag('rect'))==1 and  sqrt((start[0]-end[0])*(start[0]-end[0])+(start[1]-end[1])*(start[1]-end[1]))<20:
+		  save.config(state=DISABLED)
+		  clear.config(state=DISABLED)		    
 	if os.path.isfile(dir+"/Karteikarten/"+fc_tag+"_comment.png"):
 		image = Image.open(dir+"/Karteikarten/"+fc_tag+"_comment.png")
 		comment = ImageTk.PhotoImage(image)		
@@ -1080,17 +1082,19 @@ def savefile(canvas,dir,tag,save_b):
 
 def clearall(canvas,dir,fc_tag,w,v):
 	rects={}
-	if len(canvas.find_withtag('rect'))>0:
-		for item in canvas.find_withtag('rect'):
+	if len(canvas.find_withtag('elem'))>0:
+		for item in canvas.find_withtag('elem'):
 		  tags=canvas.gettags(item)
 		  rec_time=tags[1]+" "+tags[2]
 		  rec_time=datetime(*(strptime(rec_time, "%Y-%m-%d %H:%M:%S")[0:6]))	
-		  rects[rec_time]=item	
+		  rects[rec_time]=tags[2]
 		rect_del=sorted(rects.keys())[-1]
 		for rect in rects:
 			if rect==rect_del:
-				canvas.delete(rects[rect])
-				break 				
+				print rects[rect]
+				for elem in canvas.find_withtag(rects[rect]):
+				    canvas.delete(elem)
+				#break 				
 				
 	if len(canvas.find_withtag('rect'))==0 and len(canvas.find_withtag('old'))>0:
 		if os.path.isfile(dir+"/Users/"+user+"_comment.xml"):
@@ -1114,7 +1118,7 @@ def clearall(canvas,dir,fc_tag,w,v):
 	  	  doc.writexml(xml_file)
 	  	  xml_file.close()
 	        w.config(state=DISABLED)
-	if  len(canvas.find_withtag('old'))==0 and len(canvas.find_withtag('rect'))==0:
+	if  len(canvas.find_withtag('old'))==0 and len(canvas.find_withtag('elem'))==0:
  		  v.config(state=DISABLED)
  		  w.config(state=DISABLED)
 ############################################################### run flasher ###########################################################
