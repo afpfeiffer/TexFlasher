@@ -37,7 +37,7 @@ import Image, ImageTk
 import tkFileDialog
 from difflib import get_close_matches
 import itertools, collections
-import Pmw
+#import Pmw
 ######################################################################## leitner_db management ##############################################
 
 
@@ -265,8 +265,8 @@ def graph_points(dataSetC, dataSetB, numCards,dir):
     menu_button=create_image_button(top,"./.TexFlasher/pictures/menu.png",40,40)
     menu_button.configure(text="Menu",command=lambda:menu())
     menu_button.grid(row=0,columnspan=7)
-    Balloon = Pmw.Balloon(top)
-    Balloon.bind(menu_button, "Return to Menu") 
+    #Balloon = Pmw.Balloon(top)
+    #Balloon.bind(menu_button, "Return to Menu") 
     Stats=Frame(top,border=10)
     Stats.grid(row=2,column=0)
     
