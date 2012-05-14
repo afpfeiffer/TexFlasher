@@ -56,7 +56,7 @@ def load_leitner_db(leitner_dir,user):
 	flashcards_dir=os.listdir(leitner_dir+"/Karteikarten")
 
 	for flashcard_file in flashcards_dir:
-		if flashcard_file.split(".")[-1]=="pdf":
+		if flashcard_file.split(".")[-1]=="dvi":
 			flashcard_name=flashcard_file.split(".")[0]
 			#mod_sec=os.stat(leitner_dir+"/Karteikarten/"+flashcard_file).st_mtime
 			#mod_date=datetime(*(strptime(strftime("%Y-%m-%d %H:%M:%S",localtime(mod_sec)), "%Y-%m-%d %H:%M:%S")[0:6]))
@@ -946,9 +946,9 @@ class RectTracker:
 	def __stop(self, event):
 		if self.start==[event.x,event.y]:
 		    time=strftime("%Y-%m-%d %H:%M:%S", localtime())
-		   # self.canvas.create_image(event.x,event.y-10, image=self.canvas.question_image_now,tags="qu"+" "+time+" elem")
-		   # self.canvas.create_text(event.x,event.y+7,text=user,fill="red",tags="qu"+" "+time+" elem")
-		   # self.canvas.create_text(event.x,event.y-26,text=strftime("%Y-%m-%d", localtime()),fill="red",tags="qu"+" "+time+" elem")
+		    self.canvas.create_image(event.x,event.y-10, image=self.canvas.question_image_now,tags="qu"+" "+time+" elem")
+		    self.canvas.create_text(event.x,event.y+7,text=user,fill="red",tags="qu"+" "+time+" elem")
+		    self.canvas.create_text(event.x,event.y-26,text=strftime("%Y-%m-%d", localtime()),fill="red",tags="qu"+" "+time+" elem")
 
 		if self.item is not None:		
 			if sqrt((self.start[0]-event.x)*(self.start[0]-event.x)+(self.start[1]-event.y)*(self.start[1]-event.y))<20:
@@ -1020,15 +1020,15 @@ def create_comment_canvas(c,dir,fc_tag,save,clear):
 		global x, y
 		kill_xy()		
 		#dashes = [3, 2]
-		#c.create_image(event.x,event.y-10, image=question_image,tags="question")	
-		#c.question_image_now=question_image_now
+		c.create_image(event.x,event.y-10, image=question_image,tags="question")	
+		c.question_image_now=question_image_now
 #		x = c.create_line(event.x, 0, event.x, 1000, dash=dashes, tags='no')
 #		y = c.create_line(0, event.y, 1000, event.y, dash=dashes, tags='no')
 		
 	def kill_xy(event=None):
 		c.delete('question')
 	
-	#c.bind('<Motion>', cool_design, '+')	
+	c.bind('<Motion>', cool_design, '+')	
 	# command
 
 	def onDrag(start,end):
@@ -1088,14 +1088,14 @@ def clearall(canvas,dir,fc_tag,w,v):
 		  tags=canvas.gettags(item)
 		  rec_time=tags[1]+" "+tags[2]
 		  rec_time=datetime(*(strptime(rec_time, "%Y-%m-%d %H:%M:%S")[0:6]))	
-		  rects[rec_time]=tags[2]
+		  rects[rec_time]=item
 		rect_del=sorted(rects.keys())[-1]
 		for rect in rects:
 			if rect==rect_del:
-				print rects[rect]
-				for elem in canvas.find_withtag(rects[rect]):
-				    canvas.delete(elem)
-				#break 				
+				#print rects[rect]
+				#for elem in canvas.find_withtag(rects[rect]):
+				canvas.delete(rects[rect])
+				break 				
 				
 	if len(canvas.find_withtag('rect'))==0 and len(canvas.find_withtag('old'))>0:
 		if os.path.isfile(dir+"/Users/"+user+"_comment.xml"):
