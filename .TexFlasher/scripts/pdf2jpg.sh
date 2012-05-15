@@ -17,6 +17,9 @@
 #     You should have received a copy of the GNU General Public License
 #     along with TexFlasher  If not, see <http://www.gnu.org/licenses/>.
 
+# DEACTIVATED TODO NOTE FIXME
+exit 0
+
 FILENAME=${1%\.*}
 
 echo "compiled flashcard $FILENAME"
