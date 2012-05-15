@@ -56,7 +56,7 @@ FILES="Makefile pdf2jpg_dummy.sh dvi2png_dummy.sh flashcards.cls diviasm.py"
 # get current versions of files 
 for thing in $FILES; do
 	cp $WD/.TexFlasher/tools/$thing $folder/Flashcards/
-	cp $WD/.TexFlasher/tools/$thing $folder/Details/
+# 	cp $WD/.TexFlasher/tools/$thing $folder/Details/
 done
 
  
@@ -65,7 +65,7 @@ done
 		rm -rf $folder/Flashcards.tmp
 	fi
 
-	#cp $file $folder/Details/	
+	cp $file $folder/Details/	
 
 	mkdir $folder/Flashcards.tmp
   
@@ -131,8 +131,9 @@ done
   make -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log
   cd $WD
   
-  #cd $folder/Details
-  #make -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log
+  cd $folder/Details
+  latex $folder/Details/$purefilebase.tex
+#   make -j$procs pdf 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log
 
     
   echo "done"
