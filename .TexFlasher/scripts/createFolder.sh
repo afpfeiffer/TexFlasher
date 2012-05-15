@@ -37,4 +37,6 @@ fi
 
 mkdir -vp $foldername/Karteikarten
 mkdir -vp $foldername/Users
+mkdir -vp $foldername/Details
+
 cp .TexFlasher/Example.tex -vp $foldername/Vorbereitung.tex

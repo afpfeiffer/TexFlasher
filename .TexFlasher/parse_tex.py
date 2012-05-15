@@ -24,7 +24,7 @@ import xml.etree.ElementTree as xml
 from xml.etree.ElementTree import dump
 
 
-def parse_tex(tex_file_path, end_header_marker, fcard_marker,fcard_dir):
+def parse_tex(tex_file_path, end_header_marker, fcard_dir):
 	try:
 		tex_file=open(tex_file_path,"r")
 	except:
@@ -60,7 +60,7 @@ def parse_tex(tex_file_path, end_header_marker, fcard_marker,fcard_dir):
 	fcard_title=""
 	fcard_desc=""
 	for line in tex_file:
-		matches=re.compile(fcard_marker+'(\w+)').findall(line)
+		matches=re.compile('fc\{(\w+)\}\n').findall(line)
 		try:#fails if no fc_marker in line!
 			fcard_title=matches[0]
 			#check for doubles
@@ -87,7 +87,11 @@ def parse_tex(tex_file_path, end_header_marker, fcard_marker,fcard_dir):
 				except:
 					pass
 			else:
-				fcards[fcard_title]+=line				
+				if re.compile('ref\{(\w+)\}').findall(line):	
+					matches=re.compile('ref\{(\w+)\}').findall(line)
+					fcards[fcard_title]+=line.replace("\\ref{"+matches[0]+"}","\\link{"+matches[0]+"}")	
+				else:			
+					fcards[fcard_title]+=line				
 		#check if we are at the end of a flashcard!
 		elif fcard_title!="" and re.compile('end{'+fcard_desc+'}').findall(line):
 			fcards[fcard_title]+="\end{flashcard}\n"
@@ -126,11 +130,11 @@ def parse_tex(tex_file_path, end_header_marker, fcard_marker,fcard_dir):
 		xml_file.close()
 		print "Created "+str(len(fcards))+" flashcard LaTex file(s)"
 	else:
-		print "Fatal Error: No flashcard_markers "+fcard_marker+" found!"
+		print "Fatal Error: No flashcard_markers  found!"
 		sys.exit()
 try:		
-	parse_tex(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4])
+	parse_tex(sys.argv[1],sys.argv[2],sys.argv[3])
 except SystemExit:
 	print "SystemExit"
 except:
-	print "Syntax:\n tex_file \n end_tex_header_marker\n flashcard_marker\n flashcard_directory (ohne / am ende!)"
+	print "Syntax:\n tex_file \n end_tex_header_marker\n flashcard_directory (ohne / am ende!)"

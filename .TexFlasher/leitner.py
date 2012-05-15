@@ -863,9 +863,9 @@ def change_latex(file_path,fc_tag,content,theorem_type):
 	new_fcs=[] # -%-
 
 	for line in file:
-		if re.compile("%fc=").findall(line):
+		if re.compile('fc\{(\w+)\}\n').findall(line):
 			old_fcs.append(line)
-		if re.compile('%fc='+fc_tag+'\n').findall(line):	
+		if re.compile('fc\{'+fc_tag+'\}\n').findall(line):	
 			tag=True
 			new_latex.append(line)
 		if re.compile('begin\{'+theorem_type+'\}').findall(line) and tag:
@@ -876,7 +876,7 @@ def change_latex(file_path,fc_tag,content,theorem_type):
 			new_latex.append(line)
 	file.close()
 	for line in new_latex:
-		if re.compile("%fc=").findall(line):
+		if re.compile('fc\{(\w+)\}\n').findall(line):
 			new_fcs.append(line)	
 	if old_fcs==new_fcs: #check if # of fcs has'nt changed
 		new_file=open(file_path,"w")
@@ -947,8 +947,8 @@ class RectTracker:
 		if self.start==[event.x,event.y]:
 		    time=strftime("%Y-%m-%d %H:%M:%S", localtime())
 		    self.canvas.create_image(event.x,event.y-10, image=self.canvas.question_image_now,tags="qu"+" "+time+" elem")
-		    self.canvas.create_text(event.x,event.y+7,text=user,fill="red",tags="qu"+" "+time+" elem")
-		    self.canvas.create_text(event.x,event.y-26,text=strftime("%Y-%m-%d", localtime()),fill="red",tags="qu"+" "+time+" elem")
+		    #self.canvas.create_text(event.x,event.y+7,text=user,fill="red",tags="qu"+" "+time+" elem")
+		    #self.canvas.create_text(event.x,event.y-26,text=strftime("%Y-%m-%d", localtime()),fill="red",tags="qu"+" "+time+" elem")
 
 		if self.item is not None:		
 			if sqrt((self.start[0]-event.x)*(self.start[0]-event.x)+(self.start[1]-event.y)*(self.start[1]-event.y))<20:
@@ -1284,9 +1284,12 @@ def hide_FlashFolder(filename):
 
 def reset_flash(filename):
 	if tkMessageBox.askyesno("Reset", "Do you really want to delete all learning progress for %s?"% filename.split("/")[-2]):
-		os.remove(os.path.dirname(filename)+"/Users/"+user+".xml")
-		os.remove(os.path.dirname(filename)+"/Users/"+user+"_comment.xml")
-
+		try:
+			os.remove(os.path.dirname(filename)+"/Users/"+user+".xml")
+			os.remove(os.path.dirname(filename)+"/Users/"+user+"_comment.xml")
+		except:
+			pass
+			
 		hide_FlashFolder(filename)
 	menu()
 
