@@ -948,11 +948,10 @@ class RectTracker:
 		if self.start==[event.x,event.y]:
 		    time=strftime("%Y-%m-%d %H:%M:%S", localtime())
 		    self.canvas.create_image(event.x,event.y-10, image=self.canvas.question_image_now,tags="qu"+" "+time+" elem")
-<<<<<<< HEAD
+
 		    #self.canvas.create_text(event.x,event.y+7,text=user,fill="red",tags="qu"+" "+time+" elem")
 		    #self.canvas.create_text(event.x,event.y-26,text=strftime("%Y-%m-%d", localtime()),fill="red",tags="qu"+" "+time+" elem")
-=======
->>>>>>> 3ebd262984735db66fb778d5a45666b1f1e6c78a
+
 
 		if self.item is not None:		
 			if sqrt((self.start[0]-event.x)*(self.start[0]-event.x)+(self.start[1]-event.y)*(self.start[1]-event.y))<20:
@@ -1288,7 +1287,6 @@ def hide_FlashFolder(filename):
 
 def reset_flash(filename):
 	if tkMessageBox.askyesno("Reset", "Do you really want to delete all learning progress for %s?"% filename.split("/")[-2]):
-<<<<<<< HEAD
 		try:
 			os.remove(os.path.dirname(filename)+"/Users/"+user+".xml")
 			os.remove(os.path.dirname(filename)+"/Users/"+user+"_comment.xml")
@@ -1296,11 +1294,6 @@ def reset_flash(filename):
 			os.remove(os.path.dirname(filename)+"/Users/"+Settings["user"]+"_comment.xml")
 		except:
 			pass
-			
-=======
-
-
->>>>>>> 3ebd262984735db66fb778d5a45666b1f1e6c78a
 		hide_FlashFolder(filename)
 	menu()
 
