@@ -43,8 +43,8 @@ import ConfigParser
 
 
 def load_leitner_db(leitner_dir,user):
-	if not os.path.isdir(leitner_dir+"/Karteikarten"):
-		print "No directory named Karteikarten found in "+leitner_dir
+	if not os.path.isdir(leitner_dir+"/Flashcards"):
+		print "No directory named 'Flashcards' found in "+leitner_dir
 		sys.exit()
 	#load old flashcards
 	try:
@@ -54,12 +54,12 @@ def load_leitner_db(leitner_dir,user):
 		doc=xml.Document()
 		ldb = doc.createElement('ldb')
 	#create new flashcard xml
-	flashcards_dir=os.listdir(leitner_dir+"/Karteikarten")
+	flashcards_dir=os.listdir(leitner_dir+"/Flashcards")
 
 	for flashcard_file in flashcards_dir:
 		if flashcard_file.split(".")[-1]=="dvi":
 			flashcard_name=flashcard_file.split(".")[0]
-			#mod_sec=os.stat(leitner_dir+"/Karteikarten/"+flashcard_file).st_mtime
+			#mod_sec=os.stat(leitner_dir+"/Flashcards/"+flashcard_file).st_mtime
 			#mod_date=datetime(*(strptime(strftime("%Y-%m-%d %H:%M:%S",localtime(mod_sec)), "%Y-%m-%d %H:%M:%S")[0:6]))
 
 			try: 
@@ -115,7 +115,7 @@ def load_agenda(ldb,dir,now=datetime.now()):
 	seconds_in_a_day = 60 * 60 * 24
 	new_fc={}
 	try:
-		order = xml.parse(dir+"/Karteikarten/order.xml")
+		order = xml.parse(dir+"/Flashcards/order.xml")
 		for elem in flashcards:
 			name=elem.tagName
 			lastReviewed=elem.getAttribute('lastReviewed')
@@ -598,7 +598,7 @@ def search_flashcard(event="none"):
 		all_fcs=get_all_fcs()
 		for fc_elem in all_fcs:
 			match_list.append(fc_elem)	
-			fc_name,theorem_name,theorem_type,fc_content=get_fc_desc(all_fcs[fc_elem]['folder']+'/Karteikarten/'+fc_elem+'.tex')
+			fc_name,theorem_name,theorem_type,fc_content=get_fc_desc(all_fcs[fc_elem]['folder']+'/Flashcards/'+fc_elem+'.tex')
 			match_info_content[fc_content]=[fc_elem,all_fcs[fc_elem]['folder']]
 			match_info_name[fc_name+" "+theorem_name]=[fc_elem,all_fcs[fc_elem]['folder']]
 			match_info[fc_elem]=[fc_elem,all_fcs[fc_elem]['folder']]		
@@ -639,7 +639,7 @@ def search_flashcard(event="none"):
 
 		elif len(search_results)==1:
 			for res in search_results:
-				disp_single_fc(search_results[res]['dir']+'/Karteikarten/'+search_results[res]['tag']+'-2.png',search_results[res]['tag']+" in "+search_results[res]['dir'].split("/")[-1]+' level '+search_results[res]['level'],search_results[res]['tag'])
+				disp_single_fc(search_results[res]['dir']+'/Flashcards/'+search_results[res]['tag']+'-2.png',search_results[res]['tag']+" in "+search_results[res]['dir'].split("/")[-1]+' level '+search_results[res]['level'],search_results[res]['tag'])
 				default_search_value.set("query ...")	
 				break
 		else:
@@ -756,8 +756,8 @@ def display_mult_fcs(fcs,title,button_title,button_command,button_image): #Synta
 					res=iterator.next()
 				except:
 					break
-			button=create_image_button(Search_frame,fcs[res]['dir']+"/Karteikarten/"+fcs[res]['tag']+"-1.png",size,int(size*0.6))
-			exec('button.configure(command=lambda:disp_single_fc("'+fcs[res]['dir']+"/Karteikarten/"+fcs[res]['tag']+"-2.png"+'","'+fcs[res]['tag']+' in '+fcs[res]['dir'].split("/")[-1]+' level '+fcs[res]['level']+'","'+fcs[res]['tag']+'"))')
+			button=create_image_button(Search_frame,fcs[res]['dir']+"/Flashcards/"+fcs[res]['tag']+"-1.png",size,int(size*0.6))
+			exec('button.configure(command=lambda:disp_single_fc("'+fcs[res]['dir']+"/Flashcards/"+fcs[res]['tag']+"-2.png"+'","'+fcs[res]['tag']+' in '+fcs[res]['dir'].split("/")[-1]+' level '+fcs[res]['level']+'","'+fcs[res]['tag']+'"))')
 			button.grid(row=str(i+1),column=colu)
 			exec("button.bind('<Button-4>', lambda event: search_canvas.yview_scroll(-1, UNITS))")
 			exec("button.bind('<Button-5>', lambda event: search_canvas.yview_scroll(1, UNITS)) ")
@@ -801,7 +801,7 @@ def  disp_single_fc(image_path,title,tag):
 	clear_b.configure(state=DISABLED)
 	clear_b.grid(row=1, column=1,sticky=E+S)		
 
-	edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,os.path.dirname(image_path).replace("/Karteikarten",""),tag,edit_b,save_b,clear_b))
+	edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,os.path.dirname(image_path).replace("/Flashcards",""),tag,edit_b,save_b,clear_b))
 	save_b.configure(command=lambda:savefile(c,os.path.dirname(image_path)+"/../",tag,save_b))
 	clear_b.configure(command=lambda:clearall(c,os.path.dirname(image_path)+"/../",tag,save_b,clear_b))	
 	create_comment_canvas(c,os.path.dirname(image_path)+"/../",tag,save_b,clear_b)
@@ -826,7 +826,7 @@ def edit_fc(c,dir,fc_tag,edit_b,save_b,clear_b,back_b=None):
 	c_height=c.winfo_reqheight()
 	c_width=c.winfo_reqwidth()
 
-	fc_name,theorem_name,theorem_type,content=get_fc_desc(dir+"/Karteikarten/"+fc_tag+".tex")
+	fc_name,theorem_name,theorem_type,content=get_fc_desc(dir+"/Flashcards/"+fc_tag+".tex")
 	edit_b.grid_remove()
 	if back_b:
 	  back_b.grid_remove()
@@ -897,7 +897,7 @@ def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type,edit_b,save_b,clear_b,ba
 				if os.path.dirname(elem.getAttribute('filename'))==dir:
 					change_latex(elem.getAttribute('filename'),fc_tag,content,theorem_type)				
 					executeCommand("bash .TexFlasher/scripts/recompileFlashcards.sh "+elem.getAttribute('filename'), True)
-					image = Image.open(os.path.dirname(elem.getAttribute('filename'))+"/Karteikarten/"+fc_tag+"-2.png")
+					image = Image.open(os.path.dirname(elem.getAttribute('filename'))+"/Flashcards/"+fc_tag+"-2.png")
 					image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
 					flashcard = ImageTk.PhotoImage(image)
  					c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard)
@@ -1040,8 +1040,8 @@ def create_comment_canvas(c,dir,fc_tag,save,clear):
 		if len(c.find_withtag('rect'))==1 and  sqrt((start[0]-end[0])*(start[0]-end[0])+(start[1]-end[1])*(start[1]-end[1]))<20:
 		  save.config(state=DISABLED)
 		  clear.config(state=DISABLED)		    
-	if os.path.isfile(dir+"/Karteikarten/"+fc_tag+"_comment.png"):
-		image = Image.open(dir+"/Karteikarten/"+fc_tag+"_comment.png")
+	if os.path.isfile(dir+"/Flashcards/"+fc_tag+"_comment.png"):
+		image = Image.open(dir+"/Flashcards/"+fc_tag+"_comment.png")
 		comment = ImageTk.PhotoImage(image)		
 		c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=comment)
 		c.comment=comment	
@@ -1157,7 +1157,7 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,
 		#print "reached end of vector"
 		statistics_nextWeek(selected_dir)
 		sys.exit()
-	image = Image.open(selected_dir+"/Karteikarten/"+flashcard_name+"-1.png")
+	image = Image.open(selected_dir+"/Flashcards/"+flashcard_name+"-1.png")
 	image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
 	flashcard_image = ImageTk.PhotoImage(image)
 	c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard_image)
@@ -1187,7 +1187,7 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,
 
 
 def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,b_true,b_false,c,edit_b,save_b,clear_b,back_b):
-	image = Image.open(selected_dir+"/Karteikarten/"+flashcard_tag+"-2.png")
+	image = Image.open(selected_dir+"/Flashcards/"+flashcard_tag+"-2.png")
 	image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
 	flashcard = ImageTk.PhotoImage(image)
 	c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard)	
@@ -1372,7 +1372,7 @@ def clear_search(event):
 
 def update_texfile( fname ):	
 	executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+os.path.dirname(fname)+"/Users/"+Settings["user"]+".xml "+fname, True )
-	os.system("rm "+os.path.dirname(fname)+"/Karteikarten/UPDATE 2>/dev/null")
+	os.system("rm "+os.path.dirname(fname)+"/Flashcards/UPDATE 2>/dev/null")
 	create_flashcards( fname )
 
 
@@ -1471,7 +1471,7 @@ def menu():
 				exec('fc_folder_' + str(row_start)+'_desc=Label(Menu,justify=LEFT,text="'+l.getAttribute('filename').split("/")[-2]+'\\nlength: '+str(length)+'\\ntodo: '+str(todo-new)+', new: '+str(new)+'\\nupdated: '+l.getAttribute('lastReviewed')+'").grid(row='+str(row_start)+', column='+str(start_column+1)+',sticky=W)')
 
 				#update
-				if os.path.isfile(os.path.dirname(l.getAttribute('filename'))+"/Karteikarten/UPDATE"):
+				if os.path.isfile(os.path.dirname(l.getAttribute('filename'))+"/Flashcards/UPDATE"):
 					update_image="./.TexFlasher/pictures/update_now.png"
 				else:
 					update_image="./.TexFlasher/pictures/update.png"

@@ -121,7 +121,7 @@ def parse_tex(tex_file_path, end_header_marker, fcard_marker,fcard_dir):
 			fcard_file.writelines(tex_end)
 			fcard_file.close()
 		#success
-		xml_file = open(os.path.dirname(tex_file_path)+"/Karteikarten/order.xml", 'w')
+		xml_file = open(os.path.dirname(tex_file_path)+"/Flashcards/order.xml", 'w')
 		xml.ElementTree(order_db).write(xml_file)
 		xml_file.close()
 		print "Created "+str(len(fcards))+" flashcard LaTex file(s)"

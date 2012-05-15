@@ -30,13 +30,13 @@ for thing in $files; do
 		# get filename without extension
 		purefilebase=${filebase%\.*} 
 		
-		if [ ! -f $folder/Karteikarten/UPDATE ]; then
-			if [[ ! -f $folder/Karteikarten/$purefilebase.bak ]]; then
-				touch $folder/Karteikarten/$purefilebase.bak
-				echo "" > $folder/Karteikarten/UPDATE
+		if [ ! -f $folder/Flashcards/UPDATE ]; then
+			if [[ ! -f $folder/Flashcards/$purefilebase.bak ]]; then
+				touch $folder/Flashcards/$purefilebase.bak
+				echo "" > $folder/Flashcards/UPDATE
 			else
-				if [[ "`diff $folder/Karteikarten/$purefilebase.bak $thing`" != "" ]]; then
-					echo "" > $folder/Karteikarten/UPDATE
+				if [[ "`diff $folder/Flashcards/$purefilebase.bak $thing`" != "" ]]; then
+					echo "" > $folder/Flashcards/UPDATE
 				fi
 			fi
 			
@@ -46,9 +46,9 @@ for thing in $files; do
 			serverRev="`svn info $server | grep Revision: | cut -d " " -f 2`"
 #	 		echo $serverRev
 			if [ "$serverRev" != "$ownRev" ]; then
-# 				echo svn info $server | grep "Last Changed Author:" | cut -d ":" -f 2 | cut -d " " -f 2 > $folder/Karteikarten/UPDATE
+# 				echo svn info $server | grep "Last Changed Author:" | cut -d ":" -f 2 | cut -d " " -f 2 > $folder/Flashcards/UPDATE
 # 				echo "`date`: revisions differ: $serverRev, $ownRev"
-				echo "" > $folder/Karteikarten/UPDATE
+				echo "" > $folder/Flashcards/UPDATE
 			fi
 		fi
 	fi

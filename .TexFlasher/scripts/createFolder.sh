@@ -35,7 +35,7 @@ if [ -d "$foldername" ]; then
 	exit 1
 fi
 
-mkdir -vp $foldername/Karteikarten
+mkdir -vp $foldername/Flashcards
 mkdir -vp $foldername/Users
 mkdir -vp $foldername/Details
 

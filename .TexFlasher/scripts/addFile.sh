@@ -27,8 +27,8 @@ foldername=$(dirname $file)
 
 
 
-if [ ! -d "$foldername/Karteikarten" ]; then 
-	echo "Error: $foldername/Karteikarten does not exist."
+if [ ! -d "$foldername/Flashcards" ]; then 
+	echo "Error: $foldername/Flashcards does not exist."
 	exit 1
 fi
 
