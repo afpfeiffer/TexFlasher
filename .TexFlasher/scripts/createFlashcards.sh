@@ -56,7 +56,11 @@ FILES="Makefile pdf2jpg_dummy.sh dvi2png_dummy.sh flashcards.cls diviasm.py"
 # get current versions of files 
 for thing in $FILES; do
 	cp $WD/.TexFlasher/tools/$thing $folder/Karteikarten/
+<<<<<<< HEAD
 	#cp $WD/.TexFlasher/tools/$thing $folder/Details/
+=======
+	cp $WD/.TexFlasher/tools/$thing $folder/Details/
+>>>>>>> 3ebd262984735db66fb778d5a45666b1f1e6c78a
 done
 
 
@@ -74,7 +78,11 @@ if [[ "`diff $folder/Karteikarten/$purefilebase.bak $file`" == "" ]]; then
   echo "flashcards up to date" 
   echo "done"
 else 
+<<<<<<< HEAD
 	#cp $file $folder/Details/
+=======
+	cp $file $folder/Details/
+>>>>>>> 3ebd262984735db66fb778d5a45666b1f1e6c78a
 	# create a temprorary folder for flashcards. make sure its empty
 	if [ -d "$folder/Karteikarten.tmp" ]; then 
 		rm -rf $folder/Karteikarten.tmp
@@ -144,8 +152,13 @@ else
   make -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log
   cd $WD
     
+<<<<<<< HEAD
   #cd $folder/Details
   #make -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log
+=======
+  cd $folder/Details
+  make -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log
+>>>>>>> 3ebd262984735db66fb778d5a45666b1f1e6c78a
     
   echo "done"
 

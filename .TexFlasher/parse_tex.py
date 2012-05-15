@@ -87,11 +87,11 @@ def parse_tex(tex_file_path, end_header_marker, fcard_dir):
 				except:
 					pass
 			else:
-				if re.compile('ref\{(\w+)\}').findall(line):	
-					matches=re.compile('ref\{(\w+)\}').findall(line)
-					fcards[fcard_title]+=line.replace("\\ref{"+matches[0]+"}","\\link{"+matches[0]+"}")	
-				else:			
-					fcards[fcard_title]+=line				
+				#if re.compile('ref\{(\w+)\}').findall(line):	
+				#	matches=re.compile('ref\{(\w+)\}').findall(line)
+				#	fcards[fcard_title]+=line.replace("\\ref{"+matches[0]+"}","\\link{"+matches[0]+"}")	
+				#else:			
+				fcards[fcard_title]+=line				
 		#check if we are at the end of a flashcard!
 		elif fcard_title!="" and re.compile('end{'+fcard_desc+'}').findall(line):
 			fcards[fcard_title]+="\end{flashcard}\n"

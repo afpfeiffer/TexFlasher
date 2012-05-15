@@ -37,6 +37,7 @@ import Image, ImageTk
 import tkFileDialog
 from difflib import get_close_matches
 import itertools, collections
+import ConfigParser
 #import Pmw
 ######################################################################## leitner_db management ##############################################
 
@@ -47,7 +48,7 @@ def load_leitner_db(leitner_dir,user):
 		sys.exit()
 	#load old flashcards
 	try:
-		doc= xml.parse(leitner_dir+"/Users/"+user+".xml")
+		doc= xml.parse(leitner_dir+"/Users/"+Settings["user"]+".xml")
 		ldb=doc.getElementsByTagName('ldb')[0]
 	except:
 		doc=xml.Document()
@@ -73,7 +74,7 @@ def load_leitner_db(leitner_dir,user):
 				flashcard_element.setAttribute('level',"0")
 				flashcard_element.setAttribute('levelHistory',"0_("+strftime("%Y-%m-%d %H:%M:%S", localtime())+")")
 				flashcard_element.setAttribute('created',strftime("%Y-%m-%d %H:%M:%S", localtime()))
-	xml_file = open(leitner_dir+"/Users/"+user+".xml", "w")
+	xml_file = open(leitner_dir+"/Users/"+Settings["user"]+".xml", "w")
 	ldb.writexml(xml_file)
 	#pretty_xml = ldb.toprettyxml()
 	#xml_file.writelines(pretty_xml)
@@ -152,7 +153,7 @@ def update_flashcard(fc_tag,ldb,selected_dir,attr_name,attr_value,lastReviewed=s
 			flashcard_element.setAttribute(attr_name, str(attr_value))
 	
 		if update==True:
-			xml_file = open(selected_dir+"/Users/"+user+".xml", "w")
+			xml_file = open(selected_dir+"/Users/"+Settings["user"]+".xml", "w")
 			ldb.writexml(xml_file)
 			xml_file.close()
 	except:
@@ -163,7 +164,7 @@ def update_flashcard(fc_tag,ldb,selected_dir,attr_name,attr_value,lastReviewed=s
 
 def statistics_nextWeek(ldir):
 		checkForUpdate()
-		database = load_leitner_db(ldir, user)
+		database = load_leitner_db(ldir, Settings["user"])
 		DAYS=[]
 		LEVELS=[]
 		DATASET=[]
@@ -464,7 +465,7 @@ def show_pie_level(event,pie_data,radius):
 
 def get_fc_info(dir,tag,ldb=None):
 	if not ldb:
-		ldb=load_leitner(dir,user)
+		ldb=load_leitner(dir,Settings["user"])
 	for elem in ldb.childNodes:
 		if elem.tagName==tag:
 			return elem	
@@ -649,7 +650,7 @@ def search_flashcard(event="none"):
 
 def defaultAnswer( arg ):
 	ANSWERS={ 
-					user:"You are one lazy student.",
+					Settings["user"]:"You are one lazy student.",
 					"can":"Can is a great programmer!",
 					"axel":"Axel is a great programmer!",
 					"david":"David sucks at OA!",
@@ -709,7 +710,7 @@ def get_all_fcs(path=False):
 			if path and path==os.path.dirname(elem.getAttribute('filename')):			
 				dir=os.path.dirname(elem.getAttribute('filename'))
 				try:
-					tree = xml.parse(dir+"/Users/"+user+".xml")
+					tree = xml.parse(dir+"/Users/"+Settings["user"]+".xml")
 					dir_xml = tree.getElementsByTagName('ldb')[0].childNodes
 					for fc_elem in dir_xml:
 						all_fcs[fc_elem.tagName]={"folder":dir,"level":fc_elem.getAttribute('level')} # add atributes as needed
@@ -718,7 +719,7 @@ def get_all_fcs(path=False):
 			elif not path and not elem.getAttribute('filename')=="":
 				dir=os.path.dirname(elem.getAttribute('filename'))
 				try:
-					tree = xml.parse(dir+"/Users/"+user+".xml")
+					tree = xml.parse(dir+"/Users/"+Settings["user"]+".xml")
 					dir_xml = tree.getElementsByTagName('ldb')[0].childNodes
 					for fc_elem in dir_xml:
 						all_fcs[fc_elem.tagName]={"folder":dir,"level":fc_elem.getAttribute('level')} # add atributes as needed
@@ -804,11 +805,11 @@ def  disp_single_fc(image_path,title,tag):
 	save_b.configure(command=lambda:savefile(c,os.path.dirname(image_path)+"/../",tag,save_b))
 	clear_b.configure(command=lambda:clearall(c,os.path.dirname(image_path)+"/../",tag,save_b,clear_b))	
 	create_comment_canvas(c,os.path.dirname(image_path)+"/../",tag,save_b,clear_b)
-	ldb=load_leitner_db(os.path.dirname(image_path)+"/../",user)
+	ldb=load_leitner_db(os.path.dirname(image_path)+"/../",Settings["user"])
 	fc_info=get_fc_info(os.path.dirname(image_path)+"/../",tag,ldb)
 
- 	if os.path.isfile(os.path.dirname(image_path)+"/../Users/"+user+"_comment.xml"):
-		doc= xml.parse(os.path.dirname(image_path)+"/../Users/"+user+"_comment.xml")
+ 	if os.path.isfile(os.path.dirname(image_path)+"/../Users/"+Settings["user"]+"_comment.xml"):
+		doc= xml.parse(os.path.dirname(image_path)+"/../Users/"+Settings["user"]+"_comment.xml")
 		rects=doc.getElementsByTagName(tag)
 		for rect in rects:
 		      c.create_rectangle(int(float(rect.getAttribute("startx"))),int(float(rect.getAttribute("starty"))),int(float(rect.getAttribute("endx"))),int(float(rect.getAttribute("endy"))),dash=[4,4], tags="old"+" "+rect.getAttribute("created"),outline="red",fill="", width=2)
@@ -947,8 +948,11 @@ class RectTracker:
 		if self.start==[event.x,event.y]:
 		    time=strftime("%Y-%m-%d %H:%M:%S", localtime())
 		    self.canvas.create_image(event.x,event.y-10, image=self.canvas.question_image_now,tags="qu"+" "+time+" elem")
+<<<<<<< HEAD
 		    #self.canvas.create_text(event.x,event.y+7,text=user,fill="red",tags="qu"+" "+time+" elem")
 		    #self.canvas.create_text(event.x,event.y-26,text=strftime("%Y-%m-%d", localtime()),fill="red",tags="qu"+" "+time+" elem")
+=======
+>>>>>>> 3ebd262984735db66fb778d5a45666b1f1e6c78a
 
 		if self.item is not None:		
 			if sqrt((self.start[0]-event.x)*(self.start[0]-event.x)+(self.start[1]-event.y)*(self.start[1]-event.y))<20:
@@ -1058,7 +1062,7 @@ def savefile(canvas,dir,tag,save_b):
 		canvas.itemconfig(item, tags=("old"+" "+tags[1]+" "+tags[2]))
 	if len(coords)>0:
 		try:
-			doc= xml.parse(dir+"/Users/"+user+"_comment.xml")
+			doc= xml.parse(dir+"/Users/"+Settings["user"]+"_comment.xml")
 			comments=doc.getElementsByTagName("comments")[0]
 		except:
 		  	doc=xml.Document()
@@ -1072,7 +1076,7 @@ def savefile(canvas,dir,tag,save_b):
 			flashcard_element.setAttribute('endx', str(rect[2]))
 			flashcard_element.setAttribute('endy',str(rect[3]))	
 			flashcard_element.setAttribute('created',tags[1]+" "+tags[2])	
-		xml_file = open(dir+"/Users/"+user+"_comment.xml", "w")
+		xml_file = open(dir+"/Users/"+Settings["user"]+"_comment.xml", "w")
 		comments.writexml(xml_file)
 	#pretty_xml = ldb.toprettyxml()
 	#xml_file.writelines(pretty_xml)
@@ -1098,7 +1102,7 @@ def clearall(canvas,dir,fc_tag,w,v):
 				break 				
 				
 	if len(canvas.find_withtag('rect'))==0 and len(canvas.find_withtag('old'))>0:
-		if os.path.isfile(dir+"/Users/"+user+"_comment.xml"):
+		if os.path.isfile(dir+"/Users/"+Settings["user"]+"_comment.xml"):
 		  for item in canvas.find_withtag('old'):
 			  tags=canvas.gettags(item)
 			  rec_time=tags[1]+" "+tags[2]
@@ -1109,13 +1113,13 @@ def clearall(canvas,dir,fc_tag,w,v):
 		  	  if rect==rect_del:
 		  	  	canvas.delete(rects[rect])
 			  	break 
-		  doc= xml.parse(dir+"/Users/"+user+"_comment.xml")
+		  doc= xml.parse(dir+"/Users/"+Settings["user"]+"_comment.xml")
 		  rects_xml=doc.getElementsByTagName(fc_tag)
 		  for rect in rects_xml:
 		  	  if datetime(*(strptime(rect.getAttribute('created'), "%Y-%m-%d %H:%M:%S")[0:6]))==rect_del:
 		        	rect.parentNode.removeChild(rect)
 		        	break
-	  	  xml_file = open(dir+"/Users/"+user+"_comment.xml", "w")
+	  	  xml_file = open(dir+"/Users/"+Settings["user"]+"_comment.xml", "w")
 	  	  doc.writexml(xml_file)
 	  	  xml_file.close()
 	        w.config(state=DISABLED)
@@ -1175,7 +1179,7 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,
 	b_false.configure(state=DISABLED)
 	flashcardsTodo=len(agenda)
 	totalNumberCards=len(ldb.childNodes)
-	e0=Label(top,anchor=W,text="  "+user+": flashcards (left today / total number): "+str(flashcardsTodo-listPosition)
+	e0=Label(top,anchor=W,text="  "+Settings["user"]+": flashcards (left today / total number): "+str(flashcardsTodo-listPosition)
 	   +" / "+str(totalNumberCards), width=45).grid(row=0, columnspan=2,sticky=W)	   
 	level = ldb.getElementsByTagName(flashcard_name)[0].getAttribute('level')
 	#color, foo = getColor( int(level), 7)
@@ -1195,8 +1199,8 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,b_true,b_false,c
 		c.delete(item)
 	for item in c.find_withtag('rect'):#first clear possible rects from canvas
 		c.delete(item)			
- 	if os.path.isfile(selected_dir+"/Users/"+user+"_comment.xml"):
-		doc= xml.parse(selected_dir+"/Users/"+user+"_comment.xml")
+ 	if os.path.isfile(selected_dir+"/Users/"+Settings["user"]+"_comment.xml"):
+		doc= xml.parse(selected_dir+"/Users/"+Settings["user"]+"_comment.xml")
 		rects=doc.getElementsByTagName(flashcard_tag)
 		for rect in rects:
 		      c.create_rectangle(int(float(rect.getAttribute("startx"))),int(float(rect.getAttribute("starty"))),int(float(rect.getAttribute("endx"))),int(float(rect.getAttribute("endy"))),dash=[4,4], tags="old"+" "+rect.getAttribute("created"),outline="red",fill="", width=2)
@@ -1220,7 +1224,7 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	menu_button=create_image_button(top,"./.TexFlasher/pictures/menu.png",40,40)
 	menu_button.configure(text="Menu",command=lambda:menu())
 	menu_button.grid(row=0,columnspan=2)
-	ldb=load_leitner_db(selected_dir,user)
+	ldb=load_leitner_db(selected_dir,Settings["user"])
 	if( stuffToDo ):
 		date = datetime.now()
 	else:
@@ -1284,12 +1288,19 @@ def hide_FlashFolder(filename):
 
 def reset_flash(filename):
 	if tkMessageBox.askyesno("Reset", "Do you really want to delete all learning progress for %s?"% filename.split("/")[-2]):
+<<<<<<< HEAD
 		try:
 			os.remove(os.path.dirname(filename)+"/Users/"+user+".xml")
 			os.remove(os.path.dirname(filename)+"/Users/"+user+"_comment.xml")
+			os.remove(os.path.dirname(filename)+"/Users/"+Settings["user"]+".xml")
+			os.remove(os.path.dirname(filename)+"/Users/"+Settings["user"]+"_comment.xml")
 		except:
 			pass
 			
+=======
+
+
+>>>>>>> 3ebd262984735db66fb778d5a45666b1f1e6c78a
 		hide_FlashFolder(filename)
 	menu()
 
@@ -1335,7 +1346,7 @@ def checkForUpdate():
 		for elem in config_xml.childNodes:
 			if elem.tagName=="FlashFolder" and not elem.getAttribute('filename')=="":
 				files += str(elem.getAttribute('filename')) + " "
-				#files += str(os.path.dirname(elem.getAttribute('filename'))+"/Users/"+user+".xml ")
+				#files += str(os.path.dirname(elem.getAttribute('filename'))+"/Users/"+Settings["user"]+".xml ")
 	os.system( "bash .TexFlasher/scripts/checkForUpdate.sh "+ files + "&")
 	
 
@@ -1362,7 +1373,7 @@ def executeCommand( command ,wait=True):
 
 def open_tex(filepath):
 	try:
-		os.system("(nohup "+sys.argv[1]+" "+filepath+" > /dev/null &) 2> /dev/null")
+		os.system("(nohup "+Settings["editor"]+" "+filepath+" > /dev/null &) 2> /dev/null")
 	except:
 		tkMessageBox.showerror( "LaTeX Editor Variable","Please check, if your LaTeX Editor is set correctly in run-TexFlasher.sh")
 
@@ -1373,7 +1384,7 @@ def clear_search(event):
 
 
 def update_texfile( fname ):	
-	executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+os.path.dirname(fname)+"/Users/"+user+".xml "+fname, True )
+	executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+os.path.dirname(fname)+"/Users/"+Settings["user"]+".xml "+fname, True )
 	os.system("rm "+os.path.dirname(fname)+"/Karteikarten/UPDATE 2>/dev/null")
 	create_flashcards( fname )
 
@@ -1442,7 +1453,7 @@ def menu():
 				todo=0;
 				length=0
 				#try:
-				ldb= load_leitner_db(os.path.dirname(l.getAttribute('filename')),user)
+				ldb= load_leitner_db(os.path.dirname(l.getAttribute('filename')),Settings["user"])
 				today,new=load_agenda(ldb,os.path.dirname(l.getAttribute('filename')))
 				todo=len(today)
 				length=len(ldb.childNodes)
@@ -1503,8 +1514,8 @@ def menu():
 				exec('button_' + str(row_start)+'_res=create_image_button(Menu,"./.TexFlasher/pictures/delete.png",'+button_size+','+button_size+')')
 				exec('button_' + str(row_start)+'_res.configure(state='+button_status+',command=lambda:reset_flash("'+l.getAttribute('filename')+'"))')
 				exec('button_' + str(row_start)+'_res.grid(row='+str(row_start)+',column='+str(start_column+7)+',sticky=N+S+E)')
-				saveString += " "+ os.path.dirname(l.getAttribute('filename'))+"/Users/"+user+".xml "
-				saveString += " "+ os.path.dirname(l.getAttribute('filename'))+"/Users/"+user+"_comment.xml "
+				saveString += " "+ os.path.dirname(l.getAttribute('filename'))+"/Users/"+Settings["user"]+".xml "
+				saveString += " "+ os.path.dirname(l.getAttribute('filename'))+"/Users/"+Settings["user"]+"_comment.xml "
 				saveString += " "+ l.getAttribute('filename') 
 				exec('Label(Menu,height=1).grid(row='+str(row_start+1)+')')
 				row_start+=2	
@@ -1553,13 +1564,30 @@ def menu():
 	Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer").grid(row=3,columnspan=8,sticky=S)
 	mainloop()
 
+def readSettings( Settings ):
+	Config = ConfigParser.ConfigParser()
+	Config.read("settings")
+	if not "TexFlasher" in Config.sections():
+		print "Fatal Error while reading config file. Please reinstall by typing 'bash install.sh'."
+		sys.exit()
+
+	options = Config.options("TexFlasher")
+	
+	for thing in Settings:
+		if not thing in options:
+			print "Fatal Error while reading config file. Please reinstall by typing 'bash install.sh'."
+			sys.exit()
+
+		else:
+			Settings[thing] =  Config.get( "TexFlasher", thing )
 
 
 ##################################################################### Main ###############################################################################
-
-user=commands.getoutput("echo $USER")
-if( len(sys.argv) > 2 ):
-	user=sys.argv[2]
+global Settings 
+Settings = { 'user':'',
+						'editor':''
+	}
+readSettings( Settings )
 
 version="TexFlasher unstable build"
 top = Tk()

@@ -27,6 +27,9 @@ echo
 if [ -f run-TexFlasher.sh ]; then
 	rm run-TexFlasher.sh
 fi
+if [ -f settings ]; then
+	rm settings
+fi
 
 echo "Installation ..."
 echo
@@ -123,12 +126,12 @@ echo "echo \"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\"" >>
 echo "echo \"GNU General Public License for more details.\"" >> run-TexFlasher.sh
 echo "echo \"\"">> run-TexFlasher.sh
 
-echo "python \$TEXFLASHDIR/.TexFlasher/leitner.py $TEXEDITOR $USERNAME" >> run-TexFlasher.sh
+echo "python \$TEXFLASHDIR/.TexFlasher/leitner.py" >> run-TexFlasher.sh
 
 chmod a+x run-TexFlasher.sh
 chmod a+x .TexFlasher/leitner.py
 
-echo -n "Would you like to create a desktop shortcut? (Y/n):"
+echo -n "Would you like to create a desktop shortcut? (Y/n): "
 read ANSWER
 if [ "$ANSWER" != "n" ]; then
 	echo "creating link on Desktop"
@@ -156,6 +159,14 @@ echo
 echo -n "Would you like to start TexFlasher now? (Y/n): "
 read ANSWER
 
+
+echo
+echo "writing settings to HD"
+echo "[TexFlasher]" >> settings
+echo "user: $USERNAME" >> settings
+echo "editor: $TEXEDITOR" >> settings
+echo
+
 if [ "$ANSWER" != "n" ]; then
 	bash run-TexFlasher.sh
 else
@@ -163,7 +174,6 @@ else
 	echo
 	echo "done."
 fi
-
 
 
  
