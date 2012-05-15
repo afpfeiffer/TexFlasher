@@ -126,7 +126,7 @@ echo "echo \"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\"" >>
 echo "echo \"GNU General Public License for more details.\"" >> run-TexFlasher.sh
 echo "echo \"\"">> run-TexFlasher.sh
 
-echo "python \$TEXFLASHDIR/.TexFlasher/leitner.py $TEXEDITOR $USERNAME" >> run-TexFlasher.sh
+echo "python \$TEXFLASHDIR/.TexFlasher/leitner.py" >> run-TexFlasher.sh
 
 chmod a+x run-TexFlasher.sh
 chmod a+x .TexFlasher/leitner.py
@@ -162,7 +162,8 @@ read ANSWER
 
 echo
 echo "writing settings to HD"
-echo "username: $USERNAME" >> settings
+echo "[TexFlasher]" >> settings
+echo "user: $USERNAME" >> settings
 echo "editor: $TEXEDITOR" >> settings
 echo
 
