@@ -74,7 +74,8 @@ if [[ "`diff $folder/Flashcards/$purefilebase.bak $file`" == "" ]]; then
   echo "flashcards up to date" 
   echo "done"
 else 
-	cp $file $folder/Details/
+	cp $file $folder/Details/source.tex
+	
 	# create a temprorary folder for flashcards. make sure its empty
 	if [ -d "$folder/Flashcards.tmp" ]; then 
 		rm -rf $folder/Flashcards.tmp
@@ -145,7 +146,7 @@ else
   cd $WD
     
   cd $folder/Details
-  latex $folder/Details/$purefilebase.tex
+  latex $folder/Details/source.tex
 #   make -j$procs pdf 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log    
   echo "done"
 

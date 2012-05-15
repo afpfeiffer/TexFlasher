@@ -65,7 +65,7 @@ done
 		rm -rf $folder/Flashcards.tmp
 	fi
 
-	cp $file $folder/Details/	
+	cp $file $folder/Details/source.tex
 
 	mkdir $folder/Flashcards.tmp
   
@@ -132,7 +132,7 @@ done
   cd $WD
   
   cd $folder/Details
-  latex $folder/Details/$purefilebase.tex
+  latex $folder/Details/source.tex
 #   make -j$procs pdf 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log
 
     
