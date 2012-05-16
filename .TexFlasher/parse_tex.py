@@ -126,6 +126,8 @@ def parse_tex(tex_file_path, end_header_marker, fcard_dir,dump_file_path):
 		matches=re.compile('fc\{(\w+)\}\n').findall(line)
 		try:#fails if no fc_marker in line!
 			fcard_title=matches[0]
+			element=doc.createElement(fcard_title)
+			order_db.appendChild(element)
 			#check for doubles
 			if fcard_title in fcards:
 				print "Fatal Error: flashcard_marker "+fcard_title+" used multiple times!"
@@ -161,8 +163,7 @@ def parse_tex(tex_file_path, end_header_marker, fcard_dir,dump_file_path):
 						  fc_header+="\\renewcommand{\\thesection}{"+fc_sec[1:]+"}"
 						  fc_section="\\section{"+fc_sec_name+"}"
 						except:
-						  pass
-						
+						  pass						
 						try:
 						  fc_subsec,fc_subsec_name=fc_meta.getAttribute('subsection').split("__")
 						  fc_header+="\\renewcommand{\\thesubsection}{"+fc_subsec[1:]+"}"
@@ -179,6 +180,9 @@ def parse_tex(tex_file_path, end_header_marker, fcard_dir,dump_file_path):
 						try:
 							fcards[fcard_title]="\\begin{flashcard}{"+fc_chapter+"\n"+fc_section+"\n"+fc_subsection+"\n"+fc_subsubsection+"\\begin{"+matches[0][0]+"}["+matches[0][1]+"]\\end{"+matches[0][0]+"}}\n\\flushleft\n\\footnotesize\n"
 							fcards_header[fcard_title]=fc_header
+							element.setAttribute('name',matches[0][1])
+							element.setAttribute('theorem_type',matches[0][0])							
+							element.setAttribute('theorem_name',theorems[matches[0][0]])							
 						except:
 							print "Note: No theorem type found for flashcard_marker "+fcard_title
 							fcards[fcard_title]="\\begin{flashcard}{"+matches[0][1]+"}\n\\flushleft\n\\footnotesize\n"					
@@ -199,8 +203,6 @@ def parse_tex(tex_file_path, end_header_marker, fcard_dir,dump_file_path):
 			fcards[fcard_title]+="\end{flashcard}\n"
 			#check if flashcard is ok
 			if re.compile('begin{flashcard}').findall(fcards[fcard_title]) and re.compile('end{flashcard}').findall(fcards[fcard_title]):
-			  	element=doc.createElement(fcard_title)
-				order_db.appendChild(element)
 				element.setAttribute('position',str(counter))
 				counter+=1
 				fcard_title=""

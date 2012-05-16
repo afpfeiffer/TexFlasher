@@ -477,28 +477,21 @@ def get_fc_desc(tex_file_path):
 	except:
 		print "Fatal Error: Cannot open file: "+tex_file_path+"!"
 		sys.exit()	
-	type=""
-	content=""
-	beg_con=False
-	theorems={}
-	for line in tex_file:
-		if re.compile('newtheorem.*?\{(.*?)\}.*?\{(.*?)\}.*?').findall(line):
-			matches=re.compile('newtheorem.*?\{(.*?)\}.*?\{(.*?)\}.*?').findall(line)		
-			theorems[matches[0][1]]=matches[0][0]
-		if re.compile('begin\{flashcard\}\{.*?(.*?)\}\n').findall(line):
-			fc_name=re.compile('begin\{flashcard\}\{.*?(.*?)\}\n').findall(line)[0]	
-			try:
-				theorem_name,title=fc_name.split(": ")
-				theorem_type=theorems[theorem_name]
-			except:
-				title=fc_name
-				theorem_type=""
-				theorem_name=""
-			beg_con=True
-		if beg_con and not re.compile('end\{flashcard\}').findall(line) and not re.compile('begin\{flashcard\}\{.*?(.*?)\}\n').findall(line) and not re.compile('flushleft').findall(line) and not re.compile('footnotesize').findall(line):
-			content+=line
-		elif 	re.compile('end\{flashcard\}').findall(line):
-			beg_con=False
+	content_=False
+	content=""	
+	for l in tex_file:
+		if content_ and not l=="\end{flashcard}\n":
+			content+=l
+		if l=="\\footnotesize\n":
+			content_=True
+		if l=="\end{flashcard}\n":
+			content_=False	
+	print content
+	doc= xml.parse(os.path.dirname(tex_file_path)+"/order.xml")
+	fc_elem=doc.getElementsByTagName(tex_file_path.split("/")[-1].replace(".tex",""))[0]
+	title=fc_elem.getAttribute('name')
+	theorem_name=fc_elem.getAttribute('theorem_name')
+	theorem_type=fc_elem.getAttribute('theorem_type')
 	return title,theorem_name,theorem_type,content
 		
 ############################################################### Search ###########################################
