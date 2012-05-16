@@ -29,17 +29,15 @@ echo
 
 files=$*
 
-for thing in $files; do
-	echo "processing: $thing"
-	svn info $thing > /dev/null
-	HAVESVN=$?
-	if [ $HAVESVN -eq 0 ]; then
-		svn up $thing 
-		echo
-	else
-		echo "svn unavailable"
-		echo
-	fi
-done
+echo "processing: $files"
+svn info $files > /dev/null
+HAVESVN=$?
+if [ $HAVESVN -eq 0 ]; then
+	svn up $files
+	echo
+else
+	echo "svn unavailable"
+	echo
+fi
 
 exit 0

@@ -1377,7 +1377,7 @@ def clear_search(event):
 
 
 def update_texfile( fname ):	
-	executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+os.path.dirname(fname)+"/Users/"+Settings["user"]+".xml "+fname, True )
+	executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+os.path.dirname(fname)+"/Users/"+Settings["user"]+".xml "+os.path.dirname(fname)+"/Users/"+Settings["user"]+"_comment.xml "+fname, True )
 	os.system("rm "+os.path.dirname(fname)+"/Flashcards/UPDATE 2>/dev/null")
 	create_flashcards( fname )
 
@@ -1507,9 +1507,9 @@ def menu():
 				exec('button_' + str(row_start)+'_res=create_image_button(Menu,"./.TexFlasher/pictures/delete.png",'+button_size+','+button_size+')')
 				exec('button_' + str(row_start)+'_res.configure(state='+button_status+',command=lambda:reset_flash("'+l.getAttribute('filename')+'"))')
 				exec('button_' + str(row_start)+'_res.grid(row='+str(row_start)+',column='+str(start_column+7)+',sticky=N+S+E)')
-				saveString += " "+ os.path.dirname(l.getAttribute('filename'))+"/Users/"+Settings["user"]+".xml "
-				saveString += " "+ os.path.dirname(l.getAttribute('filename'))+"/Users/"+Settings["user"]+"_comment.xml "
-				saveString += " "+ l.getAttribute('filename') 
+				saveString += " "+ os.path.dirname(l.getAttribute('filename'))+"/Users/"+Settings["user"]+".xml"
+				saveString += "###"+ os.path.dirname(l.getAttribute('filename'))+"/Users/"+Settings["user"]+"_comment.xml"
+				saveString += "###"+ l.getAttribute('filename') 
 				exec('Label(Menu,height=1).grid(row='+str(row_start+1)+')')
 				row_start+=2	
 

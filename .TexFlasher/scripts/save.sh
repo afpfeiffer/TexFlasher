@@ -37,21 +37,25 @@ echo
 files=$*
 
 for thing in $files; do
-	if [ -f $thing ]; then
-		echo "processing: $thing"
-		svn add $thing 2> /dev/null  
-		svn info $thing > /dev/null
+# 	echo $thing
+		seperatedFiles="`echo $thing | sed -e 's/###/ /g'`"
+# 	echo $seperatedFiles
+
+# 	if [ -f $thing ]; then
+		echo "processing: $seperatedFiles"
+		svn add $seperatedFiles 2> /dev/null  
+		svn info $seperatedFiles > /dev/null
 		HAVESVN=$?
 		if [ $HAVESVN -eq 0 ]; then
 #	 		echo "svn available for this file"
-			svn up $thing 
-			svn commit $thing -m "save learning progress"
+			svn up $seperatedFiles
+			svn commit $seperatedFiles -m "save learning progress"
 			echo
 		else
 			echo "svn unavailable"
 			echo
 		fi
-	fi
+# 	fi
 done
-
+sleep 20
 exit 0
