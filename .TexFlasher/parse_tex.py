@@ -1,4 +1,6 @@
 #!/usr/bin/python
+# encoding: utf-8
+
 #     This file is part of TexFlasher.
 #     Copyright (c) 2012:
 #          Can Oezmen
@@ -20,36 +22,96 @@
 import os
 import sys
 import re
-import xml.etree.ElementTree as xml
-from xml.etree.ElementTree import dump
+import xml.dom.minidom as xml
+
+def parse_dvi_dump(dump_file_path):
+  	doc=xml.Document()
+	fc_meta = doc.createElement('fc_meta_info')
+	try:
+		dump_file=open(dump_file_path,"r")
+	except:
+		print "Fatal Error: Cannot open file: "+dump_file_path+"!"
+		sys.exit()
+	theorems={}
+	doc_start=False
+	page=[]
+	number=""
+	fc_tag=None
+	sections={}
+	current_section={"section":None,"subsection":None,"subsubsection":None}
+	for l in dump_file:
+		l=l.strip(' \t\n\r')
+	  
+		if not doc_start and re.compile("xxx: 'ps:SDict begin \[/Count -(\d+)/Dest \((.*?)\) cvn/Title \((.*?)\) /OUT pdfmark end'").findall(l):
+		  matches=re.compile("xxx: 'ps:SDict begin \[/Count -(\d+)/Dest \((.*?)\) cvn/Title \((.*?)\) /OUT pdfmark end'").findall(l)
+		  sec_name=matches[0][2].replace("\\","").replace("344","ä").replace("337","ß").replace("374","ü")
+		  sections[matches[0][1]]=sec_name
+		#check for page start  
+		if re.compile("xxx: 'ps:SDict begin \[/View \[/XYZ H.V\]/Dest \((.*?)\) cvn /DEST pdfmark end'").findall(l):#we got section or something like that
+		  matches=re.compile("xxx: 'ps:SDict begin \[/View \[/XYZ H.V\]/Dest \((.*?)\) cvn /DEST pdfmark end'").findall(l)
+		  if 'Doc-Start'==matches[0]:
+			doc_start=True
+		  elif re.compile('page.(\d+)').findall(matches[0]):
+			page=re.compile('page.(\d+)').findall(matches[0])
+		  elif doc_start and fc_tag and matches[0].startswith("sat."):
+			number=matches[0].replace("sat.","")
+			theorems[fc_tag]["number"]=number
+	          elif doc_start and sections.get(matches[0], False):
+			section_type=matches[0].split(".")[0]
+			current_section[section_type]=matches[0].replace(section_type,"")+"__"+sections[matches[0]]
+		if doc_start and re.compile("xxx: 'fc=(.*?)'").findall(l):#we got fc_tag
+		  matches=re.compile("xxx: 'fc=(.*?)'").findall(l)
+		  fc_tag=matches[0]
+		  theorems[fc_tag]={"page":None,"number":None,"chapter":None,"section":None,"section":None,"subsection":None,"subsubsection":None}
+		  for meta in current_section:
+		    theorems[fc_tag][meta]=current_section[meta]
+		  theorems[fc_tag]['page']=page[0]
+		  
+	for fc_tag in theorems:
+		element=doc.createElement(fc_tag)
+		fc_meta.appendChild(element)
+		for entry in theorems[fc_tag]:
+		  element.setAttribute(entry,str(theorems[fc_tag][entry]))
+
+	xml_file = open(os.path.dirname(dump_file_path)+"/source.xml", "w")
+	fc_meta.writexml(xml_file)	    
+	xml_file.close()
+	return fc_meta
 
 
-def parse_tex(tex_file_path, end_header_marker, fcard_dir):
+
+def parse_tex(tex_file_path, end_header_marker, fcard_dir,dump_file_path):
+	meta=parse_dvi_dump(dump_file_path)
 	try:
 		tex_file=open(tex_file_path,"r")
 	except:
 		print "Fatal Error: Cannot open file: "+tex_file_path+"!"
 		sys.exit()
+		
+		
+		
 	theorems={}
 	tex_header=""
 	tex_end="\end{document}\n"
 	notice="%NOTICE: This file is generated automatically changes will be overwritten and wont have any effect unless you compile it yourself!\n"
 	
-	order_db = xml.Element('order_db')
+  	doc=xml.Document()
+	order_db = doc.createElement('order_db')
 	counter=0
 	# get tex header
 	end_header_marker_status=""
 	for line in tex_file:
 		if re.compile('documentclass\[').findall(line):
-			line=" \documentclass[avery5388,frame]{flashcards}\n"
-		if re.compile('newtheorem.*?\{(.*?)\}.*?\{(.*?)\}.*?').findall(line):
+			tex_header+=" \documentclass[avery5388,frame]{flashcards}\n"
+		elif re.compile('newtheorem.*?\{(.*?)\}.*?\{(.*?)\}.*?').findall(line):
 			matches=re.compile('newtheorem.*?\{(.*?)\}.*?\{(.*?)\}.*?').findall(line)		
 			theorems[matches[0][0]]=matches[0][1]
+			tex_header+="\\newtheorem{"+matches[0][0]+"}{"+matches[0][1]+"}[section]"
 
-		if re.compile(end_header_marker).findall(line):
+		elif re.compile(end_header_marker).findall(line):
 			end_header_marker_status="found"
 			break
-		if not line=="\n" or len(line)==0: #only appen if line not emty!
+		elif not line=="\n" or len(line)==0: #only appen if line not emty!
 			tex_header+=line
 	
 	if not end_header_marker_status=="found":
@@ -57,6 +119,7 @@ def parse_tex(tex_file_path, end_header_marker, fcard_dir):
 		sys.exit()
 	#search for card marker
 	fcards={}
+	fcards_header={}
 	fcard_title=""
 	fcard_desc=""
 	for line in tex_file:
@@ -74,9 +137,48 @@ def parse_tex(tex_file_path, end_header_marker, fcard_dir):
 				matches=re.compile('begin\{(\w+)\}\[(.*?)\]').findall(line)
 				try:
 					if len(matches[0][1])>0:
-						try:
-							fcards[fcard_title]="\\begin{flashcard}{"+theorems[matches[0][0]]+": "+matches[0][1]+"}\n\\flushleft\n\\footnotesize\n"
+						fc_meta=meta.getElementsByTagName(fcard_title)[0]
+						fc_page=fc_meta.getAttribute('page')
+						fc_header=""
+						fc_chapter=""
+						fc_section=""
+						fc_subsection=""
+						fc_subsubsection=""
 						
+						try:
+						  fc_number=fc_meta.getAttribute('number')
+						  fc_header+="\\renewcommand{\\the"+matches[0][0]+"}{"+fc_number+"}"
+						except:
+						  pass
+						try:
+						  fc_chp,fc_chp_name=fc_meta.getAttribute('chapter').split("__")
+						  fc_header+="\\renewcommand{\\thesection}{"+fc_chp[1:]+"}"
+						  fc_chapter="\\chapter{"+fc_chp_name+"}"
+						except:
+						  pass						
+						try:
+						  fc_sec,fc_sec_name=fc_meta.getAttribute('section').split("__")
+						  fc_header+="\\renewcommand{\\thesection}{"+fc_sec[1:]+"}"
+						  fc_section="\\section{"+fc_sec_name+"}"
+						except:
+						  pass
+						
+						try:
+						  fc_subsec,fc_subsec_name=fc_meta.getAttribute('subsection').split("__")
+						  fc_header+="\\renewcommand{\\thesubsection}{"+fc_subsec[1:]+"}"
+						  fc_subsection="\\subsection{"+fc_subsec_name+"}"
+						except:
+						  pass						
+						try:
+						  fc_subsubsec,fc_subsubsec_name=fc_meta.getAttribute('subsubsection').split("__")
+						  fc_header+="\\renewcommand{\\thesubsubsection}{"+fc_subsubsec[1:]+"}"
+						  fc_subsubsection="\\subsubsection{"+fc_subsubsec_name+"}"
+						except:
+						  pass
+						  
+						try:
+							fcards[fcard_title]="\\begin{flashcard}{"+fc_chapter+"\n"+fc_section+"\n"+fc_subsection+"\n"+fc_subsubsection+"\\begin{"+matches[0][0]+"}["+matches[0][1]+"]\\end{"+matches[0][0]+"}}\n\\flushleft\n\\footnotesize\n"
+							fcards_header[fcard_title]=fc_header
 						except:
 							print "Note: No theorem type found for flashcard_marker "+fcard_title
 							fcards[fcard_title]="\\begin{flashcard}{"+matches[0][1]+"}\n\\flushleft\n\\footnotesize\n"					
@@ -97,9 +199,9 @@ def parse_tex(tex_file_path, end_header_marker, fcard_dir):
 			fcards[fcard_title]+="\end{flashcard}\n"
 			#check if flashcard is ok
 			if re.compile('begin{flashcard}').findall(fcards[fcard_title]) and re.compile('end{flashcard}').findall(fcards[fcard_title]):
-				flashcard_el=xml.Element(fcard_title)
-				order_db.append(flashcard_el)
-				flashcard_el.attrib['position'] = str(counter)
+			  	element=doc.createElement(fcard_title)
+				order_db.appendChild(element)
+				element.setAttribute('position',str(counter))
 				counter+=1
 				fcard_title=""
 				fcard_desc=""
@@ -112,12 +214,18 @@ def parse_tex(tex_file_path, end_header_marker, fcard_dir):
 				fcard_desc=""
 	tex_file.close()
 
+	
+	#
+	
+	
+	
 	#create flashcard tex files
 	if len(fcards)>0:		
 		for fcard in fcards:
 			fcard_file=open(fcard_dir+"/"+fcard+".tex","w")
 			fcard_file.writelines(notice)
 			fcard_file.writelines(tex_header)
+			fcard_file.writelines(fcards_header[fcard])
 
 			#bugfix because latex flashcard environment does not fully support align! 
 			fcard_file.writelines(fcards[fcard].replace("\\begin{align*}","\\begin{equation*}\\begin{aligned}").replace("\\end{align*}","\\end{aligned}\\end{equation*}").replace("\\begin{align}","\\begin{equation}\\begin{aligned}").replace("\\end{align}","\\end{aligned}\\end{equation}"))
@@ -126,14 +234,14 @@ def parse_tex(tex_file_path, end_header_marker, fcard_dir):
 			fcard_file.close()
 		#success
 		xml_file = open(os.path.dirname(tex_file_path)+"/Flashcards/order.xml", 'w')
-		xml.ElementTree(order_db).write(xml_file)
-		xml_file.close()
+		order_db.writexml(xml_file)	    
+		xml_file.close()		
 		print "Created "+str(len(fcards))+" flashcard LaTex file(s)"
 	else:
 		print "Fatal Error: No flashcard_markers  found!"
 		sys.exit()
 try:		
-	parse_tex(sys.argv[1],sys.argv[2],sys.argv[3])
+  parse_tex(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4])
 except SystemExit:
 	print "SystemExit"
 except:

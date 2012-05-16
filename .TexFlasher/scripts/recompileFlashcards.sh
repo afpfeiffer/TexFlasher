@@ -51,7 +51,7 @@ HAVESVN=$?
 #   fi
 # fi
 
-FILES="Makefile pdf2jpg_dummy.sh dvi2png_dummy.sh flashcards.cls diviasm.py"
+FILES="Makefile pdf2jpg_dummy.sh dvi2png_dummy.sh flashcards.cls"
 
 # get current versions of files 
 for thing in $FILES; do
@@ -67,10 +67,16 @@ done
 
 	cp $file $folder/Details/source.tex
 
+	cd $folder/Details
+	latex source.tex
+	python $WD/.TexFlasher/diviasm.py source.dvi > source.dump
+
+	cd $WD
+	echo
 	mkdir $folder/Flashcards.tmp
   
   echo "parsing ..." | tee  $folder/texFlasher.log
-	python "$WD/.TexFlasher/parse_tex.py" "$file"  "%###%" "$folder/Flashcards.tmp"  | tee -a $folder/texFlasher.log
+	python "$WD/.TexFlasher/parse_tex.py" "$file"  "%###%" "$folder/Flashcards.tmp" "$folder/Details/source.dump" | tee -a $folder/texFlasher.log
 	cp $file $folder/Flashcards/$purefilebase.bak
   
   recompile="0"
@@ -131,8 +137,8 @@ done
   make -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log
   cd $WD
   
-  cd $folder/Details
-  latex $folder/Details/source.tex
+#  cd $folder/Details
+#  latex $folder/Details/source.tex
 #   make -j$procs pdf 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log
 
     
