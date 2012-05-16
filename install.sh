@@ -68,6 +68,8 @@ fi
 echo
 
 echo "#!/bin/bash" >> run-TexFlasher.sh
+echo "#This file was created automatically by the script 'install.sh'. Changes will be overwritten." >> run-TexFlasher.sh
+echo >> run-TexFlasher.sh
 
 echo "#This file is part of TexFlasher." >> run-TexFlasher.sh
 echo "#" >> run-TexFlasher.sh
@@ -162,6 +164,7 @@ read ANSWER
 
 echo
 echo "writing settings to HD"
+echo "#This file was created automatically by the script 'install.sh'." >> settings
 echo "[TexFlasher]" >> settings
 echo "user: $USERNAME" >> settings
 echo "editor: $TEXEDITOR" >> settings
