@@ -480,13 +480,12 @@ def get_fc_desc(tex_file_path):
 	content_=False
 	content=""	
 	for l in tex_file:
-		if content_ and not l=="\end{flashcard}\n":
+		if content_ and not l=="%#end_content#%\n":
 			content+=l
-		if l=="\\footnotesize\n":
+		if l=="%#begin_content#%\n":
 			content_=True
-		if l=="\end{flashcard}\n":
+		if l=="%#end_content#%\n":
 			content_=False	
-	print content
 	doc= xml.parse(os.path.dirname(tex_file_path)+"/order.xml")
 	fc_elem=doc.getElementsByTagName(tex_file_path.split("/")[-1].replace(".tex",""))[0]
 	title=fc_elem.getAttribute('name')
@@ -849,6 +848,7 @@ def cancel_edit(c,dir,tag,frame,edit_b,save_b,clear_b,back_b=None):
 
 
 def change_latex(file_path,fc_tag,content,theorem_type):
+	print content
 	file=open(file_path,"r")
 	tag=False
 	new_latex=[]
@@ -864,7 +864,7 @@ def change_latex(file_path,fc_tag,content,theorem_type):
 			new_latex.append(line)
 		if re.compile('begin\{'+theorem_type+'\}').findall(line) and tag:
 			new_latex.append(line+content)
-		if re.compile('end\{'+theorem_type+'\}\n').findall(line) and tag:	
+		if re.compile('end\{'+theorem_type+'\}').findall(line) and tag:
 			tag=False
 		if not tag:
 			new_latex.append(line)
@@ -875,6 +875,7 @@ def change_latex(file_path,fc_tag,content,theorem_type):
 	if old_fcs==new_fcs: #check if # of fcs has'nt changed
 		new_file=open(file_path,"w")
 		for line in new_latex:
+			#print line
 			new_file.writelines(line)
 		new_file.close()
 	else:
@@ -1023,9 +1024,10 @@ def create_comment_canvas(c,dir,fc_tag,save,clear):
 		
 	def kill_xy(event=None):
 		c.delete('question')
-	
+
 	c.bind('<Motion>', cool_design, '+')	
-	# command
+
+		# command
 
 	def onDrag(start,end):
 		global x,y
@@ -1152,13 +1154,15 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,
 		#print "reached end of vector"
 		statistics_nextWeek(selected_dir)
 		sys.exit()
+	for im in c.find_withtag("backside"):
+	    c.delete(im)		
 	image = Image.open(selected_dir+"/Flashcards/"+flashcard_name+"-1.png")
 	image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
 	flashcard_image = ImageTk.PhotoImage(image)
-	c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard_image)
+	c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard_image,tags=("frontside",flashcard_name))
 	c.img=flashcard_image
 	c.bind("<Button-1>", lambda e:answer(selected_dir,agenda,ldb, flashcard_name, listPosition,b_true,b_false,c,edit_b,save_b,clear_b,back_b))
-
+	c.unbind("<Motion>")
 	edit_b.config(state=DISABLED)
 	save_b.config(state=DISABLED)
 	clear_b.config(state=DISABLED)
@@ -1177,7 +1181,7 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,
 	#color, foo = getColor( int(level), 7)
 	e1=Label(top,anchor=E,text="marker: "+flashcard_name+",  level: "+ str(level) +"  ",  width=40).grid(row=0, columnspan=2,sticky=E)
 	Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer",width=int(100.0*float(WIDTH/1000.))).grid(row=3, sticky=S,columnspan=5)
-		
+
 	mainloop()
 
 
@@ -1185,7 +1189,9 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,b_true,b_false,c
 	image = Image.open(selected_dir+"/Flashcards/"+flashcard_tag+"-2.png")
 	image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
 	flashcard = ImageTk.PhotoImage(image)
-	c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard)	
+	for im in c.find_withtag("frontside"):
+	    c.delete(im)
+	c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard,tags=("backside",flashcard_tag))	
 	c.img=flashcard	
 	for item in c.find_withtag('old'):#first clear possible rects from canvas
 		c.delete(item)
@@ -1205,7 +1211,8 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,b_true,b_false,c
 	b_true.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,True, listPosition,b_true,b_false,c,edit_b,save_b,clear_b,back_b))
 	b_false.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,False, listPosition,b_true,b_false,c,edit_b,save_b,clear_b,back_b))
 
-	create_comment_canvas(c,selected_dir,flashcard_tag,save_b,clear_b)
+	create_comment_canvas(c,selected_dir,flashcard_tag,save_b,clear_b)		
+
 
 	mainloop()
 

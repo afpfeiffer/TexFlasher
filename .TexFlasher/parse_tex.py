@@ -80,7 +80,7 @@ def parse_dvi_dump(dump_file_path):
 
 
 
-def parse_tex(tex_file_path, end_header_marker, fcard_dir,dump_file_path):
+def parse_tex(tex_file_path,fcard_dir,dump_file_path):
 	meta=parse_dvi_dump(dump_file_path)
 	try:
 		tex_file=open(tex_file_path,"r")
@@ -92,6 +92,7 @@ def parse_tex(tex_file_path, end_header_marker, fcard_dir,dump_file_path):
 		
 	theorems={}
 	tex_header=""
+	end_header_marker="\\begin{document}\n"
 	tex_end="\end{document}\n"
 	notice="%NOTICE: This file is generated automatically changes will be overwritten and wont have any effect unless you compile it yourself!\n"
 	
@@ -108,7 +109,9 @@ def parse_tex(tex_file_path, end_header_marker, fcard_dir,dump_file_path):
 			theorems[matches[0][0]]=matches[0][1]
 			tex_header+="\\newtheorem{"+matches[0][0]+"}{"+matches[0][1]+"}[section]"
 
-		elif re.compile(end_header_marker).findall(line):
+		elif line==end_header_marker:
+			tex_header+=line
+		  
 			end_header_marker_status="found"
 			break
 		elif not line=="\n" or len(line)==0: #only appen if line not emty!
@@ -178,14 +181,14 @@ def parse_tex(tex_file_path, end_header_marker, fcard_dir,dump_file_path):
 						  pass
 						  
 						try:
-							fcards[fcard_title]="\\begin{flashcard}{"+fc_chapter+"\n"+fc_section+"\n"+fc_subsection+"\n"+fc_subsubsection+"\\begin{"+matches[0][0]+"}["+matches[0][1]+"]\\end{"+matches[0][0]+"}}\n\\flushleft\n\\footnotesize\n"
+							fcards[fcard_title]="\\begin{flashcard}{"+fc_chapter+"\n"+fc_section+"\n"+fc_subsection+"\n"+fc_subsubsection+"\\begin{"+matches[0][0]+"}["+matches[0][1]+"]\\end{"+matches[0][0]+"}}\n\\flushleft\n\\footnotesize\n%#begin_content#%\n"
 							fcards_header[fcard_title]=fc_header
 							element.setAttribute('name',matches[0][1])
 							element.setAttribute('theorem_type',matches[0][0])							
 							element.setAttribute('theorem_name',theorems[matches[0][0]])							
 						except:
 							print "Note: No theorem type found for flashcard_marker "+fcard_title
-							fcards[fcard_title]="\\begin{flashcard}{"+matches[0][1]+"}\n\\flushleft\n\\footnotesize\n"					
+							fcards[fcard_title]="\\begin{flashcard}{"+matches[0][1]+"}\n\\flushleft\n\\footnotesize\n%#begin_content#%\n"					
 					
 						fcard_desc=matches[0][0]
 					else:
@@ -200,7 +203,7 @@ def parse_tex(tex_file_path, end_header_marker, fcard_dir,dump_file_path):
 				fcards[fcard_title]+=line				
 		#check if we are at the end of a flashcard!
 		elif fcard_title!="" and re.compile('end{'+fcard_desc+'}').findall(line):
-			fcards[fcard_title]+="\end{flashcard}\n"
+			fcards[fcard_title]+="%#end_content#%\n\end{flashcard}\n"
 			#check if flashcard is ok
 			if re.compile('begin{flashcard}').findall(fcards[fcard_title]) and re.compile('end{flashcard}').findall(fcards[fcard_title]):
 				element.setAttribute('position',str(counter))
@@ -243,7 +246,7 @@ def parse_tex(tex_file_path, end_header_marker, fcard_dir,dump_file_path):
 		print "Fatal Error: No flashcard_markers  found!"
 		sys.exit()
 try:		
-  parse_tex(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4])
+  parse_tex(sys.argv[1],sys.argv[2],sys.argv[3])
 except SystemExit:
 	print "SystemExit"
 except:

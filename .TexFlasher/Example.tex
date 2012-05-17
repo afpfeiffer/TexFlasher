@@ -8,7 +8,7 @@
 \usepackage{color} 
 \usepackage[colorinlistoftodos]{todonotes} 
 
-\newenvironment{fc}[1][optional]{}{}
+\newcommand{\fc}[1]{\special{fc=#1}}
 
 \newtheorem{sat}{Satz}[section]
 \newtheorem{bem}[sat]{Bemerkung}
@@ -45,10 +45,10 @@
 \section{This is a regular .tex file}
 \subsection{Howto write Flashcards}
 
-%fc=ExampleFlashCard
+\fc{ExampleFlashCard}
 \begin{bem}[You have to fill in this field. It will be shown on the front of the flashcard.]
- Simply place the flashcard marker ``fc=\textbf{tag}'' in front of the theorem and 
- come up with a \textbf{tag} for it.
+ Simply place the flashcard marker ``\textbackslash fc\{\textbf{tag}\}'' in front of the theorem and 
+ come up with a unique \textbf{tag} (without spaces and special symbols) for it.
  The marker is invisible in the compiled pdf file.
  \index{Flashcard marker} % works fine!
 \end{bem}
