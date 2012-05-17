@@ -76,7 +76,7 @@ if [[ "`diff $folder/Flashcards/$purefilebase.bak $file`" == "" ]]; then
 else 
 	cp $file $folder/Details/source.tex
 	cd $folder/Details
-	latex $folder/Details/source.tex
+	latex $folder/Details/source.tex 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log
 	python $WD/.TexFlasher/diviasm.py source.dvi > source.dump
 	cd $WD
 	# create a temprorary folder for flashcards. make sure its empty

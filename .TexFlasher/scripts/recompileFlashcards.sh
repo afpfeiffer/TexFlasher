@@ -68,7 +68,7 @@ done
 	cp $file $folder/Details/source.tex
 
 	cd $folder/Details
-	latex source.tex
+	latex source.tex 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log
 	python $WD/.TexFlasher/diviasm.py source.dvi > source.dump
 
 	cd $WD
