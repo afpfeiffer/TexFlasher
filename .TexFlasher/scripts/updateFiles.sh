@@ -29,7 +29,13 @@ echo
 
 files=$*
 
-echo "processing: $files"
+echo "processing: "
+for thing in $files; do
+	echo "  -> $thing"
+done
+echo
+	
+		
 svn info $files > /dev/null
 HAVESVN=$?
 if [ $HAVESVN -eq 0 ]; then

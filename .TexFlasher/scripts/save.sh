@@ -42,7 +42,13 @@ for thing in $files; do
 # 	echo $seperatedFiles
 
 # 	if [ -f $thing ]; then
-		echo "processing: $seperatedFiles"
+		echo "processing: "
+		for files in $seperatedFiles; do
+			echo "  -> $files"
+		done
+		echo
+		
+		
 		touch $seperatedFiles
 		svn add $seperatedFiles 2> /dev/null  
 		svn info $seperatedFiles > /dev/null
