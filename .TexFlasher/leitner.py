@@ -1344,6 +1344,8 @@ def checkForUpdate():
 			if elem.tagName=="FlashFolder" and not elem.getAttribute('filename')=="":
 				files += str(elem.getAttribute('filename')) + " "
 				#files += str(os.path.dirname(elem.getAttribute('filename'))+"/Users/"+Settings["user"]+".xml ")
+				#files += str(os.path.dirname(elem.getAttribute('filename'))+"/Users/"+Settings["user"]+"_comment.xml ")
+				#files += str(os.path.dirname(elem.getAttribute('filename'))+"/Users/questions.xml ")
 	os.system( "bash .TexFlasher/scripts/checkForUpdate.sh "+ files + "&")
 	
 
@@ -1381,7 +1383,7 @@ def clear_search(event):
 
 
 def update_texfile( fname ):	
-	executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+os.path.dirname(fname)+"/Users/"+Settings["user"]+".xml "+os.path.dirname(fname)+"/Users/"+Settings["user"]+"_comment.xml "+fname, True )
+	executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+os.path.dirname(fname)+"/Users/"+Settings["user"]+".xml "+os.path.dirname(fname)+"/Users/"+Settings["user"]+"_comment.xml "+os.path.dirname(fname)+"/Users/questions.xml "+fname, True )
 	os.system("rm "+os.path.dirname(fname)+"/Flashcards/UPDATE 2>/dev/null")
 	create_flashcards( fname )
 
@@ -1513,6 +1515,7 @@ def menu():
 				exec('button_' + str(row_start)+'_res.grid(row='+str(row_start)+',column='+str(start_column+7)+',sticky=N+S+E)')
 				saveString += " "+ os.path.dirname(l.getAttribute('filename'))+"/Users/"+Settings["user"]+".xml"
 				saveString += "###"+ os.path.dirname(l.getAttribute('filename'))+"/Users/"+Settings["user"]+"_comment.xml"
+				saveString += "###"+ os.path.dirname(l.getAttribute('filename'))+"/Users/questions.xml"
 				saveString += "###"+ l.getAttribute('filename') 
 				exec('Label(Menu,height=1).grid(row='+str(row_start+1)+')')
 				row_start+=2	
