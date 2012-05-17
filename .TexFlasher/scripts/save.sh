@@ -64,5 +64,5 @@ for thing in $files; do
 		fi
 # 	fi
 done
-sleep 20
+
 exit 0
