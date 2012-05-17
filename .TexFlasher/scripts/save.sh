@@ -43,6 +43,7 @@ for thing in $files; do
 
 # 	if [ -f $thing ]; then
 		echo "processing: $seperatedFiles"
+		touch $seperatedFiles
 		svn add $seperatedFiles 2> /dev/null  
 		svn info $seperatedFiles > /dev/null
 		HAVESVN=$?
