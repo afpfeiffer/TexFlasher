@@ -625,15 +625,15 @@ def search_flashcard(event="none"):
 					if match_count==len(search_query.split(" ")):
 						search_results[match_info_content[res][0]]={"tag":match_info_content[res][0],"dir":match_info_content[res][1],"level":all_fcs[match_info_content[res][0]]['level']}																				
 		## display search results
-		if len(search_results)>1:
+		if len(search_results)>0:
 			display_mult_fcs(search_results,version+" - Found "+str(len(search_results))+" search results for \""+search_query+"\"","Menu","lambda:menu()","./.TexFlasher/pictures/menu.png")
 			default_search_value.set("query ...")	
 
-		elif len(search_results)==1:
-			for res in search_results:
-				disp_single_fc(search_results[res]['dir']+'/Flashcards/'+search_results[res]['tag']+'-2.png',search_results[res]['tag']+" in "+search_results[res]['dir'].split("/")[-1]+' level '+search_results[res]['level'],search_results[res]['tag'])
-				default_search_value.set("query ...")	
-				break
+		#elif len(search_results)==1:
+		#	for res in search_results:
+		#		disp_single_fc(search_results[res]['dir']+'/Flashcards/'+search_results[res]['tag']+'-2.png',search_results[res]['tag']+" in "+search_results[res]['dir'].split("/")[-1]+' level '+search_results[res]['level'],search_results[res]['tag'])
+		#		default_search_value.set("query ...")	
+		#		break
 		else:
 			default_search_value.set( defaultAnswer( query.get().lower() ) )
 	else:
@@ -1024,9 +1024,13 @@ def create_comment_canvas(c,dir,fc_tag,save,clear):
 		
 	def kill_xy(event=None):
 		c.delete('question')
+	def hide(event):
+	    for im in c.find_withtag("question"):
+	      c.delete(im)
 
 	c.bind('<Motion>', cool_design, '+')	
-
+	c.bind('<Enter>',cool_design,'+')
+	c.bind('<Leave>',hide)
 		# command
 
 	def onDrag(start,end):
