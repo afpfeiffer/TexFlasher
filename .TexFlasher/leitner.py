@@ -1167,6 +1167,7 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,
 	c.img=flashcard_image
 	c.bind("<Button-1>", lambda e:answer(selected_dir,agenda,ldb, flashcard_name, listPosition,b_true,b_false,c,edit_b,save_b,clear_b,back_b))
 	c.unbind("<Motion>")
+	c.unbind("<Enter>")
 	edit_b.config(state=DISABLED)
 	save_b.config(state=DISABLED)
 	clear_b.config(state=DISABLED)
