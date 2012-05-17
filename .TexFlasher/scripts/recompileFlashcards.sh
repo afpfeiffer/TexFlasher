@@ -76,7 +76,7 @@ done
 	mkdir $folder/Flashcards.tmp
   
   echo "parsing ..." | tee  $folder/texFlasher.log
-	python "$WD/.TexFlasher/parse_tex.py" "$file" "$folder/Flashcards.tmp" "$folder/Details/source.dump" | tee -a $folder/texFlasher.log
+	python "$WD/.TexFlasher/parse_tex.py" "$folder/Flashcards.tmp" "$folder/Details" | tee -a $folder/texFlasher.log
 	cp $file $folder/Flashcards/$purefilebase.bak
   
   recompile="0"

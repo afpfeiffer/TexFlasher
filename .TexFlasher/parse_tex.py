@@ -24,29 +24,39 @@ import sys
 import re
 import xml.dom.minidom as xml
 
-def parse_dvi_dump(dump_file_path):
+def parse_dvi_dump(source_path):
   	doc=xml.Document()
 	fc_meta = doc.createElement('fc_meta_info')
 	try:
-		dump_file=open(dump_file_path,"r")
+		source_dump=open(source_path+"/source.dump","r")
+		source_aux=open(source_path+"/source.aux","r")
 	except:
-		print "Fatal Error: Cannot open file: "+dump_file_path+"!"
+		print "Fatal Error: Cannot open file: "+source_path+"/source.aux or source.dump!"
 		sys.exit()
+		
+	sections={}
+	for line in source_aux:
+		if re.compile("writefile\{toc\}\{\\\contentsline \{(.*?)\}\{\\\\numberline \{(.*?)\}(.*?)\}\{(.*?)\}\{(.*?)\}\}").findall(line):
+		  
+		  matches=re.compile("writefile\{toc\}\{\\\contentsline \{(.*?)\}\{\\\\numberline \{(.*?)\}(.*?)\}\{(.*?)\}\{(.*?)\}\}").findall(line)
+		  section_type,section_num,section_name,section_page,section=matches[0]
+		  sections[section]={"type":section_type,"number":section_num,"name":section_name}
+	source_aux.close()
 	theorems={}
 	doc_start=False
 	page=[]
 	number=""
 	fc_tag=None
-	sections={}
 	current_section={"section":None,"subsection":None,"subsubsection":None}
-	for l in dump_file:
+	for l in source_dump:
 		l=l.strip(' \t\n\r')
 	  
-		if not doc_start and re.compile("xxx: 'ps:SDict begin \[/Count -(\d+)/Dest \((.*?)\) cvn/Title \((.*?)\) /OUT pdfmark end'").findall(l):
-		  matches=re.compile("xxx: 'ps:SDict begin \[/Count -(\d+)/Dest \((.*?)\) cvn/Title \((.*?)\) /OUT pdfmark end'").findall(l)
-		  sec_name=matches[0][2].replace("\\","").replace("344","ä").replace("337","ß").replace("374","ü")
-		  sections[matches[0][1]]=sec_name
+		#if not doc_start and re.compile("xxx: 'ps:SDict begin \[/Count -(\d+)/Dest \((.*?)\) cvn/Title \((.*?)\) /OUT pdfmark end'").findall(l):
+		#  matches=re.compile("xxx: 'ps:SDict begin \[/Count -(\d+)/Dest \((.*?)\) cvn/Title \((.*?)\) /OUT pdfmark end'").findall(l)
+		#  sec_name=matches[0][2]
+		#  sections[matches[0][1]]=sec_name
 		#check for page start  
+		
 		if re.compile("xxx: 'ps:SDict begin \[/View \[/XYZ H.V\]/Dest \((.*?)\) cvn /DEST pdfmark end'").findall(l):#we got section or something like that
 		  matches=re.compile("xxx: 'ps:SDict begin \[/View \[/XYZ H.V\]/Dest \((.*?)\) cvn /DEST pdfmark end'").findall(l)
 		  if 'Doc-Start'==matches[0]:
@@ -56,15 +66,18 @@ def parse_dvi_dump(dump_file_path):
 		  elif doc_start and fc_tag and matches[0].startswith("sat."):
 			number=matches[0].replace("sat.","")
 			theorems[fc_tag]["number"]=number
-	          elif doc_start and sections.get(matches[0], False):
-			section_type=matches[0].split(".")[0]
-			current_section[section_type]=matches[0].replace(section_type,"")+"__"+sections[matches[0]]
+	          elif doc_start and sections.get(matches[0], False):			
+			section_type=sections[matches[0]]['type']
+			current_section[section_type]=sections[matches[0]]
 		if doc_start and re.compile("xxx: 'fc=(.*?)'").findall(l):#we got fc_tag
 		  matches=re.compile("xxx: 'fc=(.*?)'").findall(l)
 		  fc_tag=matches[0]
-		  theorems[fc_tag]={"page":None,"number":None,"chapter":None,"section":None,"section":None,"subsection":None,"subsubsection":None}
+		  theorems[fc_tag]={"page":None,"number":None,"section_name":None,"section_number":None,"subsection_name":None,"subsection_number":None,"subsubsection_name":None,"subsubsection_number":None}
 		  for meta in current_section:
-		    theorems[fc_tag][meta]=current_section[meta]
+			if not current_section[meta]==None:
+			  theorems[fc_tag][meta+"_name"]=current_section[meta]['name']
+			  theorems[fc_tag][meta+"_number"]=current_section[meta]['number']
+			
 		  theorems[fc_tag]['page']=page[0]
 		  
 	for fc_tag in theorems:
@@ -73,19 +86,19 @@ def parse_dvi_dump(dump_file_path):
 		for entry in theorems[fc_tag]:
 		  element.setAttribute(entry,str(theorems[fc_tag][entry]))
 
-	xml_file = open(os.path.dirname(dump_file_path)+"/source.xml", "w")
+	xml_file = open(source_path+"/source.xml", "w")
 	fc_meta.writexml(xml_file)	    
 	xml_file.close()
 	return fc_meta
 
 
 
-def parse_tex(tex_file_path,fcard_dir,dump_file_path):
-	meta=parse_dvi_dump(dump_file_path)
+def parse_tex(fcard_dir,source_path):
+	meta=parse_dvi_dump(source_path)
 	try:
-		tex_file=open(tex_file_path,"r")
+		source_tex=open(source_path+"/source.tex","r")
 	except:
-		print "Fatal Error: Cannot open file: "+tex_file_path+"!"
+		print "Fatal Error: Cannot open file: "+source_path+"/source.tex!"
 		sys.exit()
 		
 		
@@ -101,7 +114,7 @@ def parse_tex(tex_file_path,fcard_dir,dump_file_path):
 	counter=0
 	# get tex header
 	end_header_marker_status=""
-	for line in tex_file:
+	for line in source_tex:
 		if re.compile('documentclass\[').findall(line):
 			tex_header+=" \documentclass[avery5388,frame]{flashcards}\n"
 		elif re.compile('newtheorem.*?\{(.*?)\}.*?\{(.*?)\}.*?').findall(line):
@@ -125,7 +138,7 @@ def parse_tex(tex_file_path,fcard_dir,dump_file_path):
 	fcards_header={}
 	fcard_title=""
 	fcard_desc=""
-	for line in tex_file:
+	for line in source_tex:
 		matches=re.compile('fc\{(\w+)\}\n').findall(line)
 		try:#fails if no fc_marker in line!
 			fcard_title=matches[0]
@@ -154,29 +167,29 @@ def parse_tex(tex_file_path,fcard_dir,dump_file_path):
 						  fc_number=fc_meta.getAttribute('number')
 						  fc_header+="\\renewcommand{\\the"+matches[0][0]+"}{"+fc_number+"}"
 						except:
-						  pass
+						  pass					
 						try:
-						  fc_chp,fc_chp_name=fc_meta.getAttribute('chapter').split("__")
-						  fc_header+="\\renewcommand{\\thesection}{"+fc_chp[1:]+"}"
-						  fc_chapter="\\chapter{"+fc_chp_name+"}"
+						  fc_sec_name=fc_meta.getAttribute('section_name')
+						  fc_sec=fc_meta.getAttribute('section_number')
+						  if not fc_sec=="None":
+						    fc_header+="\\renewcommand{\\thesection}{"+fc_sec+"}"
+						    fc_section="\\section{"+fc_sec_name+"}"
 						except:
 						  pass						
 						try:
-						  fc_sec,fc_sec_name=fc_meta.getAttribute('section').split("__")
-						  fc_header+="\\renewcommand{\\thesection}{"+fc_sec[1:]+"}"
-						  fc_section="\\section{"+fc_sec_name+"}"
+						  fc_subsec_name=fc_meta.getAttribute('subsection_name')
+						  fc_subsec=fc_meta.getAttribute('subsection_number')
+						  if not fc_subsec=="None":
+						    fc_header+="\\renewcommand{\\thesubsection}{"+fc_subsec+"}"
+						    fc_subsection="\\subsection{"+fc_subsec_name+"}"
 						except:
 						  pass						
 						try:
-						  fc_subsec,fc_subsec_name=fc_meta.getAttribute('subsection').split("__")
-						  fc_header+="\\renewcommand{\\thesubsection}{"+fc_subsec[1:]+"}"
-						  fc_subsection="\\subsection{"+fc_subsec_name+"}"
-						except:
-						  pass						
-						try:
-						  fc_subsubsec,fc_subsubsec_name=fc_meta.getAttribute('subsubsection').split("__")
-						  fc_header+="\\renewcommand{\\thesubsubsection}{"+fc_subsubsec[1:]+"}"
-						  fc_subsubsection="\\subsubsection{"+fc_subsubsec_name+"}"
+						  fc_subsubsec_name=fc_meta.getAttribute('subsubsection_name')
+						  fc_subsubsec=fc_meta.getAttribute('subsubsection_number')
+						  if not fc_subsubsec=="None":
+						    fc_header+="\\renewcommand{\\thesubsubsection}{"+fc_subsubsec+"}"
+						    fc_subsubsection="\\subsubsection{"+fc_subsubsec_name+"}"
 						except:
 						  pass
 						  
@@ -217,7 +230,7 @@ def parse_tex(tex_file_path,fcard_dir,dump_file_path):
 				print "Error: flashcard_marker "+fcard_title+" had no valid syntax and could not be created!"
 				fcard_title=""
 				fcard_desc=""
-	tex_file.close()
+	source_tex.close()
 
 	
 	#
@@ -238,7 +251,7 @@ def parse_tex(tex_file_path,fcard_dir,dump_file_path):
 			fcard_file.writelines(tex_end)
 			fcard_file.close()
 		#success
-		xml_file = open(os.path.dirname(tex_file_path)+"/Flashcards/order.xml", 'w')
+		xml_file = open(source_path+"/../Flashcards/order.xml", 'w')
 		order_db.writexml(xml_file)	    
 		xml_file.close()		
 		print "Created "+str(len(fcards))+" flashcard LaTex file(s)"
@@ -246,8 +259,8 @@ def parse_tex(tex_file_path,fcard_dir,dump_file_path):
 		print "Fatal Error: No flashcard_markers  found!"
 		sys.exit()
 try:		
-  parse_tex(sys.argv[1],sys.argv[2],sys.argv[3])
+	parse_tex(sys.argv[1],sys.argv[2])
 except SystemExit:
 	print "SystemExit"
 except:
-	print "Syntax:\n tex_file \n end_tex_header_marker\n flashcard_directory (ohne / am ende!)"
+	print "Syntax:\n  flashcard_directory\n source_directory \n (jeweils ohne / am ende!)\n"
