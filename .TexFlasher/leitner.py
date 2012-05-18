@@ -655,7 +655,197 @@ def defaultAnswer( arg ):
 		return ANSWERS[arg]
 	else:
 		return "Nothing found!"
+####################################################### image flow #####################################################################	
 	
+class Flow:
+	def __init__(self, clickfunc):
+	         self.cfunc = clickfunc
+
+
+	def goto(self, canvas, nr):
+		global velocity,autorotate	
+		clickeditem = canvas.find_withtag("pic_" + str(nr))
+		tagsofitem= canvas.gettags(clickeditem)
+
+		oldcenteritem= canvas.find_withtag('center')
+		if clickeditem:
+			if oldcenteritem: 
+				itemtags= canvas.gettags(oldcenteritem) 
+				canvas.itemconfig(oldcenteritem, tags=(itemtags[0], itemtags[1],  itemtags[2], 'pic', 'nocenter' ) )
+			itemtags= canvas.gettags(clickeditem) 
+			canvas.itemconfig(clickeditem, tags=(itemtags[0], itemtags[1],  itemtags[2], 'pic', 'center' ) )
+			autorotate=True
+		
+			canvas.update_idletasks()
+			canvas.after(0)
+	 	
+
+	def show_gallery(self,canvas, maxdispimages, pathdict):
+	 global velocity,xold,maximages,autorotate,centerrec 
+	 distance= 10
+	 velocity= 0
+	 xold=0
+	 autorotate=False
+	 mydict={}
+	 infodict={}
+	 CWIDTH = canvas.winfo_reqwidth()
+	 CHEIGHT = canvas.winfo_reqheight()
+	 PICWIDTH= (CWIDTH-distance)/(maxdispimages) - distance
+	 PICHEIGHT= int(PICWIDTH*1.6)
+	 
+	 maximages= len(pathdict)
+	 
+	 
+	 CWIDTH=(PICWIDTH+distance)*maxdispimages + distance
+	 
+	 def forward():
+		print "lol"         
+	
+  	 #TODO
+  	 #forward_button=Button(top,width=4,height=2)
+	 #forward_button.configure(command=forward)
+	 #forward_button.grid(row=0,column=1,sticky=S,columnspan=1)	
+
+
+	 #set background image
+	 #bgim = Image.open("bg.jpg") 
+	 #bglineim= Image.open("bgline.jpg") 
+	 #bgim = bgim.resize((CWIDTH,CHEIGHT), Image.ANTIALIAS)
+	 #bglineim= bglineim.resize((CWIDTH,distance/2), Image.ANTIALIAS)
+	 #bgimage = ImageTk.PhotoImage(bgim)
+	 #bglineimage= ImageTk.PhotoImage(bglineim)
+	 #canvas.create_image(CWIDTH/2,CHEIGHT/2 , image=bgimage)
+	 #canvas.create_image(CWIDTH/2, CHEIGHT/2 - PICHEIGHT/2 - distance  , image=bglineimage)
+	 #canvas.background=bgimage
+	 #canvas.backgroundline=bglineimage
+	 #canvas.create_image(CWIDTH/2, CHEIGHT/2 + PICHEIGHT/2 + distance  , image=bglineimage)
+	 #canvas.backgroundline2=bglineimage
+	 
+	 #clipim = Image.open("clip.png") 
+	 #clipim = clipim.resize(PICWIDTH,PICHEIGHT)
+	 #clipimage = ImageTk.PhotoImage(clipim)
+#	 clipitem = canvas.create_image(CWIDTH/2,CHEIGHT/2 , image=clipimage)
+
+
+	 #create label for infos
+	 infolabel = canvas.create_text(CWIDTH/2,CHEIGHT/2 + PICHEIGHT/2 + 3*distance, text="INFO", fill= "white")
+	 #coolline =  canvas.create_line(0,CHEIGHT/2+PICHEIGHT/2, CWIDTH,CHEIGHT/2+PICHEIGHT/2, fill="white", width=2) 
+
+
+	 for i in range(0,maximages):
+	      	im = Image.open(pathdict[i]['path']) 
+	      	im = im.resize((PICWIDTH,PICHEIGHT), Image.ANTIALIAS)
+	      	mydict[i]= ImageTk.PhotoImage(im)
+		infodict[str(i)]= "Text_" + str(i)
+	      	mydict["pic_"+ str(i)]=canvas.create_image(distance + PICWIDTH/2 +i*(distance + PICWIDTH), CHEIGHT/2 , image=mydict[i])
+	      	setattr(canvas, "pic_"+ str(i), mydict[i]) 
+	      	if i < maxdispimages:
+			canvas.itemconfig(mydict["pic_"+ str(i)], tags=('visible','pic_' + str(i),str(distance + PICWIDTH/2 +i*(distance + PICWIDTH)), 'pic', 'nocenter') )
+	      	else: 
+			canvas.itemconfig(mydict["pic_"+ str(i)], tags=('invisible','pic_' + str(i),str(distance + PICWIDTH/2 +i*(distance + PICWIDTH)), 'pic', 'nocenter') )
+	 canvas.create_rectangle(distance, distance, CWIDTH-distance, CHEIGHT-distance, outline="black", width=20, outlinestipple="gray50")		
+
+	 def doubleclick(event):
+		global velocity,autorotate	
+		#clickeditem= canvas.find_withtag(CURRENT) TODO: why doesnt that work correctly?
+		clickeditem= canvas.find_closest(event.x,event.y)	
+		tagsofitem= canvas.gettags(clickeditem)
+		oldcenteritem= canvas.find_withtag('center')
+		if clickeditem:
+			if oldcenteritem: 
+				itemtags= canvas.gettags(oldcenteritem) 
+				canvas.itemconfig(oldcenteritem, tags=(itemtags[0], itemtags[1],  itemtags[2], 'pic', 'nocenter' ) )
+			itemtags= canvas.gettags(clickeditem) 
+			if itemtags[3]:
+				canvas.itemconfig(clickeditem, tags=(itemtags[0], itemtags[1],  itemtags[2], 'pic', 'center' ) )
+				autorotate=True
+		
+			canvas.update_idletasks()
+			canvas.after(0)
+
+	 def movemouse(event):
+		global velocity,autorotate
+		if not autorotate and event.y < (CHEIGHT/2 + PICWIDTH/2 + distance) : velocity= int(1.1*(event.x-CWIDTH/2)/10)
+		elif not autorotate : velocity = 0
+
+	 def rollWheel(event):
+		global velocity
+		if event.num == 4:
+			velocity-=10
+		
+		elif event.num == 5:
+			velocity+=10
+
+	 def stopvel(event):
+		global velocity
+		if not autorotate: velocity=0 
+
+	 def update_canvas():
+		global velocity,maximages,autorotate, centerrec
+	 	centeritem = canvas.find_withtag("center")
+		visibleitems = canvas.find_withtag("visible")
+		invisibleitems = canvas.find_withtag("invisible")
+		picitems=canvas.find_withtag("pic")
+	
+		leftitem=canvas.find_withtag("pic_0")
+		rightitem=canvas.find_withtag("pic_" + str(maximages-1))
+		leftitemtags=canvas.gettags(leftitem)
+		rightitemtags=canvas.gettags(rightitem)
+
+		#canvas.itemconfig(coolline, width=abs(velocity/4))
+		if centeritem :
+			itemtags= canvas.gettags(centeritem) 
+			centerrec = canvas.find_withtag("centerrec")
+			xpos=  int(itemtags[2])
+			velocity= int(1.1*(xpos- CWIDTH/2)/5)
+			if velocity == 0 or abs(xpos-CWIDTH/2) < 2 : 
+				canvas.itemconfig(centeritem, tags=('visible',itemtags[1],  itemtags[2], 'pic', 'nocenter' ) )	
+				canvas.itemconfig(infolabel, text= infodict[ itemtags[1][4:]])
+				autorotate=False
+				canvas.delete(centerrec)
+				canvas.delete(clipitem)
+				#print "stop"
+		
+			if not centerrec: 
+				#canvas.create_image(CWIDTH/2,CHEIGHT/2 , image=clipimage)
+	 			canvas.clipitem=clipimage	
+				canvas.create_rectangle(xpos-PICWIDTH/2, CHEIGHT/2-PICHEIGHT/2, xpos+PICWIDTH/2, CHEIGHT/2+PICHEIGHT/2, outline="blue", width=2 ,tags=('centerrec') )
+			else: canvas.coords(centerrec,xpos-PICWIDTH/2, CHEIGHT/2-PICHEIGHT/2, xpos+PICWIDTH/2, CHEIGHT/2+PICHEIGHT/2)	
+
+
+		for item in picitems:
+		        itemtags= canvas.gettags(item) 
+			if (velocity < 0 and int(leftitemtags[2]) < CWIDTH/2) or (velocity > 0 and int(rightitemtags[2]) > CWIDTH/2):
+				xnew=int(itemtags[2])-velocity
+				canvas.coords(item, xnew, CHEIGHT/2 )	
+		     		centertag= "nocenter"
+				if itemtags[4] == 'center':  
+					centertag= "center"
+				if xnew >= CWIDTH-distance or xnew <= distance :
+					canvas.itemconfig(item, tags=('invisible',itemtags[1],  str(xnew) ,'pic', centertag) )
+	 			else: 
+					#if itemtags[0] is "invisible":
+					#	curr_index = int(itemtags[1][4:])
+					#	newitem=canvas.create_image(xnew, CHEIGHT/2 , image=mydict[ str( contents[curr_index] ) ] )
+					canvas.itemconfig(item, tags=('visible',itemtags[1],  str(xnew) , 'pic', centertag) )
+		
+	   	canvas.update()
+		canvas.after(1,update_canvas)
+
+	 def clickB1(event):
+		curritem= canvas.find_closest(event.x,event.y)
+		clickedtags=canvas.gettags(curritem)
+		if clickedtags[1]: self.cfunc(pathdict[int(clickedtags[1][4:])]['path'])
+	 
+	 canvas.bind("<Double-Button-1>", doubleclick)
+	 canvas.bind("<Motion>", movemouse )
+	 canvas.bind("<ButtonRelease>", stopvel)
+	 canvas.bind('<Button-4>', rollWheel)
+	 canvas.bind('<Button-5>', rollWheel)
+	 canvas.bind('<Button-1>', clickB1)
+
+	 canvas.after_idle(update_canvas) 
+	 
 ############################################################### display flashcards ###########################################################	
 
 class AutoScrollbar(Scrollbar):
@@ -764,7 +954,7 @@ def display_mult_fcs(fcs,title,button_title,button_command,button_image): #Synta
 	search_canvas.config(scrollregion=search_canvas.bbox("all"),width=WIDTH-10,height=HEIGHT-60)
 
 
-def  disp_single_fc(image_path,title,tag):
+def  disp_single_fc(image_path,title=None,tag=None):
 	# create child window
 	win = Toplevel()
 	# display message
@@ -793,10 +983,19 @@ def  disp_single_fc(image_path,title,tag):
 	clear_b.configure(state=DISABLED)
 	clear_b.grid(row=1, column=1,sticky=E+S)		
 
-	edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,os.path.dirname(image_path).replace("/Flashcards",""),tag,edit_b,save_b,clear_b))
-	save_b.configure(command=lambda:savefile(c,os.path.dirname(image_path)+"/../",tag,save_b))
-	clear_b.configure(command=lambda:clearall(c,os.path.dirname(image_path)+"/../",tag,save_b,clear_b))	
-	create_comment_canvas(c,os.path.dirname(image_path)+"/../",tag,save_b,clear_b)
+	edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,os.path.dirname(image_path).replace("/Flashcards",""),tag))
+	save_b.configure(command=lambda:savefile(c,os.path.dirname(image_path)+"/../",tag))
+	clear_b.configure(command=lambda:clearall(c,os.path.dirname(image_path)+"/../",tag))	
+
+	back_b=create_image_button(win,".TexFlasher/pictures/back.png",40,40)
+	back_b.grid(row=1, column=0,sticky=W+N)		
+	back_b.config(command=lambda: win.destroy())
+	
+	c.save_b=save_b
+	c.clear_b=clear_b
+	c.edit_b=edit_b	
+	c.back_b=back_b
+	create_comment_canvas(c,os.path.dirname(image_path)+"/../",tag)
 	ldb=load_leitner_db(os.path.dirname(image_path)+"/../",Settings["user"])
 	fc_info=get_fc_info(os.path.dirname(image_path)+"/../",tag,ldb)
 
@@ -814,14 +1013,14 @@ def  disp_single_fc(image_path,title,tag):
 
 ###############################################################  Edit fc ######################################################################
 
-def edit_fc(c,dir,fc_tag,edit_b,save_b,clear_b,back_b=None):
+def edit_fc(c,dir,fc_tag):
 	c_height=c.winfo_reqheight()
 	c_width=c.winfo_reqwidth()
 
 	fc_name,theorem_name,theorem_type,content=get_fc_desc(dir+"/Flashcards/"+fc_tag+".tex")
-	edit_b.grid_remove()
-	if back_b:
-	  back_b.grid_remove()
+	c.edit_b.grid_remove()
+	if c.back_b:
+	  c.back_b.grid_remove()
 	frame=Frame(c)	
 	frame.grid(sticky=E+W+N+S)
 	#print c_width,c_height,WIDTH,HEIGHT,int(WIDTH*0.14256),int(WIDTH*0.043)
@@ -829,21 +1028,21 @@ def edit_fc(c,dir,fc_tag,edit_b,save_b,clear_b,back_b=None):
 	edit_text.insert(INSERT,content)
 	edit_text.grid(sticky=N+W+E+S)
 
-	clear_b.config(state=NORMAL)
-	save_b.config(state=NORMAL)
-	save_b.configure(command=lambda:save_edit(c,frame,edit_text,dir,fc_tag,theorem_type,edit_b,save_b,clear_b,back_b))
-	clear_b.configure(text="Cancel",command=lambda:cancel_edit(c,dir,fc_tag,frame,edit_b,save_b,clear_b,back_b))	
+	c.clear_b.config(state=NORMAL)
+	c.save_b.config(state=NORMAL)
+	c.save_b.configure(command=lambda:save_edit(c,frame,edit_text,dir,fc_tag,theorem_type))
+	c.clear_b.configure(text="Cancel",command=lambda:cancel_edit(c,dir,fc_tag,frame))	
 
 
-def cancel_edit(c,dir,tag,frame,edit_b,save_b,clear_b,back_b=None):
-	clear_b.config(state=DISABLED)
-	save_b.config(state=DISABLED)
-	edit_b.grid()
-	if back_b:
-	    back_b.grid()
-	edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,dir,tag,edit_b,save_b,clear_b,back_b))
-	save_b.configure(command=lambda:savefile(c,dir,tag,save_b))
-	clear_b.configure(command=lambda:clearall(c,dir,tag,save_b,clear_b))	
+def cancel_edit(c,dir,tag,frame):
+	c.clear_b.config(state=DISABLED)
+	c.save_b.config(state=DISABLED)
+	c.edit_b.grid()
+	if c.back_b:
+	    c.back_b.grid()
+	c.edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,dir,tag))
+	c.save_b.configure(command=lambda:savefile(c,dir,tag,save_b))
+	c.clear_b.configure(command=lambda:clearall(c,dir,tag))	
 	frame.grid_forget()
 
 
@@ -881,7 +1080,7 @@ def change_latex(file_path,fc_tag,content,theorem_type):
 	else:
 		raise	
 	
-def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type,edit_b,save_b,clear_b,back_b=None):
+def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type):
 	content=edit_text.get('1.0', END)
 	if os.path.isfile("./.TexFlasher/config.xml"):
 		try:
@@ -901,21 +1100,22 @@ def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type,edit_b,save_b,clear_b,ba
 			tkMessageBox.showerror("Error","Fatal error while saving new content for %s!"%fc_tag)
 	else:
 		tkMessageBox.showerror("Error","Fatal error while saving new content for %s: no config found!"%fc_tag)
-	cancel_edit(c,dir,fc_tag,frame,edit_b,save_b,clear_b,back_b)
+	cancel_edit(c,dir,fc_tag,frame)
 	
 ########################################################## Comment on fc ##############################################################
 class RectTracker:
 	def __init__(self, canvas):
 		self.canvas = canvas
 		self.item = None
+		self.time=strftime("%Y-%m-%d %H:%M:%S", localtime())
 		
 	def draw(self, start, end, **opts):
 		"""Draw the rectangle"""
 		if sqrt((start[0]-end[0])*(start[0]-end[0])+(start[1]-end[1])*(start[1]-end[1]))<20:
-		    return self.canvas.create_rectangle(*(list(start)+list(end)),dash=[4,4], tags="rect"+" "+strftime("%Y-%m-%d %H:%M:%S", localtime()),outline="grey",**opts)
+		    return self.canvas.create_rectangle(*(list(start)+list(end)),dash=[4,4], tags="rect"+" "+self.time,outline="grey",**opts)
 		    
 		else:
-		    return self.canvas.create_rectangle(*(list(start)+list(end)),dash=[4,4], tags="rect"+" "+strftime("%Y-%m-%d %H:%M:%S", localtime())+" elem",outline="red",**opts)
+		    return self.canvas.create_rectangle(*(list(start)+list(end)),dash=[4,4], tags="rect"+" "+self.time+" elem",outline="red",**opts)
 		
 	def autodraw(self, **opts):
 		"""Setup automatic drawing; supports command option"""
@@ -926,6 +1126,8 @@ class RectTracker:
 		
 		self._command = opts.pop('command', lambda *args: None)
 		self.rectopts = opts
+	def up_time(self,time):
+		self.time=time
 		
 	def __update(self, event):
 		if not self.start:
@@ -933,16 +1135,16 @@ class RectTracker:
 			return		 
 		if self.item is not None:
 			self.canvas.delete(self.item)
-
 		self.item = self.draw(self.start, (event.x, event.y), **self.rectopts)
 		self._command(self.start, (event.x, event.y))
 		
 		
 	def __stop(self, event):
 		if self.start==[event.x,event.y]:
-		    time=strftime("%Y-%m-%d %H:%M:%S", localtime())
-		    self.canvas.create_image(event.x,event.y-10, image=self.canvas.question_image_now,tags="qu"+" "+time+" elem")
 
+		    self.canvas.create_image(event.x,event.y-10, image=self.canvas.question_image_now,tags="ques"+" "+self.time+" elem")
+		    self.canvas.clear_b.config(state=NORMAL)
+		    self.canvas.save_b.config(state=NORMAL)
 		    #self.canvas.create_text(event.x,event.y+7,text=user,fill="red",tags="qu"+" "+time+" elem")
 		    #self.canvas.create_text(event.x,event.y-26,text=strftime("%Y-%m-%d", localtime()),fill="red",tags="qu"+" "+time+" elem")
 
@@ -995,7 +1197,7 @@ class RectTracker:
 	
 		return items	
 
-def create_comment_canvas(c,dir,fc_tag,save,clear):
+def create_comment_canvas(c,dir,fc_tag):
 	try:
 		c.rect
 	except:
@@ -1019,6 +1221,7 @@ def create_comment_canvas(c,dir,fc_tag,save,clear):
 		#dashes = [3, 2]
 		c.create_image(event.x,event.y-10, image=question_image,tags="question")	
 		c.question_image_now=question_image_now
+		rect.up_time(strftime("%Y-%m-%d %H:%M:%S", localtime()))
 #		x = c.create_line(event.x, 0, event.x, 1000, dash=dashes, tags='no')
 #		y = c.create_line(0, event.y, 1000, event.y, dash=dashes, tags='no')
 		
@@ -1031,33 +1234,26 @@ def create_comment_canvas(c,dir,fc_tag,save,clear):
 	c.bind('<Motion>', cool_design, '+')	
 	c.bind('<Enter>',cool_design,'+')
 	c.bind('<Leave>',hide)
-		# command
 
 	def onDrag(start,end):
 		global x,y
 		if sqrt((start[0]-end[0])*(start[0]-end[0])+(start[1]-end[1])*(start[1]-end[1]))>=20:		
-		  save.config(state=NORMAL)
-		  clear.config(state=NORMAL)		    
-		if len(c.find_withtag('rect'))==1 and  sqrt((start[0]-end[0])*(start[0]-end[0])+(start[1]-end[1])*(start[1]-end[1]))<20:
-		  save.config(state=DISABLED)
-		  clear.config(state=DISABLED)		    
-	if os.path.isfile(dir+"/Flashcards/"+fc_tag+"_comment.png"):
-		image = Image.open(dir+"/Flashcards/"+fc_tag+"_comment.png")
-		comment = ImageTk.PhotoImage(image)		
-		c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=comment)
-		c.comment=comment	
-		clear.configure(state=NORMAL)
+		  c.save_b.config(state=NORMAL)
+		  c.clear_b.config(state=NORMAL)		    
+		if len(c.find_withtag('elem'))==0 and  sqrt((start[0]-end[0])*(start[0]-end[0])+(start[1]-end[1])*(start[1]-end[1]))<20:
+		  c.save_b.config(state=DISABLED)
+		  c.clear_b.config(state=DISABLED)		    
 					
 	rect.autodraw(fill="", width=2, command=onDrag)
 
 
-def savefile(canvas,dir,tag,save_b):
-	save_b.config(state=DISABLED)
+def savefile(canvas,dir,tag):
+	canvas.save_b.config(state=DISABLED)
 	coords=[]
 	for item in canvas.find_withtag('rect'):
 		tags=canvas.gettags(item)
 		coords.append(canvas.coords(item))
-		canvas.itemconfig(item, tags=("old"+" "+tags[1]+" "+tags[2]))
+		canvas.itemconfig(item, tags=("old"+" "+tags[1]+" "+tags[2]+" "+"re"))
 	if len(coords)>0:
 		try:
 			doc= xml.parse(dir+"/Users/"+Settings["user"]+"_comment.xml")
@@ -1079,55 +1275,83 @@ def savefile(canvas,dir,tag,save_b):
 	#pretty_xml = ldb.toprettyxml()
 	#xml_file.writelines(pretty_xml)
 		xml_file.close()
-			#	print coords
+	#coords=[]
+	#for item in canvas.find_withtag('ques'):
+		#tags=canvas.gettags(item)
+		#coords.append(canvas.coords(item))
+		#canvas.itemconfig(item, tags=("old"+" "+tags[1]+" "+tags[2]+" "+"qu"))
+	#if len(coords)>0:
+		#try:
+			#doc= xml.parse(dir+"/Users/questions.xml")
+			#questions=doc.getElementsByTagName("questions")[0]
+		#except:
+		  	#doc=xml.Document()
+			#questions = doc.createElement('questions')
+		#for qu in coords:
+			#flashcard_element=doc.createElement(tag)
+			#questions.appendChild(flashcard_element)
+			#flashcard_element.setAttribute('x', str(qu[0]))
+			#flashcard_element.setAttribute('y',str(qu[1]))
+			#flashcard_element.setAttribute('user',Settings["user"])	
+			#flashcard_element.setAttribute('created',tags[1]+" "+tags[2])	
+		#xml_file = open(dir+"/Users/questions.xml", "w")
+		#questions.writexml(xml_file)
+	#pretty_xml = ldb.toprettyxml()
+	#xml_file.writelines(pretty_xml)
+		xml_file.close()
 
-
-
-def clearall(canvas,dir,fc_tag,w,v):
-	rects={}
+def delete_c_elem_from_xml(xml_paths,canvas,group_tag,tags,fc_tag):
+	items={}
+	if len(canvas.find_withtag(group_tag))>0:
+		for item in canvas.find_withtag(group_tag):
+		  item_tags=canvas.gettags(item)
+		  item_time=item_tags[1]+" "+item_tags[2]
+		  item_time=datetime(*(strptime(item_time, "%Y-%m-%d %H:%M:%S")[0:6]))	
+		  items[item_time]=item	
+		  
+		item_del=sorted(items.keys())[-1]
+		    	  
+	for i in range(0,len(xml_paths)):
+	      if os.path.isfile(xml_paths[i]):
+		print canvas.gettags(items[item_del])
+		if tags[i] in canvas.gettags(items[item_del]): 
+		  doc= xml.parse(xml_paths[i])
+		  items_xml=doc.getElementsByTagName(fc_tag)
+		  for item in items_xml:
+		  	  if datetime(*(strptime(item.getAttribute('created'), "%Y-%m-%d %H:%M:%S")[0:6]))==item_del:
+		        	item.parentNode.removeChild(item)
+		        	break
+	  	  xml_file = open(xml_paths[i], "w")
+	  	  doc.writexml(xml_file)
+	  	  xml_file.close()
+	if len(canvas.find_withtag(group_tag))>0:	  	  
+	      canvas.delete(items[item_del])
+	  	  
+def clearall(canvas,dir,fc_tag):
+	items={}
 	if len(canvas.find_withtag('elem'))>0:
 		for item in canvas.find_withtag('elem'):
 		  tags=canvas.gettags(item)
-		  rec_time=tags[1]+" "+tags[2]
-		  rec_time=datetime(*(strptime(rec_time, "%Y-%m-%d %H:%M:%S")[0:6]))	
-		  rects[rec_time]=item
-		rect_del=sorted(rects.keys())[-1]
-		for rect in rects:
-			if rect==rect_del:
-				#print rects[rect]
-				#for elem in canvas.find_withtag(rects[rect]):
-				canvas.delete(rects[rect])
+		  item_time=tags[1]+" "+tags[2]
+		  item_time=datetime(*(strptime(item_time, "%Y-%m-%d %H:%M:%S")[0:6]))	
+		  items[item_time]=item
+		item_del=sorted(items.keys())[-1]
+		for item in items:
+			if item==item_del:
+				canvas.delete(items[item])
 				break 				
-				
-	if len(canvas.find_withtag('rect'))==0 and len(canvas.find_withtag('old'))>0:
-		if os.path.isfile(dir+"/Users/"+Settings["user"]+"_comment.xml"):
-		  for item in canvas.find_withtag('old'):
-			  tags=canvas.gettags(item)
-			  rec_time=tags[1]+" "+tags[2]
-			  res_time=datetime(*(strptime(rec_time, "%Y-%m-%d %H:%M:%S")[0:6]))	
-			  rects[res_time]=item	
-		  rect_del=sorted(rects.keys())[-1]
-		  for rect in rects:
-		  	  if rect==rect_del:
-		  	  	canvas.delete(rects[rect])
-			  	break 
-		  doc= xml.parse(dir+"/Users/"+Settings["user"]+"_comment.xml")
-		  rects_xml=doc.getElementsByTagName(fc_tag)
-		  for rect in rects_xml:
-		  	  if datetime(*(strptime(rect.getAttribute('created'), "%Y-%m-%d %H:%M:%S")[0:6]))==rect_del:
-		        	rect.parentNode.removeChild(rect)
-		        	break
-	  	  xml_file = open(dir+"/Users/"+Settings["user"]+"_comment.xml", "w")
-	  	  doc.writexml(xml_file)
-	  	  xml_file.close()
-	        w.config(state=DISABLED)
+	elif len(canvas.find_withtag('elem'))==0:
+	  delete_c_elem_from_xml([dir+"/Users/"+Settings["user"]+"_comment.xml",dir+"/Users/questions.xml"],canvas,'old',['re','qu'],fc_tag)			
+	  canvas.save_b.config(state=DISABLED)
+	        
+	        
 	if  len(canvas.find_withtag('old'))==0 and len(canvas.find_withtag('elem'))==0:
- 		  v.config(state=DISABLED)
- 		  w.config(state=DISABLED)
+ 		  canvas.clear_b.config(state=DISABLED)
+ 		  canvas.save_b.config(state=DISABLED)
 ############################################################### run flasher ###########################################################
 
 	
-def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,edit_b,save_b,clear_b,back_b,update=True):
+def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,update=True):
 	#if len(c.find_withtag('rect'))>0:
 	#	if tkMessageBox.askyesno("Reset", "Do you want to save your changes to this flashcard?"):
 	#		flashcard_tag=agenda[listPosition-1][0]
@@ -1165,15 +1389,15 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,
 	flashcard_image = ImageTk.PhotoImage(image)
 	c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard_image,tags=("frontside",flashcard_name))
 	c.img=flashcard_image
-	c.bind("<Button-1>", lambda e:answer(selected_dir,agenda,ldb, flashcard_name, listPosition,b_true,b_false,c,edit_b,save_b,clear_b,back_b))
+	c.bind("<Button-1>", lambda e:answer(selected_dir,agenda,ldb, flashcard_name, listPosition,b_true,b_false,c))
 	c.unbind("<Motion>")
 	c.unbind("<Enter>")
-	edit_b.config(state=DISABLED)
-	save_b.config(state=DISABLED)
-	clear_b.config(state=DISABLED)
-	back_b.config(state=DISABLED)
+	c.edit_b.config(state=DISABLED)
+	c.save_b.config(state=DISABLED)
+	c.clear_b.config(state=DISABLED)
+	c.back_b.config(state=DISABLED)
 	
-	back_b.config(state=DISABLED,command=lambda:reactAndInit(selected_dir,agenda,ldb, True , listPosition-1 ,b_true,b_false,c,edit_b,save_b,clear_b,back_b,False))
+	c.back_b.config(state=DISABLED,command=lambda:reactAndInit(selected_dir,agenda,ldb, True , listPosition-1,b_true,b_false,c,False))
 
 	
 	b_true.configure(state=DISABLED)
@@ -1184,13 +1408,13 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,
 	   +" / "+str(totalNumberCards), width=45).grid(row=0, columnspan=2,sticky=W)	   
 	level = ldb.getElementsByTagName(flashcard_name)[0].getAttribute('level')
 	#color, foo = getColor( int(level), 7)
-	e1=Label(top,anchor=E,text="marker: "+flashcard_name+",  level: "+ str(level) +"  ",  width=40).grid(row=0, columnspan=2,sticky=E)
+	e1=Label(top,anchor=E,text="marker: "+flashcard_name+",  level: "+ str(level) +"  ",  width=40).grid(row=0, column=2,columnspan=2,sticky=E)
 	Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer",width=int(100.0*float(WIDTH/1000.))).grid(row=3, sticky=S,columnspan=5)
 
 	mainloop()
 
 
-def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,b_true,b_false,c,edit_b,save_b,clear_b,back_b):
+def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,b_true,b_false,c):
 	image = Image.open(selected_dir+"/Flashcards/"+flashcard_tag+"-2.png")
 	image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
 	flashcard = ImageTk.PhotoImage(image)
@@ -1200,34 +1424,64 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,b_true,b_false,c
 	c.img=flashcard	
 	for item in c.find_withtag('old'):#first clear possible rects from canvas
 		c.delete(item)
-	for item in c.find_withtag('rect'):#first clear possible rects from canvas
-		c.delete(item)			
+	for item in c.find_withtag('elem'):#first clear possible rects from canvas
+		c.delete(item)
+		
  	if os.path.isfile(selected_dir+"/Users/"+Settings["user"]+"_comment.xml"):
-		doc= xml.parse(selected_dir+"/Users/"+Settings["user"]+"_comment.xml")
-		rects=doc.getElementsByTagName(flashcard_tag)
-		for rect in rects:
-		      c.create_rectangle(int(float(rect.getAttribute("startx"))),int(float(rect.getAttribute("starty"))),int(float(rect.getAttribute("endx"))),int(float(rect.getAttribute("endy"))),dash=[4,4], tags="old"+" "+rect.getAttribute("created"),outline="red",fill="", width=2)
-		      clear_b.config(state=NORMAL)
-	c.unbind("<Button-1>")
-	edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,selected_dir,flashcard_tag,edit_b,save_b,clear_b,back_b))
-	save_b.configure(command=lambda:savefile(c,selected_dir,flashcard_tag,save_b))
-	clear_b.configure(command=lambda:clearall(c,selected_dir,flashcard_tag,save_b,clear_b))
-	back_b.configure(state=NORMAL)
-	b_true.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,True, listPosition,b_true,b_false,c,edit_b,save_b,clear_b,back_b))
-	b_false.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,False, listPosition,b_true,b_false,c,edit_b,save_b,clear_b,back_b))
+		try:
+		  doc= xml.parse(selected_dir+"/Users/"+Settings["user"]+"_comment.xml")
+		  rects=doc.getElementsByTagName(flashcard_tag)
+		  for rect in rects:
+		    c.create_rectangle(int(float(rect.getAttribute("startx"))),int(float(rect.getAttribute("starty"))),int(float(rect.getAttribute("endx"))),int(float(rect.getAttribute("endy"))),dash=[4,4], tags="old"+" "+rect.getAttribute("created")+" "+"re",outline="red",fill="", width=2)
+		    c.clear_b.config(state=NORMAL)
+		except:
+		  pass
+ 	#if os.path.isfile(selected_dir+"/Users/questions.xml"):
+		#try:
+		  #doc= xml.parse(selected_dir+"/Users/questions.xml")
+		  #qus=doc.getElementsByTagName(flashcard_tag)
+		  #qus_img={}
+		  #i=0
+		  #for qu in qus:
+		    #if qu.getAttribute('user')==Settings['user']:
+		      #image = Image.open(".TexFlasher/pictures/question_now.png")
+		    #else:
+		      #image = Image.open(".TexFlasher/pictures/question_other.png")
+		      
+		    #image = image.resize((20,20), Image.ANTIALIAS)
+		    #qus_img[i]=ImageTk.PhotoImage(image)
+		    #if not qu.getAttribute('user')==Settings['user']:
+		      #c.create_image(float(qu.getAttribute('x')),float(qu.getAttribute('y'))-10, image=qus_img[i],tags="user_question")
+		      #c.create_text(float(qu.getAttribute('x')),float(qu.getAttribute('y'))+5,text=qu.getAttribute('user'),tags="user_question")
+		    #else:
+		      #c.create_image(float(qu.getAttribute('x')),float(qu.getAttribute('y'))-10, image=qus_img[i],tags="old"+" "+qu.getAttribute("created")+" "+"qu")
 
-	create_comment_canvas(c,selected_dir,flashcard_tag,save_b,clear_b)		
+		    #c.clear_b.config(state=NORMAL)
+		    #setattr(c, "qu_"+str(i), qus_img[i])
+		    #i+=1
+		#except:
+		  #pass
+	c.unbind("<Button-1>")
+	c.edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,selected_dir,flashcard_tag))
+	c.save_b.configure(command=lambda:savefile(c,selected_dir,flashcard_tag))
+	c.clear_b.configure(command=lambda:clearall(c,selected_dir,flashcard_tag))
+	c.back_b.configure(state=NORMAL)
+	b_true.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,True, listPosition,b_true,b_false,c))
+	b_false.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,False, listPosition,b_true,b_false,c))
+
+	create_comment_canvas(c,selected_dir,flashcard_tag)		
 
 
 	mainloop()
 
 
+	
 def run_flasher(selected_dir, stuffToDo=True ):
 	clear_window()
 	top.title(version+" - "+selected_dir)
 	menu_button=create_image_button(top,"./.TexFlasher/pictures/menu.png",40,40)
 	menu_button.configure(text="Menu",command=lambda:menu())
-	menu_button.grid(row=0,columnspan=2)
+	menu_button.grid(row=0,columnspan=3)
 	ldb=load_leitner_db(selected_dir,Settings["user"])
 	if( stuffToDo ):
 		date = datetime.now()
@@ -1236,20 +1490,20 @@ def run_flasher(selected_dir, stuffToDo=True ):
 		
 	agenda,new=load_agenda(ldb,selected_dir, date)
 	frame=Frame(top)
-	frame.grid(row=1,columnspan=2,sticky=N+S+W+E)
+	frame.grid(row=1,columnspan=3,sticky=N+S+W+E)
 	c=Canvas(frame,width=WIDTH,height=WIDTH*0.6)
-	c.grid(row=0,columnspan=2,sticky=N+E+W+S)
+	c.grid(row=0,columnspan=3,sticky=N+E+W+S)
 
 	# true flase buttons
 	b_true=create_image_button(top,"./.TexFlasher/pictures/Flashcard_correct.png",80,80)
 	b_false=create_image_button(top,"./.TexFlasher/pictures/Flashcard_wrong.png",80,80)
 
-	b_true.grid(row=2, column=0, pady=int(HEIGHT*0.02/7.) )
-	b_false.grid(row=2, column=1, pady=int(HEIGHT*0.02/7.) )
+	b_true.grid(row=2, column=0, sticky=W )
+	b_false.grid(row=2, column=2, sticky=E)
 	
 	edit_b=create_image_button(top,"./.TexFlasher/pictures/latex.png",40,40)
 	edit_b.config(state=DISABLED)
-	edit_b.grid(row=1,column=1,sticky=N+E)
+	edit_b.grid(row=1,column=2,sticky=N+E)
 
 	save_b=create_image_button(top,".TexFlasher/pictures/upload_now.png",40,40)
 	save_b.config(state=DISABLED)
@@ -1260,13 +1514,27 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	
 	clear_b=create_image_button(top,".TexFlasher/pictures/clear.png",40,40)
 	clear_b.configure(state=DISABLED)
-	clear_b.grid(row=1, column=1,sticky=E+S)		
+	clear_b.grid(row=1, column=2,sticky=E+S)		
 
-	#comment_b=create_image_button(top,".TexFlasher/pictures/comment.png",40,40)
-	#comment_b.configure()
-	#comment_b.grid(row=1, columnspan=2,sticky=E)
+	c.save_b=save_b
+	c.clear_b=clear_b
+	c.back_b=back_b
+	c.edit_b=edit_b
+	
+	flow_c=Canvas(top,height=100,width=500)
+	flow_c.grid(row=2,column=1)
+	
+	flow=Flow(disp_single_fc)
+	c.flow=flow
+	pdict={}
+	i=0
+	for item in ldb.childNodes:
+	  pdict[i]={"path": selected_dir+"/Flashcards/"+item.tagName+"-1.png", "desc":"test"}	
+	  i+=1
+	flow.show_gallery(flow_c,3, pdict)
 
-	reactAndInit(selected_dir,agenda,ldb, True , -1 ,b_true,b_false,c,edit_b,save_b,clear_b,back_b)
+
+	reactAndInit(selected_dir,agenda,ldb, True , -1 ,b_true,b_false,c)
 
 ############################################################## Menu ####################################################################
 
