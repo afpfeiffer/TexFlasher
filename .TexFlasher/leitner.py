@@ -1412,7 +1412,7 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,
 	   +" / "+str(totalNumberCards), width=45).grid(row=0, columnspan=2,sticky=W)	   
 	level = ldb.getElementsByTagName(flashcard_name)[0].getAttribute('level')
 	#color, foo = getColor( int(level), 7)
-	e1=Label(top,anchor=E,text="marker: "+flashcard_name+",  level: "+ str(level) +"  ",  width=40).grid(row=0, column=2,columnspan=2,sticky=E)
+	e1=Label(top,anchor=E,text="marker: "+flashcard_name+",  level: "+ str(level) +"  ",  width=40).grid(row=0, column=3,columnspan=2,sticky=E)
 	Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer",width=int(100.0*float(WIDTH/1000.))).grid(row=3, sticky=S,columnspan=5)
 
 	mainloop()
@@ -1485,7 +1485,7 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	top.title(version+" - "+selected_dir)
 	menu_button=create_image_button(top,"./.TexFlasher/pictures/menu.png",40,40)
 	menu_button.configure(text="Menu",command=lambda:menu())
-	menu_button.grid(row=0,columnspan=3)
+	menu_button.grid(row=0,columnspan=5)
 	ldb=load_leitner_db(selected_dir,Settings["user"])
 	if( stuffToDo ):
 		date = datetime.now()
@@ -1494,7 +1494,7 @@ def run_flasher(selected_dir, stuffToDo=True ):
 		
 	agenda,new=load_agenda(ldb,selected_dir, date)
 	frame=Frame(top)
-	frame.grid(row=1,columnspan=3,sticky=N+S+W+E)
+	frame.grid(row=1,columnspan=5,sticky=N+S+W+E)
 	c=Canvas(frame,width=WIDTH,height=WIDTH*0.6)
 	c.grid(row=0,columnspan=3,sticky=N+E+W+S)
 
@@ -1503,11 +1503,11 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	b_false=create_image_button(top,"./.TexFlasher/pictures/Flashcard_wrong.png",80,80)
 
 	b_true.grid(row=2, column=0, sticky=W )
-	b_false.grid(row=2, column=2, sticky=E)
+	b_false.grid(row=2, column=4, sticky=E)
 	
 	edit_b=create_image_button(top,"./.TexFlasher/pictures/latex.png",40,40)
 	edit_b.config(state=DISABLED)
-	edit_b.grid(row=1,column=2,sticky=N+E)
+	edit_b.grid(row=1,column=4,sticky=N+E)
 
 	save_b=create_image_button(top,".TexFlasher/pictures/upload_now.png",40,40)
 	save_b.config(state=DISABLED)
@@ -1518,15 +1518,15 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	
 	clear_b=create_image_button(top,".TexFlasher/pictures/clear.png",40,40)
 	clear_b.configure(state=DISABLED)
-	clear_b.grid(row=1, column=2,sticky=E+S)		
+	clear_b.grid(row=1, column=4,sticky=E+S)		
 
 	c.save_b=save_b
 	c.clear_b=clear_b
 	c.back_b=back_b
 	c.edit_b=edit_b
 	
-	flow_c=Canvas(top,height=100,width=500)
-	flow_c.grid(row=2,column=1)
+	flow_c=Canvas(top,height=100,width=600)
+	flow_c.grid(row=2,column=1,columnspan=3)
 	
 	flow=Flow(disp_single_fc)
 	c.flow=flow
