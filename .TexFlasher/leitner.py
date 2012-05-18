@@ -787,7 +787,8 @@ class Flow:
 
 	 def stopvel(event):
 		global velocity
-		if not autorotate or event.type == 'FocusOut': velocity=0 
+		print event.type
+		if not autorotate: velocity=0 
 
 
 	 def update_canvas():
@@ -803,7 +804,7 @@ class Flow:
 		rightitemtags=canvas.gettags(rightitem)
 
 		#canvas.itemconfig(coolline, width=abs(velocity/4))
-		if centeritem :
+		if centeritem and autorotate:
 			itemtags= canvas.gettags(centeritem) 
 			centerrec = canvas.find_withtag("centerrec")
 			xpos=  int(itemtags[2])
@@ -838,7 +839,7 @@ class Flow:
 					#	curr_index = int(itemtags[1][4:])
 					#	newitem=canvas.create_image(xnew, CHEIGHT/2 , image=mydict[ str( contents[curr_index] ) ] )
 					canvas.itemconfig(item, tags=('visible',itemtags[1],  str(xnew) , 'pic', centertag) )
-		
+				#if (xnew>CWIDTH/2-PICWIDTH) and (xnew<CWIDTH/2+PICWIDTH): canvas.itemconfig(item, tags=(itemtags[0], itemtags[1],  itemtags[2], 'pic', 'center' ) )
 	   	canvas.update()
 		canvas.after(1,update_canvas)
 
@@ -850,7 +851,7 @@ class Flow:
 	 def key(event):
 		print "taste"
 	 
-	 canvas.bind("<Double-Button-1>", doubleclick)
+	 #canvas.bind("<Double-Button-1>", doubleclick)
 	 canvas.bind("<Motion>", movemouse )
 	 canvas.bind("<ButtonRelease>", stopvel)
 	 canvas.bind('<Button-4>', rollWheel)
