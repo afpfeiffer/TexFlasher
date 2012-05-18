@@ -39,6 +39,8 @@ purefilebase=${filebase%\.*}
 # check if svn is available in subfolder
 svn info $file > /dev/null
 HAVESVN=$?
+
+rm $folder/texFlasher.log
  
 # # check if Flashcards - folder exists, otherwise create it
 # if [ ! -d "$folder/Flashcards" ]; then
@@ -69,6 +71,11 @@ done
 
 	cd $folder/Details
 	latex source.tex 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log
+	Errors="`cat $folder/texFlasher.log | grep -rniE 'error|ERROR|Error'`"
+	if [ ! "$Errors" == ""  ]; then
+		echo "Fatal latex error in source file." >> $folder/texFlasher.log
+		exit 1
+	fi
 	python $WD/.TexFlasher/diviasm.py source.dvi > source.dump
 
 	cd $WD
