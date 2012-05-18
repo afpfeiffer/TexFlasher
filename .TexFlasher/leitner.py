@@ -820,7 +820,7 @@ class Flow:
 			if not centerrec: 
 				#canvas.create_image(CWIDTH/2,CHEIGHT/2 , image=clipimage)
 	 			#canvas.clipitem=clipimage	
-				canvas.create_rectangle(xpos-PICWIDTH/2, CHEIGHT/2-PICHEIGHT/2, xpos+PICWIDTH/2, CHEIGHT/2+PICHEIGHT/2, outline="blue", width=2 ,tags=('centerrec') )
+				canvas.create_rectangle(xpos-PICWIDTH/2, CHEIGHT/2-PICHEIGHT/2, xpos+PICWIDTH/2, CHEIGHT/2+PICHEIGHT/2, outline="black", width=2 ,tags=('centerrec') )
 			else: canvas.coords(centerrec,xpos-PICWIDTH/2, CHEIGHT/2-PICHEIGHT/2, xpos+PICWIDTH/2, CHEIGHT/2+PICHEIGHT/2)	
 
 
@@ -846,17 +846,17 @@ class Flow:
 	 def clickB1(event):
 		curritem= canvas.find_closest(event.x,event.y)
 		clickedtags=canvas.gettags(curritem)
-		if clickedtags[1]: self.cfunc(pathdict[int(clickedtags[1][4:])]['path'],pathdict[int(clickedtags[1][4:])]['tag'])
+		if clickedtags[1]: self.cfunc(pathdict[int(clickedtags[1][4:])]['path'].replace("-1.png","-2.png"),pathdict[int(clickedtags[1][4:])]['tag'])
 	 
 	 def key(event):
 		print "taste"
 	 
 	 #canvas.bind("<Double-Button-1>", doubleclick)
-	 canvas.bind("<Motion>", movemouse )
+	 canvas.bind("<B1-Motion>", movemouse )
 	 canvas.bind("<ButtonRelease>", stopvel)
 	 canvas.bind('<Button-4>', rollWheel)
 	 canvas.bind('<Button-5>', rollWheel)
-	 canvas.bind('<Button-1>', clickB1)
+	 canvas.bind('<Double-Button-1>', clickB1)
 	 canvas.bind('<Key>', key)
 	 canvas.bind('<FocusOut>', stopvel)
 
