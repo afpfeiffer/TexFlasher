@@ -695,7 +695,6 @@ class Flow:
 	 CWIDTH = canvas.winfo_reqwidth()
 	 CHEIGHT = canvas.winfo_reqheight()
 	 PICWIDTH= (CWIDTH-distance)/(maxdispimages) - distance
-	
 	 
 	 maximages= len(pathdict)
 	 
