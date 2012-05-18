@@ -1486,7 +1486,8 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,b_true,b_false,c
 
 	create_comment_canvas(c,selected_dir,flashcard_tag)		
 
-
+#	fc_pos=int(c.order.getElementsByTagName(flashcard_tag)[0].getAttribute('position'))
+#	c.flow.goto(fc_pos)
 	mainloop()
 
 
