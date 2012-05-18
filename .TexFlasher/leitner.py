@@ -845,7 +845,7 @@ class Flow:
 	 def clickB1(event):
 		curritem= canvas.find_closest(event.x,event.y)
 		clickedtags=canvas.gettags(curritem)
-		if clickedtags[1]: self.cfunc(pathdict[int(clickedtags[1][4:])]['path'])
+		if clickedtags[1]: self.cfunc(pathdict[int(clickedtags[1][4:])]['path'],pathdict[int(clickedtags[1][4:])]['tag'])
 	 
 	 def key(event):
 		print "taste"
