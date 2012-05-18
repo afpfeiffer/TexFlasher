@@ -358,7 +358,7 @@ def graph_points(dataSetC, dataSetB, numCards,dir):
 
     c1.create_text(160, 20, anchor=SW, text="Level status:")
    
-    coords= float(WIDTH)*0.05, float(WIDTH)*0.15 -35 ,float(WIDTH)*0.45,float(WIDTH)*0.55 -35
+    coords= float(WIDTH)*0.05 + 30, float(WIDTH)*0.15 -35 +30 ,float(WIDTH)*0.45 -30,float(WIDTH)*0.55 -35 -30
 
     center = 0.5 *(coords[0] +coords[2]), 0.5*(coords[1]+coords[3])
 
@@ -385,7 +385,7 @@ def graph_points(dataSetC, dataSetB, numCards,dir):
     pie_data.append(sectors)
 				
 
-    distance = 0.37*(coords[2]-coords[0]) 
+    distance = 0.6*(coords[2]-coords[0]) 
     initialvalue=0.0
     for l in range( len( dataSetB ) ):
 			if(l>0):
@@ -397,7 +397,9 @@ def graph_points(dataSetC, dataSetB, numCards,dir):
 			if( int(round(dataSetB[l]*numCards,0)) > 0 ):
 				textPos = center[0] + distance*cos(winkel(initialvalue +0.5*w1)), center[1] -  distance*sin(winkel(initialvalue +0.5*w1))
 				#if l >0 :
-				c1.create_text( textPos , text=str(l) + " (" + str(int(round(dataSetB[l]*100.0,0))) + "%)",font=("Helvectica", "12"))
+				color, foo = getColor(l, len(dataSetB))
+				c1.create_text( textPos, text=str(l) + " (" + str(int(round(dataSetB[l]*100.0,0))) + "%)",font=("Helvectica", "9") , activefill=color )
+				#c1.create_text( textPos , text=str(l) ,font=("Helvectica", "12"))
 				#else:
 					#c1.create_text( textPos , text="N (" + str(int(round(dataSetB[l]*100.0,0))) + "%)",font=("Helvectica", "12"))
        
@@ -408,6 +410,8 @@ def graph_points(dataSetC, dataSetB, numCards,dir):
     
     color, dl = getColor(0, len(dataSetB))
     ybasis = 420
+    
+    coords= float(WIDTH)*0.05 , 0
     c1.create_rectangle( coords[0], ybasis , coords[0] + 20, ybasis +18,width=0, fill=color  )
     c1.create_text( coords[0]+25, ybasis+9, anchor=W, text = "Level 0 (new)" )
     color, dl = getColor(1, len(dataSetB))
