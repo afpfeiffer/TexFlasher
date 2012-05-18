@@ -954,7 +954,7 @@ def display_mult_fcs(fcs,title,button_title,button_command,button_image): #Synta
 				except:
 					break
 			button=create_image_button(Search_frame,fcs[res]['dir']+"/Flashcards/"+fcs[res]['tag']+"-1.png",size,int(size*0.6))
-			exec('button.configure(command=lambda:disp_single_fc("'+fcs[res]['dir']+"/Flashcards/"+fcs[res]['tag']+"-2.png"+'","'+fcs[res]['tag']+' in '+fcs[res]['dir'].split("/")[-1]+' level '+fcs[res]['level']+'","'+fcs[res]['tag']+'"))')
+			exec('button.configure(command=lambda:disp_single_fc("'+fcs[res]['dir']+"/Flashcards/"+fcs[res]['tag']+"-2.png"+'","'+fcs[res]['tag']+'","'+fcs[res]['tag']+' in '+fcs[res]['dir'].split("/")[-1]+' level '+fcs[res]['level']+'"))')
 			button.grid(row=str(i+1),column=colu)
 			exec("button.bind('<Button-4>', lambda event: search_canvas.yview_scroll(-1, UNITS))")
 			exec("button.bind('<Button-5>', lambda event: search_canvas.yview_scroll(1, UNITS)) ")
@@ -969,7 +969,7 @@ def display_mult_fcs(fcs,title,button_title,button_command,button_image): #Synta
 	search_canvas.config(scrollregion=search_canvas.bbox("all"),width=WIDTH-10,height=HEIGHT-60)
 
 
-def  disp_single_fc(image_path,title=None,tag=None):
+def  disp_single_fc(image_path,tag=None,title=None):
 	# create child window
 	win = Toplevel()
 	# display message
@@ -1543,8 +1543,10 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	c.flow=flow
 	pdict={}
 	i=0
-	for item in ldb.childNodes:
-	  pdict[i]={"path": selected_dir+"/Flashcards/"+item.tagName+"-1.png", "desc":"test"}	
+	order = xml.parse(selected_dir+"/Flashcards/order.xml")
+	source = xml.parse(selected_dir+"/Details/source.xml")
+	for item in order.getElementsByTagName('order_db')[0].childNodes:
+	  pdict[int(item.getAttribute('position'))]={"path": selected_dir+"/Flashcards/"+item.tagName+"-1.png", "desc":"Page: "+source.getElementsByTagName(item.tagName)[0].getAttribute('page'), "tag":item.tagName}	
 	  i+=1
 	flow.show_gallery(flow_c,4, pdict)
 
