@@ -787,7 +787,6 @@ class Flow:
 
 	 def stopvel(event):
 		global velocity
-		print event.type
 		if not autorotate: velocity=0 
 
 
@@ -858,7 +857,7 @@ class Flow:
 	 canvas.bind('<Button-5>', rollWheel)
 	 canvas.bind('<Double-Button-1>', clickB1)
 	 canvas.bind('<Key>', key)
-	 canvas.bind('<FocusOut>', stopvel)
+
 
 	 canvas.after_idle(update_canvas) 
 	 
