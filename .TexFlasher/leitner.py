@@ -813,12 +813,12 @@ class Flow:
 				canvas.itemconfig(infolabel, text= infodict[ itemtags[1][4:]])
 				autorotate=False
 				canvas.delete(centerrec)
-				canvas.delete(clipitem)
+				#canvas.delete(clipitem)
 				#print "stop"
 		
 			if not centerrec: 
 				#canvas.create_image(CWIDTH/2,CHEIGHT/2 , image=clipimage)
-	 			canvas.clipitem=clipimage	
+	 			#canvas.clipitem=clipimage	
 				canvas.create_rectangle(xpos-PICWIDTH/2, CHEIGHT/2-PICHEIGHT/2, xpos+PICWIDTH/2, CHEIGHT/2+PICHEIGHT/2, outline="blue", width=2 ,tags=('centerrec') )
 			else: canvas.coords(centerrec,xpos-PICWIDTH/2, CHEIGHT/2-PICHEIGHT/2, xpos+PICWIDTH/2, CHEIGHT/2+PICHEIGHT/2)	
 
@@ -1425,7 +1425,9 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,
 	#color, foo = getColor( int(level), 7)
 	e1=Label(top,anchor=E,text="marker: "+flashcard_name+",  level: "+ str(level) +"  ",  width=40).grid(row=0, column=3,columnspan=2,sticky=E)
 	Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer",width=int(100.0*float(WIDTH/1000.))).grid(row=3, sticky=S,columnspan=5)
-
+	fc_pos=int(c.order.getElementsByTagName(flashcard_name)[0].getAttribute('position'))
+	print fc_pos
+	c.flow.goto(fc_pos)
 	mainloop()
 
 
@@ -1543,10 +1545,10 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	c.flow=flow
 	pdict={}
 	i=0
-	order = xml.parse(selected_dir+"/Flashcards/order.xml")
-	source = xml.parse(selected_dir+"/Details/source.xml")
-	for item in order.getElementsByTagName('order_db')[0].childNodes:
-	  pdict[int(item.getAttribute('position'))]={"path": selected_dir+"/Flashcards/"+item.tagName+"-1.png", "desc":"Page: "+source.getElementsByTagName(item.tagName)[0].getAttribute('page'), "tag":item.tagName}	
+	c.order = xml.parse(selected_dir+"/Flashcards/order.xml")
+	c.source = xml.parse(selected_dir+"/Details/source.xml")
+	for item in c.order.getElementsByTagName('order_db')[0].childNodes:
+	  pdict[int(item.getAttribute('position'))]={"path": selected_dir+"/Flashcards/"+item.tagName+"-1.png", "desc":"Page: "+c.source.getElementsByTagName(item.tagName)[0].getAttribute('page'), "tag":item.tagName}	
 	  i+=1
 	flow.show_gallery(flow_c,4, pdict)
 
