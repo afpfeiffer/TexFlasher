@@ -662,26 +662,26 @@ def defaultAnswer( arg ):
 ####################################################### image flow #####################################################################	
 	
 class Flow:
-	def __init__(self, clickfunc):
+	def __init__(self, clickfunc, canvas):
 	         self.cfunc = clickfunc
+		 self.canvas = canvas
 
-
-	def goto(self, canvas, nr):
+	def goto(self, nr):
 		global velocity,autorotate	
-		clickeditem = canvas.find_withtag("pic_" + str(nr))
-		tagsofitem= canvas.gettags(clickeditem)
+		clickeditem = self.canvas.find_withtag("pic_" + str(nr))
+		tagsofitem= self.canvas.gettags(clickeditem)
 
-		oldcenteritem= canvas.find_withtag('center')
+		oldcenteritem= self.canvas.find_withtag('center')
 		if clickeditem:
 			if oldcenteritem: 
-				itemtags= canvas.gettags(oldcenteritem) 
-				canvas.itemconfig(oldcenteritem, tags=(itemtags[0], itemtags[1],  itemtags[2], 'pic', 'nocenter' ) )
-			itemtags= canvas.gettags(clickeditem) 
-			canvas.itemconfig(clickeditem, tags=(itemtags[0], itemtags[1],  itemtags[2], 'pic', 'center' ) )
+				itemtags= self.canvas.gettags(oldcenteritem) 
+				self.canvas.itemconfig(oldcenteritem, tags=(itemtags[0], itemtags[1],  itemtags[2], 'pic', 'nocenter' ) )
+			itemtags= self.canvas.gettags(clickeditem) 
+			self.canvas.itemconfig(clickeditem, tags=(itemtags[0], itemtags[1],  itemtags[2], 'pic', 'center' ) )
 			autorotate=True
 		
-			canvas.update_idletasks()
-			canvas.after(0)
+			self.canvas.update_idletasks()
+			self.canvas.after(0)
 	 	
 
 	def show_gallery(self,canvas, maxdispimages, pathdict):
@@ -695,7 +695,7 @@ class Flow:
 	 CWIDTH = canvas.winfo_reqwidth()
 	 CHEIGHT = canvas.winfo_reqheight()
 	 PICWIDTH= (CWIDTH-distance)/(maxdispimages) - distance
-	 PICHEIGHT= int(PICWIDTH*1.6)
+	
 	 
 	 maximages= len(pathdict)
 	 
@@ -728,16 +728,20 @@ class Flow:
 	 #clipim = Image.open("clip.png") 
 	 #clipim = clipim.resize(PICWIDTH,PICHEIGHT)
 	 #clipimage = ImageTk.PhotoImage(clipim)
-#	 clipitem = canvas.create_image(CWIDTH/2,CHEIGHT/2 , image=clipimage)
+         #clipitem = canvas.create_image(CWIDTH/2,CHEIGHT/2 , image=clipimage)
 
 
 	 #create label for infos
-	 infolabel = canvas.create_text(CWIDTH/2,CHEIGHT/2 + PICHEIGHT/2 + 3*distance, text="INFO", fill= "white")
+	
 	 #coolline =  canvas.create_line(0,CHEIGHT/2+PICHEIGHT/2, CWIDTH,CHEIGHT/2+PICHEIGHT/2, fill="white", width=2) 
 
 
 	 for i in range(0,maximages):
 	      	im = Image.open(pathdict[i]['path']) 
+		imh = float(im.size[1])
+		imw= float(im.size[0])
+		factor= imh/imw
+		PICHEIGHT= int(PICWIDTH*factor)
 	      	im = im.resize((PICWIDTH,PICHEIGHT), Image.ANTIALIAS)
 	      	mydict[i]= ImageTk.PhotoImage(im)
 		infodict[str(i)]= "Text_" + str(i)
@@ -747,8 +751,9 @@ class Flow:
 			canvas.itemconfig(mydict["pic_"+ str(i)], tags=('visible','pic_' + str(i),str(distance + PICWIDTH/2 +i*(distance + PICWIDTH)), 'pic', 'nocenter') )
 	      	else: 
 			canvas.itemconfig(mydict["pic_"+ str(i)], tags=('invisible','pic_' + str(i),str(distance + PICWIDTH/2 +i*(distance + PICWIDTH)), 'pic', 'nocenter') )
-	 canvas.create_rectangle(distance, distance, CWIDTH-distance, CHEIGHT-distance, outline="black", width=20, outlinestipple="gray50")		
-
+	 
+	 #canvas.create_rectangle(distance, distance, CWIDTH-distance, CHEIGHT-distance, outline="black", width=20, outlinestipple="gray50")		
+ 	 infolabel = canvas.create_text(CWIDTH/2,CHEIGHT/2 + PICHEIGHT/2 + 3*distance, text="INFO", fill= "white")
 	 def doubleclick(event):
 		global velocity,autorotate	
 		#clickeditem= canvas.find_withtag(CURRENT) TODO: why doesnt that work correctly?
@@ -782,7 +787,8 @@ class Flow:
 
 	 def stopvel(event):
 		global velocity
-		if not autorotate: velocity=0 
+		if not autorotate or event.type == 'FocusOut': velocity=0 
+
 
 	 def update_canvas():
 		global velocity,maximages,autorotate, centerrec
@@ -841,12 +847,17 @@ class Flow:
 		clickedtags=canvas.gettags(curritem)
 		if clickedtags[1]: self.cfunc(pathdict[int(clickedtags[1][4:])]['path'])
 	 
+	 def key(event):
+		print "taste"
+	 
 	 canvas.bind("<Double-Button-1>", doubleclick)
 	 canvas.bind("<Motion>", movemouse )
 	 canvas.bind("<ButtonRelease>", stopvel)
 	 canvas.bind('<Button-4>', rollWheel)
 	 canvas.bind('<Button-5>', rollWheel)
 	 canvas.bind('<Button-1>', clickB1)
+	 canvas.bind('<Key>', key)
+	 canvas.bind('<FocusOut>', stopvel)
 
 	 canvas.after_idle(update_canvas) 
 	 
@@ -1528,14 +1539,14 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	flow_c=Canvas(top,height=100,width=600)
 	flow_c.grid(row=2,column=1,columnspan=3)
 	
-	flow=Flow(disp_single_fc)
+	flow=Flow(disp_single_fc,flow_c)
 	c.flow=flow
 	pdict={}
 	i=0
 	for item in ldb.childNodes:
 	  pdict[i]={"path": selected_dir+"/Flashcards/"+item.tagName+"-1.png", "desc":"test"}	
 	  i+=1
-	flow.show_gallery(flow_c,3, pdict)
+	flow.show_gallery(flow_c,4, pdict)
 
 
 	reactAndInit(selected_dir,agenda,ldb, True , -1 ,b_true,b_false,c)
