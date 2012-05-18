@@ -845,6 +845,7 @@ class Flow:
 		curritem= canvas.find_closest(event.x,event.y)
 		clickedtags=canvas.gettags(curritem)
 		if clickedtags[1]: self.cfunc(pathdict[int(clickedtags[1][4:])]['path'].replace("-1.png","-2.png"),pathdict[int(clickedtags[1][4:])]['tag'])
+		doubleclick(event)
 	 
 	 def key(event):
 		print "taste"
@@ -1898,6 +1899,14 @@ iconbitmapLocation = "@./.TexFlasher/pictures/icon2.xbm"
 top.iconbitmap(iconbitmapLocation)
 top.iconmask(iconbitmapLocation)
 
-top.geometry(str(int(WIDTH*1.005))+"x"+str(HEIGHT))
+
+# get screen width and height
+ws = top.winfo_screenwidth()
+hs = top.winfo_screenheight()
+# calculate position x, y
+xs = (ws/2) - (int(WIDTH*1.005)/2) 
+ys = (hs/2) - (HEIGHT/2)
+
+top.geometry(str(int(WIDTH*1.005))+"x"+str(HEIGHT)+"+"+str(xs)+"+"+str(ys))
 
 menu()
