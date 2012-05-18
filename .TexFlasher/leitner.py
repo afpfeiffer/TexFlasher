@@ -1033,9 +1033,8 @@ def edit_fc(c,dir,fc_tag):
 	c_width=c.winfo_reqwidth()
 
 	fc_name,theorem_name,theorem_type,content=get_fc_desc(dir+"/Flashcards/"+fc_tag+".tex")
-	c.edit_b.grid_remove()
-	if c.back_b:
-	  c.back_b.grid_remove()
+	c.edit_b.config(state=DISABLED)
+	c.back_b.config(state=DISABLED)
 	frame=Frame(c)	
 	frame.grid(sticky=E+W+N+S)
 	#print c_width,c_height,WIDTH,HEIGHT,int(WIDTH*0.14256),int(WIDTH*0.043)
@@ -1052,9 +1051,8 @@ def edit_fc(c,dir,fc_tag):
 def cancel_edit(c,dir,tag,frame):
 	c.clear_b.config(state=DISABLED)
 	c.save_b.config(state=DISABLED)
-	c.edit_b.grid()
-	if c.back_b:
-	    c.back_b.grid()
+	c.edit_b.config(state=NORMAL)
+	c.back_b.config(state=NORMAL)
 	c.edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,dir,tag))
 	c.save_b.configure(command=lambda:savefile(c,dir,tag,save_b))
 	c.clear_b.configure(command=lambda:clearall(c,dir,tag))	
@@ -1422,7 +1420,7 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,
 	e0=Label(top,anchor=W,text="  "+Settings["user"]+": flashcards (left today / total number): "+str(flashcardsTodo-listPosition)
 	   +" / "+str(totalNumberCards), width=45).grid(row=0, columnspan=2,sticky=W)	   
 	level = ldb.getElementsByTagName(flashcard_name)[0].getAttribute('level')
-	#color, foo = getColor( int(level), 7)
+	color, foo = getColor( int(level), 7)
 	e1=Label(top,anchor=E,text="marker: "+flashcard_name+",  level: "+ str(level) +"  ",  width=40).grid(row=0, column=3,columnspan=2,sticky=E)
 	fc_pos=int(c.order.getElementsByTagName(flashcard_name)[0].getAttribute('position'))
 	c.flow.goto(fc_pos)
@@ -1494,40 +1492,43 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,b_true,b_false,c
 	
 def run_flasher(selected_dir, stuffToDo=True ):
 	clear_window()
-	top.title(version+" - "+selected_dir)
-	menu_button=create_image_button(top,"./.TexFlasher/pictures/menu.png",40,40)
-	menu_button.configure(text="Menu",command=lambda:menu())
-	menu_button.grid(row=0,columnspan=5)
+
 	ldb=load_leitner_db(selected_dir,Settings["user"])
 	if( stuffToDo ):
 		date = datetime.now()
 	else:
 		date = datetime.now()+timedelta(days=1000)
 		
-	agenda,new=load_agenda(ldb,selected_dir, date)
-	frame=Frame(top)
-	frame.grid(row=1,columnspan=5,sticky=N+S+W+E)
-	c=Canvas(frame,width=WIDTH,height=WIDTH*0.6)
-	c.grid(row=0,columnspan=3,sticky=N+E+W+S)
+
 
 	# true flase buttons
+	top.title(version+" - "+selected_dir)
 
+	back_b=create_image_button(top,".TexFlasher/pictures/back.png",40,40)
+	back_b.grid(row=1, column=0,sticky=W+E)	
+	
+	menu_button=create_image_button(top,"./.TexFlasher/pictures/menu.png",40,40)
+	menu_button.configure(text="Menu",command=lambda:menu())
+	menu_button.grid(row=1,column=1,sticky=W+E)
 	
 	edit_b=create_image_button(top,"./.TexFlasher/pictures/latex.png",40,40)
 	edit_b.config(state=DISABLED)
-	edit_b.grid(row=1,column=4,sticky=N+E)
+	edit_b.grid(row=1,column=2,sticky=W+E)
 
 	save_b=create_image_button(top,".TexFlasher/pictures/upload_now.png",40,40)
 	save_b.config(state=DISABLED)
-	save_b.grid(row=1, column=0,sticky=W+S)	
-	
-	back_b=create_image_button(top,".TexFlasher/pictures/back.png",40,40)
-	back_b.grid(row=1, column=0,sticky=W+N)	
+	save_b.grid(row=1, column=3,sticky=W+E)	
 	
 	clear_b=create_image_button(top,".TexFlasher/pictures/clear.png",40,40)
 	clear_b.configure(state=DISABLED)
-	clear_b.grid(row=1, column=4,sticky=E+S)		
+	clear_b.grid(row=1, column=4,sticky=W+E)		
 
+	agenda,new=load_agenda(ldb,selected_dir, date)
+	frame=Frame(top)
+	frame.grid(row=2,columnspan=5,sticky=N+S+W+E)
+	c=Canvas(frame,width=WIDTH,height=WIDTH*0.6)
+	c.grid(row=0,columnspan=3,sticky=N+E+W+S)
+	
 	c.save_b=save_b
 	c.clear_b=clear_b
 	c.back_b=back_b
@@ -1540,7 +1541,7 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	b_true.grid(row=3, column=0, sticky=W+E+N+S )
 	b_false.grid(row=3, column=4, sticky=E+W+N+S)
 	
-	flow_c=Canvas(top,height=100,width=600,bd=3)
+	flow_c=Canvas(top,height=90,width=600,bd=3)
 	flow_c.grid(row=3,column=1,columnspan=3)
 	
 	flow=Flow(disp_single_fc,flow_c,)
@@ -1553,7 +1554,7 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	  pdict[int(item.getAttribute('position'))]={"path": selected_dir+"/Flashcards/"+item.tagName+"-1.png", "desc":"Page: "+c.source.getElementsByTagName(item.tagName)[0].getAttribute('page'), "tag":item.tagName}	
 	  i+=1
 	flow.show_gallery(flow_c,3, pdict)
-	Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer",width=int(100.0*float(WIDTH/1000.))).grid(row=4, sticky=S,columnspan=5)
+	#Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer",width=int(100.0*float(WIDTH/1000.))).grid(row=4, sticky=S,columnspan=5)
 
 
 	reactAndInit(selected_dir,agenda,ldb, True , -1 ,b_true,b_false,c)
