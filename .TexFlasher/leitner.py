@@ -1423,9 +1423,7 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,
 	level = ldb.getElementsByTagName(flashcard_name)[0].getAttribute('level')
 	#color, foo = getColor( int(level), 7)
 	e1=Label(top,anchor=E,text="marker: "+flashcard_name+",  level: "+ str(level) +"  ",  width=40).grid(row=0, column=3,columnspan=2,sticky=E)
-	Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer",width=int(100.0*float(WIDTH/1000.))).grid(row=3, sticky=S,columnspan=5)
 	fc_pos=int(c.order.getElementsByTagName(flashcard_name)[0].getAttribute('position'))
-	print fc_pos
 	c.flow.goto(fc_pos)
 	mainloop()
 
@@ -1487,7 +1485,8 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,b_true,b_false,c
 
 	create_comment_canvas(c,selected_dir,flashcard_tag)		
 
-
+#	fc_pos=int(c.order.getElementsByTagName(flashcard_tag)[0].getAttribute('position'))
+#	c.flow.goto(fc_pos)
 	mainloop()
 
 
@@ -1511,11 +1510,7 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	c.grid(row=0,columnspan=3,sticky=N+E+W+S)
 
 	# true flase buttons
-	b_true=create_image_button(top,"./.TexFlasher/pictures/Flashcard_correct.png",80,80)
-	b_false=create_image_button(top,"./.TexFlasher/pictures/Flashcard_wrong.png",80,80)
 
-	b_true.grid(row=2, column=0, sticky=W )
-	b_false.grid(row=2, column=4, sticky=E)
 	
 	edit_b=create_image_button(top,"./.TexFlasher/pictures/latex.png",40,40)
 	edit_b.config(state=DISABLED)
@@ -1536,11 +1531,18 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	c.clear_b=clear_b
 	c.back_b=back_b
 	c.edit_b=edit_b
+
+	b_true=create_image_button(top,"./.TexFlasher/pictures/Flashcard_correct.png",80,80)
+	b_false=create_image_button(top,"./.TexFlasher/pictures/Flashcard_wrong.png",80,80)
+
+	#Label(top,height=1).grid(row=2,columnspan=5)
+	b_true.grid(row=3, column=0, sticky=W+E+N+S )
+	b_false.grid(row=3, column=4, sticky=E+W+N+S)
 	
-	flow_c=Canvas(top,height=100,width=600)
-	flow_c.grid(row=2,column=1,columnspan=3)
+	flow_c=Canvas(top,height=100,width=600,bd=3)
+	flow_c.grid(row=3,column=1,columnspan=3)
 	
-	flow=Flow(disp_single_fc,flow_c)
+	flow=Flow(disp_single_fc,flow_c,)
 	c.flow=flow
 	pdict={}
 	i=0
@@ -1549,7 +1551,8 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	for item in c.order.getElementsByTagName('order_db')[0].childNodes:
 	  pdict[int(item.getAttribute('position'))]={"path": selected_dir+"/Flashcards/"+item.tagName+"-1.png", "desc":"Page: "+c.source.getElementsByTagName(item.tagName)[0].getAttribute('page'), "tag":item.tagName}	
 	  i+=1
-	flow.show_gallery(flow_c,4, pdict)
+	flow.show_gallery(flow_c,3, pdict)
+	Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer",width=int(100.0*float(WIDTH/1000.))).grid(row=4, sticky=S,columnspan=5)
 
 
 	reactAndInit(selected_dir,agenda,ldb, True , -1 ,b_true,b_false,c)
