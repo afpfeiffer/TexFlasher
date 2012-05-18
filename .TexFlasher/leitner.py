@@ -265,7 +265,7 @@ def graph_points(dataSetC, dataSetB, numCards,dir):
 
     menu_button=create_image_button(top,"./.TexFlasher/pictures/menu.png",40,40)
     menu_button.configure(text="Menu",command=lambda:menu())
-    menu_button.grid(row=0,columnspan=7)
+    menu_button.grid(row=0,columnspan=7,sticky=N+W+S+E)
     #Balloon = Pmw.Balloon(top)
     #Balloon.bind(menu_button, "Return to Menu") 
     Stats=Frame(top,border=10)
@@ -630,7 +630,7 @@ def search_flashcard(event="none"):
 						search_results[match_info_content[res][0]]={"tag":match_info_content[res][0],"dir":match_info_content[res][1],"level":all_fcs[match_info_content[res][0]]['level']}																				
 		## display search results
 		if len(search_results)>0:
-			display_mult_fcs(search_results,version+" - Found "+str(len(search_results))+" search results for \""+search_query+"\"","Menu","lambda:menu()","./.TexFlasher/pictures/menu.png")
+			display_mult_fcs(search_results,"Found "+str(len(search_results))+" search results for \""+search_query+"\"","Menu","lambda:menu()","./.TexFlasher/pictures/menu.png")
 			default_search_value.set("query ...")	
 
 		#elif len(search_results)==1:
@@ -928,11 +928,12 @@ def get_all_fcs(path=False):
 def display_mult_fcs(fcs,title,button_title,button_command,button_image): #Syntax: fcs={"anykey":{"tag":fc_tag,"dir":fc_dir,"level":fc_level}, ...}
 	clear_window()
 	global search_canvas # scrolling wheel support needs that for some reason
-	top.title(title)
-	Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer", height =2).grid(row=3, sticky=S,columnspan=2)	
+	top.title(version+" - Search")
+	Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer", height =2).grid(row=3, sticky=S,columnspan=2)
+	Label(top,text=title).grid(row=0,columnspan=5)
 	exec('menu_button=create_image_button(top,"'+button_image+'",40,40)')
 	exec('menu_button.configure(text="%s",command=%s)'%(button_title,button_command))
-	exec('menu_button.grid(row=0,columnspan=2)')
+	exec('menu_button.grid(row=1,columnspan=5,sticky=N+W+E+S)')
 	vscrollbar = AutoScrollbar(top)
 	vscrollbar.grid(row=2, column=2, sticky=N+S)
 	search_canvas = Canvas(top,yscrollcommand=vscrollbar.set)
@@ -969,7 +970,7 @@ def display_mult_fcs(fcs,title,button_title,button_command,button_image): #Synta
 	search_canvas.config(scrollregion=search_canvas.bbox("all"),width=WIDTH-10,height=HEIGHT-60)
 
 
-def  disp_single_fc(image_path,tag=None,title=None):
+def  disp_single_fc(image_path,tag,title=None):
 	# create child window
 	win = Toplevel()
 	# display message
@@ -978,7 +979,7 @@ def  disp_single_fc(image_path,tag=None,title=None):
 	win.iconmask(iconbitmapLocation)
 
 	c=Canvas(win,width=WIDTH,height=WIDTH*0.6)
-	c.grid(row=1,columnspan=2)
+	c.grid(row=2,columnspan=4)
 	image = Image.open(image_path)
 	image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
 	flashcard = ImageTk.PhotoImage(image)
@@ -988,22 +989,22 @@ def  disp_single_fc(image_path,tag=None,title=None):
 	#c.bind("<Button-1>", lambda e: win.destroy())
 	edit_b=create_image_button(win,"./.TexFlasher/pictures/latex.png",40,40)
 #	edit_b.config(state=DISABLED)
-	edit_b.grid(row=1,column=1,sticky=N+E)
+	edit_b.grid(row=1,column=1,sticky=N+E+W+S)
 
 	save_b=create_image_button(win,".TexFlasher/pictures/upload_now.png",40,40)
 	save_b.config(state=DISABLED)
-	save_b.grid(row=1, column=0,sticky=W+S)	
+	save_b.grid(row=1, column=2,sticky=W+S+E+N)	
 	
 	clear_b=create_image_button(win,".TexFlasher/pictures/clear.png",40,40)
 	clear_b.configure(state=DISABLED)
-	clear_b.grid(row=1, column=1,sticky=E+S)		
+	clear_b.grid(row=1, column=3,sticky=E+S+W+N)		
 
 	edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,os.path.dirname(image_path).replace("/Flashcards",""),tag))
 	save_b.configure(command=lambda:savefile(c,os.path.dirname(image_path)+"/../",tag))
 	clear_b.configure(command=lambda:clearall(c,os.path.dirname(image_path)+"/../",tag))	
 
 	back_b=create_image_button(win,".TexFlasher/pictures/back.png",40,40)
-	back_b.grid(row=1, column=0,sticky=W+N)		
+	back_b.grid(row=1, column=0,sticky=W+N+E+S)		
 	back_b.config(command=lambda: win.destroy())
 	
 	c.save_b=save_b
@@ -1417,12 +1418,14 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,
 	b_false.configure(state=DISABLED)
 	flashcardsTodo=len(agenda)
 	totalNumberCards=len(ldb.childNodes)
-	e0=Label(top,anchor=W,text="flashcards (left today / total number): "+str(flashcardsTodo-listPosition)
+	e0=Label(top,anchor=W,text="Flashcards (left today / total number): "+str(flashcardsTodo-listPosition)
 	   +" / "+str(totalNumberCards), width=45).grid(row=0, columnspan=2,sticky=W)	   
 	level = ldb.getElementsByTagName(flashcard_name)[0].getAttribute('level')
 	color, foo = getColor( int(level), 7)
-	e1=Label(top,anchor=E,text="level: "+ str(level) +"  ",  width=40).grid(row=0, column=3,columnspan=2,sticky=E)
+	page=c.source.getElementsByTagName(flashcard_name)[0].getAttribute('page')
 	fc_pos=int(c.order.getElementsByTagName(flashcard_name)[0].getAttribute('position'))
+	
+	e1=Label(top,anchor=E,text="Flashcardnr: "+str(fc_pos)+", Page: "+str(page)+", Level: "+ str(level) +"  ",  width=40).grid(row=0, column=3,columnspan=2,sticky=E)
 	c.flow.goto(fc_pos)
 	mainloop()
 
