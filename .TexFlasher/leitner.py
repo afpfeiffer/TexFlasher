@@ -411,30 +411,30 @@ def graph_points(dataSetC, dataSetB, numCards,dir):
     color, dl = getColor(0, len(dataSetB))
     ybasis = 420
     
-    coords= float(WIDTH)*0.05 , 0
-    c1.create_rectangle( coords[0], ybasis , coords[0] + 20, ybasis +18,width=0, fill=color  )
-    c1.create_text( coords[0]+25, ybasis+9, anchor=W, text = "Level 0 (new)" )
+    coord= float(WIDTH)*0.05
+    c1.create_rectangle( coord, ybasis , coord + 20, ybasis +18,width=0, fill=color  )
+    c1.create_text( coord+25, ybasis+9, anchor=W, text = "Level 0 (new)" )
     color, dl = getColor(1, len(dataSetB))
-    c1.create_rectangle( coords[0], ybasis+20, coords[0] + 20, ybasis +38,width=0, fill= color )
-    c1.create_text( coords[0]+25, ybasis+29, anchor=W, text = "Level 1 (bad)" )
+    c1.create_rectangle( coord, ybasis+20, coord + 20, ybasis +38,width=0, fill= color )
+    c1.create_text( coord+25, ybasis+29, anchor=W, text = "Level 1 (bad)" )
     color, dl = getColor(2, len(dataSetB))
-    c1.create_rectangle( coords[0], ybasis+40, coords[0] + 20, ybasis +58,width=0, fill= color )
-    c1.create_text( coords[0]+25, ybasis+49, anchor=W, text = "Level 2 (improving)" )
+    c1.create_rectangle( coord, ybasis+40, coord + 20, ybasis +58,width=0, fill= color )
+    c1.create_text( coord+25, ybasis+49, anchor=W, text = "Level 2 (improving)" )
     
     if( len(dataSetB)-1 >2 ):
 			color, dl = getColor(3, len(dataSetB))
-			c1.create_rectangle( coords[0]+150, ybasis, coords[0] + 170, ybasis+18,width=0, fill= color )
-			c1.create_text( coords[0]+175, ybasis+9, anchor=W, text = "Level 3 - "+str(2+dl)+" (good)" )
+			c1.create_rectangle( coord+150, ybasis, coord + 170, ybasis+18,width=0, fill= color )
+			c1.create_text( coord+175, ybasis+9, anchor=W, text = "Level 3 - "+str(2+dl)+" (good)" )
 
     if( len(dataSetB)-1 >2+dl ):
 			color, dl = getColor(int( 0.5*(len(dataSetB)+3)), len(dataSetB)) 
-			c1.create_rectangle( coords[0]+150, ybasis+20, coords[0] + 170, ybasis+38,width=0, fill= color )
-			c1.create_text( coords[0]+175, ybasis+29, anchor=W, text = "Level "+str(2+dl+1)+" - "+str(2+2*dl)+" (excellent)" )
+			c1.create_rectangle( coord+150, ybasis+20, coord + 170, ybasis+38,width=0, fill= color )
+			c1.create_text( coord+175, ybasis+29, anchor=W, text = "Level "+str(2+dl+1)+" - "+str(2+2*dl)+" (excellent)" )
 
     if( len(dataSetB)-1 >2+dl*2 ):
 			color, dl=getColor(len(dataSetB)-1, len(dataSetB)) 
-			c1.create_rectangle( coords[0]+150, ybasis+40, coords[0] + 170, ybasis+58,width=0, fill= color )
-			c1.create_text( coords[0]+175, ybasis+49, anchor=W, text = "Level "+str(2+2*dl+1)+" - "+str(len(dataSetB)-1)+" (outstanding)" )
+			c1.create_rectangle( coord+150, ybasis+40, coord + 170, ybasis+58,width=0, fill= color )
+			c1.create_text( coord+175, ybasis+49, anchor=W, text = "Level "+str(2+2*dl+1)+" - "+str(len(dataSetB)-1)+" (outstanding)" )
     mainloop()
 
 
