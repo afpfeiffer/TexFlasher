@@ -36,33 +36,43 @@ echo
 
 files=$*
 
+txtrst=$(tput sgr0) # Text reset
+txtred=$(tput setaf 1) # Red
+
 for thing in $files; do
 # 	echo $thing
 		seperatedFiles="`echo $thing | sed -e 's/###/ /g'`"
 # 	echo $seperatedFiles
-
-# 	if [ -f $thing ]; then
-		echo "processing: "
-		for files in $seperatedFiles; do
-			echo "  -> $files"
-		done
-		echo
-		
-		
 		touch $seperatedFiles
 		svn add $seperatedFiles 2> /dev/null  
 		svn info $seperatedFiles > /dev/null
 		HAVESVN=$?
-		if [ $HAVESVN -eq 0 ]; then
-#	 		echo "svn available for this file"
-			svn up $seperatedFiles
-			svn commit $seperatedFiles -m "save learning progress"
-			echo
-		else
-			echo "svn unavailable"
-			echo
-		fi
-# 	fi
-done
+		
+		echo "processing: "
+		for files in $seperatedFiles; do
+			fulldiff="`svn diff $files`" > /dev/null
+			if [ "$fulldiff" == "" ]; then			
+				echo "  -> $files"
+			else
+				echo "  -> ${txtred}$files ${txtrst} "
+			fi
+		done
+		echo
+		for files in $seperatedFiles; do
+			fulldiff="`svn diff $files`" > /dev/null			
+			if [ $HAVESVN -eq 0 ]; then
+#	 				echo "svn available for this file"
+				if [ "$fulldiff" != "" ]; then
+					svn up $files
+					svn commit $files -m "save learning progress"
+# 				else
+# 					echo "$files unchanged"
 
+				fi	
+			else
+				echo "Warning: svn unavailable for this folder. Files are always saved on HD."
+			fi
+		done
+		echo
+done
 exit 0
