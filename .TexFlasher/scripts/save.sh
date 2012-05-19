@@ -39,6 +39,7 @@ files=$*
 txtrst=$(tput sgr0) # Text reset
 txtred=$(tput setaf 1) # Red
 txtbgw=$(tput setb 7) #white background
+txtbld=$(tput bold) #bold
 
 # Other variables you can define as follows:
 # txtgrn=$(tput setaf 2) # Green
@@ -80,7 +81,7 @@ for thing in $files; do
 			if [ "$fulldiff" == "" ]; then			
 				echo "  -> $files"
 			else
-				echo "  -> ${txtred}${txtbgw}$files ${txtrst} "
+				echo "  -> ${txtred}${txtbld}$files ${txtrst} "
 			fi
 		done
 		echo
