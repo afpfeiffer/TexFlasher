@@ -40,6 +40,7 @@ txtrst=$(tput sgr0) # Text reset
 txtred=$(tput setaf 1) # Red
 txtbgw=$(tput setb 7) #white background
 txtbld=$(tput bold) #bold
+texthb=$(tput dim) #half bright
 
 # Other variables you can define as follows:
 # txtgrn=$(tput setaf 2) # Green
@@ -79,7 +80,7 @@ for thing in $files; do
 		for files in $seperatedFiles; do
 			fulldiff="`svn diff $files`" > /dev/null
 			if [ "$fulldiff" == "" ]; then			
-				echo "  -> $files"
+				echo "  -> ${texthb}$files ${txtrst}"
 			else
 				echo "  -> ${txtred}${txtbld}$files ${txtrst} "
 			fi
@@ -90,8 +91,8 @@ for thing in $files; do
 			if [ $HAVESVN -eq 0 ]; then
 #	 				echo "svn available for this file"
 				if [ "$fulldiff" != "" ]; then
-					svn up $files
-					svn commit $files -m "save learning progress"
+					echo "${texthb}`svn up $files`${txtrst}"
+					echo "${txtred}${txtbld}`svn commit $files -m 'save learning progress'`${txtrst}"
 # 				else
 # 					echo "$files unchanged"
 
