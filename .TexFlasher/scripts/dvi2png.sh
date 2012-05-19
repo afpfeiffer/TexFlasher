@@ -18,5 +18,7 @@
 #     along with TexFlasher  If not, see <http://www.gnu.org/licenses/>.
 FILENAME=${1%\.*}
 echo "compiled flashcard $FILENAME"
-dvipng --nogs* -T tight -x 1900 -z 9 $FILENAME.dvi -o $FILENAME-%d.png
+
+#-p firstpage -l lastpage.
+dvipng --noghostscript* -T tight -x 1900 -z 9 $FILENAME.dvi -o $FILENAME-%d.png
 convert $FILENAME-1.png -quality 100 -resize 360x216 $FILENAME-thumb360x216.png
