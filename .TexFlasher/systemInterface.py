@@ -40,8 +40,6 @@ import ConfigParser
 
 def saveFiles( files ):
 	executeCommand( "bash .TexFlasher/scripts/save.sh "+ files, True )
-	#menu()
-	#os.system("bash .TexFlasher/scripts/save.sh "+ files )
 
 def checkForUpdate(user):
 	files=""
@@ -67,8 +65,6 @@ def checkIfNeedToSave( files ):
 		return True
 		
 def executeCommand( command ,wait=True):
-
-	
 	win = Toplevel()
 	cmd="\""+str(command)+"; exit; sh\""
 	if not wait:
@@ -124,7 +120,8 @@ def update_config(filename):
 			pass
 	if not os.path.exists(filename):
 		print "filename does not exist."
-		menu()
+		return
+		#menu()
 	dirFound=False
 	for elem in config_xml.childNodes:
 		if elem.tagName=="FlashFolder" and elem.getAttribute('filename')==filename:
@@ -140,3 +137,4 @@ def update_config(filename):
 	xml_file = open("./.TexFlasher/config.xml", "w")
 	config_xml.writexml(xml_file)
 	xml_file.close()
+	
