@@ -18,3 +18,125 @@
 #     You should have received a copy of the GNU General Public License
 #     along with TexFlasher  If not, see <http://www.gnu.org/licenses/>.
 
+
+import os
+import subprocess
+import sys
+import re
+import commands
+import xml.dom.minidom as xml
+from operator import itemgetter
+from time import strftime, strptime, ctime, localtime
+from datetime import datetime, timedelta
+from Tkinter import *
+from math import *
+import tkFont
+import tkMessageBox
+import Image, ImageTk
+import tkFileDialog
+from difflib import get_close_matches
+import itertools, collections
+import ConfigParser
+
+def saveFiles( files ):
+	executeCommand( "bash .TexFlasher/scripts/save.sh "+ files, True )
+	#menu()
+	#os.system("bash .TexFlasher/scripts/save.sh "+ files )
+
+def checkForUpdate(user):
+	files=""
+	if os.path.isfile("./.TexFlasher/config.xml"):
+		tree = xml.parse("./.TexFlasher/config.xml")
+		config_xml = tree.getElementsByTagName('config')[0]
+		for elem in config_xml.childNodes:
+			if elem.tagName=="FlashFolder" and not elem.getAttribute('filename')=="":
+				files += str(elem.getAttribute('filename')) + " "
+				#files += str(os.path.dirname(elem.getAttribute('filename'))+"/Users/"+user+".xml ")
+				#files += str(os.path.dirname(elem.getAttribute('filename'))+"/Users/"+user+"_comment.xml ")
+				#files += str(os.path.dirname(elem.getAttribute('filename'))+"/Users/questions.xml ")
+	os.system( "bash .TexFlasher/scripts/checkForUpdate.sh "+ files + "&")
+	
+
+def checkIfNeedToSave( files ):
+	process = subprocess.Popen(['bash', '.TexFlasher/scripts/checkIfNeedToSave.sh', files], stdout=subprocess.PIPE)
+	output  = process.stdout.read()
+	
+	if str(output) == "":
+		return False
+	else:
+		return True
+		
+def executeCommand( command ,wait=True):
+
+	
+	win = Toplevel()
+	cmd="\""+str(command)+"; exit; sh\""
+	if not wait:
+		os.system('xterm -geometry 110x42 -sb -e '+ cmd +' &' )
+	else:
+		os.system('xterm -geometry 110x42 -sb -e '+ cmd )		
+	win.destroy()
+
+	
+def create_completion_list():
+	results=[]
+	if os.path.isfile("./.TexFlasher/config.xml"):
+		tree = xml.parse("./.TexFlasher/config.xml")
+		config_xml = tree.getElementsByTagName('config')[0]
+		max=1
+		for elem in config_xml.childNodes:
+			dir=elem.getAttribute('filename')
+			if len(dir)>0:
+				tex=open(dir,"r")
+				for line in tex:
+					for word in line.split(" "):
+						try:
+							results.append(unicode(word.replace(",","").replace("}","").replace("]","").replace(".","").replace("\n","").lower()))
+						except:
+							pass
+	
+	return tuple(results)
+	
+	
+def update_texfile( fname, user ):	
+	executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+os.path.dirname(fname)+"/Users/"+user+".xml "+os.path.dirname(fname)+"/Users/"+user+"_comment.xml "+os.path.dirname(fname)+"/Users/questions.xml "+fname, True )
+	os.system("rm "+os.path.dirname(fname)+"/Flashcards/UPDATE 2>/dev/null")
+	create_flashcards( fname )
+	comp_list=create_completion_list()
+
+
+def create_flashcards( filename ):
+	update_config(filename)
+	#os.system("bash .TexFlasher/scripts/createFlashcards.sh "+ filename)
+	executeCommand("bash .TexFlasher/scripts/createFlashcards.sh "+ filename, True)
+
+
+def update_config(filename):
+	dir_name=os.path.dirname(filename)
+	doc=xml.Document()
+	config_xml = doc.createElement('config')
+	doc.appendChild(config_xml)
+	if os.path.isfile("./.TexFlasher/config.xml"):
+		try:
+			tree = xml.parse("./.TexFlasher/config.xml")
+			config_xml = tree.getElementsByTagName('config')[0]
+		except:
+			pass
+	if not os.path.exists(filename):
+		print "filename does not exist."
+		menu()
+	dirFound=False
+	for elem in config_xml.childNodes:
+		if elem.tagName=="FlashFolder" and elem.getAttribute('filename')==filename:
+			elem.setAttribute('lastReviewed', strftime("%Y-%m-%d %H:%M:%S", localtime()))
+			dirFound=True
+	if not dirFound:
+		elem=doc.createElement("FlashFolder")
+		config_xml.appendChild(elem)
+		now=strftime("%Y-%m-%d %H:%M:%S", localtime())
+		elem.setAttribute('filename',filename)
+		elem.setAttribute('lastReviewed', now)
+		elem.setAttribute('created',now)	
+	xml_file = open("./.TexFlasher/config.xml", "w")
+	config_xml.writexml(xml_file)
+	xml_file.close()

@@ -18,7 +18,18 @@
 #     You should have received a copy of the GNU General Public License
 #     along with TexFlasher  If not, see <http://www.gnu.org/licenses/>.
 
-
+global comp_list
+global c
+global velocity,autorotate	
+global xold,maximages,centerrec 
+global search_canvas # scrolling wheel support needs that for some reason
+global x, y
+global saveString 
+global Menu
+global query
+global default_search_value
+global check
+global Settings 
 
 import os
 import subprocess
@@ -38,6 +49,7 @@ import tkFileDialog
 from difflib import get_close_matches
 import itertools, collections
 import ConfigParser
+from systemInterface import *
 #import Pmw
 ######################################################################## leitner_db management ##############################################
 
@@ -163,7 +175,7 @@ def update_flashcard(fc_tag,ldb,selected_dir,attr_name,attr_value,lastReviewed=s
 
 
 def statistics_nextWeek(ldir):
-		checkForUpdate()
+		checkForUpdate(Settings["user"])
 		database = load_leitner_db(ldir, Settings["user"])
 		DAYS=[]
 		LEVELS=[]
@@ -560,25 +572,6 @@ class AutocompleteEntry(Entry):
                 if len(event.keysym) == 1 or event.keysym in tkinter_umlauts:
                         self.autocomplete()
 
-
-def create_completion_list():
-	results=[]
-	if os.path.isfile("./.TexFlasher/config.xml"):
-		tree = xml.parse("./.TexFlasher/config.xml")
-		config_xml = tree.getElementsByTagName('config')[0]
-		max=1
-		for elem in config_xml.childNodes:
-			dir=elem.getAttribute('filename')
-			if len(dir)>0:
-				tex=open(dir,"r")
-				for line in tex:
-					for word in line.split(" "):
-						try:
-							results.append(unicode(word.replace(",","").replace("}","").replace("]","").replace(".","").replace("\n","").lower()))
-						except:
-							pass
-	
-	return tuple(results)
 
 				
 def search_flashcard(event="none"):
@@ -1387,7 +1380,7 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,
 	
 	if( listPosition < 0 or listPosition%10 == 9 ):
 		# look for updates at the beginning and every 10 fcs
-		checkForUpdate()
+		checkForUpdate(Settings["user"])
 		
 	listPosition +=1
 	if ( len(agenda) > listPosition):
@@ -1625,45 +1618,6 @@ def show_log(filedir):
         return
 
 
-def saveFiles( files ):
-	executeCommand( "bash .TexFlasher/scripts/save.sh "+ files, True )
-	menu()
-	#os.system("bash .TexFlasher/scripts/save.sh "+ files )
-
-def checkForUpdate():
-	files=""
-	if os.path.isfile("./.TexFlasher/config.xml"):
-		tree = xml.parse("./.TexFlasher/config.xml")
-		config_xml = tree.getElementsByTagName('config')[0]
-		for elem in config_xml.childNodes:
-			if elem.tagName=="FlashFolder" and not elem.getAttribute('filename')=="":
-				files += str(elem.getAttribute('filename')) + " "
-				#files += str(os.path.dirname(elem.getAttribute('filename'))+"/Users/"+Settings["user"]+".xml ")
-				#files += str(os.path.dirname(elem.getAttribute('filename'))+"/Users/"+Settings["user"]+"_comment.xml ")
-				#files += str(os.path.dirname(elem.getAttribute('filename'))+"/Users/questions.xml ")
-	os.system( "bash .TexFlasher/scripts/checkForUpdate.sh "+ files + "&")
-	
-
-def checkIfNeedToSave( files ):
-	process = subprocess.Popen(['bash', '.TexFlasher/scripts/checkIfNeedToSave.sh', files], stdout=subprocess.PIPE)
-	output  = process.stdout.read()
-	
-	if str(output) == "":
-		return False
-	else:
-		return True
-		
-def executeCommand( command ,wait=True):
-
-	
-	win = Toplevel()
-	cmd="\""+str(command)+"; exit; sh\""
-	if not wait:
-		os.system('xterm -geometry 110x42 -sb -e '+ cmd +' &' )
-	else:
-		os.system('xterm -geometry 110x42 -sb -e '+ cmd )		
-	win.destroy()
-
 
 def open_tex(filepath):
 	try:
@@ -1677,50 +1631,6 @@ def clear_search(event):
 	query.configure(textvariable=default_search_value)
 
 
-def update_texfile( fname ):	
-	executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+os.path.dirname(fname)+"/Users/"+Settings["user"]+".xml "+os.path.dirname(fname)+"/Users/"+Settings["user"]+"_comment.xml "+os.path.dirname(fname)+"/Users/questions.xml "+fname, True )
-	os.system("rm "+os.path.dirname(fname)+"/Flashcards/UPDATE 2>/dev/null")
-	create_flashcards( fname )
-
-
-def create_flashcards( filename ):
-	update_config(filename)
-	#os.system("bash .TexFlasher/scripts/createFlashcards.sh "+ filename)
-	executeCommand("bash .TexFlasher/scripts/createFlashcards.sh "+ filename, True)
-	comp_list=create_completion_list()
-	menu()
-	#run_flasher(dir_name,top)
-
-
-def update_config(filename):
-	dir_name=os.path.dirname(filename)
-	doc=xml.Document()
-	config_xml = doc.createElement('config')
-	doc.appendChild(config_xml)
-	if os.path.isfile("./.TexFlasher/config.xml"):
-		try:
-			tree = xml.parse("./.TexFlasher/config.xml")
-			config_xml = tree.getElementsByTagName('config')[0]
-		except:
-			pass
-	if not os.path.exists(filename):
-		print "filename does not exist."
-		menu()
-	dirFound=False
-	for elem in config_xml.childNodes:
-		if elem.tagName=="FlashFolder" and elem.getAttribute('filename')==filename:
-			elem.setAttribute('lastReviewed', strftime("%Y-%m-%d %H:%M:%S", localtime()))
-			dirFound=True
-	if not dirFound:
-		elem=doc.createElement("FlashFolder")
-		config_xml.appendChild(elem)
-		now=strftime("%Y-%m-%d %H:%M:%S", localtime())
-		elem.setAttribute('filename',filename)
-		elem.setAttribute('lastReviewed', now)
-		elem.setAttribute('created',now)	
-	xml_file = open("./.TexFlasher/config.xml", "w")
-	config_xml.writexml(xml_file)
-	xml_file.close()
 
 
 def menu():
@@ -1784,12 +1694,12 @@ def menu():
 					update_image="./.TexFlasher/pictures/update.png"
 				if l.getAttribute('lastReviewed')==l.getAttribute('created'):
 					exec('button_' + str(row_start)+'_update=create_image_button(Menu,"./.TexFlasher/pictures/update_now.png",'+button_size+','+button_size+')')
-					exec('button_' + str(row_start)+'_update.configure(command=lambda:update_texfile("'+l.getAttribute('filename')+'"))')
+					exec('button_' + str(row_start)+'_update.configure(command=lambda:update_texfile("'+l.getAttribute('filename')+'", "'+Settings["user"]+'"))')
 					exec('button_' + str(row_start)+'_update.grid(row='+str(row_start)+',column='+str(start_column+2)+',sticky=W+N+S+E)')
 					new_status="DISABLED"
 				else:
 					exec('button_' + str(row_start)+'_update=create_image_button(Menu,"'+update_image+'",'+button_size+','+button_size+')')
-					exec('button_' + str(row_start)+'_update.configure(command=lambda:update_texfile("'+l.getAttribute('filename')+'"))')
+					exec('button_' + str(row_start)+'_update.configure(command=lambda:update_texfile("'+l.getAttribute('filename')+'","'+Settings["user"]+'"))')
 					exec('button_' + str(row_start)+'_update.grid(row='+str(row_start)+',column='+str(start_column+2)+',sticky=W+N+S+E)')		
 
 				#stats	
@@ -1896,7 +1806,6 @@ BD=2
 
 top.bind("<Escape>", lambda e: top.quit()) # quits texflasher if esc is pressed
 
-global comp_list
 comp_list=create_completion_list()
 
 iconbitmapLocation = "@./.TexFlasher/pictures/icon2.xbm"
