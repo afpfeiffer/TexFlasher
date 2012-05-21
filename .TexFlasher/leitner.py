@@ -1564,6 +1564,18 @@ def run_flasher(selected_dir, stuffToDo=True ):
 
 ############################################################## Menu ####################################################################
 
+def update_texfile( fname, user ):	
+	executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+os.path.dirname(fname)+"/Users/"+user+".xml "+os.path.dirname(fname)+"/Users/"+user+"_comment.xml "+os.path.dirname(fname)+"/Users/questions.xml "+fname, True )
+	os.system("rm "+os.path.dirname(fname)+"/Flashcards/UPDATE 2>/dev/null")
+	create_flashcards( fname )
+	comp_list=create_completion_list()
+	menu()
+	
+
+def saveFiles( files ):
+	executeCommand( "bash .TexFlasher/scripts/save.sh "+ files, True )
+	menu()	
+
 def create_new():
 	file = tkFileDialog.askopenfilename(parent=top,title='Choose a LaTeX file',initialdir='./',defaultextension=".tex",filetypes=[("all files","*.tex")])
 	if file != None:
