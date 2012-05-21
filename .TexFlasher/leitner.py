@@ -1025,7 +1025,7 @@ def  disp_single_fc(image_path,tag,title=None):
 		      clear_b.config(state=NORMAL)	
 	
 	
-	Label(win,height=1).grid(row=2,column=0)
+	#Label(win,height=1).grid(row=2,column=0)
 	Label(win,text="Created: "+fc_info.getAttribute("created")+", Last Reviewed:"+fc_info.getAttribute("lastReviewed")).grid(row=0,columnspan=2)	
 
 
