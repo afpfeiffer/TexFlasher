@@ -70,7 +70,7 @@ done
 	cp $file $folder/Details/source.tex
 
 	cd $folder/Details
-	latex source.tex 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log
+	latex -halt-on-error source.tex 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log
 	Errors="`cat $folder/texFlasher.log | grep -rniE 'error|ERROR|Error'`"
 	if [ ! "$Errors" == ""  ]; then
 		echo "Fatal latex error in source file." >> $folder/texFlasher.log

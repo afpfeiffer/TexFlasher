@@ -1591,7 +1591,6 @@ def saveFiles( files ):
 def create_new():
 	file = tkFileDialog.askopenfilename(parent=top,title='Choose a LaTeX file',initialdir='./',defaultextension=".tex",filetypes=[("all files","*.tex")])
 	if file != None:
-		filename=os.path.basename(file)
 		update_config(file)
 		menu()
 
@@ -1670,6 +1669,36 @@ def clear_search(event):
 	query.configure(textvariable=default_search_value)
 
 
+class MyDialog:
+
+    def __init__(self, parent):
+
+        top = self.top = Toplevel(parent)
+
+        Label(top, text="Please enter a new flashfolder name:").pack()
+
+        self.e = Entry(top)
+        self.e.pack(padx=5)
+
+        b = Button(top, text="Create", command=self.ok)
+        b.pack(pady=5)
+
+    def ok(self):
+
+        print "value is", self.e.get()
+        if self.e.get():
+        	value=self.e.get().strip(" \n\r")
+        	os.system("bash .TexFlasher/scripts/createFolder.sh "+value)
+		dir=os.path.abspath("./"+value+"/")
+		#print dir
+		update_config(dir+"/Vorbereitung.tex")
+		menu()
+        self.top.destroy()
+        
+def create_folder():
+	d = MyDialog(top)
+	top.wait_window(d.top)
+
 
 
 def menu():
@@ -1692,7 +1721,7 @@ def menu():
 		tree = xml.parse("./.TexFlasher/config.xml")
 		config_xml = tree.getElementsByTagName('config')[0]		
 		for l in config_xml.childNodes:
-			if l.tagName=="FlashFolder" and l.getAttribute('filename')!="":
+			if l.tagName=="FlashFolder" and l.getAttribute('filename')!="" and os.path.isfile(l.getAttribute('filename')):
 				todo=0;
 				length=0
 				#try:
@@ -1800,7 +1829,11 @@ def menu():
 			image_path="./.TexFlasher/pictures/upload_now.png"	
 		exec('save=create_image_button(Menu,"'+image_path+'",'+button_size+','+button_size+')')
 		exec('save.configure(command=lambda:saveFiles(saveString))')
-		exec('save.grid(row=1, column=4,sticky=W+N+S+E,columnspan=4)')	
+		exec('save.grid(row=1, column=5,sticky=W+N+S+E,columnspan=3)')	
+	
+		create_n=create_image_button(Menu,"./.TexFlasher/pictures/Flashcard_folder_create.png",60,60)
+		create_n.configure(width=70,command=create_folder)
+		create_n.grid(row=1,column=4)		
 		Label(Menu,height=1).grid(sticky=E+W,row=2,columnspan=10)
 	else:
 		create.grid(row=row_start+1,columnspan=8)

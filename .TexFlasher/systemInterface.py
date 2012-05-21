@@ -80,7 +80,7 @@ def create_completion_list():
 		max=1
 		for elem in config_xml.childNodes:
 			dir=elem.getAttribute('filename')
-			if len(dir)>0:
+			if len(dir)>0 and os.path.isfile(dir):
 				tex=open(dir,"r")
 				for line in tex:
 					for word in line.split(" "):
