@@ -1426,7 +1426,7 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,
 	page=c.source.getElementsByTagName(flashcard_name)[0].getAttribute('page')
 	fc_pos=int(c.order.getElementsByTagName(flashcard_name)[0].getAttribute('position'))
 	
-	e1=Label(top,anchor=E,text="Flashcardnr: "+str(fc_pos)+", Page: "+str(page)+", Level: "+ str(level) +"  ",  width=40).grid(row=0, column=3,columnspan=2,sticky=E)
+	e1=Label(top,anchor=E,text="Flashcardnr.: "+str(fc_pos)+", Page: "+str(page)+", Level: "+ str(level) +"  ",  width=40).grid(row=0, column=3,columnspan=2,sticky=E)
 	#c.flow.goto(fc_pos)
 	mainloop()
 
@@ -1564,6 +1564,18 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	reactAndInit(selected_dir,agenda,ldb, True , -1 ,b_true,b_false,c)
 
 ############################################################## Menu ####################################################################
+
+def update_texfile( fname, user ):	
+	executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+os.path.dirname(fname)+"/Users/"+user+".xml "+os.path.dirname(fname)+"/Users/"+user+"_comment.xml "+os.path.dirname(fname)+"/Users/questions.xml "+fname, True )
+	os.system("rm "+os.path.dirname(fname)+"/Flashcards/UPDATE 2>/dev/null")
+	create_flashcards( fname )
+	comp_list=create_completion_list()
+	menu()
+	
+
+def saveFiles( files ):
+	executeCommand( "bash .TexFlasher/scripts/save.sh "+ files, True )
+	menu()	
 
 def create_new():
 	file = tkFileDialog.askopenfilename(parent=top,title='Choose a LaTeX file',initialdir='./',defaultextension=".tex",filetypes=[("all files","*.tex")])
