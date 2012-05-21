@@ -113,7 +113,7 @@ def parse_tex(fcard_dir,source_path):
 		elif re.compile('^\\\\newtheorem.*?\{(.*?)\}.*?\{(.*?)\}.*?').findall(line):
 			matches=re.compile('\\\\newtheorem.*?\{(.*?)\}.*?\{(.*?)\}.*?').findall(line)		
 			theorems[matches[0][0]]=matches[0][1]
-			tex_header+="\\newtheorem{"+matches[0][0]+"}{"+matches[0][1]+"}[section]"
+			tex_header+="\\newtheorem{"+matches[0][0]+"}{"+matches[0][1]+"}[section]\n"
 
 		elif line==end_header_marker:
 			tex_header+=line
@@ -151,43 +151,31 @@ def parse_tex(fcard_dir,source_path):
 						fc_meta=meta.getElementsByTagName(fcard_title)[0]
 						fc_page=fc_meta.getAttribute('page')
 						fc_header=""
-						fc_chapter=""
 						fc_section=""
-						fc_subsection=""
-						fc_subsubsection=""
+						sec_types=["section","subsection","subsubsection"]
+						for sec_type in sec_types:
+						  try:
+						    fc_sec_name=fc_meta.getAttribute(sec_type+'_name')
+						    fc_sec=fc_meta.getAttribute(sec_type+'_number')
+						    if not fc_sec=="None":
+						      fc_sec_color="\\"+sec_type+"font{\\color{gray}}\n"
+								  
+						      fc_header+="\\renewcommand{\\the"+sec_type+"}{"+fc_sec+"}\n"
+						      fc_header+=fc_sec_color
+						      fc_section+="\\section{"+fc_sec_name+"}"
+						  except:
+						    pass						
+						
 						
 						try:
 						  fc_number=fc_meta.getAttribute('number')
-						  fc_header+="\\renewcommand{\\the"+matches[0][0]+"}{"+fc_number+"}"
+						  fc_header+="\\renewcommand{\\the"+matches[0][0]+"}{\\color{gray}{"+fc_number+"}}\n"
 						except:
 						  pass					
-						try:
-						  fc_sec_name=fc_meta.getAttribute('section_name')
-						  fc_sec=fc_meta.getAttribute('section_number')
-						  if not fc_sec=="None":
-						    fc_header+="\\renewcommand{\\thesection}{"+fc_sec+"}"
-						    fc_section="\\section{"+fc_sec_name+"}"
-						except:
-						  pass						
-						try:
-						  fc_subsec_name=fc_meta.getAttribute('subsection_name')
-						  fc_subsec=fc_meta.getAttribute('subsection_number')
-						  if not fc_subsec=="None":
-						    fc_header+="\\renewcommand{\\thesubsection}{"+fc_subsec+"}"
-						    fc_subsection="\\subsection{"+fc_subsec_name+"}"
-						except:
-						  pass						
-						try:
-						  fc_subsubsec_name=fc_meta.getAttribute('subsubsection_name')
-						  fc_subsubsec=fc_meta.getAttribute('subsubsection_number')
-						  if not fc_subsubsec=="None":
-						    fc_header+="\\renewcommand{\\thesubsubsection}{"+fc_subsubsec+"}"
-						    fc_subsubsection="\\subsubsection{"+fc_subsubsec_name+"}"
-						except:
-						  pass
+
 						  
 						try:
-							fcards[fcard_title]="\\begin{flashcard}{"+fc_chapter+"\n"+fc_section+"\n"+fc_subsection+"\n"+fc_subsubsection+"\\begin{"+matches[0][0]+"}["+matches[0][1]+"]\\end{"+matches[0][0]+"}}\n\\flushleft\n\\footnotesize\n%#begin_content#%\n"
+							fcards[fcard_title]="\\begin{flashcard}{"+fc_section+"\n\\begin{"+matches[0][0]+"}[\\textbf{"+matches[0][1]+"}]\\end{"+matches[0][0]+"}}\n\\flushleft\n\\footnotesize\n%#begin_content#%\n"
 							fcards_header[fcard_title]=fc_header
 							element.setAttribute('name',matches[0][1])
 							element.setAttribute('theorem_type',matches[0][0])							
