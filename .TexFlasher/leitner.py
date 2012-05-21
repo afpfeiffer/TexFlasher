@@ -1054,7 +1054,6 @@ def cancel_edit(c,dir,tag,frame):
 
 
 def change_latex(file_path,fc_tag,content,theorem_type):
-	print content
 	file=open(file_path,"r")
 	tag=False
 	new_latex=[]
@@ -1147,13 +1146,12 @@ class RectTracker:
 		
 		
 	def __stop(self, event):
-		if self.start==[event.x,event.y]:
+		#if self.start==[event.x,event.y]:
 
-		    self.canvas.create_image(event.x,event.y-10, image=self.canvas.question_image_now,tags="ques"+" "+self.time+" elem")
-		    self.canvas.clear_b.config(state=NORMAL)
-		    self.canvas.save_b.config(state=NORMAL)
-		    #self.canvas.create_text(event.x,event.y+7,text=user,fill="red",tags="qu"+" "+time+" elem")
-		    #self.canvas.create_text(event.x,event.y-26,text=strftime("%Y-%m-%d", localtime()),fill="red",tags="qu"+" "+time+" elem")
+		    #self.canvas.create_image(event.x,event.y-10, image=self.canvas.question_image_now,tags="ques"+" "+self.time+" elem")
+		    #self.canvas.clear_b.config(state=NORMAL)
+		    #self.canvas.save_b.config(state=NORMAL)
+
 
 
 		if self.item is not None:		
@@ -1238,9 +1236,9 @@ def create_comment_canvas(c,dir,fc_tag):
 	    for im in c.find_withtag("question"):
 	      c.delete(im)
 
-	c.bind('<Motion>', cool_design, '+')	
-	c.bind('<Enter>',cool_design,'+')
-	c.bind('<Leave>',hide)
+	#c.bind('<Motion>', cool_design, '+')	
+	#c.bind('<Enter>',cool_design,'+')
+	#c.bind('<Leave>',hide)
 
 	def onDrag(start,end):
 		global x,y
@@ -1419,7 +1417,7 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,
 	fc_pos=int(c.order.getElementsByTagName(flashcard_name)[0].getAttribute('position'))
 	
 	e1=Label(top,anchor=E,text="Flashcardnr: "+str(fc_pos)+", Page: "+str(page)+", Level: "+ str(level) +"  ",  width=40).grid(row=0, column=3,columnspan=2,sticky=E)
-	c.flow.goto(fc_pos)
+	#c.flow.goto(fc_pos)
 	mainloop()
 
 
@@ -1537,19 +1535,19 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	b_true.grid(row=3, column=0, sticky=W+E+N+S )
 	b_false.grid(row=3, column=4, sticky=E+W+N+S)
 	
-	flow_c=Canvas(top,height=90,width=600,bd=3)
-	flow_c.grid(row=3,column=1,columnspan=3)
+	#flow_c=Canvas(top,height=90,width=600,bd=3)
+	#flow_c.grid(row=3,column=1,columnspan=3)
 	
-	flow=Flow(disp_single_fc,flow_c,)
-	c.flow=flow
-	pdict={}
-	i=0
+	#flow=Flow(disp_single_fc,flow_c,)
+	#c.flow=flow
+	#pdict={}
+#	i=0
 	c.order = xml.parse(selected_dir+"/Flashcards/order.xml")
 	c.source = xml.parse(selected_dir+"/Details/source.xml")
-	for item in c.order.getElementsByTagName('order_db')[0].childNodes:
-	  pdict[int(item.getAttribute('position'))]={"path": selected_dir+"/Flashcards/"+item.tagName+"-1.png", "desc":"Page: "+c.source.getElementsByTagName(item.tagName)[0].getAttribute('page'), "tag":item.tagName}	
-	  i+=1
-	flow.show_gallery(flow_c,3, pdict)
+#	for item in c.order.getElementsByTagName('order_db')[0].childNodes:
+#	  pdict[int(item.getAttribute('position'))]={"path": selected_dir+"/Flashcards/"+item.tagName+"-1.png", "desc":"Page: "+c.source.getElementsByTagName(item.tagName)[0].getAttribute('page'), "tag":item.tagName}	
+#	  i+=1
+#	flow.show_gallery(flow_c,3, pdict)
 	#Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer",width=int(100.0*float(WIDTH/1000.))).grid(row=4, sticky=S,columnspan=5)
 
 

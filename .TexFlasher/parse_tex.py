@@ -50,13 +50,6 @@ def parse_dvi_dump(source_path):
 	current_section={"section":None,"subsection":None,"subsubsection":None}
 	for l in source_dump:
 		l=l.strip(' \t\n\r')
-	  
-		#if not doc_start and re.compile("xxx: 'ps:SDict begin \[/Count -(\d+)/Dest \((.*?)\) cvn/Title \((.*?)\) /OUT pdfmark end'").findall(l):
-		#  matches=re.compile("xxx: 'ps:SDict begin \[/Count -(\d+)/Dest \((.*?)\) cvn/Title \((.*?)\) /OUT pdfmark end'").findall(l)
-		#  sec_name=matches[0][2]
-		#  sections[matches[0][1]]=sec_name
-		#check for page start  
-		
 		if re.compile("xxx: 'ps:SDict begin \[/View \[/XYZ H.V\]/Dest \((.*?)\) cvn /DEST pdfmark end'").findall(l):#we got section or something like that
 		  matches=re.compile("xxx: 'ps:SDict begin \[/View \[/XYZ H.V\]/Dest \((.*?)\) cvn /DEST pdfmark end'").findall(l)
 		  if 'Doc-Start'==matches[0]:

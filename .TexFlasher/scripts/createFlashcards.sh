@@ -78,14 +78,13 @@ else
 	rm $folder/texFlasher.log
 	cd $folder/Details
 	latex $folder/Details/source.tex 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log
-	python $WD/.TexFlasher/diviasm.py source.dvi > source.dump
 	
 	Errors="`cat $folder/texFlasher.log | grep -rniE 'error|ERROR|Error'`"
 	if [ ! "$Errors" == ""  ]; then
 		echo "Fatal latex error in source file." >> $folder/texFlasher.log
 		exit 1
 	fi
-	
+	python $WD/.TexFlasher/diviasm.py source.dvi > source.dump	
 	cd $WD
 	# create a temprorary folder for flashcards. make sure its empty
 	if [ -d "$folder/Flashcards.tmp" ]; then 
