@@ -1038,6 +1038,11 @@ def edit_fc(c,dir,fc_tag):
 	fc_name,theorem_name,theorem_type,content=get_fc_desc(dir,fc_tag)
 	c.edit_b.config(state=DISABLED)
 	c.back_b.config(state=DISABLED)
+	try:
+	  c.true_b.config(state=DISABLED)
+	  c.false_b.config(state=DISABLED)
+	except:
+	  pass
 	frame=Frame(c)	
 	frame.grid(sticky=E+W+N+S)
 	#print c_width,c_height,WIDTH,HEIGHT,int(WIDTH*0.14256),int(WIDTH*0.043)
@@ -1056,6 +1061,11 @@ def cancel_edit(c,dir,tag,frame):
 	c.save_b.config(state=DISABLED)
 	c.edit_b.config(state=NORMAL)
 	c.back_b.config(state=NORMAL)
+	try:
+	  c.true_b.config(state=NORMAL)
+	  c.false_b.config(state=NORMAL)
+	except:
+	  pass	
 	c.edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,dir,tag))
 	c.save_b.configure(command=lambda:savefile(c,dir,tag,save_b))
 	c.clear_b.configure(command=lambda:clearall(c,dir,tag))	
@@ -1157,9 +1167,9 @@ class RectTracker:
 	def __stop(self, event):
 		#if self.start==[event.x,event.y]:
 
-		 #   self.canvas.create_image(event.x,event.y-10, image=self.canvas.question_image_now,tags="ques"+" "+self.time+" elem")
-		  #  self.canvas.clear_b.config(state=NORMAL)
-		   # self.canvas.save_b.config(state=NORMAL)
+		    #self.canvas.create_image(event.x,event.y-10, image=self.canvas.question_image_now,tags="ques"+" "+self.time+" elem")
+		    #self.canvas.clear_b.config(state=NORMAL)
+		    #self.canvas.save_b.config(state=NORMAL)
 
 
 
@@ -1366,7 +1376,7 @@ def clearall(canvas,dir,fc_tag):
 ############################################################### run flasher ###########################################################
 
 	
-def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,update=True):
+def reactAndInit(selected_dir,agenda,ldb, status, listPosition,c,update=True):
 	#if len(c.find_withtag('rect'))>0:
 	#	if tkMessageBox.askyesno("Reset", "Do you want to save your changes to this flashcard?"):
 	#		flashcard_tag=agenda[listPosition-1][0]
@@ -1404,7 +1414,7 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,
 	flashcard_image = ImageTk.PhotoImage(image)
 	c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard_image,tags=("frontside",flashcard_name))
 	c.img=flashcard_image
-	c.bind("<Button-1>", lambda e:answer(selected_dir,agenda,ldb, flashcard_name, listPosition,b_true,b_false,c))
+	c.bind("<Button-1>", lambda e:answer(selected_dir,agenda,ldb, flashcard_name, listPosition,c))
 	c.unbind("<Motion>")
 	c.unbind("<Enter>")
 	c.edit_b.config(state=DISABLED)
@@ -1412,11 +1422,11 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,
 	c.clear_b.config(state=DISABLED)
 	c.back_b.config(state=DISABLED)
 	
-	c.back_b.config(state=DISABLED,command=lambda:reactAndInit(selected_dir,agenda,ldb, True , listPosition-1,b_true,b_false,c,False))
+	c.back_b.config(state=DISABLED,command=lambda:reactAndInit(selected_dir,agenda,ldb, True , listPosition-1,c,False))
 
 	
-	b_true.configure(state=DISABLED)
-	b_false.configure(state=DISABLED)
+	c.true_b.configure(state=DISABLED)
+	c.false_b.configure(state=DISABLED)
 	flashcardsTodo=len(agenda)
 	totalNumberCards=len(ldb.childNodes)
 	e0=Label(top,anchor=W,text="Flashcards (left today / total number): "+str(flashcardsTodo-listPosition)
@@ -1431,7 +1441,7 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,
 	mainloop()
 
 
-def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,b_true,b_false,c):
+def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,c):
 	image = Image.open(selected_dir+"/Flashcards/"+flashcard_tag+"-2.png")
 	image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
 	flashcard = ImageTk.PhotoImage(image)
@@ -1483,8 +1493,8 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,b_true,b_false,c
 	c.save_b.configure(command=lambda:savefile(c,selected_dir,flashcard_tag))
 	c.clear_b.configure(command=lambda:clearall(c,selected_dir,flashcard_tag))
 	c.back_b.configure(state=NORMAL)
-	b_true.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,True, listPosition,b_true,b_false,c))
-	b_false.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,False, listPosition,b_true,b_false,c))
+	c.true_b.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,True, listPosition,c))
+	c.false_b.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,False, listPosition,c))
 
 	create_comment_canvas(c,selected_dir,flashcard_tag)		
 
@@ -1538,13 +1548,14 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	c.back_b=back_b
 	c.edit_b=edit_b
 
-	b_true=create_image_button(top,"./.TexFlasher/pictures/Flashcard_correct.png",80,80)
-	b_false=create_image_button(top,"./.TexFlasher/pictures/Flashcard_wrong.png",80,80)
+	true_b=create_image_button(top,"./.TexFlasher/pictures/Flashcard_correct.png",80,80)
+	false_b=create_image_button(top,"./.TexFlasher/pictures/Flashcard_wrong.png",80,80)
 
 	#Label(top,height=1).grid(row=2,columnspan=5)
-	b_true.grid(row=3, column=0, sticky=W+E+N+S )
-	b_false.grid(row=3, column=4, sticky=E+W+N+S)
-	
+	true_b.grid(row=3, column=0, sticky=W+E+N+S )
+	false_b.grid(row=3, column=4, sticky=E+W+N+S)
+	c.true_b=true_b
+	c.false_b=false_b
 	#flow_c=Canvas(top,height=90,width=600,bd=3)
 	#flow_c.grid(row=3,column=1,columnspan=3)
 	
@@ -1561,7 +1572,7 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	#Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer",width=int(100.0*float(WIDTH/1000.))).grid(row=4, sticky=S,columnspan=5)
 
 
-	reactAndInit(selected_dir,agenda,ldb, True , -1 ,b_true,b_false,c)
+	reactAndInit(selected_dir,agenda,ldb, True , -1 ,c)
 
 ############################################################## Menu ####################################################################
 
