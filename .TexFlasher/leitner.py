@@ -1619,8 +1619,8 @@ def hide_FlashFolder(filename):
 def reset_flash(filename):
 	if tkMessageBox.askyesno("Reset", "Do you really want to delete all learning progress for %s?"% filename.split("/")[-2]):
 		try:
-			os.remove(os.path.dirname(filename)+"/Users/"+user+".xml")
-			os.remove(os.path.dirname(filename)+"/Users/"+user+"_comment.xml")
+			os.remove(os.path.dirname(filename)+"/Users/"+Settings["user"]+".xml")
+			os.remove(os.path.dirname(filename)+"/Users/"+Settings["user"]+"_comment.xml")
 			os.remove(os.path.dirname(filename)+"/Users/"+Settings["user"]+".xml")
 			os.remove(os.path.dirname(filename)+"/Users/"+Settings["user"]+"_comment.xml")
 		except:
