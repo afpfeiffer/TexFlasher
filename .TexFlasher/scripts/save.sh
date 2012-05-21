@@ -37,7 +37,7 @@ echo
 files=$*
 
 txtrst=$(tput sgr0) # Text reset
-txtred=$(tput setaf 2) # Red
+txtclr=$(tput setaf 2) 
 txtbgw=$(tput setb 7) #white background
 txtbld=$(tput bold) #bold
 texthb=$(tput dim) #half bright
@@ -82,7 +82,7 @@ for thing in $files; do
 			if [ "$fulldiff" == "" ]; then			
 				echo "  -> ${texthb}$files ${txtrst}"
 			else
-				echo "  -> ${txtred}${txtbld}$files ${txtrst} "
+				echo "  -> ${txtclr}${txtbld}$files ${txtrst} "
 			fi
 		done
 		echo
@@ -92,7 +92,7 @@ for thing in $files; do
 #	 				echo "svn available for this file"
 				if [ "$fulldiff" != "" ]; then
 					echo "${texthb}`svn up $files`${txtrst}"
-					echo "${txtred}${txtbld}`svn commit $files -m 'save learning progress'`${txtrst}"
+					echo "${txtclr}${txtbld}`svn commit $files -m 'save learning progress'`${txtrst}"
 # 				else
 # 					echo "$files unchanged"
 
