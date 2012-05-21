@@ -487,26 +487,35 @@ def get_fc_info(dir,tag,ldb=None):
 			return elem	
 			break
 
-def get_fc_desc(tex_file_path):
+def get_fc_desc(fc_dir,tag):
+	tex_file_path=get_flashfolder_path(fc_dir)
 	try:
 		tex_file=open(tex_file_path,"r")
 	except:
 		print "Fatal Error: Cannot open file: "+tex_file_path+"!"
 		sys.exit()	
-	content_=False
-	content=""	
-	for l in tex_file:
-		if content_ and not l=="%#end_content#%\n":
-			content+=l
-		if l=="%#begin_content#%\n":
-			content_=True
-		if l=="%#end_content#%\n":
-			content_=False	
-	doc= xml.parse(os.path.dirname(tex_file_path)+"/order.xml")
-	fc_elem=doc.getElementsByTagName(tex_file_path.split("/")[-1].replace(".tex",""))[0]
+	doc= xml.parse(fc_dir+"/Flashcards/order.xml")
+	fc_elem=doc.getElementsByTagName(tag)[0]
 	title=fc_elem.getAttribute('name')
 	theorem_name=fc_elem.getAttribute('theorem_name')
 	theorem_type=fc_elem.getAttribute('theorem_type')
+	content_=False
+	tag_=False
+	content=""	
+	for l in tex_file:
+		if content_ and l.startswith("\\end{"+theorem_type+"}"):
+			content_=False
+			tag_=False
+			break
+			
+		if tag_ and content_:
+			content+=l
+		if not tag_ and l.startswith("\\fc{"+tag+"}"):
+			tag_=True
+		if tag_ and l.startswith("\\begin{"+theorem_type+"}"):			
+			content_=True
+
+
 	return title,theorem_name,theorem_type,content
 		
 ############################################################### Search ###########################################
@@ -587,7 +596,7 @@ def search_flashcard(event="none"):
 		all_fcs=get_all_fcs()
 		for fc_elem in all_fcs:
 			match_list.append(fc_elem)	
-			fc_name,theorem_name,theorem_type,fc_content=get_fc_desc(all_fcs[fc_elem]['folder']+'/Flashcards/'+fc_elem+'.tex')
+			fc_name,theorem_name,theorem_type,fc_content=get_fc_desc(all_fcs[fc_elem]['folder'],fc_elem)
 			match_info_content[fc_content]=[fc_elem,all_fcs[fc_elem]['folder']]
 			match_info_name[fc_name+" "+theorem_name]=[fc_elem,all_fcs[fc_elem]['folder']]
 			match_info[fc_elem]=[fc_elem,all_fcs[fc_elem]['folder']]		
@@ -1026,7 +1035,7 @@ def edit_fc(c,dir,fc_tag):
 	c_height=c.winfo_reqheight()
 	c_width=c.winfo_reqwidth()
 
-	fc_name,theorem_name,theorem_type,content=get_fc_desc(dir+"/Flashcards/"+fc_tag+".tex")
+	fc_name,theorem_name,theorem_type,content=get_fc_desc(dir,fc_tag)
 	c.edit_b.config(state=DISABLED)
 	c.back_b.config(state=DISABLED)
 	frame=Frame(c)	
@@ -1563,6 +1572,14 @@ def create_new():
 		menu()
 
 
+def get_flashfolder_path(dir):
+	tree = xml.parse("./.TexFlasher/config.xml")
+	config_xml = tree.getElementsByTagName('config')[0]  
+	for elem in config_xml.childNodes:
+		if elem.getAttribute('filename').startswith(dir):
+		  return elem.getAttribute('filename')
+		  break
+		
 def hide_FlashFolder(filename):
 	tree = xml.parse("./.TexFlasher/config.xml")
 	config_xml = tree.getElementsByTagName('config')[0]
