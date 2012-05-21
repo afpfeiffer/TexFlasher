@@ -1425,7 +1425,7 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,b_true,b_false,c,
 	page=c.source.getElementsByTagName(flashcard_name)[0].getAttribute('page')
 	fc_pos=int(c.order.getElementsByTagName(flashcard_name)[0].getAttribute('position'))
 	
-	e1=Label(top,anchor=E,text="Flashcardnr: "+str(fc_pos)+", Page: "+str(page)+", Level: "+ str(level) +"  ",  width=40).grid(row=0, column=3,columnspan=2,sticky=E)
+	e1=Label(top,anchor=E,text="Flashcardnr.: "+str(fc_pos)+", Page: "+str(page)+", Level: "+ str(level) +"  ",  width=40).grid(row=0, column=3,columnspan=2,sticky=E)
 	#c.flow.goto(fc_pos)
 	mainloop()
 
