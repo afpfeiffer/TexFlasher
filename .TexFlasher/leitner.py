@@ -503,16 +503,16 @@ def get_fc_desc(fc_dir,tag):
 	tag_=False
 	content=""	
 	for l in tex_file:
-		if content_ and l.startswith("\\end{"+theorem_type+"}"):
+		if content_ and re.compile("^\\\\end\{"+theorem_type+"\}").findall(l):
 			content_=False
 			tag_=False
 			break
 			
 		if tag_ and content_:
 			content+=l
-		if not tag_ and l.startswith("\\fc{"+tag+"}"):
+		if not tag_ and re.compile("^\\\\fc\{"+tag+"\}").findall(l):
 			tag_=True
-		if tag_ and l.startswith("\\begin{"+theorem_type+"}"):			
+		if tag_ and re.compile("^\\\\begin\{"+theorem_type+"\}").findall(l):			
 			content_=True
 
 
@@ -1155,11 +1155,11 @@ class RectTracker:
 		
 		
 	def __stop(self, event):
-		#if self.start==[event.x,event.y]:
+		if self.start==[event.x,event.y]:
 
-		    #self.canvas.create_image(event.x,event.y-10, image=self.canvas.question_image_now,tags="ques"+" "+self.time+" elem")
-		    #self.canvas.clear_b.config(state=NORMAL)
-		    #self.canvas.save_b.config(state=NORMAL)
+		    self.canvas.create_image(event.x,event.y-10, image=self.canvas.question_image_now,tags="ques"+" "+self.time+" elem")
+		    self.canvas.clear_b.config(state=NORMAL)
+		    self.canvas.save_b.config(state=NORMAL)
 
 
 
@@ -1223,6 +1223,7 @@ def create_comment_canvas(c,dir,fc_tag):
 	else:
 		rect=c.rect
 	x, y = None, None
+	
 	image = Image.open(".TexFlasher/pictures/question.png")
 	image = image.resize((20,20), Image.ANTIALIAS)
 	question_image = ImageTk.PhotoImage(image)
@@ -1233,7 +1234,7 @@ def create_comment_canvas(c,dir,fc_tag):
 		global x, y
 		kill_xy()		
 		#dashes = [3, 2]
-		c.create_image(event.x,event.y-10, image=question_image,tags="question")	
+		c.cursor_image=c.create_image(event.x,event.y-10, image=question_image,tags="question")	
 		c.question_image_now=question_image_now
 		rect.up_time(strftime("%Y-%m-%d %H:%M:%S", localtime()))
 #		x = c.create_line(event.x, 0, event.x, 1000, dash=dashes, tags='no')
@@ -1245,9 +1246,9 @@ def create_comment_canvas(c,dir,fc_tag):
 	    for im in c.find_withtag("question"):
 	      c.delete(im)
 
-	#c.bind('<Motion>', cool_design, '+')	
-	#c.bind('<Enter>',cool_design,'+')
-	#c.bind('<Leave>',hide)
+	c.bind('<Motion>', cool_design, '+')	
+	c.bind('<Enter>',cool_design,'+')
+	c.bind('<Leave>',hide)
 
 	def onDrag(start,end):
 		global x,y
