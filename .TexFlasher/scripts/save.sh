@@ -37,7 +37,7 @@ echo
 files=$*
 
 txtrst=$(tput sgr0) # Text reset
-txtred=$(tput setaf 1) # Red
+txtred=$(tput setaf 2) # Red
 txtbgw=$(tput setb 7) #white background
 txtbld=$(tput bold) #bold
 texthb=$(tput dim) #half bright
