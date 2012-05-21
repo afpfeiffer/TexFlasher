@@ -1025,7 +1025,7 @@ def  disp_single_fc(image_path,tag,title=None):
 		      clear_b.config(state=NORMAL)	
 	
 	
-	Label(win,height=1).grid(row=2,column=0)
+	#Label(win,height=1).grid(row=2,column=0)
 	Label(win,text="Created: "+fc_info.getAttribute("created")+", Last Reviewed:"+fc_info.getAttribute("lastReviewed")).grid(row=0,columnspan=2)	
 
 
@@ -1155,11 +1155,11 @@ class RectTracker:
 		
 		
 	def __stop(self, event):
-		if self.start==[event.x,event.y]:
+		#if self.start==[event.x,event.y]:
 
-		    self.canvas.create_image(event.x,event.y-10, image=self.canvas.question_image_now,tags="ques"+" "+self.time+" elem")
-		    self.canvas.clear_b.config(state=NORMAL)
-		    self.canvas.save_b.config(state=NORMAL)
+		 #   self.canvas.create_image(event.x,event.y-10, image=self.canvas.question_image_now,tags="ques"+" "+self.time+" elem")
+		  #  self.canvas.clear_b.config(state=NORMAL)
+		   # self.canvas.save_b.config(state=NORMAL)
 
 
 
@@ -1246,9 +1246,9 @@ def create_comment_canvas(c,dir,fc_tag):
 	    for im in c.find_withtag("question"):
 	      c.delete(im)
 
-	c.bind('<Motion>', cool_design, '+')	
-	c.bind('<Enter>',cool_design,'+')
-	c.bind('<Leave>',hide)
+	#c.bind('<Motion>', cool_design, '+')	
+	#c.bind('<Enter>',cool_design,'+')
+	#c.bind('<Leave>',hide)
 
 	def onDrag(start,end):
 		global x,y
