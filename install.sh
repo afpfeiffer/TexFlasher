@@ -149,7 +149,7 @@ if [ "$ANSWER" != "n" ]; then
 	echo "Terminal=false" >> TexFlasher.desktop
 	echo "Exec=$PWD/run-TexFlasher.sh" >> TexFlasher.desktop
 	echo "Name=TexFlasher" >> TexFlasher.desktop
-	echo "Icon=$PWD/.TexFlasher/icon.png" >> TexFlasher.desktop
+	echo "Icon=$PWD/.TexFlasher/pictures/icon.png" >> TexFlasher.desktop
 	chmod a+x  TexFlasher.desktop
 
 	mv TexFlasher.desktop ~/Desktop/
