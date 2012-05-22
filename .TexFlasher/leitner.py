@@ -28,7 +28,6 @@ global saveString
 global Menu
 global query
 global default_search_value
-global check
 global Settings 
 
 import os
@@ -49,8 +48,13 @@ import tkFileDialog
 from difflib import get_close_matches
 import itertools, collections
 import ConfigParser
+
+#locals
 from systemInterface import *
+from gallery import *
 #import Pmw
+
+
 ######################################################################## leitner_db management ##############################################
 
 
@@ -170,6 +174,34 @@ def update_flashcard(fc_tag,ldb,selected_dir,attr_name,attr_value,lastReviewed=s
 			xml_file.close()
 	except:
 		print "Error while updating "+fc_tag+" attribute "+attr_name+" to "+str(attr_value)
+
+def get_all_fcs(path=False):
+	all_fcs = []
+	if os.path.isfile("./.TexFlasher/config.xml"):
+		tree = xml.parse("./.TexFlasher/config.xml")
+		config_xml = tree.getElementsByTagName('FlashFolder')
+		for elem in config_xml:
+			if path and path==os.path.dirname(elem.getAttribute('filename')):			
+				dir=os.path.dirname(elem.getAttribute('filename'))
+				try:
+					tree = xml.parse(dir+"/Users/"+Settings["user"]+".xml")
+					dir_xml = tree.getElementsByTagName('ldb')[0].childNodes
+					for fc_elem in dir_xml:
+						all_fcs.append({"tag":fc_elem.tagName,"dir":dir,"level":fc_elem.getAttribute('level')}) # add atributes as needed
+				except:
+					pass
+			elif not path and not elem.getAttribute('filename')=="":
+				dir=os.path.dirname(elem.getAttribute('filename'))
+				try:
+					tree = xml.parse(dir+"/Users/"+Settings["user"]+".xml")
+					dir_xml = tree.getElementsByTagName('ldb')[0].childNodes
+					for fc_elem in dir_xml:
+						all_fcs.append({"tag":fc_elem.tagName,"dir":dir,"level":fc_elem.getAttribute('level')}) # add atributes as
+				except:
+					pass
+	return all_fcs	
+
+
 
 ################################################ Statistics ################################################################
 
@@ -559,7 +591,44 @@ class AutocompleteEntry(Entry):
                         self.delete(0,END)
                         self.insert(0,self._hits[self._hit_index])
                         self.select_range(self.position,END)
-                        
+                       
+        def search_flashcard(self):
+		search_query=self.get()
+		# set similarity sensitivity
+		thresh=0.7 #marker and title
+		content_thresh=0.8 # content
+		if len(search_query)>0 and not search_query=="query ...":		
+			match_info_name=[]
+			all_fcs=get_all_fcs()
+			for fc_elem in all_fcs:
+				fc_name,theorem_name,theorem_type,fc_content=get_fc_desc(fc_elem['dir'],fc_elem['tag'])
+				try:
+					fc_elem['query']=fc_name+" "+theorem_name+" "+fc_content+" "+fc_elem['tag']
+					match_info_name.append(fc_elem)
+				except:
+					pass
+					#TODO: Sometimes encoding error!
+					#print "Search error with "+str(fc_elem)
+			search_results=[]
+			for res in match_info_name:
+				if not len(search_query.split(" "))>0:
+					if len(get_close_matches(search_query.lower(),res['query'].lower().split(" "),cutoff=thresh))>0:			
+						search_results.append(res)
+				else:
+					match_count=0
+					for s in search_query.lower().split(" "):
+						if len(get_close_matches(s,res['query'].lower().split(" "),cutoff=thresh))>0 or len(get_close_matches(s,[res['query'].lower()],cutoff=thresh))>0 or len(get_close_matches(s,res['query'].lower().split("-"),cutoff=thresh))>0:						
+							match_count+=1
+					if match_count==len(search_query.split(" ")):
+						search_results.append(res)												
+			## display search results
+			if len(search_results)>0:
+				display_mult_fcs(search_results,"Found "+str(len(search_results))+" search results for \""+search_query+"\"","Menu","lambda:menu()","./.TexFlasher/pictures/menu.png")
+			else:
+				self.delete(0,END)
+				self.insert(0,"Nothing found!" )
+
+	
         def handle_keyrelease(self, event):
                 """event handler for the keyrelease event on this widget"""
                 if event.keysym == "BackSpace":
@@ -580,265 +649,9 @@ class AutocompleteEntry(Entry):
                 # perform normal autocomplete if event is a single key or an umlaut
                 if len(event.keysym) == 1 or event.keysym in tkinter_umlauts:
                         self.autocomplete()
-
-
-				
-def search_flashcard(event="none"):
-	search_query=query.get()
-	# set similarity sensitivity
-	thresh=0.7 #marker and title
-	content_thresh=0.8 # content
-	if len(search_query)>0 and not search_query=="query ...":		
-		match_info_name=[]
-		all_fcs=get_all_fcs()
-		for fc_elem in all_fcs:
-			fc_name,theorem_name,theorem_type,fc_content=get_fc_desc(fc_elem['dir'],fc_elem['tag'])
-			try:
-				fc_elem['query']=fc_name+" "+theorem_name+" "+fc_content+" "+fc_elem['tag']
-				match_info_name.append(fc_elem)
-			except:
-				pass
-				#TODO: Sometimes encoding error!
-				#print "Search error with "+str(fc_elem)
-		search_results=[]
-		for res in match_info_name:
-			if not len(search_query.split(" "))>0:
-				if len(get_close_matches(search_query.lower(),res['query'].lower().split(" "),cutoff=thresh))>0:			
-					search_results.append(res)
-			else:
-				match_count=0
-				for s in search_query.lower().split(" "):
-					if len(get_close_matches(s,res['query'].lower().split(" "),cutoff=thresh))>0 or len(get_close_matches(s,[res['query'].lower()],cutoff=thresh))>0 or len(get_close_matches(s,res['query'].lower().split("-"),cutoff=thresh))>0:						
-						match_count+=1
-				if match_count==len(search_query.split(" ")):
-					search_results.append(res)												
-		## display search results
-		if len(search_results)>0:
-			display_mult_fcs(search_results,"Found "+str(len(search_results))+" search results for \""+search_query+"\"","Menu","lambda:menu()","./.TexFlasher/pictures/menu.png")
-			default_search_value.set("query ...")	
-		else:
-			default_search_value.set( defaultAnswer( query.get().lower() ) )
-	else:
-		default_search_value.set("query ...")
-
-
-def defaultAnswer( arg ):
-	ANSWERS={ 
-					Settings["user"]:"You are one lazy student.",
-					"can":"Can is a great programmer!",
-					"axel":"Axel is a great programmer!",
-					"david":"David sucks at OA!",
-					"meaning of life":"42!",
-					"what is the meaning of life":"42!",
-					"what is the meaning of life?":"42!"
-					}
-	
-	if arg in ANSWERS:
-		return ANSWERS[arg]
-	else:
-		return "Nothing found!"
-####################################################### image flow #####################################################################	
-	
-class Flow:
-	def __init__(self, clickfunc, canvas):
-	         self.cfunc = clickfunc
-		 self.canvas = canvas
-
-	def goto(self, nr):
-		global velocity,autorotate	
-		clickeditem = self.canvas.find_withtag("pic_" + str(nr))
-		tagsofitem= self.canvas.gettags(clickeditem)
-
-		oldcenteritem= self.canvas.find_withtag('center')
-		if clickeditem:
-			if oldcenteritem: 
-				itemtags= self.canvas.gettags(oldcenteritem) 
-				self.canvas.itemconfig(oldcenteritem, tags=(itemtags[0], itemtags[1],  itemtags[2], 'pic', 'nocenter' ) )
-			itemtags= self.canvas.gettags(clickeditem) 
-			self.canvas.itemconfig(clickeditem, tags=(itemtags[0], itemtags[1],  itemtags[2], 'pic', 'center' ) )
-			autorotate=True
-		
-			self.canvas.update_idletasks()
-			self.canvas.after(0)
-	 	
-
-	def show_gallery(self,canvas, maxdispimages, pathdict):
-	 global velocity,xold,maximages,autorotate,centerrec 
-	 distance= 10
-	 velocity= 0
-	 xold=0
-	 autorotate=False
-	 mydict={}
-	 infodict={}
-	 CWIDTH = canvas.winfo_reqwidth()
-	 CHEIGHT = canvas.winfo_reqheight()
-	 PICWIDTH= (CWIDTH-distance)/(maxdispimages) - distance
-	 
-	 maximages= len(pathdict)
-	 
-	 
-	 CWIDTH=(PICWIDTH+distance)*maxdispimages + distance
-	 
-	 def forward():
-		print "lol"         
-	
-  	 #TODO
-  	 #forward_button=Button(top,width=4,height=2)
-	 #forward_button.configure(command=forward)
-	 #forward_button.grid(row=0,column=1,sticky=S,columnspan=1)	
-
-
-	 #set background image
-	 #bgim = Image.open("bg.jpg") 
-	 #bglineim= Image.open("bgline.jpg") 
-	 #bgim = bgim.resize((CWIDTH,CHEIGHT), Image.ANTIALIAS)
-	 #bglineim= bglineim.resize((CWIDTH,distance/2), Image.ANTIALIAS)
-	 #bgimage = ImageTk.PhotoImage(bgim)
-	 #bglineimage= ImageTk.PhotoImage(bglineim)
-	 #canvas.create_image(CWIDTH/2,CHEIGHT/2 , image=bgimage)
-	 #canvas.create_image(CWIDTH/2, CHEIGHT/2 - PICHEIGHT/2 - distance  , image=bglineimage)
-	 #canvas.background=bgimage
-	 #canvas.backgroundline=bglineimage
-	 #canvas.create_image(CWIDTH/2, CHEIGHT/2 + PICHEIGHT/2 + distance  , image=bglineimage)
-	 #canvas.backgroundline2=bglineimage
-	 
-	 #clipim = Image.open("clip.png") 
-	 #clipim = clipim.resize(PICWIDTH,PICHEIGHT)
-	 #clipimage = ImageTk.PhotoImage(clipim)
-         #clipitem = canvas.create_image(CWIDTH/2,CHEIGHT/2 , image=clipimage)
-
-
-	 #create label for infos
-	
-	 #coolline =  canvas.create_line(0,CHEIGHT/2+PICHEIGHT/2, CWIDTH,CHEIGHT/2+PICHEIGHT/2, fill="white", width=2) 
-
-
-	 for i in range(0,maximages):
-	      	im = Image.open(pathdict[i]['path']) 
-		imh = float(im.size[1])
-		imw= float(im.size[0])
-		factor= imh/imw
-		PICHEIGHT= int(PICWIDTH*factor)
-	      	im = im.resize((PICWIDTH,PICHEIGHT), Image.ANTIALIAS)
-	      	mydict[i]= ImageTk.PhotoImage(im)
-		infodict[str(i)]= "Text_" + str(i)
-	      	mydict["pic_"+ str(i)]=canvas.create_image(distance + PICWIDTH/2 +i*(distance + PICWIDTH), CHEIGHT/2 , image=mydict[i])
-	      	setattr(canvas, "pic_"+ str(i), mydict[i]) 
-	      	if i < maxdispimages:
-			canvas.itemconfig(mydict["pic_"+ str(i)], tags=('visible','pic_' + str(i),str(distance + PICWIDTH/2 +i*(distance + PICWIDTH)), 'pic', 'nocenter') )
-	      	else: 
-			canvas.itemconfig(mydict["pic_"+ str(i)], tags=('invisible','pic_' + str(i),str(distance + PICWIDTH/2 +i*(distance + PICWIDTH)), 'pic', 'nocenter') )
-	 
-	 #canvas.create_rectangle(distance, distance, CWIDTH-distance, CHEIGHT-distance, outline="black", width=20, outlinestipple="gray50")		
- 	 infolabel = canvas.create_text(CWIDTH/2,CHEIGHT/2 + PICHEIGHT/2 + 3*distance, text="INFO", fill= "white")
-	 def doubleclick(event):
-		global velocity,autorotate	
-		#clickeditem= canvas.find_withtag(CURRENT) TODO: why doesnt that work correctly?
-		clickeditem= canvas.find_closest(event.x,event.y)	
-		tagsofitem= canvas.gettags(clickeditem)
-		oldcenteritem= canvas.find_withtag('center')
-		if clickeditem:
-			if oldcenteritem: 
-				itemtags= canvas.gettags(oldcenteritem) 
-				canvas.itemconfig(oldcenteritem, tags=(itemtags[0], itemtags[1],  itemtags[2], 'pic', 'nocenter' ) )
-			itemtags= canvas.gettags(clickeditem) 
-			if itemtags[3]:
-				canvas.itemconfig(clickeditem, tags=(itemtags[0], itemtags[1],  itemtags[2], 'pic', 'center' ) )
-				autorotate=True
-		
-			canvas.update_idletasks()
-			canvas.after(0)
-
-	 def movemouse(event):
-		global velocity,autorotate
-		if not autorotate and event.y < (CHEIGHT/2 + PICWIDTH/2 + distance) : velocity= int(1.1*(event.x-CWIDTH/2)/10)
-		elif not autorotate : velocity = 0
-
-	 def rollWheel(event):
-		global velocity
-		if event.num == 4:
-			velocity-=10
-		
-		elif event.num == 5:
-			velocity+=10
-
-	 def stopvel(event):
-		global velocity
-		if not autorotate: velocity=0 
-
-
-	 def update_canvas():
-		global velocity,maximages,autorotate, centerrec
-	 	centeritem = canvas.find_withtag("center")
-		visibleitems = canvas.find_withtag("visible")
-		invisibleitems = canvas.find_withtag("invisible")
-		picitems=canvas.find_withtag("pic")
-	
-		leftitem=canvas.find_withtag("pic_0")
-		rightitem=canvas.find_withtag("pic_" + str(maximages-1))
-		leftitemtags=canvas.gettags(leftitem)
-		rightitemtags=canvas.gettags(rightitem)
-
-		#canvas.itemconfig(coolline, width=abs(velocity/4))
-		if centeritem and autorotate:
-			itemtags= canvas.gettags(centeritem) 
-			centerrec = canvas.find_withtag("centerrec")
-			xpos=  int(itemtags[2])
-			velocity= int(1.1*(xpos- CWIDTH/2)/5)
-			if velocity == 0 or abs(xpos-CWIDTH/2) < 2 : 
-				canvas.itemconfig(centeritem, tags=('visible',itemtags[1],  itemtags[2], 'pic', 'nocenter' ) )	
-				canvas.itemconfig(infolabel, text= infodict[ itemtags[1][4:]])
-				autorotate=False
-				canvas.delete(centerrec)
-				#canvas.delete(clipitem)
-				#print "stop"
-		
-			if not centerrec: 
-				#canvas.create_image(CWIDTH/2,CHEIGHT/2 , image=clipimage)
-	 			#canvas.clipitem=clipimage	
-				canvas.create_rectangle(xpos-PICWIDTH/2, CHEIGHT/2-PICHEIGHT/2, xpos+PICWIDTH/2, CHEIGHT/2+PICHEIGHT/2, outline="black", width=2 ,tags=('centerrec') )
-			else: canvas.coords(centerrec,xpos-PICWIDTH/2, CHEIGHT/2-PICHEIGHT/2, xpos+PICWIDTH/2, CHEIGHT/2+PICHEIGHT/2)	
-
-
-		for item in picitems:
-		        itemtags= canvas.gettags(item) 
-			if (velocity < 0 and int(leftitemtags[2]) < CWIDTH/2) or (velocity > 0 and int(rightitemtags[2]) > CWIDTH/2):
-				xnew=int(itemtags[2])-velocity
-				canvas.coords(item, xnew, CHEIGHT/2 )	
-		     		centertag= "nocenter"
-				if itemtags[4] == 'center':  
-					centertag= "center"
-				if xnew >= CWIDTH-distance or xnew <= distance :
-					canvas.itemconfig(item, tags=('invisible',itemtags[1],  str(xnew) ,'pic', centertag) )
-	 			else: 
-					#if itemtags[0] is "invisible":
-					#	curr_index = int(itemtags[1][4:])
-					#	newitem=canvas.create_image(xnew, CHEIGHT/2 , image=mydict[ str( contents[curr_index] ) ] )
-					canvas.itemconfig(item, tags=('visible',itemtags[1],  str(xnew) , 'pic', centertag) )
-				#if (xnew>CWIDTH/2-PICWIDTH) and (xnew<CWIDTH/2+PICWIDTH): canvas.itemconfig(item, tags=(itemtags[0], itemtags[1],  itemtags[2], 'pic', 'center' ) )
-	   	canvas.update()
-		canvas.after(1,update_canvas)
-
-	 def clickB1(event):
-		curritem= canvas.find_closest(event.x,event.y)
-		clickedtags=canvas.gettags(curritem)
-		if clickedtags[1]: self.cfunc(pathdict[int(clickedtags[1][4:])]['path'].replace("-1.png","-2.png"),pathdict[int(clickedtags[1][4:])]['tag'])
-		doubleclick(event)
-	 
-	 def key(event):
-		print "taste"
-	 
-	 #canvas.bind("<Double-Button-1>", doubleclick)
-	 canvas.bind("<B1-Motion>", movemouse )
-	 canvas.bind("<ButtonRelease>", stopvel)
-	 canvas.bind('<Button-4>', rollWheel)
-	 canvas.bind('<Button-5>', rollWheel)
-	 canvas.bind('<Double-Button-1>', clickB1)
-	 canvas.bind('<Key>', key)
-
-
-	 canvas.after_idle(update_canvas) 
-	 
+                if event.keysym == "Return":
+                		self.search_flashcard()
+                			 
 ############################################################### display flashcards ###########################################################	
 
 class AutoScrollbar(Scrollbar):
@@ -876,31 +689,6 @@ def create_image_button(window,path,width=None,height=None):
 	return button
 
 
-def get_all_fcs(path=False):
-	all_fcs = []
-	if os.path.isfile("./.TexFlasher/config.xml"):
-		tree = xml.parse("./.TexFlasher/config.xml")
-		config_xml = tree.getElementsByTagName('FlashFolder')
-		for elem in config_xml:
-			if path and path==os.path.dirname(elem.getAttribute('filename')):			
-				dir=os.path.dirname(elem.getAttribute('filename'))
-				try:
-					tree = xml.parse(dir+"/Users/"+Settings["user"]+".xml")
-					dir_xml = tree.getElementsByTagName('ldb')[0].childNodes
-					for fc_elem in dir_xml:
-						all_fcs.append({"tag":fc_elem.tagName,"dir":dir,"level":fc_elem.getAttribute('level')}) # add atributes as needed
-				except:
-					pass
-			elif not path and not elem.getAttribute('filename')=="":
-				dir=os.path.dirname(elem.getAttribute('filename'))
-				try:
-					tree = xml.parse(dir+"/Users/"+Settings["user"]+".xml")
-					dir_xml = tree.getElementsByTagName('ldb')[0].childNodes
-					for fc_elem in dir_xml:
-						all_fcs.append({"tag":fc_elem.tagName,"dir":dir,"level":fc_elem.getAttribute('level')}) # add atributes as
-				except:
-					pass
-	return all_fcs	
 
 
 def display_mult_fcs(fcs,title,button_title,button_command,button_image): #Syntax: fcs=[{"tag":fc_tag,"dir":fc_dir,"level":fc_level}, ...]
@@ -1781,18 +1569,17 @@ def menu():
 		global default_search_value
 
 		default_search_value = StringVar()
-
 		query=AutocompleteEntry(Menu)
 		query.set_completion_list(comp_list)
-		query.configure(font=("Helvetica",20),textvariable=default_search_value,bd =5,bg=None,fg="gray",justify=CENTER)
-		query.bind('<Return>', search_flashcard)
+		query.configure(highlightthickness=0,font=("Helvetica",20),textvariable=default_search_value,bd =5,bg=None,fg="gray",justify=CENTER)
+	#	query.bind('<Return>', search_flashcard)
 		query.bind("<Button-1>", clear_search)
 		default_search_value.set("Search ...")
 		query.grid(row=1,column=1,sticky=E+W+N+S)
 
 
 		search_button=create_image_button(Menu,"./.TexFlasher/pictures/search.png",40,40)
-		search_button.configure(command=search_flashcard)
+		search_button.configure(command=lambda:query.search_flashcard())
 		search_button.grid(row=1,column=2,sticky=N+E+W+S,columnspan=2)		
 
 
