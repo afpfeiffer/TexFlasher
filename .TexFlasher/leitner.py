@@ -1831,9 +1831,9 @@ def menu():
 		exec('save.configure(command=lambda:saveFiles(saveString))')
 		exec('save.grid(row=1, column=5,sticky=W+N+S+E,columnspan=3)')	
 	
-		create_n=create_image_button(Menu,"./.TexFlasher/pictures/Flashcard_folder_create.png",60,60)
+		create_n=create_image_button(Menu,"./.TexFlasher/pictures/Flashcard_folder_create.png",40,40)
 		create_n.configure(width=70,command=create_folder)
-		create_n.grid(row=1,column=4)		
+		create_n.grid(row=1,column=4,sticky=N+W+S+E)		
 		Label(Menu,height=1).grid(sticky=E+W,row=2,columnspan=10)
 	else:
 		create.grid(row=row_start+1,columnspan=8)
