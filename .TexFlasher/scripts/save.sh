@@ -72,23 +72,23 @@ for thing in $files; do
 		seperatedFiles="`echo $thing | sed -e 's/###/ /g'`"
 # 	echo $seperatedFiles
 		touch $seperatedFiles
-		svn add $seperatedFiles 2> /dev/null  
-		svn info $seperatedFiles > /dev/null
+		svn add $seperatedFiles &> /dev/null  
+		svn info $seperatedFiles &> /dev/null
 		HAVESVN=$?
-		
-		echo "processing: "
-		for files in $seperatedFiles; do
-			fulldiff="`svn diff $files`" > /dev/null
-			if [ "$fulldiff" == "" ]; then			
-				echo "  -> ${texthb}$files ${txtrst}"
-			else
-				echo "  -> ${txtclr}${txtbld}$files ${txtrst} "
-			fi
-		done
-		echo
-		for files in $seperatedFiles; do
-			fulldiff="`svn diff $files`" > /dev/null			
-			if [ $HAVESVN -eq 0 ]; then
+		if [ $HAVESVN -eq 0 ]; then
+			echo "processing: "
+			for files in $seperatedFiles; do
+				fulldiff="`svn diff $files`" > /dev/null
+				if [ "$fulldiff" == "" ]; then			
+					echo "  -> ${texthb}$files ${txtrst}"
+				else
+					echo "  -> ${txtclr}${txtbld}$files ${txtrst} "
+				fi
+			done
+			echo
+			for files in $seperatedFiles; do
+				fulldiff="`svn diff $files`" > /dev/null			
+			
 #	 				echo "svn available for this file"
 				if [ "$fulldiff" != "" ]; then
 					echo "${texthb}`svn up $files`${txtrst}"
@@ -97,10 +97,7 @@ for thing in $files; do
 # 					echo "$files unchanged"
 
 				fi	
-			else
-				echo "Warning: svn unavailable for this folder. Files are always saved on HD."
-			fi
-		done
-		echo
+			done
+		fi
 done
 exit 0

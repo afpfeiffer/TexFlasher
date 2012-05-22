@@ -26,8 +26,8 @@ for string in $files; do
 	seperatedFiles="`echo $string | sed -e 's/###/ /g'`"
 	for thing in $seperatedFiles; do
 		if [ -f $thing ]; then
-			svn add $thing 2> /dev/null  
-			svn info $thing > /dev/null
+			svn add $thing &> /dev/null  
+			svn info $thing &> /dev/null
 			HAVESVN=$?
 			if [ $HAVESVN -eq 0 ]; then
 # 				echo "svn available for this file"

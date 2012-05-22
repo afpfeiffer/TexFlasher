@@ -21,7 +21,7 @@
 files=$*
 
 for thing in $files; do
-	svn info $thing > /dev/null
+	svn info $thing &> /dev/null
 	HAVESVN=$?
 	if [ $HAVESVN -eq 0 ]; then
 # 		echo "svn available for this file"
@@ -34,9 +34,13 @@ for thing in $files; do
 			if [[ ! -f $folder/Flashcards/$purefilebase.bak ]]; then
 				touch $folder/Flashcards/$purefilebase.bak
 				echo "" > $folder/Flashcards/UPDATE
+				exit 0
 			else
 				if [[ "`diff $folder/Flashcards/$purefilebase.bak $thing`" != "" ]]; then
 					echo "" > $folder/Flashcards/UPDATE
+# 					echo "`date`: files changed"
+
+					exit 0
 				fi
 			fi
 			
@@ -49,6 +53,7 @@ for thing in $files; do
 # 				echo svn info $server | grep "Last Changed Author:" | cut -d ":" -f 2 | cut -d " " -f 2 > $folder/Flashcards/UPDATE
 # 				echo "`date`: revisions differ: $serverRev, $ownRev"
 				echo "" > $folder/Flashcards/UPDATE
+				exit 0
 			fi
 		fi
 	fi
