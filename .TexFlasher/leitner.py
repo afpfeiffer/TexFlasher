@@ -470,10 +470,10 @@ def show_pie_level(event,pie_data,radius):
 				level=pie_data[2][i+1][1]
 				break
 		all_fcs=get_all_fcs(dir)
-		fcs={}
+		fcs=[]
 		for elem in all_fcs:
-			if all_fcs[elem]['level']==str(level):
-				fcs[elem]={"tag":elem,"dir":all_fcs[elem]['folder'],"level":str(all_fcs[elem]['level'])}
+			if elem['level']==str(level):
+				fcs.append(elem)
 		display_mult_fcs(fcs,"%s flashcard(s) at level %s in %s"%(str(len(fcs)),str(level),dir.split("/")[-1]),"Go Back","lambda:statistics_nextWeek('%s')"%(dir),"./.TexFlasher/pictures/stat.png")
 
 
@@ -589,57 +589,33 @@ def search_flashcard(event="none"):
 	thresh=0.7 #marker and title
 	content_thresh=0.8 # content
 	if len(search_query)>0 and not search_query=="query ...":		
-		match_list=[]
-		match_info={}
-		match_info_name={}
-		match_info_content={}
+		match_info_name=[]
 		all_fcs=get_all_fcs()
 		for fc_elem in all_fcs:
-			match_list.append(fc_elem)	
-			fc_name,theorem_name,theorem_type,fc_content=get_fc_desc(all_fcs[fc_elem]['folder'],fc_elem)
-			match_info_content[fc_content]=[fc_elem,all_fcs[fc_elem]['folder']]
-			match_info_name[fc_name+" "+theorem_name]=[fc_elem,all_fcs[fc_elem]['folder']]
-			match_info[fc_elem]=[fc_elem,all_fcs[fc_elem]['folder']]		
-		#search marker
-		result_marker=get_close_matches(search_query,match_list,cutoff=thresh)
-		search_results={}
-		for res in result_marker:
-			search_results[match_info[res][0]]={"tag":match_info[res][0],"dir":match_info[res][1],"level":all_fcs[match_info[res][0]]['level']}	
-		#search title
+			fc_name,theorem_name,theorem_type,fc_content=get_fc_desc(fc_elem['dir'],fc_elem['tag'])
+			try:
+				fc_elem['query']=fc_name+" "+theorem_name+" "+fc_content+" "+fc_elem['tag']
+				match_info_name.append(fc_elem)
+			except:
+				pass
+				#TODO: Sometimes encoding error!
+				#print "Search error with "+str(fc_elem)
+		search_results=[]
 		for res in match_info_name:
 			if not len(search_query.split(" "))>0:
-				if len(get_close_matches(search_query.lower(),res.lower().split(" "),cutoff=thresh))>0:			
-					search_results[match_info_name[res][0]]={"tag":match_info_name[res][0],"dir":match_info_name[res][1],"level":all_fcs[match_info_name[res][0]]['level']}
+				if len(get_close_matches(search_query.lower(),res['query'].lower().split(" "),cutoff=thresh))>0:			
+					search_results.append(res)
 			else:
 				match_count=0
 				for s in search_query.lower().split(" "):
-					if len(get_close_matches(s,res.lower().split(" "),cutoff=thresh))>0 or len(get_close_matches(s,[res.lower()],cutoff=thresh))>0 or len(get_close_matches(s,res.lower().split("-"),cutoff=thresh))>0:						
+					if len(get_close_matches(s,res['query'].lower().split(" "),cutoff=thresh))>0 or len(get_close_matches(s,[res['query'].lower()],cutoff=thresh))>0 or len(get_close_matches(s,res['query'].lower().split("-"),cutoff=thresh))>0:						
 						match_count+=1
 				if match_count==len(search_query.split(" ")):
-					search_results[match_info_name[res][0]]={"tag":match_info_name[res][0],"dir":match_info_name[res][1],"level":all_fcs[match_info_name[res][0]]['level']}						
-		#search content	
-		if check.var.get()==1:	
-			for res in match_info_content:
-				if not len(search_query.split(" "))>0:
-					if len(get_close_matches(search_query.lower(),res.lower().split(" "),cutoff=content_thresh))>0:			
-						search_results[match_info_content[res][0]]={"tag":match_info_content[res][0],"dir":match_info_content[res][1],"level":all_fcs[match_info_content[res][0]]['level']}
-				else:
-					match_count=0
-					for s in search_query.lower().split(" "):
-						if len(get_close_matches(s,res.lower().split(" "),cutoff=content_thresh))>0 or len(get_close_matches(s,[res.lower()],cutoff=thresh))>0 or len(get_close_matches(s,res.lower().split("-"),cutoff=content_thresh))>0:						
-							match_count+=1
-					if match_count==len(search_query.split(" ")):
-						search_results[match_info_content[res][0]]={"tag":match_info_content[res][0],"dir":match_info_content[res][1],"level":all_fcs[match_info_content[res][0]]['level']}																				
+					search_results.append(res)												
 		## display search results
 		if len(search_results)>0:
 			display_mult_fcs(search_results,"Found "+str(len(search_results))+" search results for \""+search_query+"\"","Menu","lambda:menu()","./.TexFlasher/pictures/menu.png")
 			default_search_value.set("query ...")	
-
-		#elif len(search_results)==1:
-		#	for res in search_results:
-		#		disp_single_fc(search_results[res]['dir']+'/Flashcards/'+search_results[res]['tag']+'-2.png',search_results[res]['tag']+" in "+search_results[res]['dir'].split("/")[-1]+' level '+search_results[res]['level'],search_results[res]['tag'])
-		#		default_search_value.set("query ...")	
-		#		break
 		else:
 			default_search_value.set( defaultAnswer( query.get().lower() ) )
 	else:
@@ -901,7 +877,7 @@ def create_image_button(window,path,width=None,height=None):
 
 
 def get_all_fcs(path=False):
-	all_fcs = {}
+	all_fcs = []
 	if os.path.isfile("./.TexFlasher/config.xml"):
 		tree = xml.parse("./.TexFlasher/config.xml")
 		config_xml = tree.getElementsByTagName('FlashFolder')
@@ -912,7 +888,7 @@ def get_all_fcs(path=False):
 					tree = xml.parse(dir+"/Users/"+Settings["user"]+".xml")
 					dir_xml = tree.getElementsByTagName('ldb')[0].childNodes
 					for fc_elem in dir_xml:
-						all_fcs[fc_elem.tagName]={"folder":dir,"level":fc_elem.getAttribute('level')} # add atributes as needed
+						all_fcs.append({"tag":fc_elem.tagName,"dir":dir,"level":fc_elem.getAttribute('level')}) # add atributes as needed
 				except:
 					pass
 			elif not path and not elem.getAttribute('filename')=="":
@@ -921,13 +897,13 @@ def get_all_fcs(path=False):
 					tree = xml.parse(dir+"/Users/"+Settings["user"]+".xml")
 					dir_xml = tree.getElementsByTagName('ldb')[0].childNodes
 					for fc_elem in dir_xml:
-						all_fcs[fc_elem.tagName]={"folder":dir,"level":fc_elem.getAttribute('level')} # add atributes as needed
+						all_fcs.append({"tag":fc_elem.tagName,"dir":dir,"level":fc_elem.getAttribute('level')}) # add atributes as
 				except:
 					pass
 	return all_fcs	
 
 
-def display_mult_fcs(fcs,title,button_title,button_command,button_image): #Syntax: fcs={"anykey":{"tag":fc_tag,"dir":fc_dir,"level":fc_level}, ...}
+def display_mult_fcs(fcs,title,button_title,button_command,button_image): #Syntax: fcs=[{"tag":fc_tag,"dir":fc_dir,"level":fc_level}, ...]
 	clear_window()
 	global search_canvas # scrolling wheel support needs that for some reason
 	top.title(version+" - Search")
@@ -956,8 +932,8 @@ def display_mult_fcs(fcs,title,button_title,button_command,button_image): #Synta
 					res=iterator.next()
 				except:
 					break
-			button=create_image_button(Search_frame,fcs[res]['dir']+"/Flashcards/"+fcs[res]['tag']+"-1.png",size,int(size*0.6))
-			exec('button.configure(command=lambda:disp_single_fc("'+fcs[res]['dir']+"/Flashcards/"+fcs[res]['tag']+"-2.png"+'","'+fcs[res]['tag']+'","'+fcs[res]['tag']+' in '+fcs[res]['dir'].split("/")[-1]+' level '+fcs[res]['level']+'"))')
+			button=create_image_button(Search_frame,res['dir']+"/Flashcards/"+res['tag']+"-1.png",size,int(size*0.6))
+			exec('button.configure(command=lambda:disp_single_fc("'+res['dir']+"/Flashcards/"+res['tag']+"-2.png"+'","'+res['tag']+'","'+res['tag']+' in '+res['dir'].split("/")[-1]+' level '+res['level']+'"))')
 			button.grid(row=str(i+1),column=colu)
 			exec("button.bind('<Button-4>', lambda event: search_canvas.yview_scroll(-1, UNITS))")
 			exec("button.bind('<Button-5>', lambda event: search_canvas.yview_scroll(1, UNITS)) ")
@@ -1023,10 +999,8 @@ def  disp_single_fc(image_path,tag,title=None):
 		for rect in rects:
 		      c.create_rectangle(int(float(rect.getAttribute("startx"))),int(float(rect.getAttribute("starty"))),int(float(rect.getAttribute("endx"))),int(float(rect.getAttribute("endy"))),dash=[4,4], tags="old"+" "+rect.getAttribute("created"),outline="red",fill="", width=2)
 		      clear_b.config(state=NORMAL)	
-	
-	
-	#Label(win,height=1).grid(row=2,column=0)
-	Label(win,text="Created: "+fc_info.getAttribute("created")+", Last Reviewed:"+fc_info.getAttribute("lastReviewed")).grid(row=0,columnspan=2)	
+	#Label(win,height=1).grid(row=3,column=0)
+	#Label(win,text="Created: "+fc_info.getAttribute("created")+", Last Reviewed:"+fc_info.getAttribute("lastReviewed")).grid(row=0,columnspan=2)	
 
 
 ###############################################################  Edit fc ######################################################################
@@ -1104,6 +1078,9 @@ def change_latex(file_path,fc_tag,content,theorem_type):
 		new_file.close()
 	else:
 		raise	
+	
+
+	
 	
 def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type):
 	content=edit_text.get('1.0', END)
@@ -1666,7 +1643,7 @@ def open_tex(filepath):
 
 def clear_search(event):
 	default_search_value.set("")
-	query.configure(textvariable=default_search_value)
+	query.configure(font=("Helvetica",14),fg="black",textvariable=default_search_value)
 
 
 class MyDialog:
@@ -1802,27 +1779,23 @@ def menu():
 		#search field
 		global query
 		global default_search_value
-		global check
+
 		default_search_value = StringVar()
 
 		query=AutocompleteEntry(Menu)
 		query.set_completion_list(comp_list)
-		query.configure(textvariable=default_search_value,bd =5,bg=None,justify=CENTER)
+		query.configure(font=("Helvetica",20),textvariable=default_search_value,bd =5,bg=None,fg="gray",justify=CENTER)
 		query.bind('<Return>', search_flashcard)
 		query.bind("<Button-1>", clear_search)
-		default_search_value.set("query ...")
+		default_search_value.set("Search ...")
 		query.grid(row=1,column=1,sticky=E+W+N+S)
 
 
 		search_button=create_image_button(Menu,"./.TexFlasher/pictures/search.png",40,40)
 		search_button.configure(command=search_flashcard)
+		search_button.grid(row=1,column=2,sticky=N+E+W+S,columnspan=2)		
 
-		search_button.grid(row=1,column=2,sticky=N+E+W,columnspan=2)		
-		v = IntVar()
-		check = Checkbutton(Menu, text="search content", variable=v)
-    		check.var = v
-		v.set(1)
-		check.grid(row=1,column=2,sticky=S+E+W,columnspan=2)
+
 		#savebutton
 		image_path="./.TexFlasher/pictures/upload.png"	
 		if checkIfNeedToSave( saveString ):
