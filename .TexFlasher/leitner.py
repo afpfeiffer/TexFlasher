@@ -904,9 +904,10 @@ class RectTracker:
 		self.time=strftime("%Y-%m-%d %H:%M:%S", localtime())
 		
 		self.canvas.tagtypes={}
-		self.canvas.tagtypes["rect"]={"xml_path":dir+"/Users/"+Settings["user"]+"_comment.xml","new":"re","old":"ore","type":"rectangle","command":hello_world}
-		self.canvas.tagtypes["link"]={"xml_path":dir+"/Users/links.xml","new":"li","old":"oli","type":"image","image_path":".TexFlasher/pictures/link_fix.png","command":hello_world}
-		self.canvas.tagtypes["question"]={"xml_path":dir+"/Users/questions.xml","new":"qu","old":"oqu","type":"image","image_path":".TexFlasher/pictures/question_fix.png","command":hello_world}
+		self.canvas.tagtypes["rect"]={"xml_path":dir+"/Users/"+Settings["user"]+"_comment.xml","new":"re","old":"ore","type":"rectangle"}
+		self.canvas.tagtypes["link"]={"xml_path":dir+"/Users/links.xml","new":"li","old":"oli","type":"image","image_path":".TexFlasher/pictures/link_fix.png"}
+		self.canvas.tagtypes["question"]={"xml_path":dir+"/Users/questions.xml","new":"qu","old":"oqu","type":"image","image_path":".TexFlasher/pictures/question_fix.png","image_path_other":".TexFlasher/pictures/question_other.png"}
+
 		self.selected_circle=None
 		self.follow_size=(20,20)
 		self.fix_size=(40,40)
@@ -1272,8 +1273,15 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,c):
 		    if c.tagtypes[tagtype]['type']=="rectangle":
 		      c.create_rectangle(int(float(tag.getAttribute("startx"))),int(float(tag.getAttribute("starty"))),int(float(tag.getAttribute("endx"))),int(float(tag.getAttribute("endy"))),dash=[4,4], tags="old"+" "+tag.getAttribute("created")+" "+c.tagtypes[tagtype]['old'],outline="red",fill="", width=2)
 		      c.clear_b.config(state=NORMAL)
-		    if c.tagtypes[tagtype]['type']=="image":
+		    if c.tagtypes[tagtype]['type']=="image" and Settings["user"]==tag.getAttribute('user'):
 		      c.create_image(float(tag.getAttribute('startx')),float(tag.getAttribute('starty'))-10, image=tags_img[tagtype],tags="old"+" "+tag.getAttribute("created")+" "+c.tagtypes[tagtype]['old'])
+		    elif c.tagtypes[tagtype]['type']=="image":
+		      image = Image.open(c.tagtypes[tagtype]['image_path_other'])		      
+		      image = image.resize((40,40), Image.ANTIALIAS)
+		      tags_img[tagtype+"_"+tag.getAttribute('user')]=ImageTk.PhotoImage(image)	
+		      setattr(c,tagtype+"_"+tag.getAttribute('user'), tags_img[tagtype+"_"+tag.getAttribute('user')])		      
+		      c.create_image(float(tag.getAttribute('startx')),float(tag.getAttribute('starty'))-10, image=tags_img[tagtype+"_"+tag.getAttribute('user')],tags="otheruser"+" "+tag.getAttribute("created"))
+		    
 #	fc_pos=int(c.order.getElementsByTagName(flashcard_tag)[0].getAttribute('position'))
 #	c.flow.goto(fc_pos)
 	
