@@ -829,7 +829,7 @@ def cancel_edit(c,dir,tag,frame):
 	except:
 	  pass	
 	c.edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,dir,tag))
-	c.save_b.configure(command=lambda:savefile(c,dir,tag,save_b))
+	c.save_b.configure(command=lambda:savefile(c,dir,tag))
 	c.clear_b.configure(command=lambda:clearall(c,dir,tag))	
 	frame.grid_forget()
 
@@ -893,12 +893,49 @@ def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type):
 	cancel_edit(c,dir,fc_tag,frame)
 	
 ########################################################## Comment on fc ##############################################################
+
+	  
 class RectTracker:
-	def __init__(self, canvas):
+	def __init__(self, canvas,dir):
 		self.canvas = canvas
 		self.item = None
 		self.time=strftime("%Y-%m-%d %H:%M:%S", localtime())
 		
+		self.canvas.tagtypes={}
+		self.canvas.tagtypes["rect"]={"xml_path":dir+"/Users/"+Settings["user"]+"_comment.xml","new":"re","old":"ore","type":"rectangle"}
+		self.canvas.tagtypes["link"]={"xml_path":dir+"/Users/links.xml","new":"li","old":"oli","type":"image","image_path":".TexFlasher/pictures/link_fix.png"}
+		self.canvas.tagtypes["question"]={"xml_path":dir+"/Users/questions.xml","new":"qu","old":"oqu","type":"image","image_path":".TexFlasher/pictures/question_fix.png"}
+		
+		self.follow_size=(20,20)
+		self.fix_size=(40,40)
+		self.tags_tag="tagger"
+		
+	def question_tag(self):
+	  image = Image.open(".TexFlasher/pictures/question_follow.png")
+	  image = image.resize(self.follow_size, Image.ANTIALIAS)
+	  image = ImageTk.PhotoImage(image)
+	  self.canvas.tag_follow_image=image	  
+	  image = Image.open(".TexFlasher/pictures/question_fix.png")
+	  image = image.resize(self.fix_size, Image.ANTIALIAS)
+	  image= ImageTk.PhotoImage(image)	
+	  self.canvas.tag_fix_image=image
+	  self.canvas.tag_fix="qu"
+	  self.canvas.tag_follow=("question",self.tags_tag)
+	  self.canvas.tag_command=None
+	  
+	def link_tag(self):
+	  image = Image.open(".TexFlasher/pictures/link_follow.png")
+	  image = image.resize(self.follow_size, Image.ANTIALIAS)
+	  image = ImageTk.PhotoImage(image)
+	  self.canvas.tag_follow_image=image
+	  image = Image.open(".TexFlasher/pictures/link_fix.png")
+	  image = image.resize(self.fix_size, Image.ANTIALIAS)
+	  image= ImageTk.PhotoImage(image)	
+	  self.canvas.tag_fix_image=image
+	  self.canvas.tag_fix="li"
+	  self.canvas.tag_follow=("link",self.tags_tag)
+	  self.canvas.tag_command=None
+	  
 	def draw(self, start, end, **opts):
 		"""Draw the rectangle"""
 		if sqrt((start[0]-end[0])*(start[0]-end[0])+(start[1]-end[1])*(start[1]-end[1]))<20:
@@ -930,21 +967,23 @@ class RectTracker:
 		
 		
 	def __stop(self, event):
-		#if self.start==[event.x,event.y]:
-
-		    #self.canvas.create_image(event.x,event.y-10, image=self.canvas.question_image_now,tags="ques"+" "+self.time+" elem")
-		    #self.canvas.clear_b.config(state=NORMAL)
-		    #self.canvas.save_b.config(state=NORMAL)
+		if self.start==[event.x,event.y]:
+		    self.canvas.create_image(event.x,event.y-10, image=self.canvas.tag_fix_image,tags=self.canvas.tag_fix+" "+self.time+" elem")
+		    self.canvas.clear_b.config(state=NORMAL)
+		    self.canvas.save_b.config(state=NORMAL)
 
 
 
 		if self.item is not None:		
 			if sqrt((self.start[0]-event.x)*(self.start[0]-event.x)+(self.start[1]-event.y)*(self.start[1]-event.y))<20:
-				self.canvas.delete(self.item)		    
+				self.canvas.delete(self.item)	
+			else:
+			    item_tags=list(self.canvas.gettags(self.item))
+			    item_tags[0]="re"
+			    self.canvas.itemconfig(self.item,tags=tuple(item_tags))
 		self.start = None
-		
-
 		self.item = None
+		
 	def hit_test(self, start, end, tags=None, ignoretags=None, ignore=[]):
 		"""
 		Check to see if there are items between the start and end
@@ -987,43 +1026,33 @@ class RectTracker:
 		return items	
 
 def create_comment_canvas(c,dir,fc_tag):
+  
 	try:
 		c.rect
 	except:
 		c.rect=False
 		
 	if not c.rect:
-		rect = RectTracker(c)
+		rect = RectTracker(c,dir)
 		c.rect=rect
 	else:
 		rect=c.rect
 	x, y = None, None
+
+	rect.question_tag() #default start tag
 	
-	image = Image.open(".TexFlasher/pictures/question.png")
-	image = image.resize((20,20), Image.ANTIALIAS)
-	question_image = ImageTk.PhotoImage(image)
-	image = Image.open(".TexFlasher/pictures/question_now.png")
-	image = image.resize((20,20), Image.ANTIALIAS)
-	question_image_now = ImageTk.PhotoImage(image)	
 	def cool_design(event):
 		global x, y
 		kill_xy()		
-		#dashes = [3, 2]
-		c.cursor_image=c.create_image(event.x,event.y-10, image=question_image,tags="question")	
-		c.question_image_now=question_image_now
+		c.cursor_image=c.create_image(event.x,event.y-10, image=c.tag_follow_image,tags=c.tag_follow)	
 		rect.up_time(strftime("%Y-%m-%d %H:%M:%S", localtime()))
-#		x = c.create_line(event.x, 0, event.x, 1000, dash=dashes, tags='no')
-#		y = c.create_line(0, event.y, 1000, event.y, dash=dashes, tags='no')
-		
-	def kill_xy(event=None):
-		c.delete('question')
-	def hide(event):
-	    for im in c.find_withtag("question"):
-	      c.delete(im)
 
-	#c.bind('<Motion>', cool_design, '+')	
-	#c.bind('<Enter>',cool_design,'+')
-	#c.bind('<Leave>',hide)
+	def kill_xy(event=None):
+		c.delete("tagger")
+		
+	c.bind('<Motion>', cool_design, '+')	
+	c.bind('<Enter>',cool_design,'+')
+	c.bind('<Leave>',kill_xy)
 
 	def onDrag(start,end):
 		global x,y
@@ -1039,101 +1068,75 @@ def create_comment_canvas(c,dir,fc_tag):
 
 def savefile(canvas,dir,tag):
 	canvas.save_b.config(state=DISABLED)
-	coords=[]
-	for item in canvas.find_withtag('rect'):
+	for tagtype in canvas.tagtypes:	  
+	    coords=[]
+	    for item in canvas.find_withtag(canvas.tagtypes[tagtype]['new']):
 		tags=canvas.gettags(item)
 		coords.append(canvas.coords(item))
-		canvas.itemconfig(item, tags=("old"+" "+tags[1]+" "+tags[2]+" "+"re"))
-	if len(coords)>0:
+		canvas.itemconfig(item, tags=("old"+" "+tags[1]+" "+tags[2]+" "+canvas.tagtypes[tagtype]['old']))
+	    if len(coords)>0:
 		try:
-			doc= xml.parse(dir+"/Users/"+Settings["user"]+"_comment.xml")
-			comments=doc.getElementsByTagName("comments")[0]
+			doc= xml.parse(canvas.tagtypes[tagtype]['xml_path'])
+			tag_xml=doc.getElementsByTagName(tagtype)[0]
 		except:
 		  	doc=xml.Document()
-			comments = doc.createElement('comments')
+			tag_xml = doc.createElement(tagtype)
 	#create new flashcard xml
-		for rect in coords:
+		for elem_coords in coords:
 			flashcard_element=doc.createElement(tag)
-			comments.appendChild(flashcard_element)
-			flashcard_element.setAttribute('startx', str(rect[0]))
-			flashcard_element.setAttribute('starty',str(rect[1]))
-			flashcard_element.setAttribute('endx', str(rect[2]))
-			flashcard_element.setAttribute('endy',str(rect[3]))	
+			tag_xml.appendChild(flashcard_element)
+			coord_names=['startx','starty','endx','endy']
+			for i in range(0,len(elem_coords)):
+			  flashcard_element.setAttribute(coord_names[i], str(elem_coords[i]))
 			flashcard_element.setAttribute('created',tags[1]+" "+tags[2])	
-		xml_file = open(dir+"/Users/"+Settings["user"]+"_comment.xml", "w")
-		comments.writexml(xml_file)
-	#pretty_xml = ldb.toprettyxml()
-	#xml_file.writelines(pretty_xml)
-		xml_file.close()
-	#coords=[]
-	#for item in canvas.find_withtag('ques'):
-		#tags=canvas.gettags(item)
-		#coords.append(canvas.coords(item))
-		#canvas.itemconfig(item, tags=("old"+" "+tags[1]+" "+tags[2]+" "+"qu"))
-	#if len(coords)>0:
-		#try:
-			#doc= xml.parse(dir+"/Users/questions.xml")
-			#questions=doc.getElementsByTagName("questions")[0]
-		#except:
-		  	#doc=xml.Document()
-			#questions = doc.createElement('questions')
-		#for qu in coords:
-			#flashcard_element=doc.createElement(tag)
-			#questions.appendChild(flashcard_element)
-			#flashcard_element.setAttribute('x', str(qu[0]))
-			#flashcard_element.setAttribute('y',str(qu[1]))
-			#flashcard_element.setAttribute('user',Settings["user"])	
-			#flashcard_element.setAttribute('created',tags[1]+" "+tags[2])	
-		#xml_file = open(dir+"/Users/questions.xml", "w")
-		#questions.writexml(xml_file)
-	#pretty_xml = ldb.toprettyxml()
-	#xml_file.writelines(pretty_xml)
+			flashcard_element.setAttribute('user',Settings['user'])	
+
+		xml_file = open(canvas.tagtypes[tagtype]['xml_path'], "w")
+		tag_xml.writexml(xml_file)
 		xml_file.close()
 
-def delete_c_elem_from_xml(xml_paths,canvas,group_tag,tags,fc_tag):
+def delete_c_elem_from_xml(canvas,fc_tag):
 	items={}
-	if len(canvas.find_withtag(group_tag))>0:
-		for item in canvas.find_withtag(group_tag):
+	if len(canvas.find_withtag("old"))>0:
+	    for tagtype in canvas.tagtypes:
+		for item in canvas.find_withtag(canvas.tagtypes[tagtype]["old"]):
 		  item_tags=canvas.gettags(item)
 		  item_time=item_tags[1]+" "+item_tags[2]
 		  item_time=datetime(*(strptime(item_time, "%Y-%m-%d %H:%M:%S")[0:6]))	
-		  items[item_time]=item	
-		  
-		item_del=sorted(items.keys())[-1]
-		    	  
-	for i in range(0,len(xml_paths)):
-	      if os.path.isfile(xml_paths[i]):
-		print canvas.gettags(items[item_del])
-		if tags[i] in canvas.gettags(items[item_del]): 
-		  doc= xml.parse(xml_paths[i])
+		  items[item_time]={"item":item,"xml_path":canvas.tagtypes[tagtype]["xml_path"],"tagtype":tagtype,"time":item_time}			  
+	    item_del=items[sorted(items.keys())[-1]]
+
+	    if os.path.isfile(item_del["xml_path"]):
+		  doc= xml.parse(item_del["xml_path"])
 		  items_xml=doc.getElementsByTagName(fc_tag)
 		  for item in items_xml:
-		  	  if datetime(*(strptime(item.getAttribute('created'), "%Y-%m-%d %H:%M:%S")[0:6]))==item_del:
+		  	  if datetime(*(strptime(item.getAttribute('created'), "%Y-%m-%d %H:%M:%S")[0:6]))==item_del['time']:
 		        	item.parentNode.removeChild(item)
 		        	break
-	  	  xml_file = open(xml_paths[i], "w")
+	  	  xml_file = open(item_del["xml_path"], "w")
 	  	  doc.writexml(xml_file)
 	  	  xml_file.close()
-	if len(canvas.find_withtag(group_tag))>0:	  	  
-	      canvas.delete(items[item_del])
+	    canvas.delete(item_del['item'])
 	  	  
 def clearall(canvas,dir,fc_tag):
 	items={}
 	if len(canvas.find_withtag('elem'))>0:
-		for item in canvas.find_withtag('elem'):
-		  tags=canvas.gettags(item)
-		  item_time=tags[1]+" "+tags[2]
-		  item_time=datetime(*(strptime(item_time, "%Y-%m-%d %H:%M:%S")[0:6]))	
-		  items[item_time]=item
+		for tag_type in canvas.tagtypes:
+		  for item in canvas.find_withtag(canvas.tagtypes[tag_type]["new"]):
+		    tags=canvas.gettags(item)
+		    item_time=tags[1]+" "+tags[2]
+		    item_time=datetime(*(strptime(item_time, "%Y-%m-%d %H:%M:%S")[0:6]))	
+		    items[item_time]=item
 		item_del=sorted(items.keys())[-1]
 		for item in items:
 			if item==item_del:
 				canvas.delete(items[item])
-				break 				
-	elif len(canvas.find_withtag('elem'))==0:
-	  delete_c_elem_from_xml([dir+"/Users/"+Settings["user"]+"_comment.xml",dir+"/Users/questions.xml"],canvas,'old',['re','qu'],fc_tag)			
+				break 	
+	if len(canvas.find_withtag('elem'))==0: # no new tags left on canvas
 	  canvas.save_b.config(state=DISABLED)
-	        
+	  
+	if len(canvas.find_withtag('old'))>0:
+	  delete_c_elem_from_xml(canvas,fc_tag)				        
 	        
 	if  len(canvas.find_withtag('old'))==0 and len(canvas.find_withtag('elem'))==0:
  		  canvas.clear_b.config(state=DISABLED)
@@ -1218,41 +1221,6 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,c):
 		c.delete(item)
 	for item in c.find_withtag('elem'):#first clear possible rects from canvas
 		c.delete(item)
-		
- 	if os.path.isfile(selected_dir+"/Users/"+Settings["user"]+"_comment.xml"):
-		try:
-		  doc= xml.parse(selected_dir+"/Users/"+Settings["user"]+"_comment.xml")
-		  rects=doc.getElementsByTagName(flashcard_tag)
-		  for rect in rects:
-		    c.create_rectangle(int(float(rect.getAttribute("startx"))),int(float(rect.getAttribute("starty"))),int(float(rect.getAttribute("endx"))),int(float(rect.getAttribute("endy"))),dash=[4,4], tags="old"+" "+rect.getAttribute("created")+" "+"re",outline="red",fill="", width=2)
-		    c.clear_b.config(state=NORMAL)
-		except:
-		  pass
- 	#if os.path.isfile(selected_dir+"/Users/questions.xml"):
-		#try:
-		  #doc= xml.parse(selected_dir+"/Users/questions.xml")
-		  #qus=doc.getElementsByTagName(flashcard_tag)
-		  #qus_img={}
-		  #i=0
-		  #for qu in qus:
-		    #if qu.getAttribute('user')==Settings['user']:
-		      #image = Image.open(".TexFlasher/pictures/question_now.png")
-		    #else:
-		      #image = Image.open(".TexFlasher/pictures/question_other.png")
-		      
-		    #image = image.resize((20,20), Image.ANTIALIAS)
-		    #qus_img[i]=ImageTk.PhotoImage(image)
-		    #if not qu.getAttribute('user')==Settings['user']:
-		      #c.create_image(float(qu.getAttribute('x')),float(qu.getAttribute('y'))-10, image=qus_img[i],tags="user_question")
-		      #c.create_text(float(qu.getAttribute('x')),float(qu.getAttribute('y'))+5,text=qu.getAttribute('user'),tags="user_question")
-		    #else:
-		      #c.create_image(float(qu.getAttribute('x')),float(qu.getAttribute('y'))-10, image=qus_img[i],tags="old"+" "+qu.getAttribute("created")+" "+"qu")
-
-		    #c.clear_b.config(state=NORMAL)
-		    #setattr(c, "qu_"+str(i), qus_img[i])
-		    #i+=1
-		#except:
-		  #pass
 	c.unbind("<Button-1>")
 	c.edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,selected_dir,flashcard_tag))
 	c.save_b.configure(command=lambda:savefile(c,selected_dir,flashcard_tag))
@@ -1262,7 +1230,25 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,c):
 	c.false_b.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,False, listPosition,c))
 
 	create_comment_canvas(c,selected_dir,flashcard_tag)		
-
+	tags_img={}
+	i=0
+	for tagtype in c.tagtypes:			
+	    if os.path.isfile(c.tagtypes[tagtype]['xml_path']):
+#		try:
+		  doc= xml.parse(c.tagtypes[tagtype]['xml_path'])
+		  tags=doc.getElementsByTagName(flashcard_tag)
+		  for tag in tags:
+		    if c.tagtypes[tagtype]['type']=="rectangle":
+		      c.create_rectangle(int(float(tag.getAttribute("startx"))),int(float(tag.getAttribute("starty"))),int(float(tag.getAttribute("endx"))),int(float(tag.getAttribute("endy"))),dash=[4,4], tags="old"+" "+tag.getAttribute("created")+" "+c.tagtypes[tagtype]['old'],outline="red",fill="", width=2)
+		      c.clear_b.config(state=NORMAL)
+		    if c.tagtypes[tagtype]['type']=="image":
+		      image = Image.open(c.tagtypes[tagtype]['image_path'])		      
+		      image = image.resize((40,40), Image.ANTIALIAS)
+		      tags_img[i]=ImageTk.PhotoImage(image)	
+		      setattr(c, flashcard_tag+"_"+tagtype+"_"+str(i), tags_img[i])
+		      
+		      c.create_image(float(tag.getAttribute('startx')),float(tag.getAttribute('starty'))-10, image=tags_img[i],tags="old"+" "+tag.getAttribute("created")+" "+c.tagtypes[tagtype]['old'])
+		      i+=1
 #	fc_pos=int(c.order.getElementsByTagName(flashcard_tag)[0].getAttribute('position'))
 #	c.flow.goto(fc_pos)
 	mainloop()
