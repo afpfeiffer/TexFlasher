@@ -1,3 +1,42 @@
+#!/usr/bin/python
+# encoding: utf-8
+#     This file is part of TexFlasher.
+#     Copyright (c) 2012:
+#          Can Oezmen
+#          Axel Pfeiffer
+#
+#     TexFlasher is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, either version 3 of the License, or
+#     (at your option) any later version.
+# 
+#     TexFlasher is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+# 
+#     You should have received a copy of the GNU General Public License
+#     along with TexFlasher  If not, see <http://www.gnu.org/licenses/>.
+
+
+import os
+import subprocess
+import sys
+import re
+import commands
+import xml.dom.minidom as xml
+from operator import itemgetter
+from time import strftime, strptime, ctime, localtime
+from datetime import datetime, timedelta
+from Tkinter import *
+from math import *
+import tkFont
+import tkMessageBox
+import Image, ImageTk
+import tkFileDialog
+from difflib import get_close_matches
+import itertools, collections
+import ConfigParser
 	
 class Flow:
 	def __init__(self, clickfunc, canvas):
