@@ -553,7 +553,7 @@ def get_fc_desc(fc_dir,tag):
 ############################################################### Search ###########################################
 tkinter_umlauts=['odiaeresis', 'adiaeresis', 'udiaeresis', 'Odiaeresis', 'Adiaeresis', 'Udiaeresis', 'ssharp']
 #http://tkinter.unpythonic.net/wiki/AutocompleteEntry
-class AutocompleteEntry(Entry):
+class Search(Entry):
         """
         Subclass of Tkinter.Entry that features autocompletion.
         
@@ -597,7 +597,7 @@ class AutocompleteEntry(Entry):
 		# set similarity sensitivity
 		thresh=0.7 #marker and title
 		content_thresh=0.8 # content
-		if len(search_query)>0 and not search_query=="query ...":		
+		if len(search_query)>0 and not search_query=="Search ...":		
 			match_info_name=[]
 			all_fcs=get_all_fcs()
 			for fc_elem in all_fcs:
@@ -1431,7 +1431,7 @@ def open_tex(filepath):
 
 def clear_search(event):
 	default_search_value.set("")
-	query.configure(font=("Helvetica",14),fg="black",textvariable=default_search_value)
+	query.configure(font=("Helvetica",14,'bold'),fg="black",textvariable=default_search_value)
 
 
 class MyDialog:
@@ -1473,7 +1473,7 @@ def menu():
 	button_size=str(40)
 	global saveString 
 	saveString = ""
-	Label(top,height=2,text="TexFlasher based on Leitner-Method",font=("Helvetica", 16)).grid(row=0,columnspan=8,sticky=E+W)
+	Label(top,height=2,text="TexFlasher based on Leitner-Method",font=("Helvetica", 16,"bold")).grid(row=0,columnspan=8,sticky=E+W)
 	#if os.path.isfile("UPDATE"):
 		#Label(top,height=2,text="(update available)           ",fg="red",font=("Helvetica", 16)).grid(row=0,columnspan=2,sticky=E)
 	global Menu
@@ -1569,9 +1569,9 @@ def menu():
 		global default_search_value
 
 		default_search_value = StringVar()
-		query=AutocompleteEntry(Menu)
+		query=Search(Menu)
 		query.set_completion_list(comp_list)
-		query.configure(highlightthickness=0,font=("Helvetica",20),textvariable=default_search_value,bd =5,bg=None,fg="gray",justify=CENTER)
+		query.configure(highlightthickness=0,font=("Helvetica",20,"bold"),textvariable=default_search_value,bd =5,bg=None,fg="gray",justify=CENTER)
 	#	query.bind('<Return>', search_flashcard)
 		query.bind("<Button-1>", clear_search)
 		default_search_value.set("Search ...")
