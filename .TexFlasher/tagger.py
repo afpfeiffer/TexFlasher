@@ -44,17 +44,50 @@ import ConfigParser
 def drawcircle(canv,x,y,rad):
 	# changed this to return the ID
 	return canv.create_oval(x-rad,y-rad,x+rad,y+rad,width=1,)
- 
+	
+def question_tag_command(tagtype,xml_path,tags,fc_tag,canvas):
+		frame=Frame()
+		tree = xml.parse(xml_path)
+		content=""
+		user=""
+		tag_xml = tree.getElementsByTagName(tagtype)[0]
+		for node in tag_xml.getElementsByTagName(fc_tag):
+		    if node.getAttribute('created')==list(tags)[1]+" "+list(tags)[2]:
+		      user=node.getAttribute('user')
+		      try:
+			content=node.getAttribute('content')
+		      except:
+			pass
+		      break
+		Label(frame,text="Tagtype: "+tagtype+"\n"+user,bg=None).grid(row=0,column=0,columnspan=4)
+		comment=Text(frame,width=20,height=10).grid(row=1,columnspan=4)
+		#check if text exists if so insert!
+		image = Image.open(".TexFlasher/pictures/clear.png")
+		image = image.resize((10,10), Image.ANTIALIAS)
+		image = ImageTk.PhotoImage(image)
+		frame.edit_img=image
+		
+		Button(frame,text="Delete",image=image,command=lambda:delete_c_elem_from_xml(canvas,fc_tag)).grid(row=2,column=3,sticky=E)
+		image = Image.open(".TexFlasher/pictures/upload.png")
+		image = image.resize((10,10), Image.ANTIALIAS)
+		image = ImageTk.PhotoImage(image)
+		frame.comment_img=image		
+		Button(frame,text="Comment",image=image).grid(row=2,column=0,sticky=W)		
+		return frame 
+		
+		
 class RectTracker:
+  
 	def __init__(self, canvas,dir,user):
 		self.canvas = canvas
 		self.item = None
 		self.time=strftime("%Y-%m-%d %H:%M:%S", localtime())
-		
+		self.user=user
 		self.canvas.tagtypes={}
-		self.canvas.tagtypes["rect"]={"xml_path":dir+"/Users/"+user+"_comment.xml","new":"re","old":"ore","type":"rectangle"}
-		self.canvas.tagtypes["link"]={"xml_path":dir+"/Users/links.xml","new":"li","old":"oli","type":"image","image_path":".TexFlasher/pictures/link_fix.png"}
-		self.canvas.tagtypes["question"]={"xml_path":dir+"/Users/questions.xml","new":"qu","old":"oqu","type":"image","image_path":".TexFlasher/pictures/question_fix.png","image_path_other":".TexFlasher/pictures/question_other.png"}
+		self.canvas.tagtypes["rect"]={"xml_path":dir+"/Users/"+user+"_comment.xml","new":"re","old":"ore","type":"rectangle","command":question_tag_command}
+		self.canvas.tagtypes["link"]={"xml_path":dir+"/Users/links.xml","new":"li","old":"oli","type":"image","image_path":".TexFlasher/pictures/link_fix.png","command":question_tag_command}
+		self.canvas.tagtypes["question"]={"xml_path":dir+"/Users/questions.xml","new":"qu","old":"oqu","type":"image","image_path":".TexFlasher/pictures/question_fix.png","image_path_other":".TexFlasher/pictures/question_other.png","command":question_tag_command}
+
 		self.canvas.tags_imgs={}
 		for tagtype in self.canvas.tagtypes:
 		    try:# doesnt work for rectagle tags
@@ -68,7 +101,7 @@ class RectTracker:
 		self.follow_size=(20,20)
 		self.fix_size=(40,40)
 		self.tags_tag="tagger"
-
+		
 	def question_tag(self):
 	  image = Image.open(".TexFlasher/pictures/question_follow.png")
 	  image = image.resize(self.follow_size, Image.ANTIALIAS)
@@ -133,10 +166,30 @@ class RectTracker:
 			    item_tags=list(self.canvas.gettags(self.item))
 			    item_tags[0]="re"
 			    self.canvas.itemconfig(self.item,tags=tuple(item_tags))
-			    #self.canvas.tag_bind(self.item,"<Button-1>",  lambda event, item=tag : self.tag_enter(event,item))
-			   # self.canvas.tag_bind(self.item,"<Leave>", lambda event, item=tag : self.tag_leave(event,item))
 		self.start = None
 		self.item = None
+		
+	def show_tags(self,fc_tag):
+	    for tagtype in self.canvas.tagtypes:
+		if os.path.isfile(self.canvas.tagtypes[tagtype]['xml_path']):
+			doc= xml.parse(self.canvas.tagtypes[tagtype]['xml_path'])
+		  	tags=doc.getElementsByTagName(fc_tag)
+		  	for tag in tags:
+				timestamp=tag.getAttribute('created')
+				tags="old"+" "+timestamp+" "+self.canvas.tagtypes[tagtype]['old']+" "+fc_tag
+				
+				if self.canvas.tagtypes[tagtype]['type']=="rectangle":
+					self.canvas.create_rectangle(int(float(tag.getAttribute("startx"))),int(float(tag.getAttribute("starty"))),int(float(tag.getAttribute("endx"))),int(float(tag.getAttribute("endy"))),dash=[4,4], tags=tags,outline="red",fill="", width=2)
+				if self.canvas.tagtypes[tagtype]['type']=="image" and self.user==tag.getAttribute('user'):
+					self.canvas.create_image(float(tag.getAttribute('startx')),float(tag.getAttribute('starty'))-10, image=self.canvas.tags_imgs[tagtype],tags=tags)
+				elif self.canvas.tagtypes[tagtype]['type']=="image":
+					other_img={}
+					image = Image.open(self.canvas.tagtypes[tagtype]['image_path_other'])
+					image = image.resize((40,40), Image.ANTIALIAS)
+					other_img["img"]=ImageTk.PhotoImage(image)
+					setattr(self.canvas,tagtype+"_"+tag.getAttribute('user'),other_img["img"])
+					self.canvas.create_image(float(tag.getAttribute('startx')),float(tag.getAttribute('starty'))-10, image=other_img["img"],tags=tags.replace("old ","other "))
+
 			
 
 def create_comment_canvas(c,dir,fc_tag,user):
@@ -161,43 +214,10 @@ def create_comment_canvas(c,dir,fc_tag,user):
 	else:
 		rect=c.rect
 	x, y = None, None
+	rect.show_tags(fc_tag)
+	if len(c.find_withtag("old"))>0 or len(c.find_withtag("elem"))>0:
+	  c.clear_b.configure(state=NORMAL)
 
-	for tagtype in c.tagtypes:
-		if os.path.isfile(c.tagtypes[tagtype]['xml_path']):
-			doc= xml.parse(c.tagtypes[tagtype]['xml_path'])
-		  	tags=doc.getElementsByTagName(fc_tag)
-		  	for tag in tags:
-		    		c.clear_b.configure(state=NORMAL)
-				if c.tagtypes[tagtype]['type']=="rectangle":
-					c.create_rectangle(int(float(tag.getAttribute("startx"))),int(float(tag.getAttribute("starty"))),int(float(tag.getAttribute("endx"))),int(float(tag.getAttribute("endy"))),dash=[4,4], tags="old"+" "+tag.getAttribute("created")+" "+c.tagtypes[tagtype]['old'],outline="red",fill="", width=2)
-				if c.tagtypes[tagtype]['type']=="image" and user==tag.getAttribute('user'):
-					c.create_image(float(tag.getAttribute('startx')),float(tag.getAttribute('starty'))-10, image=c.tags_imgs[tagtype],tags="old"+" "+tag.getAttribute("created")+" "+c.tagtypes[tagtype]['old'])
-				elif c.tagtypes[tagtype]['type']=="image":
-					other_img={}
-					image = Image.open(c.tagtypes[tagtype]['image_path_other'])
-					image = image.resize((40,40), Image.ANTIALIAS)
-					other_img["img"]=ImageTk.PhotoImage(image)
-					setattr(c,tagtype+"_"+tag.getAttribute('user'),other_img["img"])
-					c.create_image(float(tag.getAttribute('startx')),float(tag.getAttribute('starty'))-10, image=other_img["img"],tags="otheruser"+" "+tag.getAttribute("created"))
-	def tag_info(tagtype):
-		frame=Frame()
-		Label(frame,text=tagtype,bg=None).grid(row=0,column=0,columnspan=4)
-		image = Image.open(".TexFlasher/pictures/edit.png")
-		image = image.resize((10,10), Image.ANTIALIAS)
-		image = ImageTk.PhotoImage(image)
-		frame.edit_img=image
-		Button(frame,text="Edit",image=image).grid(row=1,column=0,sticky=W)
-		image = Image.open(".TexFlasher/pictures/clear.png")
-		image = image.resize((10,10), Image.ANTIALIAS)
-		image = ImageTk.PhotoImage(image)
-		frame.clear_img=image		
-		Button(frame,text="Delete",image=image).grid(row=1,column=3,sticky=E)
-		image = Image.open(".TexFlasher/pictures/comment.png")
-		image = image.resize((10,10), Image.ANTIALIAS)
-		image = ImageTk.PhotoImage(image)
-		frame.comment_img=image		
-		Button(frame,text="Comment",image=image).grid(row=1,column=2)		
-		return frame
 		
 	def cool_design(event):
 		global x, y, tag_win
@@ -209,14 +229,12 @@ def create_comment_canvas(c,dir,fc_tag,user):
 		    for tagtype in c.tagtypes:
 		      
 		      if c.tagtypes[tagtype]['new'] in list(c.gettags(item)) or c.tagtypes[tagtype]['old'] in list(c.gettags(item)):
-
 			try:
 			  if not tag_win:
 
-			    tag_win=c.create_window(c.coords(item)[0],c.coords(item)[1]+25,window=tag_info(tagtype),tag="info_win")
+			    tag_win=c.create_window(c.coords(item)[0],c.coords(item)[1]+25,window=c.tagtypes[tagtype]['command'](tagtype,c.tagtypes[tagtype]['xml_path'],c.gettags(item),fc_tag,c),tag="info_win")
 			except:
-
-			    tag_win=c.create_window(c.coords(item)[0],c.coords(item)[1]+25,window= tag_info(tagtype),tag="info_win")	    
+			    tag_win=c.create_window(c.coords(item)[0],c.coords(item)[1]+25,window= c.tagtypes[tagtype]['command'](tagtype,c.tagtypes[tagtype]['xml_path'],c.gettags(item),fc_tag,c),tag="info_win")	    
 		try:  
 		    if not tag_win in c.find_overlapping(event.x-30, event.y-30, event.x+30, event.y+30):
 		      c.delete("info_win")
@@ -263,6 +281,8 @@ def savefile(canvas,dir,tag,user):
 		tag_xml.writexml(xml_file)
 		xml_file.close()
 
+				
+		
 def delete_c_elem_from_xml(canvas,fc_tag):
 	items={}
 	if len(canvas.find_withtag("old"))>0:
@@ -296,8 +316,6 @@ def clearall(canvas,dir,fc_tag):
 		    item_time=datetime(*(strptime(item_time, "%Y-%m-%d %H:%M:%S")[0:6]))	
 		    items[item_time]=item
 		item_del=sorted(items.keys())[-1]
-		print canvas.gettags(items[item_del])
-		print canvas.find_withtag(items[item_del])
 		canvas.delete(items[item_del])
 				#break 	
 	elif len(canvas.find_withtag('old'))>0:
