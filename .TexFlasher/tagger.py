@@ -180,24 +180,26 @@ class RectTracker:
 	def show_tags(self,fc_tag):
 	    for tagtype in self.canvas.tagtypes:
 		if os.path.isfile(self.canvas.tagtypes[tagtype]['xml_path']):
-			doc= xml.parse(self.canvas.tagtypes[tagtype]['xml_path'])
-		  	tags=doc.getElementsByTagName(fc_tag)
-		  	for tag in tags:
-				timestamp=tag.getAttribute('created')
-				tags="old"+" "+timestamp+" "+self.canvas.tagtypes[tagtype]['old']+" "+fc_tag
+			try:
+				doc= xml.parse(self.canvas.tagtypes[tagtype]['xml_path'])
+			  	tags=doc.getElementsByTagName(fc_tag)
+			  	for tag in tags:
+					timestamp=tag.getAttribute('created')
+					tags="old"+" "+timestamp+" "+self.canvas.tagtypes[tagtype]['old']+" "+fc_tag
 				
-				if self.canvas.tagtypes[tagtype]['type']=="rectangle":
-					self.canvas.create_rectangle(int(float(tag.getAttribute("startx"))),int(float(tag.getAttribute("starty"))),int(float(tag.getAttribute("endx"))),int(float(tag.getAttribute("endy"))),dash=[4,4], tags=tags,outline="red",fill="", width=2)
-				if self.canvas.tagtypes[tagtype]['type']=="image" and self.user==tag.getAttribute('user'):
-					self.canvas.create_image(float(tag.getAttribute('startx')),float(tag.getAttribute('starty'))-10, image=self.canvas.tags_imgs[tagtype],tags=tags)
-				elif self.canvas.tagtypes[tagtype]['type']=="image":
-					other_img={}
-					image = Image.open(self.canvas.tagtypes[tagtype]['image_path_other'])
-					image = image.resize((40,40), Image.ANTIALIAS)
-					other_img["img"]=ImageTk.PhotoImage(image)
-					setattr(self.canvas,tagtype+"_"+tag.getAttribute('user'),other_img["img"])
-					self.canvas.create_image(float(tag.getAttribute('startx')),float(tag.getAttribute('starty'))-10, image=other_img["img"],tags=tags.replace("old ","other "))
-
+					if self.canvas.tagtypes[tagtype]['type']=="rectangle":
+						self.canvas.create_rectangle(int(float(tag.getAttribute("startx"))),int(float(tag.getAttribute("starty"))),int(float(tag.getAttribute("endx"))),int(float(tag.getAttribute("endy"))),dash=[4,4], tags=tags,outline="red",fill="", width=2)
+					if self.canvas.tagtypes[tagtype]['type']=="image" and self.user==tag.getAttribute('user'):
+						self.canvas.create_image(float(tag.getAttribute('startx')),float(tag.getAttribute('starty'))-10, image=self.canvas.tags_imgs[tagtype],tags=tags)
+					elif self.canvas.tagtypes[tagtype]['type']=="image":
+						other_img={}
+						image = Image.open(self.canvas.tagtypes[tagtype]['image_path_other'])
+						image = image.resize((40,40), Image.ANTIALIAS)
+						other_img["img"]=ImageTk.PhotoImage(image)
+						setattr(self.canvas,tagtype+"_"+tag.getAttribute('user'),other_img["img"])
+						self.canvas.create_image(float(tag.getAttribute('startx')),float(tag.getAttribute('starty'))-10, image=other_img["img"],tags=tags.replace("old ","other "))
+			except:
+				pass
 			
 
 def create_comment_canvas(c,dir,fc_tag,user):
