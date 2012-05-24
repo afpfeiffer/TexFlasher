@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/python
+# encoding: utf-8
 #     This file is part of TexFlasher.
 #     Copyright (c) 2012:
 #          Can Oezmen
@@ -17,30 +18,11 @@
 #     You should have received a copy of the GNU General Public License
 #     along with TexFlasher  If not, see <http://www.gnu.org/licenses/>.
 
+import os
+import subprocess
+import sys
 
-file=$1
-filebase=$(basename $file)
-workingDir=$PWD
+string=sys.argv[1]
+parts=string.split("/")
 
-svn info $file &> /dev/null
-HAVESVN=$?
-if [ ! $HAVESVN -eq 0 ]; then
-	# no svn -> no update!
-	exit 0
-fi
-# only svn revisioned files past this point
-
-lastFolder="`python .TexFlasher/scripts/repoName.py $file`"
-shaddowFolder="$workingDir/.$lastFolder"
-echo $file
-echo $lastFolder
-
-if [ ! -f "$shaddowFolder/$filebase" ]; then
-	repoURL="`svn info $workingDir/$lastFolder | grep URL | cut -d ' ' -f2`"
-	echo "$repoURL needs to be checked out"
-	svn co $repoURL $shaddowFolder
-else
-	echo "shaddow repository exists."
-	svn up $shaddowFolder
-fi
-
+print parts[len(parts)-2]
