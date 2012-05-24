@@ -71,7 +71,7 @@ for thing in $files; do
 # 	echo $thing
 		seperatedFiles="`echo $thing | sed -e 's/###/ /g'`"
 # 	echo $seperatedFiles
-		touch $seperatedFiles
+# 		touch $seperatedFiles
 		svn add $seperatedFiles &> /dev/null  
 		svn info $seperatedFiles &> /dev/null
 		HAVESVN=$?
