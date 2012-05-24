@@ -767,9 +767,7 @@ def  disp_single_fc(image_path,tag,title=None):
 	clear_b.grid(row=1, column=3,sticky=E+S+W+N)		
 
 	edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,os.path.dirname(image_path).replace("/Flashcards",""),tag))
-	save_b.configure(command=lambda:savefile(c,os.path.dirname(image_path)+"/../",tag,Settings['user']))
-	clear_b.configure(command=lambda:clearall(c,os.path.dirname(image_path)+"/../",tag))	
-
+	
 	back_b=create_image_button(win,".TexFlasher/pictures/back.png",40,40)
 	back_b.grid(row=1, column=0,sticky=W+N+E+S)		
 	back_b.config(command=lambda: win.destroy())
@@ -779,15 +777,10 @@ def  disp_single_fc(image_path,tag,title=None):
 	c.edit_b=edit_b	
 	c.back_b=back_b
 	create_comment_canvas(c,os.path.dirname(image_path)+"/../",tag,Settings['user'])
+	
 	ldb=load_leitner_db(os.path.dirname(image_path)+"/../",Settings["user"])
 	fc_info=get_fc_info(os.path.dirname(image_path)+"/../",tag,ldb)
-
- 	if os.path.isfile(os.path.dirname(image_path)+"/../Users/"+Settings["user"]+"_comment.xml"):
-		doc= xml.parse(os.path.dirname(image_path)+"/../Users/"+Settings["user"]+"_comment.xml")
-		rects=doc.getElementsByTagName(tag)
-		for rect in rects:
-		      c.create_rectangle(int(float(rect.getAttribute("startx"))),int(float(rect.getAttribute("starty"))),int(float(rect.getAttribute("endx"))),int(float(rect.getAttribute("endy"))),dash=[4,4], tags="old"+" "+rect.getAttribute("created"),outline="red",fill="", width=2)
-		      clear_b.config(state=NORMAL)	
+	
 	#Label(win,height=1).grid(row=3,column=0)
 	#Label(win,text="Created: "+fc_info.getAttribute("created")+", Last Reviewed:"+fc_info.getAttribute("lastReviewed")).grid(row=0,columnspan=2)	
 
@@ -830,8 +823,6 @@ def cancel_edit(c,dir,tag,frame):
 	except:
 	  pass	
 	c.edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,dir,tag))
-	c.save_b.configure(command=lambda:savefile(c,dir,tag,Settings['user']))
-	c.clear_b.configure(command=lambda:clearall(c,dir,tag))	
 	frame.grid_forget()
 
 
@@ -978,8 +969,6 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,c):
 
 	c.unbind("<Button-1>")
 	c.edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,selected_dir,flashcard_tag))
-	c.save_b.configure(command=lambda:savefile(c,selected_dir,flashcard_tag,Settings['user']))
-	c.clear_b.configure(command=lambda:clearall(c,selected_dir,flashcard_tag))
 	c.back_b.configure(state=NORMAL)
 	c.true_b.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,True, listPosition,c))
 	c.false_b.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,False, listPosition,c))

@@ -68,13 +68,13 @@ def question_tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user):
 		comment_field.grid(row=1,columnspan=4)
 		#check if text exists if so insert!
 		image = Image.open(".TexFlasher/pictures/clear.png")
-		image = image.resize((15,15), Image.ANTIALIAS)
+		image = image.resize((20,20), Image.ANTIALIAS)
 		image = ImageTk.PhotoImage(image)
 		frame.edit_img=image		
 		Button(frame,text="Delete",image=image,command=lambda:delete_c_elem_from_xml(canvas,fc_tag,tags,tagtype,item)).grid(row=2,column=3,sticky=E)
 
 		image = Image.open(".TexFlasher/pictures/upload.png")
-		image = image.resize((15,15), Image.ANTIALIAS)
+		image = image.resize((20,20), Image.ANTIALIAS)
 		image = ImageTk.PhotoImage(image)
 		frame.comment_img=image		
 		Button(frame,text="Comment",image=image,command=lambda:savefile(canvas,fc_tag,user,tagtype,item,comment_field)).grid(row=2,column=0,sticky=W)		
@@ -223,7 +223,8 @@ def create_comment_canvas(c,dir,fc_tag,user):
 		kill_xy()
 		c.cursor_image=c.create_image(event.x,event.y-10, image=c.tag_follow_image,tags=c.tag_follow)	
 		rect.up_time(strftime("%Y-%m-%d %H:%M:%S", localtime()))
-		for item in c.find_overlapping(event.x-5, event.y-5, event.x+5, event.y+5):	
+		for item in c.find_overlapping(event.x-5, event.y-5, event.x+5, event.y+5):
+		    
 		    for tagtype in c.tagtypes:
 		      
 		      if c.tagtypes[tagtype]['new'] in list(c.gettags(item)) or c.tagtypes[tagtype]['old'] in list(c.gettags(item)):
