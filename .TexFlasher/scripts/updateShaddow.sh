@@ -21,3 +21,18 @@
 file=$1
 folder=$(dirname $file)
 
+svn info $file &> /dev/null
+HAVESVN=$?
+if [ ! $HAVESVN -eq 0 ]; then
+	# no svn -> no update!
+	exit 0
+fi
+# only svn revisioned files past this point
+
+# lastFolder="`svn info $folder | grep 'Path' | cut -d ' ' -f2`"
+
+
+echo $file
+echo $folder
+echo $lastFolder
+
