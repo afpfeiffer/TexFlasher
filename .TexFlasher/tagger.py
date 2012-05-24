@@ -97,6 +97,8 @@ class RectTracker:
 	def autodraw(self, **opts):
 		"""Setup automatic drawing; supports command option"""
 		self.start = None
+
+
 		self.canvas.bind("<Button-1>", self.__update, '+')
 		self.canvas.bind("<Double-Button-1>", self.__tag, '+')
 		self.canvas.bind("<B1-Motion>", self.__update, '+')
@@ -116,22 +118,10 @@ class RectTracker:
 		self.item = self.draw(self.start, (event.x, event.y), **self.rectopts)
 		self._command(self.start, (event.x, event.y))
 		
-	def tag_leave(self,e,item):
-	    tags=self.canvas.gettags(item)
-	    coords=self.canvas.coords(item)
-
-
-	    
-	def tag_enter(self,e,item): 	  
-	    tags=self.canvas.gettags(item)
-	    coords=self.canvas.coords(item)
-	    #print "hey"
-
 	def __tag(self,event):
-		    tag=self.canvas.create_image(event.x,event.y-10, image=self.canvas.tags_imgs[self.canvas.current_tag],tags=self.canvas.tag_fix+" "+self.time+" elem")
-		    self.canvas.tag_bind(tag,"<Enter>",  lambda event, item=tag : self.tag_enter(event,item))
+		    self.canvas.create_image(event.x,event.y-10, image=self.canvas.tags_imgs[self.canvas.current_tag],tags=self.canvas.tag_fix+" "+self.time+" elem")
 		    self.canvas.clear_b.config(state=NORMAL)
-		    self.canvas.save_b.config(state=NORMAL)	
+		    self.canvas.save_b.config(state=NORMAL)
 	
 	    
 	def __stop(self, event):
@@ -143,21 +133,31 @@ class RectTracker:
 			    item_tags=list(self.canvas.gettags(self.item))
 			    item_tags[0]="re"
 			    self.canvas.itemconfig(self.item,tags=tuple(item_tags))
-			   # self.canvas.tag_bind(self.item,"<Enter>",  lambda event, item=tag : self.tag_enter(event,item))
+			    #self.canvas.tag_bind(self.item,"<Button-1>",  lambda event, item=tag : self.tag_enter(event,item))
 			   # self.canvas.tag_bind(self.item,"<Leave>", lambda event, item=tag : self.tag_leave(event,item))
 		self.start = None
 		self.item = None
 			
 
 def create_comment_canvas(c,dir,fc_tag,user):
+ 	def onDrag(start,end):
+		global x,y
+		if sqrt((start[0]-end[0])*(start[0]-end[0])+(start[1]-end[1])*(start[1]-end[1]))>=20:		
+		  c.save_b.config(state=NORMAL)
+		  c.clear_b.config(state=NORMAL)		    
+		if len(c.find_withtag('elem'))==0 and  sqrt((start[0]-end[0])*(start[0]-end[0])+(start[1]-end[1])*(start[1]-end[1]))<20:
+		  c.save_b.config(state=DISABLED)
+		  c.clear_b.config(state=DISABLED) 
 	try:
 		c.rect
 	except:
 		c.rect=False
-	if not c.rect:
+	if not c.rect: #initialize
 		rect = RectTracker(c,dir,user)
 		rect.question_tag() #default start tag
 		c.rect=rect
+		rect.autodraw(fill="", width=2, command=onDrag)
+
 	else:
 		rect=c.rect
 	x, y = None, None
@@ -179,13 +179,50 @@ def create_comment_canvas(c,dir,fc_tag,user):
 					other_img["img"]=ImageTk.PhotoImage(image)
 					setattr(c,tagtype+"_"+tag.getAttribute('user'),other_img["img"])
 					c.create_image(float(tag.getAttribute('startx')),float(tag.getAttribute('starty'))-10, image=other_img["img"],tags="otheruser"+" "+tag.getAttribute("created"))
-	
+	def tag_info(tagtype):
+		frame=Frame()
+		Label(frame,text=tagtype,bg=None).grid(row=0,column=0,columnspan=4)
+		image = Image.open(".TexFlasher/pictures/edit.png")
+		image = image.resize((10,10), Image.ANTIALIAS)
+		image = ImageTk.PhotoImage(image)
+		frame.edit_img=image
+		Button(frame,text="Edit",image=image).grid(row=1,column=0,sticky=W)
+		image = Image.open(".TexFlasher/pictures/clear.png")
+		image = image.resize((10,10), Image.ANTIALIAS)
+		image = ImageTk.PhotoImage(image)
+		frame.clear_img=image		
+		Button(frame,text="Delete",image=image).grid(row=1,column=3,sticky=E)
+		image = Image.open(".TexFlasher/pictures/comment.png")
+		image = image.resize((10,10), Image.ANTIALIAS)
+		image = ImageTk.PhotoImage(image)
+		frame.comment_img=image		
+		Button(frame,text="Comment",image=image).grid(row=1,column=2)		
+		return frame
+		
 	def cool_design(event):
-		global x, y
-		kill_xy()		
+		global x, y, tag_win
+		
+		kill_xy()
 		c.cursor_image=c.create_image(event.x,event.y-10, image=c.tag_follow_image,tags=c.tag_follow)	
 		rect.up_time(strftime("%Y-%m-%d %H:%M:%S", localtime()))
+		for item in c.find_overlapping(event.x-5, event.y-5, event.x+5, event.y+5):	
+		    for tagtype in c.tagtypes:
+		      
+		      if c.tagtypes[tagtype]['new'] in list(c.gettags(item)) or c.tagtypes[tagtype]['old'] in list(c.gettags(item)):
 
+			try:
+			  if not tag_win:
+
+			    tag_win=c.create_window(c.coords(item)[0],c.coords(item)[1]+25,window=tag_info(tagtype),tag="info_win")
+			except:
+
+			    tag_win=c.create_window(c.coords(item)[0],c.coords(item)[1]+25,window= tag_info(tagtype),tag="info_win")	    
+		try:  
+		    if not tag_win in c.find_overlapping(event.x-30, event.y-30, event.x+30, event.y+30):
+		      c.delete("info_win")
+		      tag_win=False
+		except:
+		    pass
 	def kill_xy(event=None):
 		c.delete("tagger")
 		
@@ -193,16 +230,8 @@ def create_comment_canvas(c,dir,fc_tag,user):
 	c.bind('<Enter>',cool_design,'+')
 	c.bind('<Leave>',kill_xy)
 
-	def onDrag(start,end):
-		global x,y
-		if sqrt((start[0]-end[0])*(start[0]-end[0])+(start[1]-end[1])*(start[1]-end[1]))>=20:		
-		  c.save_b.config(state=NORMAL)
-		  c.clear_b.config(state=NORMAL)		    
-		if len(c.find_withtag('elem'))==0 and  sqrt((start[0]-end[0])*(start[0]-end[0])+(start[1]-end[1])*(start[1]-end[1]))<20:
-		  c.save_b.config(state=DISABLED)
-		  c.clear_b.config(state=DISABLED)		    
+		    
 					
-	rect.autodraw(fill="", width=2, command=onDrag)
 
 
 def savefile(canvas,dir,tag,user):
@@ -251,7 +280,7 @@ def delete_c_elem_from_xml(canvas,fc_tag):
 		  for item in items_xml:
 		  	  if datetime(*(strptime(item.getAttribute('created'), "%Y-%m-%d %H:%M:%S")[0:6]))==item_del['time']:
 		        	item.parentNode.removeChild(item)
-		        	break
+		        	#break
 	  	  xml_file = open(item_del["xml_path"], "w")
 	  	  doc.writexml(xml_file)
 	  	  xml_file.close()
@@ -267,15 +296,17 @@ def clearall(canvas,dir,fc_tag):
 		    item_time=datetime(*(strptime(item_time, "%Y-%m-%d %H:%M:%S")[0:6]))	
 		    items[item_time]=item
 		item_del=sorted(items.keys())[-1]
-		for item in items:
-			if item==item_del:
-				canvas.delete(items[item])
-				break 	
+		print canvas.gettags(items[item_del])
+		print canvas.find_withtag(items[item_del])
+		canvas.delete(items[item_del])
+				#break 	
+	elif len(canvas.find_withtag('old'))>0:
+	  delete_c_elem_from_xml(canvas,fc_tag)	
+	  
 	if len(canvas.find_withtag('elem'))==0: # no new tags left on canvas
 	  canvas.save_b.config(state=DISABLED)
 	  
-	if len(canvas.find_withtag('old'))>0:
-	  delete_c_elem_from_xml(canvas,fc_tag)				        
+			        
 	        
 	if  len(canvas.find_withtag('old'))==0 and len(canvas.find_withtag('elem'))==0:
  		  canvas.clear_b.config(state=DISABLED)
