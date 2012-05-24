@@ -42,8 +42,8 @@ import ConfigParser
 
 ########################################################## Comment on fc ##############################################################
 
-def question_tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user):
-		frame=Frame()
+def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user):
+		frame=Frame(bd=5)
 		tree = xml.parse(xml_path)
 		content=""
 		creator=""
@@ -89,9 +89,9 @@ class RectTracker:
 		self.time=strftime("%Y-%m-%d %H:%M:%S", localtime())
 		self.user=user
 		self.canvas.tagtypes={}
-		self.canvas.tagtypes["rect"]={"xml_path":dir+"/Users/"+user+"_comment.xml","new":"re","old":"ore","type":"rectangle","command":question_tag_command}
-		self.canvas.tagtypes["link"]={"xml_path":dir+"/Users/links.xml","new":"li","old":"oli","type":"image","image_path":".TexFlasher/pictures/link_fix.png","command":question_tag_command}
-		self.canvas.tagtypes["question"]={"xml_path":dir+"/Users/questions.xml","new":"qu","old":"oqu","type":"image","image_path":".TexFlasher/pictures/question_fix.png","image_path_other":".TexFlasher/pictures/question_other.png","command":question_tag_command}
+		self.canvas.tagtypes["rect"]={"xml_path":dir+"/Users/"+user+"_comment.xml","new":"re","old":"ore","type":"rectangle","command":tag_command}
+		self.canvas.tagtypes["link"]={"xml_path":dir+"/Users/links.xml","new":"li","old":"oli","type":"image","image_path":".TexFlasher/pictures/link_fix.png","command":tag_command}
+		self.canvas.tagtypes["question"]={"xml_path":dir+"/Users/questions.xml","new":"qu","old":"oqu","type":"image","image_path":".TexFlasher/pictures/question_fix.png","image_path_other":".TexFlasher/pictures/question_other.png","command":tag_command}
 
 		self.canvas.tags_imgs={}
 		for tagtype in self.canvas.tagtypes:
@@ -242,7 +242,15 @@ def create_comment_canvas(c,dir,fc_tag,user):
 		    pass
 	def kill_xy(event=None):
 		c.delete("tagger")
+	def switch_tag(direction):
+	    if c.current_tag=="question":
+		rect.link_tag() #default start tag
+	    else:
+		rect.question_tag()
 		
+        c.bind('<4>', lambda event : switch_tag("next"))
+        c.bind('<5>', lambda event : switch_tag("back"))
+        
 	c.bind('<Motion>', cool_design, '+')	
 	c.bind('<Enter>',cool_design,'+')
 	c.bind('<Leave>',kill_xy)
@@ -252,9 +260,9 @@ def create_comment_canvas(c,dir,fc_tag,user):
 
 
 def savefile(canvas,fc_tag,user,tagtype,item,comment_field):
-	    if item in canvas.find_withtag(canvas.tagtypes[tagtype]['new']):
+	 #   if item in canvas.find_withtag(canvas.tagtypes[tagtype]['new']) or item in :
 		tags=canvas.gettags(item)
-
+		flashcard_element=None
 		canvas.itemconfig(item, tags=("old"+" "+tags[1]+" "+tags[2]+" "+canvas.tagtypes[tagtype]['old']))
 		try:
 			doc= xml.parse(canvas.tagtypes[tagtype]['xml_path'])
@@ -262,8 +270,17 @@ def savefile(canvas,fc_tag,user,tagtype,item,comment_field):
 		except:
 		  	doc=xml.Document()
 			tag_xml = doc.createElement(tagtype)
+		try:
+			elements=doc.getElementsByTagName(fc_tag)
+			for element in elements:
+			    if element.getAttribute('created')==tags[1]+" "+tags[2]:
+			      flashcard_element=element
+			      break
+			if flashcard_element==None:
+			  raise
+		except:	      
+			flashcard_element=doc.createElement(fc_tag)
 			
-		flashcard_element=doc.createElement(fc_tag)
 		tag_xml.appendChild(flashcard_element)
 		coord_names=['startx','starty','endx','endy']
 		for i in range(0,len(canvas.coords(item))):
@@ -273,7 +290,7 @@ def savefile(canvas,fc_tag,user,tagtype,item,comment_field):
 		
 		content=comment_field.get('1.0', END)
 		flashcard_element.setAttribute('comment',content)	
-		
+		print content
 		xml_file = open(canvas.tagtypes[tagtype]['xml_path'], "w")
 		tag_xml.writexml(xml_file)
 		xml_file.close()
