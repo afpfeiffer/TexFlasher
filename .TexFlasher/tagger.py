@@ -41,38 +41,43 @@ import ConfigParser
 
 
 ########################################################## Comment on fc ##############################################################
-def drawcircle(canv,x,y,rad):
-	# changed this to return the ID
-	return canv.create_oval(x-rad,y-rad,x+rad,y+rad,width=1,)
-	
-def question_tag_command(tagtype,xml_path,tags,fc_tag,canvas):
+
+def question_tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user):
 		frame=Frame()
 		tree = xml.parse(xml_path)
 		content=""
-		user=""
-		tag_xml = tree.getElementsByTagName(tagtype)[0]
-		for node in tag_xml.getElementsByTagName(fc_tag):
+		creator=""
+		fg="black"
+		if not fc_tag==None:
+		  tag_xml = tree.getElementsByTagName(tagtype)[0]
+		  for node in tag_xml.getElementsByTagName(fc_tag):
 		    if node.getAttribute('created')==list(tags)[1]+" "+list(tags)[2]:
-		      user=node.getAttribute('user')
+		      creator=node.getAttribute('user')
 		      try:
-			content=node.getAttribute('content')
+			content=node.getAttribute('comment')
 		      except:
 			pass
 		      break
-		Label(frame,text="Tagtype: "+tagtype+"\n"+user,bg=None).grid(row=0,column=0,columnspan=4)
-		comment=Text(frame,width=20,height=10).grid(row=1,columnspan=4)
+		if fc_tag==None or creator=="":
+		  creator="unsaved"
+		  content="comment here ..."
+		  fg="red"
+		Label(frame,text="Tagtype: "+tagtype+"\n"+creator,fg=fg,bg=None).grid(row=0,column=0,columnspan=4)
+		comment_field=Text(frame,width=20,height=10)
+		comment_field.insert(INSERT,content)
+		comment_field.grid(row=1,columnspan=4)
 		#check if text exists if so insert!
 		image = Image.open(".TexFlasher/pictures/clear.png")
-		image = image.resize((10,10), Image.ANTIALIAS)
+		image = image.resize((15,15), Image.ANTIALIAS)
 		image = ImageTk.PhotoImage(image)
-		frame.edit_img=image
-		
-		Button(frame,text="Delete",image=image,command=lambda:delete_c_elem_from_xml(canvas,fc_tag)).grid(row=2,column=3,sticky=E)
+		frame.edit_img=image		
+		Button(frame,text="Delete",image=image,command=lambda:delete_c_elem_from_xml(canvas,fc_tag,tags,tagtype,item)).grid(row=2,column=3,sticky=E)
+
 		image = Image.open(".TexFlasher/pictures/upload.png")
-		image = image.resize((10,10), Image.ANTIALIAS)
+		image = image.resize((15,15), Image.ANTIALIAS)
 		image = ImageTk.PhotoImage(image)
 		frame.comment_img=image		
-		Button(frame,text="Comment",image=image).grid(row=2,column=0,sticky=W)		
+		Button(frame,text="Comment",image=image,command=lambda:savefile(canvas,fc_tag,user,tagtype,item,comment_field)).grid(row=2,column=0,sticky=W)		
 		return frame 
 		
 		
@@ -152,9 +157,9 @@ class RectTracker:
 		self._command(self.start, (event.x, event.y))
 		
 	def __tag(self,event):
-		    self.canvas.create_image(event.x,event.y-10, image=self.canvas.tags_imgs[self.canvas.current_tag],tags=self.canvas.tag_fix+" "+self.time+" elem")
-		    self.canvas.clear_b.config(state=NORMAL)
-		    self.canvas.save_b.config(state=NORMAL)
+		    tags=self.canvas.tag_fix+" "+self.time+" elem"
+		    self.canvas.create_image(event.x,event.y-10, image=self.canvas.tags_imgs[self.canvas.current_tag],tags=tags)
+
 	
 	    
 	def __stop(self, event):
@@ -195,12 +200,6 @@ class RectTracker:
 def create_comment_canvas(c,dir,fc_tag,user):
  	def onDrag(start,end):
 		global x,y
-		if sqrt((start[0]-end[0])*(start[0]-end[0])+(start[1]-end[1])*(start[1]-end[1]))>=20:		
-		  c.save_b.config(state=NORMAL)
-		  c.clear_b.config(state=NORMAL)		    
-		if len(c.find_withtag('elem'))==0 and  sqrt((start[0]-end[0])*(start[0]-end[0])+(start[1]-end[1])*(start[1]-end[1]))<20:
-		  c.save_b.config(state=DISABLED)
-		  c.clear_b.config(state=DISABLED) 
 	try:
 		c.rect
 	except:
@@ -215,8 +214,7 @@ def create_comment_canvas(c,dir,fc_tag,user):
 		rect=c.rect
 	x, y = None, None
 	rect.show_tags(fc_tag)
-	if len(c.find_withtag("old"))>0 or len(c.find_withtag("elem"))>0:
-	  c.clear_b.configure(state=NORMAL)
+
 
 		
 	def cool_design(event):
@@ -232,9 +230,9 @@ def create_comment_canvas(c,dir,fc_tag,user):
 			try:
 			  if not tag_win:
 
-			    tag_win=c.create_window(c.coords(item)[0],c.coords(item)[1]+25,window=c.tagtypes[tagtype]['command'](tagtype,c.tagtypes[tagtype]['xml_path'],c.gettags(item),fc_tag,c),tag="info_win")
+			    tag_win=c.create_window(c.coords(item)[0],c.coords(item)[1]+25,window=c.tagtypes[tagtype]['command'](tagtype,c.tagtypes[tagtype]['xml_path'],c.gettags(item),fc_tag,c,item,user),tag="info_win")
 			except:
-			    tag_win=c.create_window(c.coords(item)[0],c.coords(item)[1]+25,window= c.tagtypes[tagtype]['command'](tagtype,c.tagtypes[tagtype]['xml_path'],c.gettags(item),fc_tag,c),tag="info_win")	    
+			    tag_win=c.create_window(c.coords(item)[0],c.coords(item)[1]+25,window= c.tagtypes[tagtype]['command'](tagtype,c.tagtypes[tagtype]['xml_path'],c.gettags(item),fc_tag,c,item,user),tag="info_win")	    
 		try:  
 		    if not tag_win in c.find_overlapping(event.x-30, event.y-30, event.x+30, event.y+30):
 		      c.delete("info_win")
@@ -252,80 +250,48 @@ def create_comment_canvas(c,dir,fc_tag,user):
 					
 
 
-def savefile(canvas,dir,tag,user):
-	canvas.save_b.config(state=DISABLED)
-	for tagtype in canvas.tagtypes:	  
-	    coords=[]
-	    for item in canvas.find_withtag(canvas.tagtypes[tagtype]['new']):
+def savefile(canvas,fc_tag,user,tagtype,item,comment_field):
+	    if item in canvas.find_withtag(canvas.tagtypes[tagtype]['new']):
 		tags=canvas.gettags(item)
-		coords.append(canvas.coords(item))
+
 		canvas.itemconfig(item, tags=("old"+" "+tags[1]+" "+tags[2]+" "+canvas.tagtypes[tagtype]['old']))
-	    if len(coords)>0:
 		try:
 			doc= xml.parse(canvas.tagtypes[tagtype]['xml_path'])
 			tag_xml=doc.getElementsByTagName(tagtype)[0]
 		except:
 		  	doc=xml.Document()
 			tag_xml = doc.createElement(tagtype)
-	#create new flashcard xml
-		for elem_coords in coords:
-			flashcard_element=doc.createElement(tag)
-			tag_xml.appendChild(flashcard_element)
-			coord_names=['startx','starty','endx','endy']
-			for i in range(0,len(elem_coords)):
-			  flashcard_element.setAttribute(coord_names[i], str(elem_coords[i]))
-			flashcard_element.setAttribute('created',tags[1]+" "+tags[2])	
-			flashcard_element.setAttribute('user',user)	
-
+			
+		flashcard_element=doc.createElement(fc_tag)
+		tag_xml.appendChild(flashcard_element)
+		coord_names=['startx','starty','endx','endy']
+		for i in range(0,len(canvas.coords(item))):
+		  flashcard_element.setAttribute(coord_names[i], str(canvas.coords(item)[i]))
+		flashcard_element.setAttribute('created',tags[1]+" "+tags[2])	
+		flashcard_element.setAttribute('user',user)
+		
+		content=comment_field.get('1.0', END)
+		flashcard_element.setAttribute('comment',content)	
+		
 		xml_file = open(canvas.tagtypes[tagtype]['xml_path'], "w")
 		tag_xml.writexml(xml_file)
 		xml_file.close()
 
 				
 		
-def delete_c_elem_from_xml(canvas,fc_tag):
-	items={}
-	if len(canvas.find_withtag("old"))>0:
-	    for tagtype in canvas.tagtypes:
-		for item in canvas.find_withtag(canvas.tagtypes[tagtype]["old"]):
-		  item_tags=canvas.gettags(item)
-		  item_time=item_tags[1]+" "+item_tags[2]
-		  item_time=datetime(*(strptime(item_time, "%Y-%m-%d %H:%M:%S")[0:6]))	
-		  items[item_time]={"item":item,"xml_path":canvas.tagtypes[tagtype]["xml_path"],"tagtype":tagtype,"time":item_time}			  
-	    item_del=items[sorted(items.keys())[-1]]
-
-	    if os.path.isfile(item_del["xml_path"]):
-		  doc= xml.parse(item_del["xml_path"])
+def delete_c_elem_from_xml(canvas,fc_tag,tags,tagtype,item):
+	for win in canvas.find_withtag("info_win"):
+	    canvas.delete(win)
+	canvas.delete(item)
+	 
+	if os.path.isfile(canvas.tagtypes[tagtype]["xml_path"]) and canvas.tagtypes[tagtype]["old"] in list(tags):
+		  doc= xml.parse(canvas.tagtypes[tagtype]["xml_path"])
 		  items_xml=doc.getElementsByTagName(fc_tag)
 		  for item in items_xml:
-		  	  if datetime(*(strptime(item.getAttribute('created'), "%Y-%m-%d %H:%M:%S")[0:6]))==item_del['time']:
+		  	  if item.getAttribute('created')==list(tags)[1]+" "+list(tags)[2]:
 		        	item.parentNode.removeChild(item)
-		        	#break
-	  	  xml_file = open(item_del["xml_path"], "w")
+		        	break
+	  	  xml_file = open(canvas.tagtypes[tagtype]["xml_path"], "w")
 	  	  doc.writexml(xml_file)
 	  	  xml_file.close()
-	    canvas.delete(item_del['item'])
 	  	  
-def clearall(canvas,dir,fc_tag):
-	items={}
-	if len(canvas.find_withtag('elem'))>0:
-		for tag_type in canvas.tagtypes:
-		  for item in canvas.find_withtag(canvas.tagtypes[tag_type]["new"]):
-		    tags=canvas.gettags(item)
-		    item_time=tags[1]+" "+tags[2]
-		    item_time=datetime(*(strptime(item_time, "%Y-%m-%d %H:%M:%S")[0:6]))	
-		    items[item_time]=item
-		item_del=sorted(items.keys())[-1]
-		canvas.delete(items[item_del])
-				#break 	
-	elif len(canvas.find_withtag('old'))>0:
-	  delete_c_elem_from_xml(canvas,fc_tag)	
-	  
-	if len(canvas.find_withtag('elem'))==0: # no new tags left on canvas
-	  canvas.save_b.config(state=DISABLED)
-	  
-			        
-	        
-	if  len(canvas.find_withtag('old'))==0 and len(canvas.find_withtag('elem'))==0:
- 		  canvas.clear_b.config(state=DISABLED)
- 		  canvas.save_b.config(state=DISABLED)
