@@ -38,8 +38,11 @@ from difflib import get_close_matches
 import itertools, collections
 import ConfigParser
 
-
-
+def open_xml_file(file_path):
+	try:
+		return xml.parse(file_path)		  
+	except:
+		return False
 ########################################################## Comment on fc ##############################################################
 
 def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user):
@@ -85,6 +88,42 @@ def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user):
 		
 		
 class RectTracker:
+
+	def question_tag(self):
+	  image = Image.open(".TexFlasher/pictures/question_fix.png")
+	  image = image.resize(self.follow_size, Image.ANTIALIAS)
+	  image = ImageTk.PhotoImage(image)
+	  self.canvas.tag_follow_image=image	  
+	  self.canvas.current_tag="question"	  
+	  self.canvas.tag_fix="qu"
+	  self.canvas.tag_follow=("question",self.tags_tag)
+	  
+	def link_tag(self):
+	  image = Image.open(".TexFlasher/pictures/link_fix.png")
+	  image = image.resize(self.follow_size, Image.ANTIALIAS)
+	  image = ImageTk.PhotoImage(image)
+	  self.canvas.tag_follow_image=image
+	  self.canvas.current_tag="link"
+	  self.canvas.tag_fix="li"
+	  self.canvas.tag_follow=("link",self.tags_tag)
+
+	def repeat_tag(self):
+	  image = Image.open(".TexFlasher/pictures/repeat_fix.png")
+	  image = image.resize(self.follow_size, Image.ANTIALIAS)
+	  image = ImageTk.PhotoImage(image)
+	  self.canvas.tag_follow_image=image
+	  self.canvas.current_tag="repeat"
+	  self.canvas.tag_fix="rep"
+	  self.canvas.tag_follow=("repeat",self.tags_tag)
+
+	def watchout_tag(self):
+	  image = Image.open(".TexFlasher/pictures/watchout_fix.png")
+	  image = image.resize(self.follow_size, Image.ANTIALIAS)
+	  image = ImageTk.PhotoImage(image)
+	  self.canvas.tag_follow_image=image
+	  self.canvas.current_tag="watchout"
+	  self.canvas.tag_fix="wa"
+	  self.canvas.tag_follow=("watchout",self.tags_tag)
   
 	def __init__(self, canvas,dir,user):
 		self.canvas = canvas
@@ -93,9 +132,10 @@ class RectTracker:
 		self.user=user
 		self.canvas.tagtypes={}
 		self.canvas.tagtypes["rect"]={"xml_path":dir+"/Users/"+user+"_comment.xml","new":"re","old":"ore","type":"rectangle","command":tag_command}
-		self.canvas.tagtypes["link"]={"xml_path":dir+"/Users/links.xml","new":"li","old":"oli","type":"image","image_path":".TexFlasher/pictures/link_fix.png","command":tag_command}
-		self.canvas.tagtypes["question"]={"xml_path":dir+"/Users/questions.xml","new":"qu","old":"oqu","type":"image","image_path":".TexFlasher/pictures/question_fix.png","image_path_other":".TexFlasher/pictures/question_other.png","command":tag_command}
-
+		self.canvas.tagtypes["link"]={"init":self.link_tag,"xml_path":dir+"/Users/links.xml","new":"li","old":"oli","type":"image","image_path":".TexFlasher/pictures/link_fix.png","command":tag_command}
+		self.canvas.tagtypes["question"]={"init":self.question_tag,"xml_path":dir+"/Users/questions.xml","new":"qu","old":"oqu","type":"image","image_path":".TexFlasher/pictures/question_fix.png","image_path_other":".TexFlasher/pictures/question_other.png","command":tag_command}
+		self.canvas.tagtypes["repeat"]={"init":self.repeat_tag,"xml_path":dir+"/Users/repeat.xml","new":"rep","old":"orep","type":"image","image_path":".TexFlasher/pictures/repeat_fix.png","command":tag_command}		
+		self.canvas.tagtypes["watchout"]={"init":self.watchout_tag,"xml_path":dir+"/Users/watchout.xml","new":"wa","old":"owa","type":"image","image_path":".TexFlasher/pictures/watchout_fix.png","command":tag_command}
 		self.canvas.tags_imgs={}
 		for tagtype in self.canvas.tagtypes:
 		    try:# doesnt work for rectagle tags
@@ -110,23 +150,7 @@ class RectTracker:
 		self.fix_size=(40,40)
 		self.tags_tag="tagger"
 		
-	def question_tag(self):
-	  image = Image.open(".TexFlasher/pictures/question_follow.png")
-	  image = image.resize(self.follow_size, Image.ANTIALIAS)
-	  image = ImageTk.PhotoImage(image)
-	  self.canvas.tag_follow_image=image	  
-	  self.canvas.current_tag="question"	  
-	  self.canvas.tag_fix="qu"
-	  self.canvas.tag_follow=("question",self.tags_tag)
-	  
-	def link_tag(self):
-	  image = Image.open(".TexFlasher/pictures/link_follow.png")
-	  image = image.resize(self.follow_size, Image.ANTIALIAS)
-	  image = ImageTk.PhotoImage(image)
-	  self.canvas.tag_follow_image=image
-	  self.canvas.current_tag="link"
-	  self.canvas.tag_fix="li"
-	  self.canvas.tag_follow=("link",self.tags_tag)
+
 	  
 	def draw(self, start, end, **opts):
 		"""Draw the rectangle"""
@@ -247,15 +271,12 @@ def create_comment_canvas(c,dir,fc_tag,user):
 		    pass
 	def kill_xy(event=None):
 		c.delete("tagger")
-	def switch_tag(direction):
-	    if c.current_tag=="question":
-		rect.link_tag() #default start tag
-	    else:
-		rect.question_tag()
 		
-        c.bind('<4>', lambda event : switch_tag("next"))
-        c.bind('<5>', lambda event : switch_tag("back"))
-        
+	def switch_tag(direction):
+		rect.watchout_tag()
+		
+	c.bind('<4>', lambda event : switch_tag("next"))
+	c.bind('<5>', lambda event : switch_tag("back"))        
 	c.bind('<Motion>', cool_design, '+')	
 	c.bind('<Enter>',cool_design,'+')
 	c.bind('<Leave>',kill_xy)

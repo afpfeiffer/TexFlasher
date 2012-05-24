@@ -976,6 +976,8 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,c):
 	
 	
 	create_comment_canvas(c,selected_dir,flashcard_tag,Settings['user'])	
+
+		
 	#Button(top,command=c.rect.link_tag,image=c.tags_imgs['link']).grid(row=2,column=4,sticky=E)		    
 #	fc_pos=int(c.order.getElementsByTagName(flashcard_tag)[0].getAttribute('position'))
 #	c.flow.goto(fc_pos)
