@@ -44,20 +44,23 @@ import ConfigParser
 
 def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user):
 		frame=Frame(bd=5)
-		tree = xml.parse(xml_path)
 		content=""
 		creator=""
 		fg="black"
 		if not fc_tag==None:
-		  tag_xml = tree.getElementsByTagName(tagtype)[0]
-		  for node in tag_xml.getElementsByTagName(fc_tag):
-		    if node.getAttribute('created')==list(tags)[1]+" "+list(tags)[2]:
-		      creator=node.getAttribute('user')
-		      try:
-			content=node.getAttribute('comment')
-		      except:
-			pass
-		      break
+		  try:
+		    tree = xml.parse(xml_path)		  
+		    tag_xml = tree.getElementsByTagName(tagtype)[0]
+		    for node in tag_xml.getElementsByTagName(fc_tag):
+		      if node.getAttribute('created')==list(tags)[1]+" "+list(tags)[2]:
+			creator=node.getAttribute('user')
+			try:
+			  content=node.getAttribute('comment')
+			except:
+			  pass
+			break
+		  except:
+		    pass
 		if fc_tag==None or creator=="":
 		  creator="unsaved"
 		  content="comment here ..."
