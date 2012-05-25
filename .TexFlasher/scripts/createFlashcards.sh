@@ -30,40 +30,55 @@ echo
 WD=$PWD
 
 file=$1
+user=$2
    
 folder=$(dirname $file)
 filebase=$(basename $file)
 # get filename without extension
 purefilebase=${filebase%\.*}  
+lastFolder="`python .TexFlasher/scripts/repoName.py $file`"
 
-# check if svn is available in subfolder
-# svn info $file > /dev/null
-# HAVESVN=$?
- 
-# # check if Flashcards - folder exists, otherwise create it
-# if [ ! -d "$folder/Flashcards" ]; then
-#   echo "creating subfolder Flashcards"
-#   svn mkdir $folder/Flashcards
-#   svn propset svn:ignore -F .TexFlasher/svnignore $folder/Flashcards/
-#   svn commit $folder/Flashcards -m  "new folder created"
-#   if [ ! -d "$folder/Flashcards" ]; then
-#     echo "error: folder could not be created"
-#   fi
-# fi
+## Update Cards
+ToBeUpdated="$filebase Users/$user.xml Users/${user}_comment.xml Users/questions.xml"
+for element in $ToBeUpdated; do
+	echo "looking at $element"
+	path1="$WD/$lastFolder/$element"
+	path2="$WD/.$lastFolder/$element"
+	svndiff1="`svn diff $path1`" > /dev/null
+	# check if we modified the file
+	if [ "$svndiff1" == "" ]; then
+		echo "you did not modify $element"
+		# if we did not modify the file, we only need to check, if a new revision is online.
+		# if that is 
+		localdiff1="`diff $path1 $path2`"
+		if [ "$localdiff1" != "" ]; then
+			echo "a newer version of $element is available"
+			# a new version is out there. We assuem that path2 holds a reasonably new version (less than 10 min)
+			cp $path2 $path1
+			rev2="`svn info $path2 | grep Revision | cut -d ' ' -f 2`"
+			svn up -r$rev2 $path1 & #don't wait for me to finish, this is just to make sure the revisions are up to date...
+		fi
+	else
+		rev1="`svn info $path1 | grep Revision | cut -d ' ' -f 2`"
+		rev2="`svn info $path2 | grep Revision | cut -d ' ' -f 2`"
+		if [ "$rev1" != "$rev2"  ]; then
+			#this means merging work is to be done. we don't bypass svn here.
+			echo "you have modified $element, as has someone else => svn merge"
+			svn up $path1
+		fi
+	fi	
+done
 
+
+sleep 20
+# some files in tools folder
 FILES="Makefile pdf2jpg_dummy.sh dvi2png_dummy.sh flashcards.cls"
 
 # get current versions of files 
 for thing in $FILES; do
 	cp $WD/.TexFlasher/tools/$thing $folder/Flashcards/
-# 	cp $WD/.TexFlasher/tools/$thing $folder/Details/
 done
 
-
-# get latest version of file (if file is under revision control)
-# if [ $HAVESVN -eq 0 ]; then
-# 	svn up $file
-# fi
 
 if [[ ! -f $folder/Flashcards/$purefilebase.bak ]]; then
    touch $folder/Flashcards/$purefilebase.bak
@@ -162,5 +177,8 @@ else
 
 
 fi  
+
+# update shaddow folder in background
+svn up ".$lastFolder" &
 
 exit 0

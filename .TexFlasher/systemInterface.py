@@ -47,7 +47,7 @@ def checkForUpdate(user):
 		for elem in config_xml.childNodes:
 			if elem.tagName=="FlashFolder" and not elem.getAttribute('filename')=="":
 				files += str(elem.getAttribute('filename')) + " "
-				os.system( "bash .TexFlasher/scripts/updateShaddow.sh "+ str(elem.getAttribute('filename')) )
+				os.system( "bash .TexFlasher/scripts/updateShaddow.sh "+ str(elem.getAttribute('filename'))+" &" )
 				#files += str(os.path.dirname(elem.getAttribute('filename'))+"/Users/"+user+".xml ")
 				#files += str(os.path.dirname(elem.getAttribute('filename'))+"/Users/"+user+"_comment.xml ")
 				#files += str(os.path.dirname(elem.getAttribute('filename'))+"/Users/questions.xml ")
@@ -96,10 +96,10 @@ def create_completion_list():
 
 
 
-def create_flashcards( filename ):
+def create_flashcards( filename, user ):
 	update_config(filename)
 	#os.system("bash .TexFlasher/scripts/createFlashcards.sh "+ filename)
-	executeCommand("bash .TexFlasher/scripts/createFlashcards.sh "+ filename, True)
+	executeCommand("bash .TexFlasher/scripts/createFlashcards.sh "+ filename+" "+user, True)
 
 
 def update_config(filename):
