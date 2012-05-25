@@ -327,8 +327,17 @@ def cardHistory( flashcard ):
 		#print str(elem[0])+": "+elem[1]
 	
 	offset=HISTORY[0][0]
+	init =True
 	for elem in HISTORY:
+		if init:
+			init=False
+			elem[0] = elem[0] - offset
+			continue
+			
 		elem[0] = elem[0] - offset
+		elem[0] = int(str(elem[0]).partition(' ')[0])
+		
+	HISTORY[0][0]=0
 
 	for elem in HISTORY:
 		print str(elem[0])+": "+elem[1]
