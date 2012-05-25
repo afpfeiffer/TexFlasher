@@ -37,7 +37,7 @@ import re
 import commands
 import xml.dom.minidom as xml
 from operator import itemgetter
-from time import strftime, strptime, ctime, localtime
+from time import strftime, strptime, ctime, localtime, mktime
 from datetime import datetime, timedelta
 from Tkinter import *
 from math import *
@@ -320,22 +320,25 @@ def cardHistory( flashcard ):
 		#print elem
 		part=elem.split('_')
 		changeTime = datetime(*(strptime(  part[1].partition('(')[2]  , "%Y-%m-%d %H:%M:%S")[0:6]))
-		HISTORY.append( [ changeTime , part[0] ] )
-		
-	
-	#for elem in HISTORY:
-		#print str(elem[0])+": "+elem[1]
+		totalTime = mktime(changeTime.timetuple())+1e-6*changeTime.microsecond
+		HISTORY.append( [ totalTime , int(part[0]) ] )
+
 	
 	offset=HISTORY[0][0]
 	for elem in HISTORY:
-		elem[0] = elem[0] - offset
+		elem[0] = (elem[0] - offset)
 
 	for elem in HISTORY:
-		print str(elem[0])+": "+elem[1]
+		print str(elem[0])+": "+str(elem[1])
 	
-	
+	return HISTORY
 	
 		
+def drawCardHistory( flashcard, stat ):
+	HISTORY=cardHistory( flashcard )
+	height =  stat.height
+	width = stat.width
+	stat.create_rectangle( 1, 1, width - 1, height - 1)
 		
 		
 def graph_points(dataSetC, dataSetB, numCards,dir):
@@ -1010,6 +1013,8 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,c,update=True):
 		sys.exit()
 	for im in c.find_withtag("backside"):
 	    c.delete(im)		
+	    
+	drawCardHistory( ldb.getElementsByTagName(flashcard_name)[0], c.stat )
 	image = Image.open(selected_dir+"/Flashcards/"+flashcard_name+"-1.png")
 	image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
 	flashcard_image = ImageTk.PhotoImage(image)
@@ -1066,7 +1071,7 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,c):
 	c.true_b.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,True, listPosition,c))
 	c.false_b.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,False, listPosition,c))
 
-	cardHistory( ldb.getElementsByTagName(flashcard_tag)[0] )	
+	drawCardHistory( ldb.getElementsByTagName(flashcard_tag)[0], c.stat )
 	
 	create_comment_canvas(c,selected_dir,flashcard_tag,Settings['user'])	
 
@@ -1141,12 +1146,21 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	c.clear_b=clear_b
 	c.back_b=back_b
 	c.edit_b=edit_b
-
+	
 	#spacer
-	Label(top,height=1).grid(row=3,columnspan=5)
+	#Label(top,height=1).grid(row=3,columnspan=5)
+
+	stat_height=30
+	stat_width=int(float(WIDTH)*0.95)
+	stat=Canvas(top,width=stat_width, height=stat_height)
+	stat.grid(row=4, columnspan=5)
+	stat.height=stat_height
+	stat.width=stat_width
+	c.stat=stat
+
 
 	#fc_content
-	c.fc_row=4
+	c.fc_row=5
 	frame.grid(row=c.fc_row,columnspan=5,sticky=N+S+W+E)
 	c.grid(row=0,columnspan=3,sticky=N+E+W+S)
 	c.tag_buttons=[]
@@ -1173,10 +1187,10 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	c.tag_buttons=[q_b,w_b,r_b,l_b]	
 
 	#spacer
-	Label(top,height=1).grid(row=5,columnspan=5)	
+	Label(top,height=1).grid(row=6,columnspan=5)	
 
 	#true false
-	c.true_false_row=6
+	c.true_false_row=7
 	true_b=create_image_button(top,"./.TexFlasher/pictures/Flashcard_correct.png",80,80)
 	false_b=create_image_button(top,"./.TexFlasher/pictures/Flashcard_wrong.png",80,80)
 	true_b.grid(row=c.true_false_row, column=0, sticky=E )
@@ -1197,7 +1211,7 @@ def run_flasher(selected_dir, stuffToDo=True ):
 #	flow.show_gallery(flow_c,3, pdict)
 
 	#footer
-	Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer",width=int(100.0*float(WIDTH/1000.))).grid(row=7, sticky=S,columnspan=5)
+	Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer",width=int(100.0*float(WIDTH/1000.))).grid(row=8, sticky=S,columnspan=5)
 
 	reactAndInit(selected_dir,agenda,ldb, True , -1 ,c)
 
