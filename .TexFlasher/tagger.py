@@ -66,7 +66,7 @@ def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user):
 		    pass
 		if fc_tag==None or creator=="":
 		  creator="unsaved"
-		  content="comment here ..."
+		  content=""
 		  fg="red"
 		Label(frame,text="Tagtype: "+tagtype+"\n"+creator,fg=fg,bg=None).grid(row=0,column=0,columnspan=4)
 		comment_field=Text(frame,width=20,height=10)
@@ -84,7 +84,7 @@ def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user):
 		image = ImageTk.PhotoImage(image)
 		frame.comment_img=image		
 		Button(frame,text="Comment",image=image,command=lambda:savefile(canvas,fc_tag,user,tagtype,item,comment_field)).grid(row=2,column=0,sticky=W)		
-		return frame 
+		return frame,comment_field 
 		
 		
 class RectTracker:
@@ -257,12 +257,13 @@ def create_comment_canvas(c,dir,fc_tag,user):
 		    for tagtype in c.tagtypes:
 		      
 		      if c.tagtypes[tagtype]['new'] in list(c.gettags(item)) or c.tagtypes[tagtype]['old'] in list(c.gettags(item)):
+			frame,comment_field=c.tagtypes[tagtype]['command'](tagtype,c.tagtypes[tagtype]['xml_path'],c.gettags(item),fc_tag,c,item,user)
 			try:
-			  if not tag_win:
-
-			    tag_win=c.create_window(c.coords(item)[0],c.coords(item)[1]+25,window=c.tagtypes[tagtype]['command'](tagtype,c.tagtypes[tagtype]['xml_path'],c.gettags(item),fc_tag,c,item,user),tag="info_win")
+			  if not tag_win:			    
+			    tag_win=c.create_window(c.coords(item)[0],c.coords(item)[1]+25,window=frame,tag="info_win")
 			except:
-			    tag_win=c.create_window(c.coords(item)[0],c.coords(item)[1]+25,window= c.tagtypes[tagtype]['command'](tagtype,c.tagtypes[tagtype]['xml_path'],c.gettags(item),fc_tag,c,item,user),tag="info_win")	    
+			    tag_win=c.create_window(c.coords(item)[0],c.coords(item)[1]+25,window=frame,tag="info_win")	    
+			comment_field.focus_set()
 		try:  
 		    if not tag_win in c.find_overlapping(event.x-30, event.y-30, event.x+30, event.y+30):
 		      c.delete("info_win")
