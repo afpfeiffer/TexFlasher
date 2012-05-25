@@ -115,8 +115,8 @@ def futureCardNumber( database, offset, offset2, maxLevel ):
 			dt_1 = lastReviewed_time + timedelta(days=(level - (offset + offset2)))		
 			dt_2 = lastReviewed_time + timedelta(days=(level - offset))		
 		
-			if (datetime.now() + timedelta(hours=int(24 - datetime.now().hour + 3)) < dt_1):
-				if datetime.now() + timedelta(hours=int(24 - datetime.now().hour + 3)) >= dt_2:
+			if (datetime.now() + timedelta(hours=int(24 - datetime.now().hour + 5)) < dt_1):
+				if datetime.now() + timedelta(hours=int(24 - datetime.now().hour + 5)) >= dt_2:
 					number += 1
 					LEVELS[level] +=1
 		else:
@@ -143,7 +143,7 @@ def load_agenda(ldb,dir,now=datetime.now()):
 				lastReviewed_time=datetime(*(strptime(lastReviewed, "%Y-%m-%d %H:%M:%S")[0:6]))
 				level=elem.getAttribute('level')
 				dt = lastReviewed_time + timedelta(days=int(level))		
-				if now + timedelta(hours=int(24 - now.hour + 3))>=dt:
+				if now + timedelta(hours=int(24 - now.hour + 5))>=dt:
 					diff=now-dt
 					local_agenda[elem.tagName]=diff.days * seconds_in_a_day + diff.seconds
 	except:
@@ -311,7 +311,29 @@ def getColor( i, maxLevel ):
 
 def cardHistory( flashcard ):
 	history_string=flashcard.getAttribute('levelHistory')
-	#print history	
+	#print history
+	history=history_string.split(')')
+	HISTORY=[]
+	for elem in history:
+		if( elem == '' ):
+			continue
+		#print elem
+		part=elem.split('_')
+		changeTime = datetime(*(strptime(  part[1].partition('(')[2]  , "%Y-%m-%d %H:%M:%S")[0:6]))
+		HISTORY.append( [ changeTime , part[0] ] )
+		
+	
+	#for elem in HISTORY:
+		#print str(elem[0])+": "+elem[1]
+	
+	offset=HISTORY[0][0]
+	for elem in HISTORY:
+		elem[0] = elem[0] - offset
+
+	for elem in HISTORY:
+		print str(elem[0])+": "+elem[1]
+	
+	
 	
 		
 		
