@@ -756,7 +756,6 @@ def  disp_single_fc(image_path,tag,title=None):
 	flashcard = ImageTk.PhotoImage(image)
 	c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard)	
 	c.img=flashcard
-	
 	#c.bind("<Button-1>", lambda e: win.destroy())
 	edit_b=create_image_button(win,"./.TexFlasher/pictures/latex.png",40,40)
 #	edit_b.config(state=DISABLED)
@@ -782,6 +781,34 @@ def  disp_single_fc(image_path,tag,title=None):
 	c.back_b=back_b
 	create_comment_canvas(c,os.path.dirname(image_path)+"/../",tag,Settings['user'])
 	
+	c.fc_row=2
+	c.tag_buttons=[]
+
+	q_b=create_image_button(win,".TexFlasher/pictures/question_fix.png",20,20)
+	q_b.grid(row=c.fc_row,column=0,sticky=N+W)
+	#q_b.grid_remove()
+	c.q_b=q_b
+	w_b=create_image_button(win,".TexFlasher/pictures/watchout_fix.png",20,20)
+	w_b.grid(row=c.fc_row,column=0,sticky=S+W)
+	#w_b.grid_remove()
+	c.w_b=w_b
+	r_b=create_image_button(win,".TexFlasher/pictures/repeat_fix.png",20,20)
+
+	r_b.grid(row=c.fc_row,column=3,sticky=N+E)
+	#r_b.grid_remove()
+	c.r_b=r_b
+	l_b=create_image_button(win,".TexFlasher/pictures/link_fix.png",20,20)
+
+	l_b.grid(row=c.fc_row,column=3,sticky=S+E)		    
+	#l_b.grid_remove()
+	c.l_b=l_b
+
+	c.tag_buttons=[q_b,w_b,r_b,l_b]	
+	
+	c.l_b.config(command=c.rect.link_tag)
+	c.r_b.config(command=c.rect.repeat_tag)
+	c.w_b.config(command=c.rect.watchout_tag)
+	c.q_b.config(command=c.rect.question_tag)	
 	ldb=load_leitner_db(os.path.dirname(image_path)+"/../",Settings["user"])
 	fc_info=get_fc_info(os.path.dirname(image_path)+"/../",tag,ldb)
 	
@@ -1203,7 +1230,6 @@ def show_log(filedir):
 def show_tagged(dir,tag_path):
 	all_fcs=get_all_fcs(dir)
 	tagged=[]
-	print dir
 	tree = xml.parse(tag_path)
 	for elem in all_fcs:
 	  if len(tree.getElementsByTagName(elem['tag']))>0:
