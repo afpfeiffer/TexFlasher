@@ -1567,8 +1567,8 @@ def menu():
 
 		#savebutton
 		image_path="./.TexFlasher/pictures/upload.png"	
-		if checkIfNeedToSave( saveString ):
-			image_path="./.TexFlasher/pictures/upload_now.png"	
+		#if checkIfNeedToSave( saveString ):
+		#	image_path="./.TexFlasher/pictures/upload_now.png"	
 		exec('save=create_image_button(Menu,"'+image_path+'",'+button_size+','+button_size+')')
 		exec('save.configure(command=lambda:saveFiles(saveString))')
 		exec('save.grid(row=1, column=9,sticky=W+N+S+E,columnspan=5)')	
