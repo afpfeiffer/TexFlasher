@@ -323,14 +323,6 @@ def cardHistory( flashcard ):
 		totalTime = mktime(changeTime.timetuple())+1e-6*changeTime.microsecond
 		HISTORY.append( [ totalTime , int(part[0]) ] )
 
-	
-	offset=HISTORY[0][0]
-	for elem in HISTORY:
-		elem[0] = (elem[0] - offset)
-
-	for elem in HISTORY:
-		print str(elem[0])+": "+str(elem[1])
-	
 	return HISTORY
 	
 		
@@ -338,8 +330,54 @@ def drawCardHistory( flashcard, stat ):
 	HISTORY=cardHistory( flashcard )
 	height =  stat.height
 	width = stat.width
-	stat.create_rectangle( 1, 1, width - 1, height - 1)
+	t_end=mktime(datetime.now().timetuple())+1e-6*datetime.now().microsecond
+	HISTORY.append([t_end, 0])
+	offset=HISTORY[0][0]
+	maxVal=0
+	for elem in HISTORY:
+		elem[0] = (elem[0] - offset)
+		maxVal = max( maxVal, elem[1] )
+		#print str(elem[0])+": "+str(elem[1])
+	#print t_end
+	
+	dx_offset=5
+	dt=float(width-1)/(t_end - offset)
+	dx=float(height-2-dx_offset)/maxVal
+	
+	# set backgrund color
+	#stat.create_rectangle( 1, 1, width , height -1 , fill = "white")
+	
+	H=HISTORY
+	level_one_begin=-1
+	level_one_end=-1
+	for i in range(len(H)-1):
+		#print str(elem[0]*dt/width)+": "+str(elem[1])
+		color, foo=getColor(H[i][1], maxVal )
+		stat.create_rectangle(1+H[i][0]*dt,height-1-H[i][1]*dx - dx_offset,1+H[i+1][0]*dt, height-1, fill=color )
 		
+		text_offset = 8
+
+		if H[i][1] == 1:
+			if level_one_begin < 0:
+				level_one_begin = H[i][0]
+			
+			if H[i+1][1] != 1:
+				level_one_end = H[i+1][0]
+				text_height = height - 1 - dx_offset - dx - text_offset
+				if (level_one_end-level_one_begin )*dt >= 10:
+					stat.create_text( 1+level_one_begin*dt + 0.5*(level_one_end-level_one_begin )*dt, text_height , text=str(H[i][1]))
+				level_one_begin=-1
+				
+		else:
+			text_height = height - 1 - 0.5*( dx_offset+ H[i][1]*dx)
+			if H[i][1] == 0:
+				text_height = height - 1 - dx_offset - text_offset
+			if (H[i+1][0]-H[i][0])*dt >= 10:
+				stat.create_text( 1+ H[i][0]*dt + 0.5*(H[i+1][0]-H[i][0])*dt, text_height , text=str(H[i][1]))
+	
+	#stat.create_rectangle( 1, 1, width , height - 1)
+
+	
 		
 def graph_points(dataSetC, dataSetB, numCards,dir):
     clear_window()
@@ -808,7 +846,7 @@ def  disp_single_fc(image_path,tag,title=None):
 	win.iconmask(iconbitmapLocation)
 
 	c=Canvas(win,width=WIDTH,height=WIDTH*0.6)
-	c.grid(row=2,columnspan=4)
+	c.grid(row=3,columnspan=4)
 	image = Image.open(image_path)
 	image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
 	flashcard = ImageTk.PhotoImage(image)
@@ -838,8 +876,10 @@ def  disp_single_fc(image_path,tag,title=None):
 	c.edit_b=edit_b	
 	c.back_b=back_b
 	create_comment_canvas(c,os.path.dirname(image_path)+"/../",tag,Settings['user'])
+
 	
-	c.fc_row=2
+	
+	c.fc_row=3
 	c.tag_buttons=[]
 
 	q_b=create_image_button(win,".TexFlasher/pictures/question_fix.png",20,20)
@@ -869,6 +909,16 @@ def  disp_single_fc(image_path,tag,title=None):
 	c.q_b.config(command=c.rect.question_tag)	
 	ldb=load_leitner_db(os.path.dirname(image_path)+"/../",Settings["user"])
 	fc_info=get_fc_info(os.path.dirname(image_path)+"/../",tag,ldb)
+	
+	
+	stat_height=30
+	stat_width=int(float(WIDTH)*0.95)
+	stat=Canvas(win,width=stat_width, height=stat_height)
+	stat.grid(row=2, columnspan=5)
+	stat.height=stat_height
+	stat.width=stat_width
+	c.stat=stat	
+	drawCardHistory( ldb.getElementsByTagName(tag)[0], c.stat )
 	
 	#Label(win,height=1).grid(row=3,column=0)
 	#Label(win,text="Created: "+fc_info.getAttribute("created")+", Last Reviewed:"+fc_info.getAttribute("lastReviewed")).grid(row=0,columnspan=2)	
