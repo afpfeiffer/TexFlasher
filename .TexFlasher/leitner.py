@@ -1493,8 +1493,10 @@ def readSettings( Settings ):
 global Settings 
 Settings = { 'user':'',
 						'editor':''
-	}
+	}	
 readSettings( Settings )
+
+
 
 version="TexFlasher unstable build"
 top = Tk()
@@ -1504,7 +1506,7 @@ WIDTH=800
 HEIGHT=int(WIDTH*0.7) +170
 
 BD=2
-
+RESTART_TIME=5 
 
 top.bind("<Escape>", lambda e: top.quit()) # quits texflasher if esc is pressed
 
