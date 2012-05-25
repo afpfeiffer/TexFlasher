@@ -303,6 +303,19 @@ def getColor( i, maxLevel ):
 		else:
 			return COLORS[delim+3], dl
 		
+
+#def cardHistory( ldb, flashcard_name ):
+	#flashcard=ldb.getElementsByTagName(flashcard_name)[0]
+	#history=flashcard.getAttribute('levelHistory')
+	#print history
+
+def cardHistory( flashcard ):
+	history_string=flashcard.getAttribute('levelHistory')
+	#print history	
+	
+		
+		
+		
 def graph_points(dataSetC, dataSetB, numCards,dir):
     clear_window()
     top.title(version+" - Statistics")
@@ -979,6 +992,7 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,c,update=True):
 	flashcardsTodo=len(agenda)
 	totalNumberCards=len(ldb.childNodes)
 
+	
 	level = ldb.getElementsByTagName(flashcard_name)[0].getAttribute('level')
 	color, foo = getColor( int(level), 7)
 	page=c.source.getElementsByTagName(flashcard_name)[0].getAttribute('page')
@@ -1000,7 +1014,7 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,c):
 		c.delete(item)
 	for item in c.find_withtag('elem'):#first clear possible rects from canvas
 		c.delete(item)	
-	    
+	
 	c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard,tags=("backside",flashcard_tag))	
 	c.img=flashcard			
 
@@ -1010,7 +1024,7 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,c):
 	c.true_b.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,True, listPosition,c))
 	c.false_b.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,False, listPosition,c))
 
-	
+	cardHistory( ldb.getElementsByTagName(flashcard_tag)[0] )	
 	
 	create_comment_canvas(c,selected_dir,flashcard_tag,Settings['user'])	
 
@@ -1148,7 +1162,8 @@ def run_flasher(selected_dir, stuffToDo=True ):
 ############################################################## Menu ####################################################################
 
 def update_texfile( fname, user ):	
-	executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+os.path.dirname(fname)+"/Users/"+user+".xml "+os.path.dirname(fname)+"/Users/"+user+"_comment.xml "+os.path.dirname(fname)+"/Users/questions.xml "+fname, True )
+	#executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+os.path.dirname(fname)+"/Users/"+user+".xml "+os.path.dirname(fname)+"/Users/"+user+"_comment.xml "+os.path.dirname(fname)+"/Users/questions.xml "+fname, True )
+	executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+os.path.dirname(fname)+"/Users/"+user+".xml "+os.path.dirname(fname)+"/Users/"+user+"_comment.xml "+fname, True )
 	os.system("rm "+os.path.dirname(fname)+"/Flashcards/UPDATE 2>/dev/null")
 	create_flashcards( fname )
 	comp_list=create_completion_list()
@@ -1406,7 +1421,7 @@ def menu():
 				exec('button_' + str(row_start)+'_res.grid(row='+str(row_start)+',column='+str(start_column+7)+',sticky=N+S+E)')
 				saveString += " "+ os.path.dirname(l.getAttribute('filename'))+"/Users/"+Settings["user"]+".xml"
 				saveString += "###"+ os.path.dirname(l.getAttribute('filename'))+"/Users/"+Settings["user"]+"_comment.xml"
-				saveString += "###"+ os.path.dirname(l.getAttribute('filename'))+"/Users/questions.xml"
+				#saveString += "###"+ os.path.dirname(l.getAttribute('filename'))+"/Users/questions.xml"
 				saveString += "###"+ l.getAttribute('filename') 
 				exec('Label(Menu,height=1).grid(row='+str(row_start+1)+')')
 				row_start+=2	
