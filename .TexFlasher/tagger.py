@@ -46,7 +46,7 @@ def open_xml_file(file_path):
 ########################################################## Comment on fc ##############################################################
 
 def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user):
-		frame=Frame(bd=5)
+		frame=Frame(canvas,bd=5)
 		content=""
 		creator=""
 		fg="black"
