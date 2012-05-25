@@ -115,8 +115,8 @@ def futureCardNumber( database, offset, offset2, maxLevel ):
 			dt_1 = lastReviewed_time + timedelta(days=(level - (offset + offset2)))		
 			dt_2 = lastReviewed_time + timedelta(days=(level - offset))		
 		
-			if (datetime.now() + timedelta(hours=int(24 - datetime.now().hour + 5)) < dt_1):
-				if datetime.now() + timedelta(hours=int(24 - datetime.now().hour + 5)) >= dt_2:
+			if (datetime.now() + timedelta(hours=int(24 - datetime.now().hour + RESTART_TIME)) < dt_1):
+				if datetime.now() + timedelta(hours=int(24 - datetime.now().hour + RESTART_TIME)) >= dt_2:
 					number += 1
 					LEVELS[level] +=1
 		else:
@@ -143,7 +143,7 @@ def load_agenda(ldb,dir,now=datetime.now()):
 				lastReviewed_time=datetime(*(strptime(lastReviewed, "%Y-%m-%d %H:%M:%S")[0:6]))
 				level=elem.getAttribute('level')
 				dt = lastReviewed_time + timedelta(days=int(level))		
-				if now + timedelta(hours=int(24 - now.hour + 5))>=dt:
+				if now + timedelta(hours=int(24 - now.hour + RESTART_TIME))>=dt:
 					diff=now-dt
 					local_agenda[elem.tagName]=diff.days * seconds_in_a_day + diff.seconds
 	except:
