@@ -334,8 +334,9 @@ def cardHistory( flashcard ):
 	return HISTORY
 	
 		
-def drawCardHistory( flashcard, h_can ):
+def drawCardHistory( flashcard, stat ):
 	HISTORY=cardHistory( flashcard )
+	#stat.create_rectangle
 		
 		
 def graph_points(dataSetC, dataSetB, numCards,dir):
@@ -810,7 +811,6 @@ def  disp_single_fc(image_path,tag,title=None):
 	back_b.grid(row=1, column=0,sticky=W+N+E+S)		
 	back_b.config(command=lambda: win.destroy())
 	
-	
 	c.save_b=save_b
 	c.clear_b=clear_b
 	c.edit_b=edit_b	
@@ -991,6 +991,8 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,c,update=True):
 		sys.exit()
 	for im in c.find_withtag("backside"):
 	    c.delete(im)		
+	    
+	drawCardHistory( ldb.getElementsByTagName(flashcard_name)[0], c.stat )
 	image = Image.open(selected_dir+"/Flashcards/"+flashcard_name+"-1.png")
 	image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
 	flashcard_image = ImageTk.PhotoImage(image)
@@ -1047,7 +1049,7 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,c):
 	c.true_b.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,True, listPosition,c))
 	c.false_b.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,False, listPosition,c))
 
-	drawCardHistory( ldb.getElementsByTagName(flashcard_tag)[0] )	
+	drawCardHistory( ldb.getElementsByTagName(flashcard_tag)[0], c.stat )
 	
 	create_comment_canvas(c,selected_dir,flashcard_tag,Settings['user'])	
 
@@ -1122,12 +1124,17 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	c.clear_b=clear_b
 	c.back_b=back_b
 	c.edit_b=edit_b
-
+	
 	#spacer
 	Label(top,height=1).grid(row=3,columnspan=5)
 
+	stat=Canvas(top,width=int(float(WIDTH)*0.95), height=10)
+	stat.grid(row=4, columnspan=5)
+	c.stat=stat
+
+
 	#fc_content
-	c.fc_row=4
+	c.fc_row=5
 	frame.grid(row=c.fc_row,columnspan=5,sticky=N+S+W+E)
 	c.grid(row=0,columnspan=3,sticky=N+E+W+S)
 	c.tag_buttons=[]
@@ -1154,10 +1161,10 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	c.tag_buttons=[q_b,w_b,r_b,l_b]	
 
 	#spacer
-	Label(top,height=1).grid(row=5,columnspan=5)	
+	Label(top,height=1).grid(row=6,columnspan=5)	
 
 	#true false
-	c.true_false_row=6
+	c.true_false_row=7
 	true_b=create_image_button(top,"./.TexFlasher/pictures/Flashcard_correct.png",80,80)
 	false_b=create_image_button(top,"./.TexFlasher/pictures/Flashcard_wrong.png",80,80)
 	true_b.grid(row=c.true_false_row, column=0, sticky=E )
@@ -1178,7 +1185,7 @@ def run_flasher(selected_dir, stuffToDo=True ):
 #	flow.show_gallery(flow_c,3, pdict)
 
 	#footer
-	Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer",width=int(100.0*float(WIDTH/1000.))).grid(row=7, sticky=S,columnspan=5)
+	Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer",width=int(100.0*float(WIDTH/1000.))).grid(row=8, sticky=S,columnspan=5)
 
 	reactAndInit(selected_dir,agenda,ldb, True , -1 ,c)
 
