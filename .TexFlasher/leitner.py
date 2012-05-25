@@ -336,7 +336,9 @@ def cardHistory( flashcard ):
 		
 def drawCardHistory( flashcard, stat ):
 	HISTORY=cardHistory( flashcard )
-	#stat.create_rectangle
+	height =  stat.height
+	width = stat.width
+	stat.create_rectangle( 1, 1, width - 1, height - 1)
 		
 		
 def graph_points(dataSetC, dataSetB, numCards,dir):
@@ -1126,10 +1128,14 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	c.edit_b=edit_b
 	
 	#spacer
-	Label(top,height=1).grid(row=3,columnspan=5)
+	#Label(top,height=1).grid(row=3,columnspan=5)
 
-	stat=Canvas(top,width=int(float(WIDTH)*0.95), height=10)
+	stat_height=30
+	stat_width=int(float(WIDTH)*0.95)
+	stat=Canvas(top,width=stat_width, height=stat_height)
 	stat.grid(row=4, columnspan=5)
+	stat.height=stat_height
+	stat.width=stat_width
 	c.stat=stat
 
 
