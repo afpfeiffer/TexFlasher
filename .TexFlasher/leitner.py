@@ -671,7 +671,7 @@ class AutoScrollbar(Scrollbar):
         raise TclError, "cannot use place with this widget"
 
 # TODO Alter schwede, size=BOOL(>1) (=true) size>1 oder was?
-def create_image_button(window,path,width=None,height=None):
+def create_image_button(window,path,width=None,height=None,border=None):
 	button_image = Image.open(path)
 	if width and height:
 		STRS=path.partition("-1")
@@ -684,7 +684,11 @@ def create_image_button(window,path,width=None,height=None):
 		else:
 			button_image = button_image.resize((width, height), Image.ANTIALIAS)
 	img= ImageTk.PhotoImage(button_image)
-	button=Button(window,image=img,bd=BD)
+	if border==None:
+		button=Button(window,image=img,bd=BD)
+	else:
+		button=Button(window,image=img,bd=border)
+	  
 	button.img=img
 	button.grid()
 	return button
@@ -810,7 +814,8 @@ def edit_fc(c,dir,fc_tag):
 	c.save_b.config(state=NORMAL)
 	c.save_b.configure(command=lambda:save_edit(c,frame,edit_text,dir,fc_tag,theorem_type))
 	c.clear_b.configure(text="Cancel",command=lambda:cancel_edit(c,dir,fc_tag,frame))	
-
+	for tag in c.tag_buttons:
+		tag.grid_remove()
 
 def cancel_edit(c,dir,tag,frame):
 	c.clear_b.config(state=DISABLED)
@@ -824,6 +829,8 @@ def cancel_edit(c,dir,tag,frame):
 	  pass	
 	c.edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,dir,tag))
 	frame.grid_forget()
+	for tag in c.tag_buttons:
+		tag.grid()	
 
 
 def change_latex(file_path,fc_tag,content,theorem_type):
@@ -1236,6 +1243,16 @@ def create_folder():
 	d = MyDialog(top)
 	top.wait_window(d.top)
 
+	
+	
+def check_tags(xml_path,tagtype):
+  if os.path.isfile(xml_path):
+      try:
+	return 	len(xml.parse(xml_path).getElementsByTagName(tagtype)[0].childNodes) 
+      except:
+	return None
+    
+	
 
 
 def menu():
@@ -1292,6 +1309,24 @@ def menu():
 				#folder desc
 				exec('fc_folder_' + str(row_start)+'_desc=Label(Menu,justify=LEFT,text="'+l.getAttribute('filename').split("/")[-2]+'\\nlength: '+str(length)+'\\ntodo: '+str(todo-new)+', new: '+str(new)+'\\nupdated: '+l.getAttribute('lastReviewed')+'").grid(row='+str(row_start)+', column='+str(start_column+1)+',sticky=W)')
 
+				#tags
+				q_b=create_image_button(Menu,".TexFlasher/pictures/question_fix.png",40,40,0)
+				q_b.grid(row=row_start,column=start_column+2,sticky=N+W+E+S)
+				if check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/questions.xml","question")==None:
+				   q_b.config(state=DISABLED)			
+				w_b=create_image_button(Menu,".TexFlasher/pictures/watchout_fix.png",40,40,0)
+				w_b.grid(row=row_start,column=start_column+3,sticky=N+S+E+W)
+				if check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/watchout.xml","watchout")==None:
+				   w_b.config(state=DISABLED)	
+				r_b=create_image_button(Menu,".TexFlasher/pictures/repeat_fix.png",40,40,0)
+				r_b.grid(row=row_start,column=start_column+4,sticky=N+W+E+S)
+				if check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/repeat.xml","repeat")==None:
+				   r_b.config(state=DISABLED)					   
+				l_b=create_image_button(Menu,".TexFlasher/pictures/link_fix.png",40,40,0)
+				l_b.grid(row=row_start,column=start_column+5,sticky=N+W+E+S)
+				if check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/link.xml","link")==None:
+				   l_b.config(state=DISABLED)					
+				start_column+=6
 				#update
 				if os.path.isfile(os.path.dirname(l.getAttribute('filename'))+"/Flashcards/UPDATE"):
 					update_image="./.TexFlasher/pictures/update_now.png"
@@ -1354,7 +1389,7 @@ def menu():
 
 		search_button=create_image_button(Menu,"./.TexFlasher/pictures/search.png",40,40)
 		search_button.configure(command=lambda:query.search_flashcard())
-		search_button.grid(row=1,column=2,sticky=N+E+W+S,columnspan=2)		
+		search_button.grid(row=1,column=2,sticky=N+E+W+S,columnspan=4)		
 
 
 		#savebutton
@@ -1363,10 +1398,10 @@ def menu():
 			image_path="./.TexFlasher/pictures/upload_now.png"	
 		exec('save=create_image_button(Menu,"'+image_path+'",'+button_size+','+button_size+')')
 		exec('save.configure(command=lambda:saveFiles(saveString))')
-		exec('save.grid(row=1, column=5,sticky=W+N+S+E,columnspan=3)')	
+		exec('save.grid(row=1, column=9,sticky=W+N+S+E,columnspan=5)')	
 	
 
-		create_n.grid(row=1,column=4,sticky=N+W+S+E)		
+		create_n.grid(row=1,column=8,sticky=N+W+S+E)		
 		Label(Menu,height=1).grid(sticky=E+W,row=2,columnspan=10)
 	else:
 		create_n.grid(row=row_start+2,columnspan=8)			
