@@ -241,7 +241,7 @@ def statistics_nextWeek(ldir):
 			LEVELS[int( card.getAttribute('level'))] += 1.0/cards
 		
 		
-		graph_points(DATASET, LEVELS, cards ,ldir)
+		graph_points(database, DATASET, LEVELS, cards ,ldir)
 		
 		
 
@@ -304,10 +304,46 @@ def getColor( i, maxLevel ):
 			return COLORS[delim+3], dl
 		
 
-#def cardHistory( ldb, flashcard_name ):
-	#flashcard=ldb.getElementsByTagName(flashcard_name)[0]
-	#history=flashcard.getAttribute('levelHistory')
-	#print history
+def totalCardHistory( ldb, threshold=1 ):
+	TH=[]
+	TS=[]
+	for elem in ldb.childNodes:
+		H=cardHistory( elem )
+		time = 0
+		counter = 0
+		pos = 0
+		cardValid=False
+		while time < H[len(H)-1][0]:
+			if H[pos][1] >= threshold :
+				cardValid=True
+				
+			if cardValid:
+				while len(TS)<=counter:
+					TS.append(0)
+					TH.append([time, 0])
+				
+				TS[counter] = TS[counter] + 1
+				TH[counter][1] = TH[counter][1] + H[pos][1]
+				
+				
+			time = time + 86400 #seconds in a day
+			counter = counter+1
+			if time > H[pos+1][0]:
+				pos = pos + 1
+
+		
+	for i in range(len(TS)-1):
+		if TS[i] > 0:
+			TH[i][1] = int(float(TH[i][1])/float(TS[i]))
+		else:
+			TH[i][1] = 0
+			
+	TH[len(TH)-1][1]=0
+	return TH
+					
+def drawTotalCardHistory( ldb, stat ):
+	HISTORY=totalCardHistory( ldb )
+	drawHistory( HISTORY, stat, False )					
 
 def cardHistory( flashcard ):
 	history_string=flashcard.getAttribute('levelHistory')
@@ -322,30 +358,37 @@ def cardHistory( flashcard ):
 		changeTime = datetime(*(strptime(  part[1].partition('(')[2]  , "%Y-%m-%d %H:%M:%S")[0:6]))
 		totalTime = mktime(changeTime.timetuple())+1e-6*changeTime.microsecond
 		HISTORY.append( [ totalTime , int(part[0]) ] )
+		
+	offset=HISTORY[0][0]
+	for elem in HISTORY:
+			elem[0] = (elem[0] - offset)
+
+	t_end=mktime(datetime.now().timetuple())+1e-6*datetime.now().microsecond
+	HISTORY.append([t_end-offset, 0])
 
 	return HISTORY
 	
-		
+
 def drawCardHistory( flashcard, stat ):
 	HISTORY=cardHistory( flashcard )
-	height =  stat.height
+	drawHistory( HISTORY, stat )
+	
+def drawHistory( HISTORY, stat, verbose=True ):
+	height = stat.height
 	width = stat.width
-	t_end=mktime(datetime.now().timetuple())+1e-6*datetime.now().microsecond
-	HISTORY.append([t_end, 0])
-	offset=HISTORY[0][0]
-	maxVal=0
+
+	maxVal=3
 	for elem in HISTORY:
-		elem[0] = (elem[0] - offset)
 		maxVal = max( maxVal, elem[1] )
 		#print str(elem[0])+": "+str(elem[1])
 	#print t_end
 	
 	dx_offset=5
-	dt=float(width-1)/(t_end - offset)
+	dt=float(width-1)/(HISTORY[len(HISTORY)-1][0])
 	dx=float(height-2-dx_offset)/maxVal
 	
 	# set backgrund color
-	#stat.create_rectangle( 1, 1, width , height -1 , fill = "white")
+	#stat.create_rectangle( 1, 1, width , height -1 )
 	
 	H=HISTORY
 	level_one_begin=-1
@@ -357,29 +400,32 @@ def drawCardHistory( flashcard, stat ):
 		
 		text_offset = 8
 
-		if H[i][1] == 1:
-			if level_one_begin < 0:
-				level_one_begin = H[i][0]
+		if verbose:
+			if H[i][1] == 1:
+				if level_one_begin < 0:
+					level_one_begin = H[i][0]
 			
-			if H[i+1][1] != 1:
-				level_one_end = H[i+1][0]
-				text_height = height - 1 - dx_offset - dx - text_offset
-				if (level_one_end-level_one_begin )*dt >= 10:
-					stat.create_text( 1+level_one_begin*dt + 0.5*(level_one_end-level_one_begin )*dt, text_height , text=str(H[i][1]))
-				level_one_begin=-1
-				
-		else:
-			text_height = height - 1 - 0.5*( dx_offset+ H[i][1]*dx)
-			if H[i][1] == 0:
-				text_height = height - 1 - dx_offset - text_offset
-			if (H[i+1][0]-H[i][0])*dt >= 10:
-				stat.create_text( 1+ H[i][0]*dt + 0.5*(H[i+1][0]-H[i][0])*dt, text_height , text=str(H[i][1]))
-	
+				if H[i+1][1] != 1:
+					level_one_end = H[i+1][0]
+					text_height = height - 1 - dx_offset - dx - text_offset
+					if (level_one_end-level_one_begin )*dt >= 10:
+						stat.create_text( 1+level_one_begin*dt + 0.5*(level_one_end-level_one_begin )*dt, text_height , text=str(H[i][1]))
+					level_one_begin=-1
+					
+			else:
+				text_height = height - 1 - 0.5*( dx_offset+ H[i][1]*dx)
+				if H[i][1]*dx < 10:
+					text_height = height - 1 - dx_offset - H[i][1]*dx - text_offset
+				if H[i][1] == 0:
+					text_height = height - 1 - dx_offset - text_offset
+				if (H[i+1][0]-H[i][0])*dt >= 10:
+					stat.create_text( 1+ H[i][0]*dt + 0.5*(H[i+1][0]-H[i][0])*dt, text_height , text=str(H[i][1]))
+		
 	#stat.create_rectangle( 1, 1, width , height - 1)
 
 	
 		
-def graph_points(dataSetC, dataSetB, numCards,dir):
+def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     clear_window()
     top.title(version+" - Statistics")
 
@@ -390,14 +436,14 @@ def graph_points(dataSetC, dataSetB, numCards,dir):
     #Balloon = Pmw.Balloon(top)
     #Balloon.bind(menu_button, "Return to Menu") 
     Stats=Frame(top,border=10)
-    Stats.grid(row=2,column=0)
+    Stats.grid(row=3,column=0)
     
     DAYS =[ 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun' ]
     tday=dayToday()   
            
     global c
-    c = Canvas(Stats, width=int(float(WIDTH)*0.4999), height=int(WIDTH*0.6))  
-    c.grid(row=1 , column=0, sticky=W+E)
+    c = Canvas(Stats, width=int(float(WIDTH)*0.4999), height=int(WIDTH*0.5))  
+    c.grid(row=0 , column=0, sticky=N+W+E)
     
     ymax=1
     for i in range(len(dataSetC)):
@@ -405,7 +451,7 @@ def graph_points(dataSetC, dataSetB, numCards,dir):
 
     D1= 50.0
     D2=0.6*(WIDTH*0.6)
-    zero= D1, float(HEIGHT)*0.65
+    zero= D1, float(HEIGHT)*0.5
     
 
     valMax=5
@@ -474,12 +520,12 @@ def graph_points(dataSetC, dataSetB, numCards,dir):
     c.create_text(0, zero[1]+D1*0.2, anchor=W, text="Cards")
     c.create_text(D1*0.45, zero[1]+D1*0.8, anchor=W, text="Day")
     
-    c1 = Canvas(Stats, width=int(float(WIDTH)*0.47), height=int(WIDTH*0.6)) 
-    c1.grid(row=1 , column=1, sticky=W+E)
+    c1 = Canvas(Stats, width=int(float(WIDTH)*0.47), height=int(WIDTH*0.5)) 
+    c1.grid(row=0 , column=1, sticky=N)
 
     c1.create_text(160, 20, anchor=SW, text="Level status:")
    
-    coords= float(WIDTH)*0.05 + 30, float(WIDTH)*0.15 -35 +30 ,float(WIDTH)*0.45 -30,float(WIDTH)*0.55 -35 -30
+    coords= float(WIDTH)*0.05 + 30, float(WIDTH)*0.1 -35 +30 ,float(WIDTH)*0.45 -30,float(WIDTH)*0.5 -35 -30
 
     center = 0.5 *(coords[0] +coords[2]), 0.5*(coords[1]+coords[3])
 
@@ -526,36 +572,53 @@ def graph_points(dataSetC, dataSetB, numCards,dir):
        
     c1.bind("<Button-1>",lambda e:show_pie_level(e,pie_data,0.5*(coords[2]-coords[0])))
     #c1.create_text(center[0],470,  text="Ln: Cards on level n,  N: New Cards")
-    Label(Stats,height = 6).grid(row=8, columnspan=100)
-    Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer",height = 1).grid(row=2, sticky=S,columnspan=100)
     
+    
+    Legende=Canvas(Stats, width=int(WIDTH*0.95))
+    Legende.grid(row=3 , columnspan=5)
+
     color, dl = getColor(0, len(dataSetB))
-    ybasis = 420
-    
-    coord= float(WIDTH)*0.05
-    c1.create_rectangle( coord, ybasis , coord + 20, ybasis +18,width=0, fill=color  )
-    c1.create_text( coord+25, ybasis+9, anchor=W, text = "Level 0 (new)" )
+    ybasis = 50
+    coord= float(WIDTH)*0.5 -150
+    #Legende.create_line( 0, ybasis-10 , WIDTH, ybasis-10 )
+    Legende.create_rectangle( coord, ybasis , coord + 20, ybasis +18,width=0, fill=color  )
+    Legende.create_text( coord+25, ybasis+9, anchor=W, text = "Level 0 (new)" )
     color, dl = getColor(1, len(dataSetB))
-    c1.create_rectangle( coord, ybasis+20, coord + 20, ybasis +38,width=0, fill= color )
-    c1.create_text( coord+25, ybasis+29, anchor=W, text = "Level 1 (bad)" )
+    Legende.create_rectangle( coord, ybasis+20, coord + 20, ybasis +38,width=0, fill= color )
+    Legende.create_text( coord+25, ybasis+29, anchor=W, text = "Level 1 (bad)" )
     color, dl = getColor(2, len(dataSetB))
-    c1.create_rectangle( coord, ybasis+40, coord + 20, ybasis +58,width=0, fill= color )
-    c1.create_text( coord+25, ybasis+49, anchor=W, text = "Level 2 (improving)" )
+    Legende.create_rectangle( coord, ybasis+40, coord + 20, ybasis +58,width=0, fill= color )
+    Legende.create_text( coord+25, ybasis+49, anchor=W, text = "Level 2 (improving)" )
+    #Legende.create_line( 0, ybasis+65 , WIDTH, ybasis+65 )
+    Legende.create_text( float(WIDTH)*0.5 , ybasis + 90 , text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer")
+
     
     if( len(dataSetB)-1 >2 ):
 			color, dl = getColor(3, len(dataSetB))
-			c1.create_rectangle( coord+150, ybasis, coord + 170, ybasis+18,width=0, fill= color )
-			c1.create_text( coord+175, ybasis+9, anchor=W, text = "Level 3 - "+str(2+dl)+" (good)" )
+			Legende.create_rectangle( coord+150, ybasis, coord + 170, ybasis+18,width=0, fill= color )
+			Legende.create_text( coord+175, ybasis+9, anchor=W, text = "Level 3 - "+str(2+dl)+" (good)" )
 
     if( len(dataSetB)-1 >2+dl ):
 			color, dl = getColor(int( 0.5*(len(dataSetB)+3)), len(dataSetB)) 
-			c1.create_rectangle( coord+150, ybasis+20, coord + 170, ybasis+38,width=0, fill= color )
-			c1.create_text( coord+175, ybasis+29, anchor=W, text = "Level "+str(2+dl+1)+" - "+str(2+2*dl)+" (excellent)" )
+			Legende.create_rectangle( coord+150, ybasis+20, coord + 170, ybasis+38,width=0, fill= color )
+			Legende.create_text( coord+175, ybasis+29, anchor=W, text = "Level "+str(2+dl+1)+" - "+str(2+2*dl)+" (excellent)" )
 
     if( len(dataSetB)-1 >2+dl*2 ):
 			color, dl=getColor(len(dataSetB)-1, len(dataSetB)) 
-			c1.create_rectangle( coord+150, ybasis+40, coord + 170, ybasis+58,width=0, fill= color )
-			c1.create_text( coord+175, ybasis+49, anchor=W, text = "Level "+str(2+2*dl+1)+" - "+str(len(dataSetB)-1)+" (outstanding)" )
+			Legende.create_rectangle( coord+150, ybasis+40, coord + 170, ybasis+58,width=0, fill= color )
+			Legende.create_text( coord+175, ybasis+49, anchor=W, text = "Level "+str(2+2*dl+1)+" - "+str(len(dataSetB)-1)+" (outstanding)" )
+    
+    stat_height=30
+    stat_width=int(float(WIDTH)*0.95)
+    stat=Canvas(Stats,width=stat_width, height=stat_height)
+    stat.grid(row=2, columnspan=2)
+    stat.height=stat_height
+    stat.width=stat_width
+    Stats.stat=stat
+    drawTotalCardHistory( ldb, Stats.stat )
+    #spacer
+    Label(Stats,height=4).grid(row=1,columnspan=5)	#spacer
+    #Label(top,height=1).grid(row=0,columnspan=5)
     mainloop()
 
 
