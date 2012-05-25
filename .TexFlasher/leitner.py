@@ -706,25 +706,45 @@ class AutoScrollbar(Scrollbar):
         raise TclError, "cannot use place with this widget"
 
 # TODO Alter schwede, size=BOOL(>1) (=true) size>1 oder was?
-def create_image_button(window,path,width=None,height=None,border=None):
-	button_image = Image.open(path)
+class ImageKeeper:  
+	def __init__(self):
+	  self.images={}
+	  
+	def add_image(self,path,width=None,height=None):
+	  image = Image.open(path)
+	  if width and height:
+	    image = image.resize((width, height), Image.ANTIALIAS)
+	    self.images[path+"X"+str(width)+"Y"+str(height)]=ImageTk.PhotoImage(image)
+	  else:
+	    self.images[path]=ImageTk.PhotoImage(image)
+	  return ImageTk.PhotoImage(image)
+	    
+	def get_image(self,path,width=None,height=None):
+	  if width and height and self.images.get(path+"X"+str(width)+"Y"+str(height), False):
+	    return self.images[path+"X"+str(width)+"Y"+str(height)]
+	  elif self.images.get(path, False):
+	    return self.images[path]
+	  else:
+	    return self.add_image(path,width,height)
+	    
+def create_image_button(window,path,width=None,height=None,border=None):	
+#	button_image = Image.open(path)
 	if width and height:
 		STRS=path.partition("-1")
 		thumbname=STRS[0]+"-thumb"+str(int(width))+"x"+str(int(height))+STRS[2]
 		if os.path.isfile(thumbname):
 			try:
-				button_image = Image.open(thumbname)
+				button_image = IK.get_image(thumbname)
 			except:
-				button_image = button_image.resize((width, height), Image.ANTIALIAS)
+				button_image = IK.get_image(path,width,height)
 		else:
-			button_image = button_image.resize((width, height), Image.ANTIALIAS)
-	img= ImageTk.PhotoImage(button_image)
+			button_image = IK.get_image(path,width,height)	
 	if border==None:
-		button=Button(window,image=img,bd=BD)
+		button=Button(window,image=button_image,bd=BD)
 	else:
-		button=Button(window,image=img,bd=border)
+		button=Button(window,image=button_image,bd=border)
 	  
-	button.img=img
+	button.img=button_image
 	button.grid()
 	return button
 
@@ -1387,24 +1407,30 @@ def menu():
 				#tags
 				q_b=create_image_button(Menu,".TexFlasher/pictures/question_fix.png",40,40,0)
 				q_b.grid(row=row_start,column=start_column+2,sticky=N+W+E+S)
-				if check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/questions.xml","question")==None or check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/questions.xml","question")==0:
+				q_length=check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/questions.xml","question")
+				if q_length==None or q_length==0:
 				   q_b.config(state=DISABLED)
+				#else:
+				#   Label(Menu,text=str(q_length)).grid(row=row_start,column=start_column+2,sticky=S)
 				exec("q_b.config(command=lambda:show_tagged('"+os.path.dirname(l.getAttribute('filename'))+"','"+os.path.dirname(l.getAttribute('filename'))+"/Users/questions.xml'))")
 				w_b=create_image_button(Menu,".TexFlasher/pictures/watchout_fix.png",40,40,0)
 				w_b.grid(row=row_start,column=start_column+3,sticky=N+S+E+W)
-				if check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/watchout.xml","watchout")==None or check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/watchout.xml","watchout")==0:
+				w_length=check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/watchout.xml","watchout")
+				if w_length==None or w_length==0:
 				   w_b.config(state=DISABLED)	
 				exec("w_b.config(command=lambda:show_tagged('"+os.path.dirname(l.getAttribute('filename'))+"','"+os.path.dirname(l.getAttribute('filename'))+"/Users/watchout.xml'))")
    
 				r_b=create_image_button(Menu,".TexFlasher/pictures/repeat_fix.png",40,40,0)
 				r_b.grid(row=row_start,column=start_column+4,sticky=N+W+E+S)
-				if check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/repeat.xml","repeat")==None or check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/repeat.xml","repeat")==0:
+				r_length=check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/repeat.xml","repeat")
+				if r_length==None or r_length==0:
 				   r_b.config(state=DISABLED)	
 				exec("r_b.config(command=lambda:show_tagged('"+os.path.dirname(l.getAttribute('filename'))+"','"+os.path.dirname(l.getAttribute('filename'))+"/Users/repeat.xml'))")
 
 				l_b=create_image_button(Menu,".TexFlasher/pictures/link_fix.png",40,40,0)
 				l_b.grid(row=row_start,column=start_column+5,sticky=N+W+E+S)
-				if check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/links.xml","link")==None or check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/links.xml","link")==0:
+				l_length=check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/links.xml","link")
+				if l_length==None or l_length==0:
 				   l_b.config(state=DISABLED)	
 				exec("l_b.config(command=lambda:show_tagged('"+os.path.dirname(l.getAttribute('filename'))+"','"+os.path.dirname(l.getAttribute('filename'))+"/Users/links.xml'))")
 
@@ -1530,6 +1556,9 @@ HEIGHT=int(WIDTH*0.7) +170
 BD=2
 RESTART_TIME=5 
 
+IK=ImageKeeper()
+
+
 top.bind("<Escape>", lambda e: top.quit()) # quits texflasher if esc is pressed
 
 comp_list=create_completion_list()
@@ -1547,5 +1576,7 @@ xs = (ws/2) - (int(WIDTH*1.005)/2)
 ys = (hs/2) - (HEIGHT/2)
 
 top.geometry(str(int(WIDTH*1.005))+"x"+str(HEIGHT)+"+"+str(xs)+"+"+str(ys))
+
+
 
 menu()
