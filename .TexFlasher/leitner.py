@@ -1200,6 +1200,18 @@ def show_log(filedir):
         return
 
 
+def show_tagged(dir,tag_path):
+	all_fcs=get_all_fcs(dir)
+	tagged=[]
+	print dir
+	tree = xml.parse(tag_path)
+	for elem in all_fcs:
+	  if len(tree.getElementsByTagName(elem['tag']))>0:
+	     tagged.append(elem)
+	display_mult_fcs(tagged,"Tagged in "+dir,"Menu","lambda:menu()","./.TexFlasher/pictures/menu.png")
+
+        
+        
 
 def open_tex(filepath):
 	try:
@@ -1313,20 +1325,28 @@ def menu():
 				q_b=create_image_button(Menu,".TexFlasher/pictures/question_fix.png",40,40,0)
 				q_b.grid(row=row_start,column=start_column+2,sticky=N+W+E+S)
 				if check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/questions.xml","question")==None:
-				   q_b.config(state=DISABLED)			
+				   q_b.config(state=DISABLED)
+				exec("q_b.config(command=lambda:show_tagged('"+os.path.dirname(l.getAttribute('filename'))+"','"+os.path.dirname(l.getAttribute('filename'))+"/Users/questions.xml'))")
 				w_b=create_image_button(Menu,".TexFlasher/pictures/watchout_fix.png",40,40,0)
 				w_b.grid(row=row_start,column=start_column+3,sticky=N+S+E+W)
 				if check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/watchout.xml","watchout")==None:
 				   w_b.config(state=DISABLED)	
+				exec("w_b.config(command=lambda:show_tagged('"+os.path.dirname(l.getAttribute('filename'))+"','"+os.path.dirname(l.getAttribute('filename'))+"/Users/watchout.xml'))")
+   
 				r_b=create_image_button(Menu,".TexFlasher/pictures/repeat_fix.png",40,40,0)
 				r_b.grid(row=row_start,column=start_column+4,sticky=N+W+E+S)
 				if check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/repeat.xml","repeat")==None:
-				   r_b.config(state=DISABLED)					   
+				   r_b.config(state=DISABLED)	
+				exec("r_b.config(command=lambda:show_tagged('"+os.path.dirname(l.getAttribute('filename'))+"','"+os.path.dirname(l.getAttribute('filename'))+"/Users/repeat.xml'))")
+
 				l_b=create_image_button(Menu,".TexFlasher/pictures/link_fix.png",40,40,0)
 				l_b.grid(row=row_start,column=start_column+5,sticky=N+W+E+S)
 				if check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/link.xml","link")==None:
-				   l_b.config(state=DISABLED)					
+				   l_b.config(state=DISABLED)	
+				exec("l_b.config(command=lambda:show_tagged('"+os.path.dirname(l.getAttribute('filename'))+"','"+os.path.dirname(l.getAttribute('filename'))+"/Users/link.xml'))")
+
 				start_column+=6
+				
 				#update
 				if os.path.isfile(os.path.dirname(l.getAttribute('filename'))+"/Flashcards/UPDATE"):
 					update_image="./.TexFlasher/pictures/update_now.png"

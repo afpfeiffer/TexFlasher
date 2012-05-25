@@ -316,7 +316,6 @@ def savefile(canvas,fc_tag,user,tagtype,item,comment_field):
 		
 		content=comment_field.get('1.0', END)
 		flashcard_element.setAttribute('comment',content)	
-		print content
 		xml_file = open(canvas.tagtypes[tagtype]['xml_path'], "w")
 		tag_xml.writexml(xml_file)
 		xml_file.close()
