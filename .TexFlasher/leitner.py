@@ -933,23 +933,26 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,c,update=True):
 	c.save_b.config(state=DISABLED)
 	c.clear_b.config(state=DISABLED)
 	c.back_b.config(state=DISABLED)
-	
 	c.back_b.config(state=DISABLED,command=lambda:reactAndInit(selected_dir,agenda,ldb, True , listPosition-1,c,False))
 
 	
 	c.true_b.configure(state=DISABLED)
 	c.false_b.configure(state=DISABLED)
+
+	for tag in c.tag_buttons:
+		tag.grid_remove()
+
 	flashcardsTodo=len(agenda)
 	totalNumberCards=len(ldb.childNodes)
-	e0=Label(top,anchor=W,text="Flashcards (left today / total number): "+str(flashcardsTodo-listPosition)
-	   +" / "+str(totalNumberCards), width=45).grid(row=0, columnspan=2,sticky=W)	   
+
 	level = ldb.getElementsByTagName(flashcard_name)[0].getAttribute('level')
 	color, foo = getColor( int(level), 7)
 	page=c.source.getElementsByTagName(flashcard_name)[0].getAttribute('page')
 	fc_pos=int(c.order.getElementsByTagName(flashcard_name)[0].getAttribute('position'))
-	
-	e1=Label(top,anchor=E,text="Flashcardnr.: "+str(fc_pos)+", Page: "+str(page)+", Level: "+ str(level) +"  ",  width=40).grid(row=0, column=3,columnspan=2,sticky=E)
-	#c.flow.goto(fc_pos)
+
+	c.fc_det_left.set("Flashcards (left today / total number): "+str(flashcardsTodo-listPosition)+" / "+str(totalNumberCards))	
+   	c.fc_det_right.set("Flashcardnr.: "+str(fc_pos)+", Page: "+str(page)+", Level: "+ str(level) +"  ")
+
 	mainloop()
 
 
@@ -977,82 +980,134 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,c):
 	
 	create_comment_canvas(c,selected_dir,flashcard_tag,Settings['user'])	
 
-		
-	#Button(top,command=c.rect.link_tag,image=c.tags_imgs['link']).grid(row=2,column=4,sticky=E)		    
-#	fc_pos=int(c.order.getElementsByTagName(flashcard_tag)[0].getAttribute('position'))
-#	c.flow.goto(fc_pos)
+	for tag in c.tag_buttons:
+		tag.grid()
+	c.l_b.config(command=c.rect.link_tag)
+	c.r_b.config(command=c.rect.repeat_tag)
+	c.w_b.config(command=c.rect.watchout_tag)
+	c.q_b.config(command=c.rect.question_tag)
+
+	#fc_pos=int(c.order.getElementsByTagName(flashcard_tag)[0].getAttribute('position'))
+	#c.flow.goto(fc_pos)
 	
 	mainloop()
 
 
 	
 def run_flasher(selected_dir, stuffToDo=True ):
+	#creates grid structure and initializes all elements
+
 	clear_window()
 
-	ldb=load_leitner_db(selected_dir,Settings["user"])
 	if( stuffToDo ):
 		date = datetime.now()
 	else:
 		date = datetime.now()+timedelta(days=1000)
-		
 
+	ldb=load_leitner_db(selected_dir,Settings["user"])		
+	agenda,new=load_agenda(ldb,selected_dir, date)
+	frame=Frame(top)
+	c=Canvas(frame,width=WIDTH,height=WIDTH*0.6)
 
-	# true flase buttons
+	c.order = xml.parse(selected_dir+"/Flashcards/order.xml")
+	c.source = xml.parse(selected_dir+"/Details/source.xml")
+
+	#title
 	top.title(version+" - "+selected_dir)
 
+	#spacer
+	Label(top,height=1).grid(row=0,columnspan=5)
+	
+	#flashcard details
+	c.fc_det_row=1
+	fc_det_left = StringVar()
+	fc_det_right = StringVar()
+	Label(top,anchor=W,width=45,textvariable=fc_det_left).grid(row=c.fc_det_row, columnspan=2,sticky=W)	
+	Label(top,anchor=E,width=40,textvariable=fc_det_right).grid(row=c.fc_det_row, column=3,columnspan=2,sticky=E)
+	c.fc_det_left=fc_det_left
+	c.fc_det_right=fc_det_right
+
+	# menubar
+	c.menu_row=2
 	back_b=create_image_button(top,".TexFlasher/pictures/back.png",40,40)
-	back_b.grid(row=1, column=0,sticky=W+E)	
+	back_b.grid(row=c.menu_row, column=0,sticky=W+E)	
 	
 	menu_button=create_image_button(top,"./.TexFlasher/pictures/menu.png",40,40)
 	menu_button.configure(text="Menu",command=lambda:menu())
-	menu_button.grid(row=1,column=1,sticky=W+E)
+	menu_button.grid(row=c.menu_row,column=1,sticky=W+E)
 	
 	edit_b=create_image_button(top,"./.TexFlasher/pictures/latex.png",40,40)
 	edit_b.config(state=DISABLED)
-	edit_b.grid(row=1,column=2,sticky=W+E)
+	edit_b.grid(row=c.menu_row,column=2,sticky=W+E)
 
 	save_b=create_image_button(top,".TexFlasher/pictures/upload_now.png",40,40)
 	save_b.config(state=DISABLED)
-	save_b.grid(row=1, column=3,sticky=W+E)	
-	
+	save_b.grid(row=c.menu_row, column=3,sticky=W+E)	
+
 	clear_b=create_image_button(top,".TexFlasher/pictures/clear.png",40,40)
 	clear_b.configure(state=DISABLED)
-	clear_b.grid(row=1, column=4,sticky=W+E)		
-
-	agenda,new=load_agenda(ldb,selected_dir, date)
-	frame=Frame(top)
-	frame.grid(row=2,columnspan=5,sticky=N+S+W+E)
-	c=Canvas(frame,width=WIDTH,height=WIDTH*0.6)
-	c.grid(row=0,columnspan=3,sticky=N+E+W+S)
-	
+	clear_b.grid(row=c.menu_row, column=4,sticky=W+E)		
 	c.save_b=save_b
 	c.clear_b=clear_b
 	c.back_b=back_b
 	c.edit_b=edit_b
 
+	#spacer
+	Label(top,height=1).grid(row=3,columnspan=5)
+
+	#fc_content
+	c.fc_row=4
+	frame.grid(row=c.fc_row,columnspan=5,sticky=N+S+W+E)
+	c.grid(row=0,columnspan=3,sticky=N+E+W+S)
+	c.tag_buttons=[]
+
+	q_b=create_image_button(top,".TexFlasher/pictures/question_fix.png",20,20)
+	q_b.grid(row=c.fc_row,column=0,sticky=N+W)
+	q_b.grid_remove()
+	c.q_b=q_b
+	w_b=create_image_button(top,".TexFlasher/pictures/watchout_fix.png",20,20)
+	w_b.grid(row=c.fc_row,column=0,sticky=S+W)
+	w_b.grid_remove()
+	c.w_b=w_b
+	r_b=create_image_button(top,".TexFlasher/pictures/repeat_fix.png",20,20)
+
+	r_b.grid(row=c.fc_row,column=4,sticky=N+E)
+	r_b.grid_remove()
+	c.r_b=r_b
+	l_b=create_image_button(top,".TexFlasher/pictures/link_fix.png",20,20)
+
+	l_b.grid(row=c.fc_row,column=4,sticky=S+E)		    
+	l_b.grid_remove()
+	c.l_b=l_b
+	
+	c.tag_buttons=[q_b,w_b,r_b,l_b]	
+
+	#spacer
+	Label(top,height=1).grid(row=5,columnspan=5)	
+
+	#true false
+	c.true_false_row=6
 	true_b=create_image_button(top,"./.TexFlasher/pictures/Flashcard_correct.png",80,80)
 	false_b=create_image_button(top,"./.TexFlasher/pictures/Flashcard_wrong.png",80,80)
-
-	#Label(top,height=1).grid(row=2,columnspan=5)
-	true_b.grid(row=3, column=0, sticky=W+E+N+S )
-	false_b.grid(row=3, column=4, sticky=E+W+N+S)
+	true_b.grid(row=c.true_false_row, column=0, sticky=E )
+	false_b.grid(row=c.true_false_row, column=4, sticky=W)
 	c.true_b=true_b
 	c.false_b=false_b
-	#flow_c=Canvas(top,height=90,width=600,bd=3)
-	#flow_c.grid(row=3,column=1,columnspan=3)
-	
-	#flow=Flow(disp_single_fc,flow_c,)
-	#c.flow=flow
-	#pdict={}
+
+	#gallery
+#	flow_c=Canvas(top,height=90,width=600,bd=3)
+#	flow_c.grid(row=c.true_false_row,column=1,columnspan=3)
+#	flow=Flow(disp_single_fc,flow_c,)
+#	c.flow=flow
+#	pdict={}
 #	i=0
-	c.order = xml.parse(selected_dir+"/Flashcards/order.xml")
-	c.source = xml.parse(selected_dir+"/Details/source.xml")
 #	for item in c.order.getElementsByTagName('order_db')[0].childNodes:
 #	  pdict[int(item.getAttribute('position'))]={"path": selected_dir+"/Flashcards/"+item.tagName+"-1.png", "desc":"Page: "+c.source.getElementsByTagName(item.tagName)[0].getAttribute('page'), "tag":item.tagName}	
 #	  i+=1
 #	flow.show_gallery(flow_c,3, pdict)
-	#Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer",width=int(100.0*float(WIDTH/1000.))).grid(row=4, sticky=S,columnspan=5)
 
+	#footer
+	Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer",width=int(100.0*float(WIDTH/1000.))).grid(row=7, sticky=S,columnspan=5)
 
 	reactAndInit(selected_dir,agenda,ldb, True , -1 ,c)
 
@@ -1350,7 +1405,7 @@ top = Tk()
 
 
 WIDTH=800
-HEIGHT=int(WIDTH*0.6) +170
+HEIGHT=int(WIDTH*0.7) +170
 
 BD=2
 
