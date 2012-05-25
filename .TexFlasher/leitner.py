@@ -37,7 +37,7 @@ import re
 import commands
 import xml.dom.minidom as xml
 from operator import itemgetter
-from time import strftime, strptime, ctime, localtime
+from time import strftime, strptime, ctime, localtime, mktime
 from datetime import datetime, timedelta
 from Tkinter import *
 from math import *
@@ -320,31 +320,22 @@ def cardHistory( flashcard ):
 		#print elem
 		part=elem.split('_')
 		changeTime = datetime(*(strptime(  part[1].partition('(')[2]  , "%Y-%m-%d %H:%M:%S")[0:6]))
-		HISTORY.append( [ changeTime , part[0] ] )
-		
-	
-	#for elem in HISTORY:
-		#print str(elem[0])+": "+elem[1]
+		totalTime = mktime(changeTime.timetuple())+1e-6*changeTime.microsecond
+		HISTORY.append( [ totalTime , int(part[0]) ] )
+
 	
 	offset=HISTORY[0][0]
-	init =True
 	for elem in HISTORY:
-		if init:
-			init=False
-			elem[0] = elem[0] - offset
-			continue
-			
-		elem[0] = elem[0] - offset
-		elem[0] = int(str(elem[0]).partition(' ')[0])
-		
-	HISTORY[0][0]=0
+		elem[0] = (elem[0] - offset)
 
 	for elem in HISTORY:
-		print str(elem[0])+": "+elem[1]
+		print str(elem[0])+": "+str(elem[1])
 	
-	
+	return HISTORY
 	
 		
+def drawCardHistory( flashcard, h_can ):
+	HISTORY=cardHistory( flashcard )
 		
 		
 def graph_points(dataSetC, dataSetB, numCards,dir):
@@ -819,6 +810,7 @@ def  disp_single_fc(image_path,tag,title=None):
 	back_b.grid(row=1, column=0,sticky=W+N+E+S)		
 	back_b.config(command=lambda: win.destroy())
 	
+	
 	c.save_b=save_b
 	c.clear_b=clear_b
 	c.edit_b=edit_b	
@@ -1055,7 +1047,7 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,c):
 	c.true_b.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,True, listPosition,c))
 	c.false_b.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,False, listPosition,c))
 
-	cardHistory( ldb.getElementsByTagName(flashcard_tag)[0] )	
+	drawCardHistory( ldb.getElementsByTagName(flashcard_tag)[0] )	
 	
 	create_comment_canvas(c,selected_dir,flashcard_tag,Settings['user'])	
 
