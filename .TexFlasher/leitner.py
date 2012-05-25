@@ -1387,26 +1387,26 @@ def menu():
 				#tags
 				q_b=create_image_button(Menu,".TexFlasher/pictures/question_fix.png",40,40,0)
 				q_b.grid(row=row_start,column=start_column+2,sticky=N+W+E+S)
-				if check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/questions.xml","question")==None:
+				if check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/questions.xml","question")==None or check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/questions.xml","question")==0:
 				   q_b.config(state=DISABLED)
 				exec("q_b.config(command=lambda:show_tagged('"+os.path.dirname(l.getAttribute('filename'))+"','"+os.path.dirname(l.getAttribute('filename'))+"/Users/questions.xml'))")
 				w_b=create_image_button(Menu,".TexFlasher/pictures/watchout_fix.png",40,40,0)
 				w_b.grid(row=row_start,column=start_column+3,sticky=N+S+E+W)
-				if check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/watchout.xml","watchout")==None:
+				if check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/watchout.xml","watchout")==None or check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/watchout.xml","watchout")==0:
 				   w_b.config(state=DISABLED)	
 				exec("w_b.config(command=lambda:show_tagged('"+os.path.dirname(l.getAttribute('filename'))+"','"+os.path.dirname(l.getAttribute('filename'))+"/Users/watchout.xml'))")
    
 				r_b=create_image_button(Menu,".TexFlasher/pictures/repeat_fix.png",40,40,0)
 				r_b.grid(row=row_start,column=start_column+4,sticky=N+W+E+S)
-				if check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/repeat.xml","repeat")==None:
+				if check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/repeat.xml","repeat")==None or check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/repeat.xml","repeat")==0:
 				   r_b.config(state=DISABLED)	
 				exec("r_b.config(command=lambda:show_tagged('"+os.path.dirname(l.getAttribute('filename'))+"','"+os.path.dirname(l.getAttribute('filename'))+"/Users/repeat.xml'))")
 
 				l_b=create_image_button(Menu,".TexFlasher/pictures/link_fix.png",40,40,0)
 				l_b.grid(row=row_start,column=start_column+5,sticky=N+W+E+S)
-				if check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/link.xml","link")==None:
+				if check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/links.xml","link")==None or check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/links.xml","link")==0:
 				   l_b.config(state=DISABLED)	
-				exec("l_b.config(command=lambda:show_tagged('"+os.path.dirname(l.getAttribute('filename'))+"','"+os.path.dirname(l.getAttribute('filename'))+"/Users/link.xml'))")
+				exec("l_b.config(command=lambda:show_tagged('"+os.path.dirname(l.getAttribute('filename'))+"','"+os.path.dirname(l.getAttribute('filename'))+"/Users/links.xml'))")
 
 				start_column+=6
 				
