@@ -177,9 +177,7 @@ class RectTracker:
 		
 	def __tag(self,event):
 		    tags=self.canvas.tag_fix+" "+self.time+" elem"
-		    self.canvas.create_image(event.x,event.y-10, image=self.canvas.tags_imgs[self.canvas.current_tag],tags=tags)
-
-	
+		    self.canvas.create_image(event.x,event.y-10, image=self.canvas.tags_imgs[self.canvas.current_tag],tags=tags)	
 	    
 	def __stop(self, event):
 
@@ -242,6 +240,11 @@ class tag_tracker:
 			self.canvas.delete("info_win")
 			savefile(self.canvas,self.fc_tag,self.user,self.current_tagtype,self.current_item,self.comment_field)
 			self.tag_win=False
+	def reset(self):
+		self.tag_win=False
+		self.comment_field=False
+		self.current_item=False
+		self.current_tagtype=False		
 
 def create_comment_canvas(c,dir,fc_tag,user):
  	def onDrag(start,end):
@@ -260,14 +263,14 @@ def create_comment_canvas(c,dir,fc_tag,user):
 	x, y = None, None
 	rect.show_tags(fc_tag)
 
-	TagTracker=tag_tracker(c,user,fc_tag)
+	c.tag_tracker=tag_tracker(c,user,fc_tag)
 		
 	def cool_design(event):
 		global x, y
 		kill_xy()
 		c.cursor_image=c.create_image(event.x,event.y-10, image=c.tag_follow_image,tags=c.tag_follow)	
 		rect.up_time(strftime("%Y-%m-%d %H:%M:%S", localtime()))
-		TagTracker.check_for_tag(event)
+		c.tag_tracker.check_for_tag(event)
 		    
 	def kill_xy(event=None):
 		c.delete("tagger")
@@ -289,6 +292,7 @@ def savefile(canvas,fc_tag,user,tagtype,item,comment_field):
 	 #   if item in canvas.find_withtag(canvas.tagtypes[tagtype]['new']) or item in :
 		tags=canvas.gettags(item)
 		flashcard_element=None
+		
 		canvas.itemconfig(item, tags=("old"+" "+tags[1]+" "+tags[2]+" "+canvas.tagtypes[tagtype]['old']))
 		try:
 			doc= xml.parse(canvas.tagtypes[tagtype]['xml_path'])
@@ -325,10 +329,12 @@ def savefile(canvas,fc_tag,user,tagtype,item,comment_field):
 				
 		
 def delete_c_elem_from_xml(canvas,fc_tag,tags,tagtype,item):
+
 	for win in canvas.find_withtag("info_win"):
 	    canvas.delete(win)
 	canvas.delete(item)
-	 
+	canvas.tag_tracker.reset()
+	
 	if os.path.isfile(canvas.tagtypes[tagtype]["xml_path"]) and canvas.tagtypes[tagtype]["old"] in list(tags):
 		  doc= xml.parse(canvas.tagtypes[tagtype]["xml_path"])
 		  items_xml=doc.getElementsByTagName(fc_tag)
