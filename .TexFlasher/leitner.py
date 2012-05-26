@@ -1137,6 +1137,14 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,c,update=True):
 	for im in c.find_withtag("backside"):
 	    c.delete(im)		
 	    
+	c.stat.grid_forget()
+	stat_height=30
+	stat_width=int(float(WIDTH)*0.95)
+	stat=Canvas(top,width=stat_width, height=stat_height)
+	stat.grid(row=4, columnspan=5)
+	stat.height=stat_height
+	stat.width=stat_width
+	c.stat=stat	
 	drawCardHistory( ldb.getElementsByTagName(flashcard_name)[0], c.stat )
 	image = Image.open(selected_dir+"/Flashcards/"+flashcard_name+"-1.png")
 	image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
