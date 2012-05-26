@@ -343,7 +343,7 @@ def totalCardHistory( ldb, threshold=1 ):
 					
 def drawTotalCardHistory( ldb, stat ):
 	HISTORY=totalCardHistory( ldb )
-	drawHistory( HISTORY, stat, False )					
+	drawHistory( HISTORY, stat, True, True )					
 
 def cardHistory( flashcard ):
 	history_string=flashcard.getAttribute('levelHistory')
@@ -373,9 +373,10 @@ def drawCardHistory( flashcard, stat ):
 	HISTORY=cardHistory( flashcard )
 	drawHistory( HISTORY, stat )
 	
-def drawHistory( HISTORY, stat, verbose=True ):
+def drawHistory( HISTORY, stat, verbose=True, alwaysOnTop=False ):
 	height = stat.height
 	width = stat.width
+	
 
 	maxVal=3
 	for elem in HISTORY:
@@ -386,13 +387,16 @@ def drawHistory( HISTORY, stat, verbose=True ):
 	dx_offset=5
 	dt=float(width-1)/(HISTORY[len(HISTORY)-1][0])
 	dx=float(height-2-dx_offset)/maxVal
+	if alwaysOnTop:
+		dx=float(height-2-30-dx_offset)/maxVal
 	
 	# set backgrund color
 	#stat.create_rectangle( 1, 1, width , height -1 )
 	
 	H=HISTORY
-	level_one_begin=-1
-	level_one_end=-1
+	n_value=-1
+	level_n_begin=-1
+	level_n_end=-1
 	for i in range(len(H)-1):
 		#print str(elem[0]*dt/width)+": "+str(elem[1])
 		color, foo=getColor(H[i][1], maxVal )
@@ -401,25 +405,22 @@ def drawHistory( HISTORY, stat, verbose=True ):
 		text_offset = 8
 
 		if verbose:
-			if H[i][1] == 1:
-				if level_one_begin < 0:
-					level_one_begin = H[i][0]
+			if n_value<0:
+				n_value = H[i][1]
+				level_n_begin = H[i][0]
 			
-				if H[i+1][1] != 1:
-					level_one_end = H[i+1][0]
-					text_height = height - 1 - dx_offset - dx - text_offset
-					if (level_one_end-level_one_begin )*dt >= 10:
-						stat.create_text( 1+level_one_begin*dt + 0.5*(level_one_end-level_one_begin )*dt, text_height , text=str(H[i][1]))
-					level_one_begin=-1
-					
-			else:
+			if H[i+1][1] != n_value:
+				level_n_end = H[i+1][0]
 				text_height = height - 1 - 0.5*( dx_offset+ H[i][1]*dx)
-				if H[i][1]*dx < 10:
+				if H[i][1]*dx < 10 or alwaysOnTop:
 					text_height = height - 1 - dx_offset - H[i][1]*dx - text_offset
-				if H[i][1] == 0:
-					text_height = height - 1 - dx_offset - text_offset
-				if (H[i+1][0]-H[i][0])*dt >= 10:
-					stat.create_text( 1+ H[i][0]*dt + 0.5*(H[i+1][0]-H[i][0])*dt, text_height , text=str(H[i][1]))
+
+
+				if (level_n_end-level_n_begin )*dt >= 10:
+					stat.create_text( 1+level_n_begin*dt + 0.5*(level_n_end-level_n_begin )*dt, text_height , text=str(H[i][1]))
+				level_n_begin=H[i+1][0]
+				n_value = H[i+1][1]
+				
 		
 	#stat.create_rectangle( 1, 1, width , height - 1)
 
@@ -451,7 +452,7 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
 
     D1= 50.0
     D2=0.6*(WIDTH*0.6)
-    zero= D1, float(HEIGHT)*0.5
+    zero= D1, float(HEIGHT)*0.45
     
 
     valMax=5
@@ -513,9 +514,9 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
 					#daystring="today"
         c.create_text(0.5*(x0+x1), y1+20, text=daystring,font=("Helvectica", "9"))
         
-    c.create_text(80, 20, anchor=SW, text="Workload in the next few days:")
+    c.create_text(int(float(WIDTH)*0.25), 20, anchor=S, text="Workload in the next few days:",font=("Helvectica", "12"))
     c.create_line(0, zero[1] , int(float(WIDTH)*0.4999) , zero[1], width=2)
-    c.create_line( zero[0], zero[1] - 0.75*zero[1]  , zero[0], zero[1]+D1 , width=2)
+    c.create_line( zero[0], 45  , zero[0], zero[1]+D1 , width=2)
     c.create_line( zero, zero[0]-D1*0.9, zero[1]+D1*0.9)
     c.create_text(0, zero[1]+D1*0.2, anchor=W, text="Cards")
     c.create_text(D1*0.45, zero[1]+D1*0.8, anchor=W, text="Day")
@@ -523,7 +524,7 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     c1 = Canvas(Stats, width=int(float(WIDTH)*0.47), height=int(WIDTH*0.5)) 
     c1.grid(row=0 , column=1, sticky=N)
 
-    c1.create_text(160, 20, anchor=SW, text="Level status:")
+    c1.create_text(int(float(WIDTH)*0.25), 20, anchor=S, text="Level status:",font=("Helvectica", "12"))
    
     coords= float(WIDTH)*0.05 + 30, float(WIDTH)*0.1 -35 +30 ,float(WIDTH)*0.45 -30,float(WIDTH)*0.5 -35 -30
 
@@ -580,7 +581,7 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     color, dl = getColor(0, len(dataSetB))
     ybasis = 50
     coord= float(WIDTH)*0.5 -150
-    #Legende.create_line( 0, ybasis-10 , WIDTH, ybasis-10 )
+    Legende.create_line( 0, ybasis-25 , WIDTH, ybasis-25 )
     Legende.create_rectangle( coord, ybasis , coord + 20, ybasis +18,width=0, fill=color  )
     Legende.create_text( coord+25, ybasis+9, anchor=W, text = "Level 0 (new)" )
     color, dl = getColor(1, len(dataSetB))
@@ -608,16 +609,17 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
 			Legende.create_rectangle( coord+150, ybasis+40, coord + 170, ybasis+58,width=0, fill= color )
 			Legende.create_text( coord+175, ybasis+49, anchor=W, text = "Level "+str(2+2*dl+1)+" - "+str(len(dataSetB)-1)+" (outstanding)" )
     
-    stat_height=30
+    stat_height=80
     stat_width=int(float(WIDTH)*0.95)
     stat=Canvas(Stats,width=stat_width, height=stat_height)
     stat.grid(row=2, columnspan=2)
     stat.height=stat_height
     stat.width=stat_width
     Stats.stat=stat
+    Stats.stat.create_text( 1, 10, text="Average learning progress:", anchor=W,font=("Helvectica", "12"))
     drawTotalCardHistory( ldb, Stats.stat )
     #spacer
-    Label(Stats,height=4).grid(row=1,columnspan=5)	#spacer
+    Label(Stats,height=1).grid(row=1,columnspan=5)	#spacer
     #Label(top,height=1).grid(row=0,columnspan=5)
     mainloop()
 
