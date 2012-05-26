@@ -377,6 +377,8 @@ def drawHistory( HISTORY, stat, verbose=True, alwaysOnTop=False ):
 	height = stat.height
 	width = stat.width
 	
+	if alwaysOnTop:
+		height -= 20
 
 	maxVal=3
 	for elem in HISTORY:
@@ -397,6 +399,7 @@ def drawHistory( HISTORY, stat, verbose=True, alwaysOnTop=False ):
 	n_value=-1
 	level_n_begin=-1
 	level_n_end=-1
+	counter=0
 	for i in range(len(H)-1):
 		#print str(elem[0]*dt/width)+": "+str(elem[1])
 		color, foo=getColor(H[i][1], maxVal )
@@ -421,7 +424,14 @@ def drawHistory( HISTORY, stat, verbose=True, alwaysOnTop=False ):
 				level_n_begin=H[i+1][0]
 				n_value = H[i+1][1]
 				
-		
+				
+		#if alwaysOnTop:
+			#print int(fmod(i,10))
+			#if int(fmod(i,10)) == 0:
+				#print
+				#stat.create_line(H[i][0], height, H[i][0], height+15)
+				#stat.create_text(H[i][0]+1, height + 10, text="day "+ str(i), anchor=W )
+			
 	#stat.create_rectangle( 1, 1, width , height - 1)
 
 	
