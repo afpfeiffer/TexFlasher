@@ -136,6 +136,7 @@ class RectTracker:
 		      setattr(c,tagtype+"_img", self.canvas.tags_imgs[tagtype])
 		    except:
 			pass
+		
 		self.selected_circle=None
 		self.follow_size=(20,20)
 		self.fix_size=(40,40)
@@ -216,6 +217,34 @@ class RectTracker:
 			except:
 				pass
 			
+class tag_tracker:
+	def __init__(self, canvas,user,fc_tag):
+		self.fc_tag=fc_tag	
+		self.user=user
+		self.canvas=canvas
+		self.tag_win=False
+		self.comment_field=False
+		self.current_item=False
+		self.current_tagtype=False
+	def check_for_tag(self, event):
+		if not self.tag_win:
+			for item in self.canvas.find_overlapping(event.x-5, event.y-5, event.x+5, event.y+5):		    
+				for tagtype in self.canvas.tagtypes:		      
+				      if self.canvas.tagtypes[tagtype]['new'] in list(self.canvas.gettags(item)) or self.canvas.tagtypes[tagtype]['old'] in list(self.canvas.gettags(item)):
+						frame,self.comment_field=self.canvas.tagtypes[tagtype]['command'](tagtype,self.canvas.tagtypes[tagtype]['xml_path'],self.canvas.gettags(item),self.fc_tag,self.canvas,item,self.user)
+						self.current_tagtype=tagtype
+						self.current_item=item
+						self.tag_win=self.canvas.create_window(self.canvas.coords(item)[0],self.canvas.coords(item)[1]+25,window=frame,tag="info_win")	    
+						self.comment_field.focus_set()				
+
+		else: 
+		    if not self.tag_win in self.canvas.find_overlapping(event.x-30, event.y-30, event.x+30, event.y+30):
+			self.canvas.delete("info_win")
+			if not self.comment_field.get('1.0', END)=="\n":
+				#print "hey"
+			#print self.current_tagtype,self.current_item,self.fc_tag,self.user,self.comment_field.get('1.0', END)
+				savefile(self.canvas,self.fc_tag,self.user,self.current_tagtype,self.current_item,self.comment_field)
+			self.tag_win=False
 
 def create_comment_canvas(c,dir,fc_tag,user):
  	def onDrag(start,end):
@@ -229,41 +258,20 @@ def create_comment_canvas(c,dir,fc_tag,user):
 		rect.question_tag() #default start tag
 		c.rect=rect
 		rect.autodraw(fill="", width=2, command=onDrag)
-
 	else:
 		rect=c.rect
 	x, y = None, None
 	rect.show_tags(fc_tag)
 
-
+	TagTracker=tag_tracker(c,user,fc_tag)
 		
 	def cool_design(event):
-		global x, y, tag_win,comment_field,current_item,current_tagtype
-
+		global x, y
 		kill_xy()
 		c.cursor_image=c.create_image(event.x,event.y-10, image=c.tag_follow_image,tags=c.tag_follow)	
 		rect.up_time(strftime("%Y-%m-%d %H:%M:%S", localtime()))
-		for item in c.find_overlapping(event.x-5, event.y-5, event.x+5, event.y+5):		    
-		    for tagtype in c.tagtypes:		      
-		      if c.tagtypes[tagtype]['new'] in list(c.gettags(item)) or c.tagtypes[tagtype]['old'] in list(c.gettags(item)):
-			frame,comment_field=c.tagtypes[tagtype]['command'](tagtype,c.tagtypes[tagtype]['xml_path'],c.gettags(item),fc_tag,c,item,user)
-			current_tagtype=tagtype
-			current_item=item
-			try:
-			  if not tag_win:			    
-			    tag_win=c.create_window(c.coords(item)[0],c.coords(item)[1]+25,window=frame,tag="info_win")
-			except:
-			    tag_win=c.create_window(c.coords(item)[0],c.coords(item)[1]+25,window=frame,tag="info_win")	    
-			comment_field.focus_set()
-		try:  
-		    if not tag_win in c.find_overlapping(event.x-30, event.y-30, event.x+30, event.y+30) and len(c.find_withtag("info_win"))>0:
-			c.delete("info_win")
-			#if not comment_field.get('1.0', END)=="\n":
-			print current_tagtype,current_item,fc_tag,user,comment_field.get('1.0', END)
-			#savefile(c,fc_tag,user,current_tagtype,current_item,comment_field)
-			tag_win=False
-		except:
-		    pass
+		TagTracker.check_for_tag(event)
+		    
 	def kill_xy(event=None):
 		c.delete("tagger")
 		
@@ -310,7 +318,6 @@ def savefile(canvas,fc_tag,user,tagtype,item,comment_field):
 		flashcard_element.setAttribute('user',user)
 		
 		content=comment_field.get('1.0', END)
-		print content
 		flashcard_element.setAttribute('comment',content)	
 		xml_file = open(canvas.tagtypes[tagtype]['xml_path'], "w")
 		tag_xml.writexml(xml_file)
