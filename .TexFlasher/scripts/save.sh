@@ -66,6 +66,7 @@ texthb=$(tput dim) #half bright
 # tput smso : Enter standout mode (bold on rxvt)
 # tput rmso : Exit standout mode
 # tput sgr0 : Turn off all attributes (doesn’t work quite as expected)
+rm SAVE &> /dev/null
 
 for thing in $files; do
 # 	echo $thing

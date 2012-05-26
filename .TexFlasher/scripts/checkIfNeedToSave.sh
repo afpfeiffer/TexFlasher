@@ -22,25 +22,30 @@
 
 files=$*
 
-for string in $files; do
-	seperatedFiles="`echo $string | sed -e 's/###/ /g'`"
-	for thing in $seperatedFiles; do
-		if [ -f $thing ]; then
-			svn add $thing &> /dev/null  
-			svn info $thing &> /dev/null
-			HAVESVN=$?
-			if [ $HAVESVN -eq 0 ]; then
-# 				echo "svn available for this file"
-				fulldiff="`svn diff $thing`" > /dev/null
-				if [ "$fulldiff" != "" ]; then
-					echo "Save"
-					exit 0
+if [ -f SAVE ]; then
+	echo "Save"
+else
+	for string in $files; do
+		seperatedFiles="`echo $string | sed -e 's/###/ /g'`"
+		for thing in $seperatedFiles; do
+			if [ -f $thing ]; then
+				svn add $thing &> /dev/null  
+				svn info $thing &> /dev/null
+				HAVESVN=$?
+				if [ $HAVESVN -eq 0 ]; then
+	# 				echo "svn available for this file"
+					fulldiff="`svn diff $thing`" > /dev/null
+					if [ "$fulldiff" != "" ]; then
+						echo "Save"
+						touch SAVE
+						exit 0
+					fi
 				fi
 			fi
-		fi
+		done
+	# 	else
+	# 		echo "svn unavailable"
 	done
-# 	else
-# 		echo "svn unavailable"
-done
-
+fi
+	
 exit 0
