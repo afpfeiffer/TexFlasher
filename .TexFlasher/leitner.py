@@ -589,7 +589,6 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     color, dl = getColor(0, len(dataSetB))
     ybasis = 50
     coord= float(WIDTH)*0.5 -150
-    Legende.create_line( 0, ybasis-25 , WIDTH, ybasis-25 )
     Legende.create_rectangle( coord, ybasis , coord + 20, ybasis +18,width=0, fill=color  )
     Legende.create_text( coord+25, ybasis+9, anchor=W, text = "Level 0 (new)" )
     color, dl = getColor(1, len(dataSetB))
@@ -617,7 +616,7 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
 			Legende.create_rectangle( coord+150, ybasis+40, coord + 170, ybasis+58,width=0, fill= color )
 			Legende.create_text( coord+175, ybasis+49, anchor=W, text = "Level "+str(2+2*dl+1)+" - "+str(len(dataSetB)-1)+" (outstanding)" )
     
-    stat_height=80
+    stat_height=100
     stat_width=int(float(WIDTH)*0.95)
     stat=Canvas(Stats,width=stat_width, height=stat_height)
     stat.grid(row=2, columnspan=2)
@@ -629,6 +628,9 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     #spacer
     Label(Stats,height=1).grid(row=1,columnspan=5)	#spacer
     #Label(top,height=1).grid(row=0,columnspan=5)
+    
+    Legende.create_line( 0, ybasis-25 , WIDTH, ybasis-25, width=2 )
+
     mainloop()
 
 
