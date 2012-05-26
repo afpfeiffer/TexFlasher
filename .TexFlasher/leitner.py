@@ -307,6 +307,7 @@ def getColor( i, maxLevel ):
 def totalCardHistory( ldb, threshold=1 ):
 	TH=[]
 	TS=[]
+	maxLevel=3
 	for elem in ldb.childNodes:
 		H=cardHistory( elem )
 		time = 0
@@ -324,6 +325,7 @@ def totalCardHistory( ldb, threshold=1 ):
 				
 				TS[counter] = TS[counter] + 1
 				TH[counter][1] = TH[counter][1] + H[pos][1]
+				maxLevel = max( maxLevel, H[pos][1] )
 				
 				
 			time = time + 86400 #seconds in a day
@@ -339,11 +341,11 @@ def totalCardHistory( ldb, threshold=1 ):
 			TH[i][1] = 0
 			
 	TH[len(TH)-1][1]=0
-	return TH
+	return TH, maxLevel
 					
 def drawTotalCardHistory( ldb, stat ):
-	HISTORY=totalCardHistory( ldb )
-	drawHistory( HISTORY, stat, True, True )					
+	HISTORY, maxLevel =totalCardHistory( ldb )
+	drawHistory( HISTORY, stat, True, True, maxLevel )					
 
 def cardHistory( flashcard ):
 	history_string=flashcard.getAttribute('levelHistory')
@@ -373,7 +375,7 @@ def drawCardHistory( flashcard, stat ):
 	HISTORY=cardHistory( flashcard )
 	drawHistory( HISTORY, stat )
 	
-def drawHistory( HISTORY, stat, verbose=True, alwaysOnTop=False ):
+def drawHistory( HISTORY, stat, verbose=True, alwaysOnTop=False, maxLevel = 3 ):
 	height = stat.height
 	width = stat.width
 	
@@ -402,7 +404,8 @@ def drawHistory( HISTORY, stat, verbose=True, alwaysOnTop=False ):
 	counter=0
 	for i in range(len(H)-1):
 		#print str(elem[0]*dt/width)+": "+str(elem[1])
-		color, foo=getColor(H[i][1], maxVal )
+		#print H[i][1], maxLevel
+		color, foo=getColor( int(H[i][1]), maxLevel+1 )
 		stat.create_rectangle(1+H[i][0]*dt,height-1-H[i][1]*dx - dx_offset,1+H[i+1][0]*dt, height-1, fill=color )
 		
 		text_offset = 8
