@@ -240,10 +240,7 @@ class tag_tracker:
 		else: 
 		    if not self.tag_win in self.canvas.find_overlapping(event.x-30, event.y-30, event.x+30, event.y+30):
 			self.canvas.delete("info_win")
-			if not self.comment_field.get('1.0', END)=="\n":
-				#print "hey"
-			#print self.current_tagtype,self.current_item,self.fc_tag,self.user,self.comment_field.get('1.0', END)
-				savefile(self.canvas,self.fc_tag,self.user,self.current_tagtype,self.current_item,self.comment_field)
+			savefile(self.canvas,self.fc_tag,self.user,self.current_tagtype,self.current_item,self.comment_field)
 			self.tag_win=False
 
 def create_comment_canvas(c,dir,fc_tag,user):
@@ -318,6 +315,8 @@ def savefile(canvas,fc_tag,user,tagtype,item,comment_field):
 		flashcard_element.setAttribute('user',user)
 		
 		content=comment_field.get('1.0', END)
+		if content=="\n":
+			content=""
 		flashcard_element.setAttribute('comment',content)	
 		xml_file = open(canvas.tagtypes[tagtype]['xml_path'], "w")
 		tag_xml.writexml(xml_file)
