@@ -598,7 +598,7 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     Legende.create_rectangle( coord, ybasis+40, coord + 20, ybasis +58,width=0, fill= color )
     Legende.create_text( coord+25, ybasis+49, anchor=W, text = "Level 2 (improving)" )
     #Legende.create_line( 0, ybasis+65 , WIDTH, ybasis+65 )
-    Legende.create_text( float(WIDTH)*0.5 , ybasis + 90 , text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer")
+    Legende.create_text( float(WIDTH)*0.5 , ybasis + 90 , text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer",font=("Helvetica",8))
 
     
     if( len(dataSetB)-1 >2 ):
