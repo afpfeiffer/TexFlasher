@@ -1194,7 +1194,7 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,c):
 	c.true_b.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,True, listPosition,c))
 	c.false_b.configure(state=NORMAL,command=lambda:reactAndInit(selected_dir,agenda,ldb,False, listPosition,c))
 
-	drawCardHistory( ldb.getElementsByTagName(flashcard_tag)[0], c.stat )
+	#drawCardHistory( ldb.getElementsByTagName(flashcard_tag)[0], c.stat )
 	
 	create_comment_canvas(c,selected_dir,flashcard_tag,Settings['user'])	
 
