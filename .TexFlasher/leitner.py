@@ -524,7 +524,7 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
         
     c.create_text(int(float(WIDTH)*0.25), 20, anchor=S, text="Workload in the next few days:",font=("Helvectica", "12"))
     c.create_line(0, zero[1] , int(float(WIDTH)*0.4999) , zero[1], width=2)
-    c.create_line( zero[0], 45  , zero[0], zero[1]+D1 , width=2)
+    c.create_line( zero[0], 35  , zero[0], zero[1]+D1 , width=2)
     c.create_line( zero, zero[0]-D1*0.9, zero[1]+D1*0.9)
     c.create_text(0, zero[1]+D1*0.2, anchor=W, text="Cards")
     c.create_text(D1*0.45, zero[1]+D1*0.8, anchor=W, text="Day")
