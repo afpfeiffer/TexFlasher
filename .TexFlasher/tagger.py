@@ -64,26 +64,17 @@ def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user):
 			break
 		  except:
 		    pass
-		if fc_tag==None or creator=="":
-		  creator="unsaved"
-		  content=""
-		  fg="red"
 		Label(frame,text="Tagtype: "+tagtype+"\n"+creator,fg=fg,bg=None).grid(row=0,column=0,columnspan=4)
 		comment_field=Text(frame,width=20,height=10)
-		comment_field.insert(INSERT,content)
+		if not content=="":
+			comment_field.insert(INSERT,content)
 		comment_field.grid(row=1,columnspan=4)
 		#check if text exists if so insert!
 		image = Image.open(".TexFlasher/pictures/clear.png")
 		image = image.resize((20,20), Image.ANTIALIAS)
 		image = ImageTk.PhotoImage(image)
 		frame.edit_img=image		
-		Button(frame,text="Delete",image=image,command=lambda:delete_c_elem_from_xml(canvas,fc_tag,tags,tagtype,item)).grid(row=2,column=3,sticky=E)
-
-		image = Image.open(".TexFlasher/pictures/upload.png")
-		image = image.resize((20,20), Image.ANTIALIAS)
-		image = ImageTk.PhotoImage(image)
-		frame.comment_img=image		
-		Button(frame,text="Comment",image=image,command=lambda:savefile(canvas,fc_tag,user,tagtype,item,comment_field)).grid(row=2,column=0,sticky=W)		
+		Button(frame,text="Delete",image=image,command=lambda:delete_c_elem_from_xml(canvas,fc_tag,tags,tagtype,item)).grid(row=2,columnspan=4,sticky=N+W+S+E)		
 		return frame,comment_field 
 		
 		
@@ -247,17 +238,17 @@ def create_comment_canvas(c,dir,fc_tag,user):
 
 		
 	def cool_design(event):
-		global x, y, tag_win
-		
+		global x, y, tag_win,comment_field,current_item,current_tagtype
+
 		kill_xy()
 		c.cursor_image=c.create_image(event.x,event.y-10, image=c.tag_follow_image,tags=c.tag_follow)	
 		rect.up_time(strftime("%Y-%m-%d %H:%M:%S", localtime()))
-		for item in c.find_overlapping(event.x-5, event.y-5, event.x+5, event.y+5):
-		    
-		    for tagtype in c.tagtypes:
-		      
+		for item in c.find_overlapping(event.x-5, event.y-5, event.x+5, event.y+5):		    
+		    for tagtype in c.tagtypes:		      
 		      if c.tagtypes[tagtype]['new'] in list(c.gettags(item)) or c.tagtypes[tagtype]['old'] in list(c.gettags(item)):
 			frame,comment_field=c.tagtypes[tagtype]['command'](tagtype,c.tagtypes[tagtype]['xml_path'],c.gettags(item),fc_tag,c,item,user)
+			current_tagtype=tagtype
+			current_item=item
 			try:
 			  if not tag_win:			    
 			    tag_win=c.create_window(c.coords(item)[0],c.coords(item)[1]+25,window=frame,tag="info_win")
@@ -265,9 +256,12 @@ def create_comment_canvas(c,dir,fc_tag,user):
 			    tag_win=c.create_window(c.coords(item)[0],c.coords(item)[1]+25,window=frame,tag="info_win")	    
 			comment_field.focus_set()
 		try:  
-		    if not tag_win in c.find_overlapping(event.x-30, event.y-30, event.x+30, event.y+30):
-		      c.delete("info_win")
-		      tag_win=False
+		    if not tag_win in c.find_overlapping(event.x-30, event.y-30, event.x+30, event.y+30) and len(c.find_withtag("info_win"))>0:
+			c.delete("info_win")
+			#if not comment_field.get('1.0', END)=="\n":
+			print current_tagtype,current_item,fc_tag,user,comment_field.get('1.0', END)
+			#savefile(c,fc_tag,user,current_tagtype,current_item,comment_field)
+			tag_win=False
 		except:
 		    pass
 	def kill_xy(event=None):
@@ -316,6 +310,7 @@ def savefile(canvas,fc_tag,user,tagtype,item,comment_field):
 		flashcard_element.setAttribute('user',user)
 		
 		content=comment_field.get('1.0', END)
+		print content
 		flashcard_element.setAttribute('comment',content)	
 		xml_file = open(canvas.tagtypes[tagtype]['xml_path'], "w")
 		tag_xml.writexml(xml_file)
