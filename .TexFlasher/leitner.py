@@ -425,12 +425,10 @@ def drawHistory( HISTORY, stat, verbose=True, alwaysOnTop=False ):
 				n_value = H[i+1][1]
 				
 				
-		#if alwaysOnTop:
-			#print int(fmod(i,10))
-			#if int(fmod(i,10)) == 0:
-				#print
-				#stat.create_line(H[i][0], height, H[i][0], height+15)
-				#stat.create_text(H[i][0]+1, height + 10, text="day "+ str(i), anchor=W )
+			if alwaysOnTop:
+				if (int(fmod(i,10)) == 0) and H[i][0]*dt < width - 40:
+					stat.create_line( 1 + H[i][0]*dt, height, 1+ H[i][0]*dt, height+30)
+					stat.create_text( 5 + H[i][0]*dt, height + 15, text="day "+ str(i), anchor=W )
 			
 	#stat.create_rectangle( 1, 1, width , height - 1)
 
