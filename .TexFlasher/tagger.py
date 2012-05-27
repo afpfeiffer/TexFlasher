@@ -233,13 +233,16 @@ class tag_tracker:
 						self.current_tagtype=tagtype
 						self.current_item=item
 						self.tag_win=self.canvas.create_window(self.canvas.coords(item)[0],self.canvas.coords(item)[1]+25,window=frame,tag="info_win")	    
+
 						self.comment_field.focus_set()				
 
 		else: 
-		    if not self.tag_win in self.canvas.find_overlapping(event.x-30, event.y-30, event.x+30, event.y+30):
+		    if not self.tag_win in self.canvas.find_overlapping(event.x-30, event.y-30, event.x+30, event.y+30) and not self.current_item in  self.canvas.find_overlapping(event.x-30, event.y-30, event.x+30, event.y+30):
+			savefile(self.canvas,self.fc_tag,self.user,self.current_tagtype,self.current_item,self.comment_field.get('1.0', END))		    
 			self.canvas.delete("info_win")
-			savefile(self.canvas,self.fc_tag,self.user,self.current_tagtype,self.current_item,self.comment_field)
+
 			self.tag_win=False
+
 	def reset(self):
 		self.tag_win=False
 		self.comment_field=False
@@ -288,7 +291,7 @@ def create_comment_canvas(c,dir,fc_tag,user):
 					
 
 
-def savefile(canvas,fc_tag,user,tagtype,item,comment_field):
+def savefile(canvas,fc_tag,user,tagtype,item,content):
 	 #   if item in canvas.find_withtag(canvas.tagtypes[tagtype]['new']) or item in :
 		tags=canvas.gettags(item)
 		flashcard_element=None
@@ -317,10 +320,16 @@ def savefile(canvas,fc_tag,user,tagtype,item,comment_field):
 		  flashcard_element.setAttribute(coord_names[i], str(canvas.coords(item)[i]))
 		flashcard_element.setAttribute('created',tags[1]+" "+tags[2])	
 		flashcard_element.setAttribute('user',user)
-		
-		content=comment_field.get('1.0', END)
+
 		if content=="\n":
 			content=""
+		try:
+			if content[-1]=="\n":
+				content=content[:-1]
+			if content[-1]==" ":
+				content=content[:-1]			
+		except:
+			pass
 		flashcard_element.setAttribute('comment',content)	
 		xml_file = open(canvas.tagtypes[tagtype]['xml_path'], "w")
 		tag_xml.writexml(xml_file)
