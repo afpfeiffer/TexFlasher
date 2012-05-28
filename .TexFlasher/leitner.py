@@ -1424,11 +1424,16 @@ def get_log_status(filedir):
 		log_time=ctime(os.path.getmtime(filedir+"/texFlasher.log"))
 		message="Log from %s\\n\\n"%log_time
 		log=open(filedir+"/texFlasher.log","r")
+		l_count=0
 		for l in log:
 			if re.compile('Error').findall(l):
 				window_type="showerror"
-						
-			message+=l.replace("\n","\\n\\n")	
+				message=l.replace("\n","\\n\\n")
+				l_count=0
+			message+=l.replace("\n","\\n\\n")
+			l_count+=1
+			if l_count>10:
+				break
 	else:
 		message="No logfile found!"	
 	return message,window_type
