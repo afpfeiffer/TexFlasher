@@ -1496,12 +1496,11 @@ def create_folder():
 	
 	
 def check_tags(xml_path,tagtype):
-  if os.path.isfile(xml_path):
-      try:
-	print len(xml.parse(xml_path).getElementsByTagName(tagtype)[0].childNodes) 
-	return 	len(xml.parse(xml_path).getElementsByTagName(tagtype)[0].childNodes) 
-      except:
-	return None
+	if os.path.isfile(xml_path):
+		try:
+			return 	len(xml.parse(xml_path).getElementsByTagName(tagtype)[0].childNodes) 
+		except:
+			return None
     
 	
 
