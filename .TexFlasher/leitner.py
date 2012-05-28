@@ -1419,7 +1419,7 @@ def get_log_status(filedir):
 		log=open(filedir+"/texFlasher.log","r")
 		l_count=0
 		for l in log:
-			if re.compile('Error').findall(l):
+			if re.compile('error').findall(l.lower()):
 				window_type="showerror"
 				message=l.replace("\n","\\n\\n")
 				l_count=0
