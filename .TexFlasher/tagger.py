@@ -64,7 +64,7 @@ def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user,color,position):
 			break
 		  except:
 		    pass
-		Label(frame,text=tagtype.upper()+"\n"+creator,fg=fg,bg=color).grid(row=0,column=0,columnspan=4)
+		#Label(frame,text=tagtype.upper()+"\n"+creator,fg=fg,bg=color).grid(row=0,column=0,columnspan=4)
 		comment_field=Text(frame,width=20,height=10,bd=0)
 		if not content=="":
 			comment_field.insert(INSERT,content)
