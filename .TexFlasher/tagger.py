@@ -126,12 +126,13 @@ class RectTracker:
 		self.item = None
 		self.time=strftime("%Y-%m-%d %H:%M:%S", localtime())
 		self.user=user
+		self.tag_xml_path=dir+"/Users/"+user+"_comment.xml"
 		self.canvas.tagtypes={}
-		self.canvas.tagtypes["rect"]={"xml_path":dir+"/Users/"+user+"_comment.xml","new":"re","old":"ore","type":"rectangle","command":tag_command}
-		self.canvas.tagtypes["link"]={"init":self.link_tag,"xml_path":dir+"/Users/links.xml","new":"li","old":"oli","type":"image","image_path":".TexFlasher/pictures/link_fix.png","command":tag_command}
-		self.canvas.tagtypes["question"]={"init":self.question_tag,"xml_path":dir+"/Users/questions.xml","new":"qu","old":"oqu","type":"image","image_path":".TexFlasher/pictures/question_fix.png","image_path_other":".TexFlasher/pictures/question_other.png","command":tag_command}
-		self.canvas.tagtypes["repeat"]={"init":self.repeat_tag,"xml_path":dir+"/Users/repeat.xml","new":"rep","old":"orep","type":"image","image_path":".TexFlasher/pictures/repeat_fix.png","command":tag_command}		
-		self.canvas.tagtypes["watchout"]={"init":self.watchout_tag,"xml_path":dir+"/Users/watchout.xml","new":"wa","old":"owa","type":"image","image_path":".TexFlasher/pictures/watchout_fix.png","command":tag_command}
+		self.canvas.tagtypes["rect"]={"xml_path":self.tag_xml_path,"new":"re","old":"ore","type":"rectangle","command":tag_command}
+		self.canvas.tagtypes["link"]={"init":self.link_tag,"xml_path":self.tag_xml_path,"new":"li","old":"oli","type":"image","image_path":".TexFlasher/pictures/link_fix.png","command":tag_command}
+		self.canvas.tagtypes["question"]={"init":self.question_tag,"xml_path":self.tag_xml_path,"new":"qu","old":"oqu","type":"image","image_path":".TexFlasher/pictures/question_fix.png","command":tag_command}
+		self.canvas.tagtypes["repeat"]={"init":self.repeat_tag,"xml_path":self.tag_xml_path,"new":"rep","old":"orep","type":"image","image_path":".TexFlasher/pictures/repeat_fix.png","command":tag_command}		
+		self.canvas.tagtypes["watchout"]={"init":self.watchout_tag,"xml_path":self.tag_xml_path,"new":"wa","old":"owa","type":"image","image_path":".TexFlasher/pictures/watchout_fix.png","command":tag_command}
 		self.canvas.tags_imgs={}
 		for tagtype in self.canvas.tagtypes:
 		    try:# doesnt work for rectagle tags
@@ -199,7 +200,8 @@ class RectTracker:
 		if os.path.isfile(self.canvas.tagtypes[tagtype]['xml_path']):
 			try:
 				doc= xml.parse(self.canvas.tagtypes[tagtype]['xml_path'])
-			  	tags=doc.getElementsByTagName(fc_tag)
+				tag_nodes=doc.getElementsByTagName(tagtype)[0]
+			  	tags=tag_nodes.getElementsByTagName(fc_tag)
 			  	for tag in tags:
 					timestamp=tag.getAttribute('created')
 					tags="old"+" "+timestamp+" "+self.canvas.tagtypes[tagtype]['old']+" "+fc_tag
@@ -208,13 +210,7 @@ class RectTracker:
 						self.canvas.create_rectangle(int(float(tag.getAttribute("startx"))),int(float(tag.getAttribute("starty"))),int(float(tag.getAttribute("endx"))),int(float(tag.getAttribute("endy"))),dash=[4,4], tags=tags,outline="red",fill="", width=2)
 					if self.canvas.tagtypes[tagtype]['type']=="image" and self.user==tag.getAttribute('user'):
 						self.canvas.create_image(float(tag.getAttribute('startx')),float(tag.getAttribute('starty'))-10, image=self.canvas.tags_imgs[tagtype],tags=tags)
-					elif self.canvas.tagtypes[tagtype]['type']=="image":
-						other_img={}
-						image = Image.open(self.canvas.tagtypes[tagtype]['image_path_other'])
-						image = image.resize((40,40), Image.ANTIALIAS)
-						other_img["img"]=ImageTk.PhotoImage(image)
-						setattr(self.canvas,tagtype+"_"+tag.getAttribute('user'),other_img["img"])
-						self.canvas.create_image(float(tag.getAttribute('startx')),float(tag.getAttribute('starty'))-10, image=other_img["img"],tags=tags.replace("old ","other "))
+					
 			except:
 				pass
 
@@ -320,19 +316,24 @@ def create_comment_canvas(c,dir,fc_tag,user):
 
 
 def savefile(canvas,fc_tag,user,tagtype,item,content):
-	 #   if item in canvas.find_withtag(canvas.tagtypes[tagtype]['new']) or item in :
 		tags=canvas.gettags(item)
 		flashcard_element=None
 		
 		canvas.itemconfig(item, tags=("old"+" "+tags[1]+" "+tags[2]+" "+canvas.tagtypes[tagtype]['old']))
 		try:
 			doc= xml.parse(canvas.tagtypes[tagtype]['xml_path'])
-			tag_xml=doc.getElementsByTagName(tagtype)[0]
+			parent=doc.getElementsByTagName("comments")[0]
+			
 		except:
 		  	doc=xml.Document()
-			tag_xml = doc.createElement(tagtype)
+		  	parent=doc.createElement("comments")
 		try:
-			elements=doc.getElementsByTagName(fc_tag)
+			tag_xml=parent.getElementsByTagName(tagtype)[0]
+		except:
+			tag_xml = doc.createElement(tagtype)
+			parent.appendChild(tag_xml)		  
+		try:
+			elements=tag_xml.getElementsByTagName(fc_tag)
 			for element in elements:
 			    if element.getAttribute('created')==tags[1]+" "+tags[2]:
 			      flashcard_element=element
@@ -358,9 +359,9 @@ def savefile(canvas,fc_tag,user,tagtype,item,content):
 				content=content[:-1]			
 		except:
 			pass
-		flashcard_element.setAttribute('comment',content)	
+		flashcard_element.setAttribute('comment',content)
 		xml_file = open(canvas.tagtypes[tagtype]['xml_path'], "w")
-		tag_xml.writexml(xml_file)
+		parent.writexml(xml_file)
 		xml_file.close()
 
 				

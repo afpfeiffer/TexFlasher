@@ -1438,12 +1438,13 @@ def show_log(filedir):
         return
 
 
-def show_tagged(dir,tag_path):
+def show_tagged(tagtype,dir,tag_path):
 	all_fcs=get_all_fcs(dir)
 	tagged=[]
 	tree = xml.parse(tag_path)
+	parent=tree.getElementsByTagName(tagtype)[0]
 	for elem in all_fcs:
-	  if len(tree.getElementsByTagName(elem['tag']))>0:
+	  if len(parent.getElementsByTagName(elem['tag']))>0:
 	     tagged.append(elem)
 	display_mult_fcs(tagged,"Tagged in "+dir,"Menu","lambda:menu()","./.TexFlasher/pictures/menu.png")
 
@@ -1497,6 +1498,7 @@ def create_folder():
 def check_tags(xml_path,tagtype):
   if os.path.isfile(xml_path):
       try:
+	print len(xml.parse(xml_path).getElementsByTagName(tagtype)[0].childNodes) 
 	return 	len(xml.parse(xml_path).getElementsByTagName(tagtype)[0].childNodes) 
       except:
 	return None
@@ -1559,34 +1561,35 @@ def menu():
 				exec('fc_folder_' + str(row_start)+'_desc=Label(Menu,justify=LEFT,text="'+l.getAttribute('filename').split("/")[-2]+'\\nlength: '+str(length)+'\\ntodo: '+str(todo-new)+', new: '+str(new)+'\\nupdated: '+l.getAttribute('lastReviewed')+'").grid(row='+str(row_start)+', column='+str(start_column+1)+',sticky=W)')
 
 				#tags
+				tag_xml_path=os.path.dirname(l.getAttribute('filename'))+"/Users/"+Settings['user']+"_comment.xml"
 				q_b=create_image_button(Menu,".TexFlasher/pictures/question_fix.png",40,40,0)
 				q_b.grid(row=row_start,column=start_column+2,sticky=N+W+E+S)
-				q_length=check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/questions.xml","question")
+				q_length=check_tags(tag_xml_path,"question")
 				if q_length==None or q_length==0:
 				   q_b.config(state=DISABLED)
 				#else:
 				#   Label(Menu,text=str(q_length)).grid(row=row_start,column=start_column+2,sticky=S)
-				exec("q_b.config(command=lambda:show_tagged('"+os.path.dirname(l.getAttribute('filename'))+"','"+os.path.dirname(l.getAttribute('filename'))+"/Users/questions.xml'))")
+				exec("q_b.config(command=lambda:show_tagged('question','"+os.path.dirname(l.getAttribute('filename'))+"','"+tag_xml_path+"'))")
 				w_b=create_image_button(Menu,".TexFlasher/pictures/watchout_fix.png",40,40,0)
 				w_b.grid(row=row_start,column=start_column+3,sticky=N+S+E+W)
-				w_length=check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/watchout.xml","watchout")
+				w_length=check_tags(tag_xml_path,"watchout")
 				if w_length==None or w_length==0:
 				   w_b.config(state=DISABLED)	
-				exec("w_b.config(command=lambda:show_tagged('"+os.path.dirname(l.getAttribute('filename'))+"','"+os.path.dirname(l.getAttribute('filename'))+"/Users/watchout.xml'))")
+				exec("w_b.config(command=lambda:show_tagged('watchout','"+os.path.dirname(l.getAttribute('filename'))+"','"+tag_xml_path+"'))")
    
 				r_b=create_image_button(Menu,".TexFlasher/pictures/repeat_fix.png",40,40,0)
 				r_b.grid(row=row_start,column=start_column+4,sticky=N+W+E+S)
-				r_length=check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/repeat.xml","repeat")
+				r_length=check_tags(tag_xml_path,"repeat")
 				if r_length==None or r_length==0:
 				   r_b.config(state=DISABLED)	
-				exec("r_b.config(command=lambda:show_tagged('"+os.path.dirname(l.getAttribute('filename'))+"','"+os.path.dirname(l.getAttribute('filename'))+"/Users/repeat.xml'))")
+				exec("r_b.config(command=lambda:show_tagged('repeat','"+os.path.dirname(l.getAttribute('filename'))+"','"+tag_xml_path+"'))")
 
 				l_b=create_image_button(Menu,".TexFlasher/pictures/link_fix.png",40,40,0)
 				l_b.grid(row=row_start,column=start_column+5,sticky=N+W+E+S)
-				l_length=check_tags(os.path.dirname(l.getAttribute('filename'))+"/Users/links.xml","link")
+				l_length=check_tags(tag_xml_path,"link")
 				if l_length==None or l_length==0:
 				   l_b.config(state=DISABLED)	
-				exec("l_b.config(command=lambda:show_tagged('"+os.path.dirname(l.getAttribute('filename'))+"','"+os.path.dirname(l.getAttribute('filename'))+"/Users/links.xml'))")
+				exec("l_b.config(command=lambda:show_tagged('link','"+os.path.dirname(l.getAttribute('filename'))+"','"+tag_xml_path+"'))")
 
 				start_column+=6
 				
