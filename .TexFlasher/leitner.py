@@ -66,10 +66,11 @@ def load_leitner_db(leitner_dir,user):
 	#load old flashcards
 	try:
 		doc= xml.parse(leitner_dir+"/Users/"+Settings["user"]+".xml")
-		ldb=doc.getElementsByTagName('ldb')[0]
+		old_ldb=doc.getElementsByTagName('ldb')[0]
 	except:
-		doc=xml.Document()
-		ldb = doc.createElement('ldb')
+		pass
+	doc=xml.Document()
+	ldb = doc.createElement('ldb')
 	#create new flashcard xml
 	flashcards_dir=os.listdir(leitner_dir+"/Flashcards")
 
@@ -80,9 +81,10 @@ def load_leitner_db(leitner_dir,user):
 			#mod_date=datetime(*(strptime(strftime("%Y-%m-%d %H:%M:%S",localtime(mod_sec)), "%Y-%m-%d %H:%M:%S")[0:6]))
 
 			try: 
-				flashcard_element=ldb.getElementsByTagName(flashcard_name)[0] #raises if old_ldb does not exist or not found
+				flashcard_element=old_ldb.getElementsByTagName(flashcard_name)[0] #raises if old_ldb does not exist or not found
 			#		lastReviewed_date=datetime(*(strptime(flashcard_element.getAttribute('lastReviewed'), "%Y-%m-%d %H:%M:%S")[0:6])) #this raises if not reviewed yet	#		if mod_date>lastReviewed_date: 
 			#			changed.append(flashcard_element.tagName)
+				ldb.appendChild(flashcard_element)
 			except:
 				#create new flashcard node
 				flashcard_element=doc.createElement(flashcard_name)
