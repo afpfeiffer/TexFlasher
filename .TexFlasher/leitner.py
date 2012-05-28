@@ -315,17 +315,18 @@ def totalCardHistory( ldb, threshold=1 ):
 		time = 0
 		counter = 0
 		pos = 0
-		cardValid=False
+		cardValid=True
 		while time < H[len(H)-1][0]:
-			if H[pos][1] >= threshold :
-				cardValid=True
+			#if H[pos][1] >= threshold :
+				#cardValid=True
 				
 			if cardValid:
 				while len(TS)<=counter:
 					TS.append(0)
 					TH.append([time, 0])
 				
-				TS[counter] = TS[counter] + 1
+				if H[pos][1] >= threshold :
+					TS[counter] = TS[counter] + 1
 				TH[counter][1] = TH[counter][1] + H[pos][1]
 				maxLevel = max( maxLevel, H[pos][1] )
 				
@@ -341,6 +342,7 @@ def totalCardHistory( ldb, threshold=1 ):
 			TH[i][1] = int(float(TH[i][1])/float(TS[i]))
 		else:
 			TH[i][1] = 0
+			
 			
 	TH[len(TH)-1][1]=0
 	return TH, maxLevel
@@ -391,7 +393,10 @@ def drawHistory( HISTORY, stat, verbose=True, alwaysOnTop=False, maxLevel = 3 ):
 	#print t_end
 	
 	dx_offset=5
-	dt=float(width-1)/(HISTORY[len(HISTORY)-1][0])
+	if HISTORY[len(HISTORY)-1][0] > 1e-5:
+		dt=float(width-1)/(HISTORY[len(HISTORY)-1][0])
+	else:
+		dt=float(width-1)/(1)
 	dx=float(height-2-dx_offset)/maxVal
 	if alwaysOnTop:
 		dx=float(height-2-30-dx_offset)/maxVal
