@@ -429,7 +429,7 @@ def drawHistory( HISTORY, stat, verbose=True, alwaysOnTop=False, maxLevel = 3 ):
 				
 				
 			if alwaysOnTop:
-				if (int(fmod(i,10)) == 0) and H[i][0]*dt < width - 40:
+				if (int(fmod(i,10)) == 0) and H[i][0]*dt < width - 50:
 					stat.create_line( 1 + H[i][0]*dt, height, 1+ H[i][0]*dt, height+30)
 					stat.create_text( 5 + H[i][0]*dt, height + 15, text="day "+ str(i), anchor=W )
 			
