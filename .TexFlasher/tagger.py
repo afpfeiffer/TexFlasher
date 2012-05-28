@@ -45,7 +45,7 @@ def open_xml_file(file_path):
 		return False
 ########################################################## Comment on fc ##############################################################
 
-def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user,color):
+def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user,color,position):
 		frame=Frame(canvas,bd=5,bg=color)
 		content=""
 		creator=""
@@ -68,13 +68,18 @@ def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user,color):
 		comment_field=Text(frame,width=20,height=10,bd=0)
 		if not content=="":
 			comment_field.insert(INSERT,content)
-		comment_field.grid(row=1,columnspan=4)
+		comment_field.grid(row=2,columnspan=4)
 		#check if text exists if so insert!
 		image = Image.open(".TexFlasher/pictures/clear.png")
 		image = image.resize((20,20), Image.ANTIALIAS)
 		image = ImageTk.PhotoImage(image)
-		frame.edit_img=image		
-		Button(frame,text="Delete",image=image,command=lambda:delete_c_elem_from_xml(canvas,fc_tag,tags,tagtype,item)).grid(row=2,columnspan=4,sticky=N+W+S+E)		
+		frame.edit_img=image	
+		del_row=3
+		if position=="upper":
+		  del_row=1
+		if position=="lower":
+		  del_row=3
+		Button(frame,text="Delete",image=image,command=lambda:delete_c_elem_from_xml(canvas,fc_tag,tags,tagtype,item)).grid(row=del_row,columnspan=4,sticky=N+W+S+E)		
 		return frame,comment_field 
 		
 		
@@ -154,8 +159,6 @@ class RectTracker:
 	def autodraw(self, **opts):
 		"""Setup automatic drawing; supports command option"""
 		self.start = None
-
-
 		self.canvas.bind("<Button-1>", self.__update, '+')
 		self.canvas.bind("<Double-Button-1>", self.__tag, '+')
 		self.canvas.bind("<B1-Motion>", self.__update, '+')
@@ -247,8 +250,11 @@ class tag_tracker:
 				      if self.canvas.tagtypes[tagtype]['new'] in list(self.canvas.gettags(item)) or self.canvas.tagtypes[tagtype]['old'] in list(self.canvas.gettags(item)):
 						coords=self.canvas.coords(item)
 						#rounded_rect(coords[0],coords[1]+25,170,230,30,"lightgray",self.canvas,"info_win")
-						
-						frame,self.comment_field=self.canvas.tagtypes[tagtype]['command'](tagtype,self.canvas.tagtypes[tagtype]['xml_path'],self.canvas.gettags(item),self.fc_tag,self.canvas,item,self.user,"lightgray")
+						if coords[1]>float(self.canvas.cget("height"))/2.:
+						   position="upper"
+						else:
+						   position="lower"
+						frame,self.comment_field=self.canvas.tagtypes[tagtype]['command'](tagtype,self.canvas.tagtypes[tagtype]['xml_path'],self.canvas.gettags(item),self.fc_tag,self.canvas,item,self.user,"lightgray",position)
 						self.current_tagtype=tagtype
 						self.current_item=item
 						self.tag_win=self.canvas.create_window(coords[0],coords[1]+25,window=frame,tag="info_win")	    
