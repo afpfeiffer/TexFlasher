@@ -1361,10 +1361,14 @@ def update_texfile( fname, user ):
 	menu()
 	
 
-def saveFiles( files ):
-	executeCommand( "bash .TexFlasher/scripts/save.sh "+ files, True )
-	menu()	
-
+def saveFiles():
+	if checkIfNeedToSave( saveString ):
+		if tkMessageBox.askokcancel("Quit?", "Do you want to save your changes?"):
+			executeCommand( "bash .TexFlasher/scripts/save.sh "+ saveString, True )
+			top.destroy()	
+	else:
+		top.destroy()
+		
 def create_new():
 	file = tkFileDialog.askopenfilename(parent=top,title='Choose a LaTeX file',initialdir='./',defaultextension=".tex",filetypes=[("all files","*.tex")])
 	if file != None:
@@ -1733,6 +1737,8 @@ ys = (hs/2) - (HEIGHT/2)
 
 top.geometry(str(int(WIDTH*1.005))+"x"+str(HEIGHT)+"+"+str(xs)+"+"+str(ys))
 
-
-
+# root is your root window
+top.protocol('WM_DELETE_WINDOW',lambda:saveFiles())
 menu()
+
+
