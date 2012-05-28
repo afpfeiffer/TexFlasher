@@ -1365,6 +1365,8 @@ def saveFiles():
 	if checkIfNeedToSave( saveString ):
 		if tkMessageBox.askokcancel("Quit?", "Do you want to save your changes?"):
 			executeCommand( "bash .TexFlasher/scripts/save.sh "+ saveString, True )
+			top.destroy()
+		else:
 			top.destroy()	
 	else:
 		top.destroy()
