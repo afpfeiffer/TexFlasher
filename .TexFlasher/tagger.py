@@ -246,7 +246,7 @@ class tag_tracker:
 				for tagtype in self.canvas.tagtypes:		      
 				      if self.canvas.tagtypes[tagtype]['new'] in list(self.canvas.gettags(item)) or self.canvas.tagtypes[tagtype]['old'] in list(self.canvas.gettags(item)):
 						coords=self.canvas.coords(item)
-						rounded_rect(coords[0],coords[1]+25,170,230,30,"lightgray",self.canvas,"info_win")
+						#rounded_rect(coords[0],coords[1]+25,170,230,30,"lightgray",self.canvas,"info_win")
 						
 						frame,self.comment_field=self.canvas.tagtypes[tagtype]['command'](tagtype,self.canvas.tagtypes[tagtype]['xml_path'],self.canvas.gettags(item),self.fc_tag,self.canvas,item,self.user,"lightgray")
 						self.current_tagtype=tagtype
