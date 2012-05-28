@@ -45,8 +45,8 @@ def open_xml_file(file_path):
 		return False
 ########################################################## Comment on fc ##############################################################
 
-def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user):
-		frame=Frame(canvas,bd=5)
+def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user,color):
+		frame=Frame(canvas,bd=5,bg=color)
 		content=""
 		creator=""
 		fg="black"
@@ -64,8 +64,8 @@ def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user):
 			break
 		  except:
 		    pass
-		Label(frame,text="Tagtype: "+tagtype+"\n"+creator,fg=fg,bg=None).grid(row=0,column=0,columnspan=4)
-		comment_field=Text(frame,width=20,height=10)
+		Label(frame,text=tagtype.upper()+"\n"+creator,fg=fg,bg=color).grid(row=0,column=0,columnspan=4)
+		comment_field=Text(frame,width=20,height=10,bd=0)
 		if not content=="":
 			comment_field.insert(INSERT,content)
 		comment_field.grid(row=1,columnspan=4)
@@ -137,7 +137,7 @@ class RectTracker:
 		    except:
 			pass
 		
-		self.selected_circle=None
+		self.selected_circle=None	
 		self.follow_size=(20,20)
 		self.fix_size=(40,40)
 		self.tags_tag="tagger"
@@ -214,7 +214,23 @@ class RectTracker:
 						self.canvas.create_image(float(tag.getAttribute('startx')),float(tag.getAttribute('starty'))-10, image=other_img["img"],tags=tags.replace("old ","other "))
 			except:
 				pass
-			
+
+				
+def rounded_rect(centerX,centerY,width,height,rad,color,canvas,tags):
+  x0=centerX-width/2.
+  y0=centerY-height/2.
+  x1=centerX+width/2.
+  y1=centerY+height/2.
+  centers=[[x0,y0,x0+rad,y0+rad],[x0,y1-rad,x0+rad,y1],[x1-rad,y1-rad,x1,y1],[x1-rad,y0,x1,y0+rad]]
+  ang=0
+  items={}
+  for center in centers:
+    items[ang]=canvas.create_arc(center[0],center[1],center[2],center[3],start=ang,extent=270,width=0,fill=color,outline="",tags=tags)
+    ang+=90
+  items["in1"]=canvas.create_rectangle(x0+rad/2.,y0,x1-rad/2.,y1,width=0,fill=color,tags=tags)
+  items["in2"]=canvas.create_rectangle(x0,y0+rad/2.,x1,y1-rad/2.,width=0,fill=color,tags=tags)					
+  return items
+				
 class tag_tracker:
 	def __init__(self, canvas,user,fc_tag):
 		self.fc_tag=fc_tag	
@@ -229,10 +245,13 @@ class tag_tracker:
 			for item in self.canvas.find_overlapping(event.x-5, event.y-5, event.x+5, event.y+5):		    
 				for tagtype in self.canvas.tagtypes:		      
 				      if self.canvas.tagtypes[tagtype]['new'] in list(self.canvas.gettags(item)) or self.canvas.tagtypes[tagtype]['old'] in list(self.canvas.gettags(item)):
-						frame,self.comment_field=self.canvas.tagtypes[tagtype]['command'](tagtype,self.canvas.tagtypes[tagtype]['xml_path'],self.canvas.gettags(item),self.fc_tag,self.canvas,item,self.user)
+						coords=self.canvas.coords(item)
+						rounded_rect(coords[0],coords[1]+25,170,230,30,"lightgray",self.canvas,"info_win")
+						
+						frame,self.comment_field=self.canvas.tagtypes[tagtype]['command'](tagtype,self.canvas.tagtypes[tagtype]['xml_path'],self.canvas.gettags(item),self.fc_tag,self.canvas,item,self.user,"lightgray")
 						self.current_tagtype=tagtype
 						self.current_item=item
-						self.tag_win=self.canvas.create_window(self.canvas.coords(item)[0],self.canvas.coords(item)[1]+25,window=frame,tag="info_win")	    
+						self.tag_win=self.canvas.create_window(coords[0],coords[1]+25,window=frame,tag="info_win")	    
 
 						self.comment_field.focus_set()				
 
@@ -249,6 +268,9 @@ class tag_tracker:
 		self.current_item=False
 		self.current_tagtype=False		
 
+
+	
+		
 def create_comment_canvas(c,dir,fc_tag,user):
  	def onDrag(start,end):
 		global x,y

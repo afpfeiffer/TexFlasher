@@ -532,6 +532,9 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     c.create_text(0, zero[1]+D1*0.2, anchor=W, text="Cards")
     c.create_text(D1*0.45, zero[1]+D1*0.8, anchor=W, text="Day")
     
+    
+    
+    
     c1 = Canvas(Stats, width=int(float(WIDTH)*0.47), height=int(WIDTH*0.5)) 
     c1.grid(row=0 , column=1, sticky=N)
 
@@ -1292,6 +1295,7 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	stat.grid(row=4, columnspan=5)
 	stat.height=stat_height
 	stat.width=stat_width
+	
 	c.stat=stat
 
 
