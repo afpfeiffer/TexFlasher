@@ -391,10 +391,10 @@ def drawHistory( HISTORY, stat, verbose=True, alwaysOnTop=False, maxLevel = 3 ):
 		maxVal = max( maxVal, elem[1] )
 		#print str(elem[0])+": "+str(elem[1])
 	#print t_end
-	
 	dt_border= 86400- int(fmod(HISTORY[len(HISTORY)-1][0], 86400))
 	dx_offset=5
-	HISTORY[len(HISTORY)-1][0]+=dt_border
+	if not alwaysOnTop:
+		HISTORY[len(HISTORY)-1][0]+=dt_border
 	if HISTORY[len(HISTORY)-1][0] > 1e-5:
 		dt=float(width-1)/(HISTORY[len(HISTORY)-1][0])
 	else:
@@ -420,7 +420,7 @@ def drawHistory( HISTORY, stat, verbose=True, alwaysOnTop=False, maxLevel = 3 ):
 	for i in range(len(H)-1):
 		#print str(elem[0]*dt/width)+": "+str(elem[1])
 		#print H[i][1], maxLevel
-		color, foo=getColor( int(H[i][1]), maxLevel+1 )
+		color, foo=getColor( int(H[i][1]), maxVal+1 )
 		stat.create_rectangle(2+H[i][0]*dt,height-1-H[i][1]*dx - dx_offset,1+H[i+1][0]*dt, height-1, fill=color, width=2 )
 		
 		text_offset = 8
