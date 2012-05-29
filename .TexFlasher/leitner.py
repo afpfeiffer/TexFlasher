@@ -1138,9 +1138,9 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,c,update=True):
 			#print "answer wrong"
 			update_flashcard(flashcard_name,ldb,selected_dir,"Level",1)
 	
-	if( listPosition < 0 or listPosition%10 == 9 ):
+	#if( listPosition < 0 or listPosition%10 == 9 ):
 		# look for updates at the beginning and every 10 fcs
-		checkForUpdate(Settings["user"])
+		#checkForUpdate(Settings["user"])
 		
 	listPosition +=1
 	if ( len(agenda) > listPosition):
@@ -1153,6 +1153,8 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,c,update=True):
 	    c.delete(im)		
 	    
 	c.stat.delete("all")
+	c.delete("info_win")
+	
 	drawCardHistory( ldb.getElementsByTagName(flashcard_name)[0], c.stat )
 	image = Image.open(selected_dir+"/Flashcards/"+flashcard_name+"-1.png")
 	image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
@@ -1303,28 +1305,7 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	c.fc_row=5
 	frame.grid(row=c.fc_row,columnspan=5,sticky=N+S+W+E)
 	c.grid(row=0,columnspan=3,sticky=N+E+W+S)
-	c.tag_buttons=[]
 
-	q_b=create_image_button(top,".TexFlasher/pictures/question_fix.png",20,20)
-	q_b.grid(row=c.fc_row,column=0,sticky=N+W)
-	q_b.grid_remove()
-	c.q_b=q_b
-	w_b=create_image_button(top,".TexFlasher/pictures/watchout_fix.png",20,20)
-	w_b.grid(row=c.fc_row,column=0,sticky=S+W)
-	w_b.grid_remove()
-	c.w_b=w_b
-	r_b=create_image_button(top,".TexFlasher/pictures/repeat_fix.png",20,20)
-
-	r_b.grid(row=c.fc_row,column=4,sticky=N+E)
-	r_b.grid_remove()
-	c.r_b=r_b
-	l_b=create_image_button(top,".TexFlasher/pictures/link_fix.png",20,20)
-
-	l_b.grid(row=c.fc_row,column=4,sticky=S+E)		    
-	l_b.grid_remove()
-	c.l_b=l_b
-	
-	c.tag_buttons=[q_b,w_b,r_b,l_b]	
 
 	#spacer
 	Label(top,height=1).grid(row=6,columnspan=5)	
@@ -1338,6 +1319,29 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	c.true_b=true_b
 	c.false_b=false_b
 
+	c.tag_buttons=[]
+
+	q_b=create_image_button(top,".TexFlasher/pictures/question_fix.png",35,35)
+	q_b.grid(row=c.true_false_row,column=2,sticky=N+W)
+	q_b.grid_remove()
+	c.q_b=q_b
+	
+	w_b=create_image_button(top,".TexFlasher/pictures/watchout_fix.png",35,35)
+	w_b.grid(row=c.true_false_row,column=2,sticky=S+W)
+	w_b.grid_remove()
+	c.w_b=w_b
+	
+	r_b=create_image_button(top,".TexFlasher/pictures/repeat_fix.png",35,35)
+	r_b.grid(row=c.true_false_row,column=2,sticky=N+E)
+	r_b.grid_remove()
+	c.r_b=r_b
+	
+	l_b=create_image_button(top,".TexFlasher/pictures/link_fix.png",35,35)
+	l_b.grid(row=c.true_false_row,column=2,sticky=S+E)		    
+	l_b.grid_remove()
+	c.l_b=l_b
+	
+	c.tag_buttons=[q_b,w_b,r_b,l_b]	
 	#gallery
 #	flow_c=Canvas(top,height=90,width=600,bd=3)
 #	flow_c.grid(row=c.true_false_row,column=1,columnspan=3)
@@ -1368,7 +1372,7 @@ def update_texfile( fname, user ):
 
 def saveFiles():
 	if checkIfNeedToSave( saveString ):
-		if tkMessageBox.askokcancel("Quit?", "Do you want to save your changes?"):
+		if tkMessageBox.askyesno("Quit?", "Do you want to save your changes on the server?"):
 			executeCommand( "bash .TexFlasher/scripts/save.sh "+ saveString, True )
 			top.destroy()
 		else:
@@ -1673,7 +1677,7 @@ def menu():
 		#if checkIfNeedToSave( saveString ):
 			#image_path="./.TexFlasher/pictures/upload_now.png"	
 		exec('save=create_image_button(Menu,"'+image_path+'",'+button_size+','+button_size+')')
-		exec('save.configure(command=lambda:saveFiles(saveString))')
+		exec('save.configure(command=lambda:saveFiles())')
 		exec('save.grid(row=1, column=9,sticky=W+N+S+E,columnspan=5)')	
 	
 
@@ -1711,7 +1715,7 @@ Settings = { 'user':'',
 	}	
 readSettings( Settings )
 
-
+sys.setrecursionlimit(2000)
 
 version="TexFlasher unstable build"
 top = Tk()
