@@ -651,7 +651,7 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     
     Legende.create_line( 0, ybasis-25 , WIDTH, ybasis-25, width=2 )
 
-    mainloop()
+    #mainloop()
 
 
 def frac(n): return 360. * n
@@ -1155,7 +1155,7 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,c,update=True):
 	else:
 		#print "reached end of vector"
 		statistics_nextWeek(selected_dir)
-		sys.exit()
+		#sys.exit()
 	for im in c.find_withtag("backside"):
 	    c.delete(im)		
 	    
@@ -1196,8 +1196,6 @@ def reactAndInit(selected_dir,agenda,ldb, status, listPosition,c,update=True):
 	c.fc_det_left.set("Flashcards (left today / total number): "+str(flashcardsTodo-listPosition)+" / "+str(totalNumberCards))	
    	c.fc_det_right.set("Flashcardnr.: "+str(fc_pos)+", Page: "+str(page)+", Level: "+ str(level) +"  ")
 
-	mainloop()
-
 
 def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,c):
 	image = Image.open(selected_dir+"/Flashcards/"+flashcard_tag+"-2.png")
@@ -1233,7 +1231,7 @@ def answer(selected_dir,agenda,ldb, flashcard_tag, listPosition,c):
 	#fc_pos=int(c.order.getElementsByTagName(flashcard_tag)[0].getAttribute('position'))
 	#c.flow.goto(fc_pos)
 	
-	mainloop()
+	#mainloop()
 
 
 	
@@ -1265,7 +1263,7 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	c.fc_det_row=1
 	fc_det_left = StringVar()
 	fc_det_right = StringVar()
-	Label(top,anchor=W,width=45,textvariable=fc_det_left).grid(row=c.fc_det_row, columnspan=2,sticky=W)	
+	Label(top,anchor=W,width=45,textvariable=fc_det_left).grid(row=c.fc_det_row,column=0, columnspan=2,sticky=W)	
 	Label(top,anchor=E,width=40,textvariable=fc_det_right).grid(row=c.fc_det_row, column=3,columnspan=2,sticky=E)
 	c.fc_det_left=fc_det_left
 	c.fc_det_right=fc_det_right
@@ -1695,7 +1693,6 @@ def menu():
 		create.grid(row=row_start+1,columnspan=8)
 	#footer
 	Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer").grid(row=3,columnspan=8,sticky=S)
-	mainloop()
 
 def readSettings( Settings ):
 	Config = ConfigParser.ConfigParser()
@@ -1722,11 +1719,16 @@ Settings = { 'user':'',
 	}	
 readSettings( Settings )
 
-sys.setrecursionlimit(2000)
+#sys.setrecursionlimit(2000)
 
 version="TexFlasher unstable build"
-top = Tk()
 
+
+class Application(Tk):
+    def __init__(self):
+        Tk.__init__(self)
+
+top = Application()
 
 WIDTH=800
 HEIGHT=int(WIDTH*0.7) +170
@@ -1757,6 +1759,8 @@ top.geometry(str(int(WIDTH*1.005))+"x"+str(HEIGHT)+"+"+str(xs)+"+"+str(ys))
 
 # root is your root window
 top.protocol('WM_DELETE_WINDOW',lambda:saveFiles())
+
 menu()
 
+top.mainloop()
 
