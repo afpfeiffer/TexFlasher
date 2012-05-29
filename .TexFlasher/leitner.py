@@ -392,10 +392,11 @@ def drawHistory( HISTORY, stat, verbose=True, alwaysOnTop=False, maxLevel = 3 ):
 		#print str(elem[0])+": "+str(elem[1])
 	#print t_end
 	
-	dt_border= 86400- int(fmod(HISTORY[len(HISTORY)-1][0], 86400))+1
+	dt_border= 86400- int(fmod(HISTORY[len(HISTORY)-1][0], 86400))
 	dx_offset=5
+	HISTORY[len(HISTORY)-1][0]+=dt_border
 	if HISTORY[len(HISTORY)-1][0] > 1e-5:
-		dt=float(width-1)/(HISTORY[len(HISTORY)-1][0]+dt_border)
+		dt=float(width-1)/(HISTORY[len(HISTORY)-1][0])
 	else:
 		dt=float(width-1)/(1)
 	dx=float(height-2-10-dx_offset)/maxVal
@@ -411,7 +412,6 @@ def drawHistory( HISTORY, stat, verbose=True, alwaysOnTop=False, maxLevel = 3 ):
 		while time < H[len(H)-1][0] + 86400:
 			stat.create_line( 1+time*dt, 5, 1+time*dt, height, fill="grey50" )
 			time = time + 86400 #seconds in a day
-		#stat.create_line( HISTORY[len(HISTORY)-1][0]+dt_border*dt, 5, HISTORY[len(HISTORY)-1][0]+dt_border*dt, height, fill="grey50" )
 	
 	n_value=-1
 	level_n_begin=-1
@@ -448,8 +448,6 @@ def drawHistory( HISTORY, stat, verbose=True, alwaysOnTop=False, maxLevel = 3 ):
 					stat.create_line( 1 + H[i][0]*dt, height, 1+ H[i][0]*dt, height+30)
 					stat.create_text( 5 + H[i][0]*dt, height + 13, text="day "+ str(i), anchor=W )
 			
-	#stat.create_rectangle( 1, 1, width , height - 1)
-
 	
 		
 def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
