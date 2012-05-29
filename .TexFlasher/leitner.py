@@ -397,14 +397,21 @@ def drawHistory( HISTORY, stat, verbose=True, alwaysOnTop=False, maxLevel = 3 ):
 		dt=float(width-1)/(HISTORY[len(HISTORY)-1][0])
 	else:
 		dt=float(width-1)/(1)
-	dx=float(height-2-dx_offset)/maxVal
+	dx=float(height-2-10-dx_offset)/maxVal
 	if alwaysOnTop:
 		dx=float(height-2-30-dx_offset)/maxVal
 	
 	# set backgrund color
 	#stat.create_rectangle( 1, 1, width , height -1 )
-	
 	H=HISTORY
+	
+	if not alwaysOnTop:
+		time=0
+		while time < H[len(H)-1][0] + 86400:
+			stat.create_line( 1+time*dt, 5, 1+time*dt, height, fill="grey50" )
+			time = time + 86400 #seconds in a day
+
+	
 	n_value=-1
 	level_n_begin=-1
 	level_n_end=-1
@@ -413,7 +420,7 @@ def drawHistory( HISTORY, stat, verbose=True, alwaysOnTop=False, maxLevel = 3 ):
 		#print str(elem[0]*dt/width)+": "+str(elem[1])
 		#print H[i][1], maxLevel
 		color, foo=getColor( int(H[i][1]), maxLevel+1 )
-		stat.create_rectangle(1+H[i][0]*dt,height-1-H[i][1]*dx - dx_offset,1+H[i+1][0]*dt, height-1, fill=color )
+		stat.create_rectangle(2+H[i][0]*dt,height-1-H[i][1]*dx - dx_offset,1+H[i+1][0]*dt, height-1, fill=color, width=2 )
 		
 		text_offset = 8
 
@@ -999,7 +1006,7 @@ def  disp_single_fc(image_path,tag,title=None):
 	fc_info=get_fc_info(os.path.dirname(image_path)+"/../",tag,ldb)
 	
 	
-	stat_height=30
+	stat_height=40
 	stat_width=int(float(WIDTH)*0.95)
 	stat=Canvas(win,width=stat_width, height=stat_height)
 	stat.grid(row=2, columnspan=5)
@@ -1291,7 +1298,7 @@ def run_flasher(selected_dir, stuffToDo=True ):
 	#spacer
 	#Label(top,height=1).grid(row=3,columnspan=5)
 
-	stat_height=30
+	stat_height=40
 	stat_width=int(float(WIDTH)*0.95)
 	stat=Canvas(top,width=stat_width, height=stat_height)
 	stat.grid(row=4, columnspan=5)
