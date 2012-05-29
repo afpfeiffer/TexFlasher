@@ -1673,15 +1673,15 @@ def menu():
 
 
 		#savebutton
-		image_path="./.TexFlasher/pictures/upload.png"	
+		#image_path="./.TexFlasher/pictures/upload.png"	
 		#if checkIfNeedToSave( saveString ):
 			#image_path="./.TexFlasher/pictures/upload_now.png"	
-		exec('save=create_image_button(Menu,"'+image_path+'",'+button_size+','+button_size+')')
-		exec('save.configure(command=lambda:saveFiles())')
-		exec('save.grid(row=1, column=9,sticky=W+N+S+E,columnspan=5)')	
+		#exec('save=create_image_button(Menu,"'+image_path+'",'+button_size+','+button_size+')')
+		#exec('save.configure(command=lambda:saveFiles())')
+		#exec('save.grid(row=1, column=9,sticky=W+N+S+E,columnspan=5)')	
 	
 
-		create_n.grid(row=1,column=8,sticky=N+W+S+E)		
+		create_n.grid(row=1,column=8,columnspan=6,sticky=N+W+S+E)		
 		Label(Menu,height=1).grid(sticky=E+W,row=2,columnspan=10)
 	else:
 		create_n.grid(row=row_start+2,columnspan=8)			
