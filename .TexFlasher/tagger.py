@@ -144,7 +144,7 @@ class RectTracker:
 			pass
 		
 		self.selected_circle=None	
-		self.follow_size=(20,20)
+		self.follow_size=(40,40)
 		self.fix_size=(40,40)
 		self.tags_tag="tagger"
 		
@@ -181,7 +181,7 @@ class RectTracker:
 		
 	def __tag(self,event):
 		    tags=self.canvas.tag_fix+" "+self.time+" elem"
-		    self.canvas.create_image(event.x,event.y-10, image=self.canvas.tags_imgs[self.canvas.current_tag],tags=tags)	
+		    self.canvas.create_image(event.x,event.y-22, image=self.canvas.tags_imgs[self.canvas.current_tag],tags=tags)	
 	    
 	def __stop(self, event):
 
@@ -209,7 +209,7 @@ class RectTracker:
 					if self.canvas.tagtypes[tagtype]['type']=="rectangle":
 						self.canvas.create_rectangle(int(float(tag.getAttribute("startx"))),int(float(tag.getAttribute("starty"))),int(float(tag.getAttribute("endx"))),int(float(tag.getAttribute("endy"))),dash=[4,4], tags=tags,outline="red",fill="", width=2)
 					if self.canvas.tagtypes[tagtype]['type']=="image" and self.user==tag.getAttribute('user'):
-						self.canvas.create_image(float(tag.getAttribute('startx')),float(tag.getAttribute('starty'))-10, image=self.canvas.tags_imgs[tagtype],tags=tags)
+						self.canvas.create_image(float(tag.getAttribute('startx')),float(tag.getAttribute('starty')), image=self.canvas.tags_imgs[tagtype],tags=tags)
 					
 			except:
 				pass
@@ -295,7 +295,7 @@ def create_comment_canvas(c,dir,fc_tag,user):
 	def cool_design(event):
 		global x, y
 		kill_xy()
-		c.cursor_image=c.create_image(event.x,event.y-10, image=c.tag_follow_image,tags=c.tag_follow)	
+		c.cursor_image=c.create_image(event.x,event.y-22, image=c.tag_follow_image,tags=c.tag_follow)	
 		rect.up_time(strftime("%Y-%m-%d %H:%M:%S", localtime()))
 		c.tag_tracker.check_for_tag(event)
 		    

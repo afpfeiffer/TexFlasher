@@ -1047,7 +1047,7 @@ def edit_fc(c,dir,fc_tag):
 	for tag in c.tag_buttons:
 		tag.grid_remove()
 
-def cancel_edit(c,dir,tag,frame):
+def cancel_edit(c,dir,fc_tag,frame):
 	c.clear_b.config(state=DISABLED)
 	c.save_b.config(state=DISABLED)
 	c.edit_b.config(state=NORMAL)
@@ -1057,7 +1057,7 @@ def cancel_edit(c,dir,tag,frame):
 	  c.false_b.config(state=NORMAL)
 	except:
 	  pass	
-	c.edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,dir,tag))
+	c.edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,dir,fc_tag))
 	frame.grid_forget()
 	for tag in c.tag_buttons:
 		tag.grid()	
