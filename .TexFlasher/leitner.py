@@ -386,7 +386,7 @@ def drawHistory( HISTORY, stat, verbose=True, alwaysOnTop=False, maxLevel = 3 ):
 	if alwaysOnTop:
 		height -= 20
 
-	maxVal=3
+	maxVal=maxLevel
 	for elem in HISTORY:
 		maxVal = max( maxVal, elem[1] )
 		#print str(elem[0])+": "+str(elem[1])
