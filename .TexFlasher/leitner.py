@@ -570,7 +570,8 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
 			initialvalue+=w0
 			#print "color = "+getColor(counter)
 			color, foo = getColor(counter, len(dataSetB))
-			c1.create_arc( coords , fill=color, start=initialvalue, extent=w1, width=2 ,activewidth=4, outline="grey50" )
+			c1.create_arc( coords , fill=color, start=initialvalue, extent=w1, width=2 ,activewidth=3 )
+			#c1.create_arc( coords , fill=color, start=initialvalue, extent=w1, width=2 ,activewidth=4, outline="grey50" )
 			sectors.append([w1+sectors[-1][0],l])
 			#if( int(round(dataSetB[l+1]*numCards,0)) > 0 ):
 				#textPos = center[0] + distance*cos(winkel(initialvalue +0.5*w1)), center[1] -  distance*sin(winkel(initialvalue +0.5*w1))
