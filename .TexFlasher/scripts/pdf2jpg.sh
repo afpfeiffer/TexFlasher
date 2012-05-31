@@ -19,8 +19,9 @@
 
 
 FILENAME=${1%\.*}
+FILEBASE=$(basename $FILENAME)
+echo "compiled $FILEBASE"
 
-echo "compiled flashcard $FILENAME"
 convert -density 400 $FILENAME.pdf -quality 50 -crop 1910x1130+745+490 $FILENAME.jpg
 convert $FILENAME-0.jpg -quality 100 -resize 360x216 $FILENAME-thumb360x216.jpg
 

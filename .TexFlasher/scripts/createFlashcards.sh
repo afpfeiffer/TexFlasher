@@ -123,7 +123,7 @@ else
 				recompile=`echo $recompile + "1" | bc`
 				
 				ts="`date +%s`"
-				echo "changed content: $folder/Flashcards/$purename" | tee -a $folder/texFlasher.log
+				echo "changed content: $purename" | tee -a $folder/texFlasher.log
       fi
     else 
       # delete files, that are no longer used!

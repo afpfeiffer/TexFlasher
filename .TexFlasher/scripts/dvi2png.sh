@@ -17,7 +17,8 @@
 #     You should have received a copy of the GNU General Public License
 #     along with TexFlasher  If not, see <http://www.gnu.org/licenses/>.
 FILENAME=${1%\.*}
-echo "compiled flashcard $FILENAME"
+FILEBASE=$(basename $FILENAME)
+echo "compiled $FILEBASE"
 
 #-p firstpage -l lastpage.
 dvipng --noghostscript* -T tight -x 1900 -z 9 $FILENAME.dvi -o $FILENAME-%d.png
