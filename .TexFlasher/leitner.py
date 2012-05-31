@@ -1113,13 +1113,18 @@ def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type):
 					image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
 					flashcard = ImageTk.PhotoImage(image)
  					c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard)
- 					c.img=flashcard			
+ 					c.img=flashcard	
+ 					message,window_type=get_log_status(dir)
+ 					if window_type=="showerror":
+						exec('tkMessageBox.'+window_type+'( "Parse LaTex Logfile","%s")'%message)
+					else:
+						cancel_edit(c,dir,fc_tag,frame)							
 					break
 		except:
 			tkMessageBox.showerror("Error","Fatal error while saving new content for %s!"%fc_tag)
 	else:
 		tkMessageBox.showerror("Error","Fatal error while saving new content for %s: no config found!"%fc_tag)
-	cancel_edit(c,dir,fc_tag,frame)
+
 	
 
 ############################################################### run flasher ###########################################################
