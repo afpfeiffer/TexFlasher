@@ -1036,7 +1036,7 @@ def edit_fc(c,dir,fc_tag):
 	frame=Frame(c)	
 	frame.grid(sticky=E+W+N+S)
 	#print c_width,c_height,WIDTH,HEIGHT,int(WIDTH*0.14256),int(WIDTH*0.043)
-	edit_text=Text(frame,width=int(WIDTH*0.14256),height=int(WIDTH*0.043)) #TODO fit ro canvas
+	edit_text=create_textbox(frame,int(WIDTH*0.043),int(WIDTH*0.14256)) #TODO fit ro canvas
 	edit_text.insert(INSERT,content)
 	edit_text.grid(sticky=N+W+E+S)
 

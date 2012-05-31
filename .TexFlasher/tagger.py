@@ -45,6 +45,15 @@ def open_xml_file(file_path):
 		return False
 ########################################################## Comment on fc ##############################################################
 
+def create_textbox(win,height,width):
+	textbox = Text(win, height=height, width=width)
+	# create a vertical scrollbar to the right of the listbox
+	yscroll = Scrollbar(command=textbox.yview, orient='vertical')
+	#yscroll.grid(row=row, column=column+1, sticky='ns')
+	textbox.configure(yscrollcommand=yscroll.set)
+	return textbox
+
+
 def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user,color,position):
 		frame=Frame(canvas,bd=5,bg=color)
 		content=""
@@ -65,10 +74,12 @@ def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user,color,position):
 		  except:
 		    pass
 		#Label(frame,text=tagtype.upper()+"\n"+creator,fg=fg,bg=color).grid(row=0,column=0,columnspan=4)
-		comment_field=Text(frame,width=20,height=10,bd=0)
+		
+		comment_field=create_textbox(frame,5,30)
+		comment_field.grid(row=2,column=0)
 		if not content=="":
 			comment_field.insert(INSERT,content)
-		comment_field.grid(row=2,columnspan=4)
+#		comment_field.grid(row=2,columnspan=4)
 		#check if text exists if so insert!
 		image = Image.open(".TexFlasher/pictures/clear.png")
 		image = image.resize((20,20), Image.ANTIALIAS)
