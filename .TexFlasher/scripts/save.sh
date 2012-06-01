@@ -71,10 +71,18 @@ rm SAVE &> /dev/null
 for thing in $files; do
 # 	echo $thing
 		seperatedFiles="`echo $thing | sed -e 's/###/ /g'`"
-# 	echo $seperatedFiles
+# 		echo $seperatedFiles
 # 		touch $seperatedFiles
-		svn add $seperatedFiles &> /dev/null  
-		svn info $seperatedFiles &> /dev/null
+ 		svn add $seperatedFiles &> /dev/null  
+ 		
+
+ 		folder=""
+		for files in $seperatedFiles; do
+			folder=$(dirname $files)
+		done
+
+		svn info $folder &> /dev/null
+ 		
 		HAVESVN=$?
 		if [ $HAVESVN -eq 0 ]; then
 			echo "processing: "
@@ -86,7 +94,7 @@ for thing in $files; do
 					echo "  -> ${txtclr}${txtbld}$files ${txtrst} "
 				fi
 			done
-			echo
+			
 			for files in $seperatedFiles; do
 				fulldiff="`svn diff $files`" > /dev/null			
 			
@@ -100,5 +108,7 @@ for thing in $files; do
 				fi	
 			done
 		fi
+		echo
 done
+# sleep 20
 exit 0

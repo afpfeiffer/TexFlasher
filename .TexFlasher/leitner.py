@@ -1655,6 +1655,7 @@ def menu():
 				exec('Label(Menu,height=1).grid(row='+str(row_start+1)+')')
 				row_start+=2	
 
+	#print saveString
 
 	#create button
 	create=create_image_button(Menu,"./.TexFlasher/pictures/Flashcard_folder_add.png",60,60)
