@@ -35,8 +35,13 @@ for thing in $files; do
 done
 echo
 	
-		
-svn info $files > /dev/null
+folder=""
+for thing in $files; do
+	folder=$(dirname $thing)
+done
+
+svn info $folder &> /dev/null
+
 HAVESVN=$?
 if [ $HAVESVN -eq 0 ]; then
 	svn up $files
