@@ -1391,6 +1391,9 @@ def update_texfile( fname, user ):
 	os.system("rm "+os.path.dirname(fname)+"/Flashcards/UPDATE 2>/dev/null")
 	create_flashcards( fname )
 	comp_list=create_completion_list()
+ 	message,window_type=get_log_status(os.path.dirname(fname))
+ 	if window_type=="showerror":
+		exec('tkMessageBox.'+window_type+'( "Parse LaTex Logfile","%s")'%message)	
 	menu()
 	
 
