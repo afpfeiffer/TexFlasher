@@ -524,9 +524,11 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
         lastYpos = y0
         for i in range(len(dataSetC[x][1])):
 					color, foo=getColor(i, len(dataSetB))
-					c.create_rectangle(x0+1, lastYpos +dataSetC[x][1][i]*y_stretch  , x1-1, lastYpos, fill=color, width=0)
+					if( dataSetC[x][1][i] > 0 ):					
+						c.create_rectangle(x0, lastYpos +dataSetC[x][1][i]*y_stretch  , x1-1, lastYpos, fill=color, width=1, outline="black")
+						c.create_text( x0+2, (lastYpos ), anchor="nw", text="L"+str(i),font=("Helvectica", "7"), fill=color, activefill="black" )
 					lastYpos += dataSetC[x][1][i]*y_stretch
-        c.create_line(x0, y0, x1, y0, width=2 )
+        c.create_rectangle(x0, y0, x1, zero[1], width=2 )
 					
         if( dataSetC[x][0] > 0 ):
 					if( y1-y0 > 20 ):
