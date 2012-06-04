@@ -30,11 +30,18 @@ def main(argv=None):
 	with open( '.TexFlasher/copyright.txt', 'r' ) as f:
 		COPYRIGHT=f.readlines()
   
-
-  # print copyright
+	# initialize credits
+	CREDITS=[]
+	with open( '.TexFlasher/credits.txt', 'r' ) as f:
+		CREDITS=f.readlines()
+  
+  # print credits and copyright
+	for line in CREDITS:
+		print line,
 	for line in COPYRIGHT:
 		print line,
   
+	
 
 
   
