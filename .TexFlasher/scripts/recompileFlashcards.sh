@@ -70,8 +70,8 @@ done
 	cp $file $folder/Details/source.tex
 
 	cd $folder/Details
-	latex -halt-on-error $folder/Details/source.tex 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|No pages of output.' | tee -a $folder/texFlasher.log
-	Errors="`cat $folder/texFlasher.log | grep -rniE 'error|ERROR|Error|No pages of output.'`"
+	latex -halt-on-error $folder/Details/source.tex 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|No pages of output|Missing|Emergency stop' | tee -a $folder/texFlasher.log
+	Errors="`cat $folder/texFlasher.log | grep -rniE 'error|ERROR|Error|No pages of output|Missing|Emergency stop'`" 
 	if [ ! "$Errors" == ""  ]; then
 		echo "Fatal latex error in source file." >> $folder/texFlasher.log
 		exit 1
@@ -141,7 +141,7 @@ done
     elif [ "`uname`" == "Darwin" ] ; then
       procs="`/usr/sbin/system_profiler -detailLevel full SPHardwareDataType | grep -i 'number of cores' | awk '{ print $5 }'`"
     fi
-  make -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log
+  make -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|Emergency stop.' | tee -a $folder/texFlasher.log
   cd $WD
   
 #  cd $folder/Details
@@ -150,6 +150,5 @@ done
 
     
   echo "done"
-
 
 exit 0
