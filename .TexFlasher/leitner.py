@@ -22,12 +22,11 @@ global comp_list
 global c
 global velocity,autorotate	
 global xold,maximages,centerrec 
+
 global search_canvas # scrolling wheel support needs that for some reason
-global x, y
+
 global saveString 
 global Menu
-global query
-global default_search_value
 global Settings 
 
 import os
@@ -753,9 +752,6 @@ def get_fc_section(dir,tag,source):
 tkinter_umlauts=['odiaeresis', 'adiaeresis', 'udiaeresis', 'Odiaeresis', 'Adiaeresis', 'Udiaeresis', 'ssharp']
 #http://tkinter.unpythonic.net/wiki/AutocompleteEntry
 
-
-
-
 class Search(Entry):
         """
         Subclass of Tkinter.Entry that features autocompletion.
@@ -763,13 +759,32 @@ class Search(Entry):
         To enable autocompletion use set_completion_list(list) to define 
         a list of possible strings to hit.
         To cycle through hits use down and up arrow keys.
-        """
-        def set_completion_list(self, completion_list):
-                self._completion_list = completion_list
-                self._hits = []
-                self._hit_index = 0
-                self.position = 0
-                self.bind('<KeyRelease>', self.handle_keyrelease)               
+        """ 
+        def clear_search(self,event):
+		self._def_value.set("")
+		self.configure(font=("Helvetica",14,'bold'),fg="black",textvariable=self._def_value)
+        
+        def __init__( self, parent, **options ):
+        	Entry.__init__( self, parent, **options )
+        	self._def_value=StringVar()
+		self.configure(highlightthickness=0,font=("Helvetica",20,"bold"),textvariable=self._def_value,bd =5,bg=None,fg="gray",justify=CENTER)
+		self.bind("<Button-1>", self.clear_search)
+		self._def_value.set("Search ...")    
+		self._hits = []
+		self._hit_index = 0
+		self.position = 0
+		self.bind('<KeyRelease>', self.handle_keyrelease)		  	
+      	
+      	
+        def set_completion_list(self, completion_list):             	    
+                self._completion_list = completion_list                
+
+                
+                
+        def add_search_query(self,se_query,results):
+        	global comp_list
+        	if not unicode(se_query.lower()) in list(comp_list):							        		
+			comp_list+=(unicode(se_query.lower()),)
 
         def autocomplete(self, delta=0):
                 """autocomplete the Entry, delta may be 0/1/-1 to cycle through possible hits"""
@@ -838,16 +853,20 @@ class Search(Entry):
 			## display search results
 			if len(search_results)>0:
 				display_mult_fcs(search_results,"Found "+str(len(search_results))+" search results for \""+search_query+"\"","Menu","lambda:menu()","./.TexFlasher/pictures/menu.png")
+				self.add_search_query(search_query,search_results)
 			else:
 				self.delete(0,END)
 				self.insert(0,"Nothing found!" )
 
 	
         def handle_keyrelease(self, event):
+        		
+        	
                 """event handler for the keyrelease event on this widget"""
                 if event.keysym == "BackSpace":
                         self.delete(self.index(INSERT), END) 
                         self.position = self.index(END)
+                
                 if event.keysym == "Left":
                         if self.position < self.index(END): # delete the selection
                                 self.delete(self.position, END)
@@ -1530,9 +1549,6 @@ def open_tex(filepath):
 		tkMessageBox.showerror( "LaTeX Editor Variable","Please check, if your LaTeX Editor is set correctly in run-TexFlasher.sh")
 
 
-def clear_search(event):
-	default_search_value.set("")
-	query.configure(font=("Helvetica",14,'bold'),fg="black",textvariable=default_search_value)
 
 
 class MyDialog:
@@ -1712,33 +1728,13 @@ def menu():
 	if row_start > 3:
 		create.grid(row=1,column=0,sticky=W)
 		#search field
-		global query
-		global default_search_value
-
-		default_search_value = StringVar()
 		query=Search(Menu)
 		query.set_completion_list(comp_list)
-		query.configure(highlightthickness=0,font=("Helvetica",20,"bold"),textvariable=default_search_value,bd =5,bg=None,fg="gray",justify=CENTER)
-	#	query.bind('<Return>', search_flashcard)
-		query.bind("<Button-1>", clear_search)
-		default_search_value.set("Search ...")
-		query.grid(row=1,column=1,sticky=E+W+N+S)
-
-
-		search_button=create_image_button(Menu,"./.TexFlasher/pictures/search.png",40,40)
-		search_button.configure(command=lambda:query.search_flashcard())
-		search_button.grid(row=1,column=2,sticky=N+E+W+S,columnspan=4)		
-
-
-		#savebutton
-		#image_path="./.TexFlasher/pictures/upload.png"	
-		#if checkIfNeedToSave( saveString ):
-			#image_path="./.TexFlasher/pictures/upload_now.png"	
-		#exec('save=create_image_button(Menu,"'+image_path+'",'+button_size+','+button_size+')')
-		#exec('save.configure(command=lambda:saveFiles())')
-		#exec('save.grid(row=1, column=9,sticky=W+N+S+E,columnspan=5)')	
-	
-
+		query.grid(row=1,column=1,columnspan=5,sticky=E+W+N+S)
+		#search_button=create_image_button(Menu,"./.TexFlasher/pictures/search.png",40,40)
+		#exec('search_button.configure(command=lambda:query.search_flashcard())')
+		#search_button.grid(row=1,column=2,sticky=N+E+W+S,columnspan=4)		
+		
 		create_n.grid(row=1,column=8,columnspan=6,sticky=N+W+S+E)		
 		Label(Menu,height=1).grid(sticky=E+W,row=2,columnspan=10)
 	else:

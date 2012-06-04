@@ -39,11 +39,6 @@ import itertools, collections
 import ConfigParser
 import webbrowser
 
-def open_xml_file(file_path):
-	try:
-		return xml.parse(file_path)		  
-	except:
-		return False
 ########################################################## Comment on fc ##############################################################
 
 class HyperlinkManager:
@@ -85,8 +80,7 @@ class HyperlinkManager:
 
 
 def create_textbox(win,height,width):
-	textbox = Text(win, height=height, width=width)
-	
+	textbox = Text(win, height=height, width=width)	
 	# create a vertical scrollbar to the right of the listbox
 	yscroll = Scrollbar(command=textbox.yview, orient='vertical')
 	#yscroll.grid(row=row, column=column+1, sticky='ns')
@@ -94,7 +88,6 @@ def create_textbox(win,height,width):
 	return textbox
 
 def click(url):
-
 	new = 2
 	webbrowser.open(url,new=new)
     
@@ -117,8 +110,6 @@ def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user,color,position):
 			break
 		  except:
 		    pass
-		#Label(frame,text=tagtype.upper()+"\n"+creator,fg=fg,bg=color).grid(row=0,column=0,columnspan=4)
-		
 		comment_field=create_textbox(frame,5,30)
 		hyperlink = HyperlinkManager(comment_field)
 		comment_field.grid(row=2,column=0)

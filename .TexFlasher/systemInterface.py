@@ -73,11 +73,8 @@ def executeCommand( command ,wait=True):
 
 	
 def sanatize(string):
-	out=""
-	for s in string.split("\n"):
-		s=s.replace(",","").replace("}","").replace("]","").replace("."," ")#.split(":")[0].split("\[")[0].split("$")[0]
-		out+=s+" "
-	return out	
+	return string.replace(",","").replace("}","").replace("]","").replace("."," ")#.split(":")[0].split("\[")[0].split("$")[0]
+	
 	
 def create_completion_list():
 	results=[]
