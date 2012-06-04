@@ -83,12 +83,20 @@ def create_completion_list():
 			if len(dir)>0 and os.path.isfile(dir):
 				tex=open(dir,"r")
 				for line in tex:
+					#words={}
 					for word in line.split(" "):
 						try:
-							results.append(unicode(word.replace(",","").replace("}","").replace("]","").replace(".","").replace("\n","").lower()))
+							word=unicode(word.replace(",","").replace("}","").replace("]","").replace(".","").replace("\n","").lower())
+							#for w in words:
+							#	words[w]+=word+" "
+							#	results.append(words[w])
+							#words[word]=word+" "
+							results.append(word)
+
 						except:
 							pass
-	
+
+					#print words	
 	return tuple(results)
 	
 	

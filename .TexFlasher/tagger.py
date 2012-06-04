@@ -124,7 +124,7 @@ def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user,color,position):
 		comment_field.grid(row=2,column=0)
 		if not content=="":
 			if re.findall(r'(https?://\S+)', content):
-				_content=content.split(" ")
+				_content=content.split()
 				for w in _content:
 					if re.findall(r'(https?://\S+)', w):
 						comment_field.insert(INSERT, w, hyperlink.add(click,w))	

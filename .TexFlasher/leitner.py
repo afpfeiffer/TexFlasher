@@ -705,15 +705,19 @@ def get_fc_info(dir,tag,ldb=None):
 			return elem	
 			break
 
-def get_fc_desc(fc_dir,tag):
-	tex_file_path=get_flashfolder_path(fc_dir)
-	try:
-		tex_file=open(tex_file_path,"r")
-	except:
-		print "Fatal Error: Cannot open file: "+tex_file_path+"!"
-		sys.exit()	
-	doc= xml.parse(fc_dir+"/Flashcards/order.xml")
-	fc_elem=doc.getElementsByTagName(tag)[0]
+def get_fc_desc(fc_dir,tag,tex_file=False,xml_file=False):
+
+	if not tex_file:	
+		try:
+			tex_file_path=get_flashfolder_path(fc_dir)
+			tex_file=open(tex_file_path,"r")
+		except:
+			print "Fatal Error: Cannot open file: "+tex_file_path+"!"
+			sys.exit()	
+	if not xml_file:
+		xml_file= xml.parse(fc_dir+"/Flashcards/order.xml")
+
+	fc_elem=xml_file.getElementsByTagName(tag)[0]
 	title=fc_elem.getAttribute('name')
 	theorem_name=fc_elem.getAttribute('theorem_name')
 	theorem_type=fc_elem.getAttribute('theorem_type')
@@ -721,21 +725,28 @@ def get_fc_desc(fc_dir,tag):
 	tag_=False
 	content=""	
 	for l in tex_file:
-		if content_ and re.compile("^\\\\end\{"+theorem_type+"\}").findall(l):
+		if content_ and re.compile("\\\\end\{"+theorem_type+"\}").findall(l):
 			content_=False
 			tag_=False
 			break
 			
 		if tag_ and content_:
 			content+=l
-		if not tag_ and re.compile("^\\\\fc\{"+tag+"\}").findall(l):
+		if not tag_ and re.compile("\\\\fc\{"+tag+"\}").findall(l):
 			tag_=True
-		if tag_ and re.compile("^\\\\begin\{"+theorem_type+"\}").findall(l):			
+		if tag_ and re.compile("\\\\begin\{"+theorem_type+"\}").findall(l):			
 			content_=True
 
 
 	return title,theorem_name,theorem_type,content
-		
+	
+def get_fc_section(dir,tag,source):	
+	section_string=""
+	elem=source.getElementsByTagName(tag)[0]
+	for attr in elem.attributes.keys():
+		if re.compile('name').findall(attr) and not elem.getAttribute(attr)=="None":
+			section_string+=elem.getAttribute(attr)+" "
+	return section_string
 ############################################################### Search ###########################################
 tkinter_umlauts=['odiaeresis', 'adiaeresis', 'udiaeresis', 'Odiaeresis', 'Adiaeresis', 'Udiaeresis', 'ssharp']
 #http://tkinter.unpythonic.net/wiki/AutocompleteEntry
@@ -781,15 +792,27 @@ class Search(Entry):
         def search_flashcard(self):
 		search_query=self.get()
 		# set similarity sensitivity
-		thresh=0.7 #marker and title
-		content_thresh=0.8 # content
+		thresh=0.8 #marker and title
+		current_dir=""
+		current_source_xml=None
+		current_tex_file=None
+		current_order_xml=None
 		if len(search_query)>0 and not search_query=="Search ...":		
 			match_info_name=[]
 			all_fcs=get_all_fcs()
 			for fc_elem in all_fcs:
-				fc_name,theorem_name,theorem_type,fc_content=get_fc_desc(fc_elem['dir'],fc_elem['tag'])
+				if not fc_elem['dir']==current_dir: #load files needed for get_... funktions to speed up search
+					current_dir=fc_elem['dir']
+					current_source_xml=xml.parse(fc_elem['dir']+"/Details/source.xml")
+					tex_file_path=get_flashfolder_path(fc_elem['dir'])
+					current_tex_file=open(tex_file_path,"r")
+					current_order_xml=xml.parse(fc_elem['dir']+"/Flashcards/order.xml")
+					
+				fc_name,theorem_name,theorem_type,fc_content=get_fc_desc(fc_elem['dir'],fc_elem['tag'],current_tex_file,current_order_xml)
+				fc_sections=get_fc_section(fc_elem['dir'],fc_elem['tag'],current_source_xml)	
+
 				try:
-					fc_elem['query']=fc_name+" "+theorem_name+" "+fc_content+" "+fc_elem['tag']
+					fc_elem['query']=fc_name+" "+theorem_name+" "+fc_content+" "+fc_elem['tag']+" "+fc_sections
 					match_info_name.append(fc_elem)
 				except:
 					pass
