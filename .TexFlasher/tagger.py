@@ -37,6 +37,7 @@ import tkFileDialog
 from difflib import get_close_matches
 import itertools, collections
 import ConfigParser
+import webbrowser
 
 def open_xml_file(file_path):
 	try:
@@ -45,15 +46,58 @@ def open_xml_file(file_path):
 		return False
 ########################################################## Comment on fc ##############################################################
 
+class HyperlinkManager:
+
+    def __init__(self, text):
+
+        self.text = text
+
+        self.text.tag_config("hyper", foreground="blue", underline=1)
+
+        self.text.tag_bind("hyper", "<Enter>", self._enter)
+        self.text.tag_bind("hyper", "<Leave>", self._leave)
+        self.text.tag_bind("hyper", "<Button-1>", self._click)
+
+        self.reset()
+
+    def reset(self):
+        self.links = {}
+
+    def add(self, action,url):
+        # add an action to the manager.  returns tags to use in
+        # associated text widget
+        tag = "hyper-%d" % len(self.links)
+        self.links[tag] = {"action":action,"url":url}
+        return "hyper", tag
+
+    def _enter(self, event):
+        self.text.config(cursor="hand2")
+
+    def _leave(self, event):
+        self.text.config(cursor="")
+
+    def _click(self, event):
+        for tag in self.text.tag_names(CURRENT):
+            if tag[:6] == "hyper-":
+                self.links[tag]["action"](self.links[tag]["url"])
+                return
+
+
+
 def create_textbox(win,height,width):
 	textbox = Text(win, height=height, width=width)
+	
 	# create a vertical scrollbar to the right of the listbox
 	yscroll = Scrollbar(command=textbox.yview, orient='vertical')
 	#yscroll.grid(row=row, column=column+1, sticky='ns')
 	textbox.configure(yscrollcommand=yscroll.set)
 	return textbox
 
+def click(url):
 
+	new = 2
+	webbrowser.open(url,new=new)
+    
 def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user,color,position):
 		frame=Frame(canvas,bd=5,bg=color)
 		content=""
@@ -76,11 +120,21 @@ def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user,color,position):
 		#Label(frame,text=tagtype.upper()+"\n"+creator,fg=fg,bg=color).grid(row=0,column=0,columnspan=4)
 		
 		comment_field=create_textbox(frame,5,30)
+		hyperlink = HyperlinkManager(comment_field)
 		comment_field.grid(row=2,column=0)
 		if not content=="":
-			comment_field.insert(INSERT,content)
-#		comment_field.grid(row=2,columnspan=4)
-		#check if text exists if so insert!
+			if re.findall(r'(https?://\S+)', content):
+				_content=content.split(" ")
+				for w in _content:
+					if re.findall(r'(https?://\S+)', w):
+						comment_field.insert(INSERT, w, hyperlink.add(click,w))	
+					else:
+						comment_field.insert(INSERT, w)				
+					comment_field.insert(INSERT, " ")					
+			else:			
+				comment_field.insert(INSERT,content)
+
+
 		image = Image.open(".TexFlasher/pictures/clear.png")
 		image = image.resize((20,20), Image.ANTIALIAS)
 		image = ImageTk.PhotoImage(image)
