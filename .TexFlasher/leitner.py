@@ -1386,7 +1386,8 @@ def run_flasher(selected_dir, stuffToDo=True ):
 ############################################################## Menu ####################################################################
 
 def update_texfile( fname, user ):	
-	executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+fname+" "+os.path.dirname(fname)+"/Users", True )
+	executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+os.path.dirname(fname), True )
+	#executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+fname+" "+os.path.dirname(fname)+"/Users", True )
 	#executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+os.path.dirname(fname)+"/Users/"+user+".xml "+os.path.dirname(fname)+"/Users/"+user+"_comment.xml "+fname, True )
 	os.system("rm "+os.path.dirname(fname)+"/Flashcards/UPDATE 2>/dev/null")
 	create_flashcards( fname )

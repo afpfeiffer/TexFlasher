@@ -27,24 +27,18 @@ echo
 echo "Updating files."
 echo
 
-files=$*
 
-echo "processing: "
-for thing in $files; do
-	echo "  -> $thing"
-done
+folder=$1
+
+echo "processing: $folder"
+
 echo
 	
-folder=""
-for thing in $files; do
-	folder=$(dirname $thing)
-done
-
 svn info $folder &> /dev/null
 
 HAVESVN=$?
 if [ $HAVESVN -eq 0 ]; then
-	svn up $files
+	svn up $folder
 	echo
 else
 	echo "svn unavailable"
@@ -52,3 +46,32 @@ else
 fi
 
 exit 0
+
+
+# files=$*
+# 
+# echo "processing: "
+# for thing in $files; do
+# 	echo "  -> $thing"
+# done
+# echo
+# 	
+# folder=""
+# for thing in $files; do
+# 	folder=$(dirname $thing)
+# done
+# 
+# svn info $folder &> /dev/null
+# 
+# HAVESVN=$?
+# if [ $HAVESVN -eq 0 ]; then
+# 	svn up $files
+# 	echo
+# else
+# 	echo "svn unavailable"
+# 	echo
+# fi
+# 
+# exit 0
+
+
