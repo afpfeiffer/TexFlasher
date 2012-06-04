@@ -1146,19 +1146,19 @@ def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type):
 				if os.path.dirname(elem.getAttribute('filename'))==dir:
 					change_latex(elem.getAttribute('filename'),fc_tag,content,theorem_type)				
 					executeCommand("bash .TexFlasher/scripts/recompileFlashcards.sh "+elem.getAttribute('filename'), True)
-					image = Image.open(os.path.dirname(elem.getAttribute('filename'))+"/Flashcards/"+fc_tag+"-2.png")
-					image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
-					flashcard = ImageTk.PhotoImage(image)
- 					c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard)
- 					c.img=flashcard	
  					message,window_type=get_log_status(dir)
  					if window_type=="showerror":
 						exec('tkMessageBox.'+window_type+'( "Parse LaTex Logfile","%s")'%message)
 					else:
+						image = Image.open(os.path.dirname(elem.getAttribute('filename'))+"/Flashcards/"+fc_tag+"-2.png")
+						image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
+						flashcard = ImageTk.PhotoImage(image)
+	 					c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard)
+	 					c.img=flashcard	
 						cancel_edit(c,dir,fc_tag,frame)							
 					break
 		except:
-			tkMessageBox.showerror("Error","Fatal error while saving new content for %s!"%fc_tag)
+			tkMessageBox.showerror("Error","Fatal error with %s! This is bad, because the card may have been deleted (not from latex) and we did not detect latex errors!"%fc_tag)
 	else:
 		tkMessageBox.showerror("Error","Fatal error while saving new content for %s: no config found!"%fc_tag)
 
@@ -1489,7 +1489,8 @@ def get_log_status(filedir):
 				window_type="showerror"
 				message=l.replace("\n","\\n\\n")
 				l_count=0
-			message+=l.replace("\n","\\n\\n")
+			else:
+				message+=l.replace("\n","\\n\\n")
 			l_count+=1
 			if l_count>10:
 				break
