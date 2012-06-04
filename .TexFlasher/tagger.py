@@ -312,12 +312,7 @@ def create_comment_canvas(c,dir,fc_tag,user):
 		    
 	def kill_xy(event=None):
 		c.delete("tagger")
-		
-	def switch_tag(direction):
-		rect.watchout_tag()
-		
-	c.bind('<4>', lambda event : switch_tag("next"))
-	c.bind('<5>', lambda event : switch_tag("back"))        
+		     
 	c.bind('<Motion>', cool_design, '+')	
 	c.bind('<Enter>',cool_design,'+')
 	c.bind('<Leave>',kill_xy)
@@ -370,7 +365,7 @@ def savefile(canvas,fc_tag,user,tagtype,item,content):
 				content=content[:-1]			
 		except:
 			pass
-		flashcard_element.setAttribute('comment',content)
+		flashcard_element.setAttribute('comment',content.encode('utf-8'))
 		xml_file = open(canvas.tagtypes[tagtype]['xml_path'], "w")
 		parent.writexml(xml_file)
 		xml_file.close()
