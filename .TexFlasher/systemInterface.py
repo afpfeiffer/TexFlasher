@@ -147,3 +147,5 @@ def update_config(filename):
 	config_xml.writexml(xml_file)
 	xml_file.close()
 	
+
+	
