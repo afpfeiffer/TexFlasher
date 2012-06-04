@@ -526,18 +526,18 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
 					color, foo=getColor(i, len(dataSetB))
 					if( dataSetC[x][1][i] >= 1 ):					
 						c.create_rectangle(x0, lastYpos +dataSetC[x][1][i]*y_stretch  , x1-1, lastYpos, fill=color, width=1, outline="black")
-						small_dx=15						
+						small_dx=15
 						small_dy=10
 						vspace = dataSetC[x][1][i]*y_stretch
 						hspace = x1 - x0
 						vpos = 2
-						hpos = 2
+						hpos = 5
 						while vpos+0.6*small_dy < vspace:
 							while hpos +small_dx < hspace:
 								c.create_text( x0+ hpos , lastYpos + vpos, anchor="nw", text="L"+str(i),font=("Helvectica", "7"), fill=color, activefill="black" )
 								hpos += small_dx
 							vpos += small_dy
-							hpos = 0
+							hpos = 5
 							
 					lastYpos += dataSetC[x][1][i]*y_stretch
         c.create_rectangle(x0, y0, x1, zero[1], width=2 )
