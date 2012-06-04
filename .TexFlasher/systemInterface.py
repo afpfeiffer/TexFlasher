@@ -72,6 +72,13 @@ def executeCommand( command ,wait=True):
 	win.destroy()
 
 	
+def sanatize(string):
+	out=""
+	for s in string.split("\n"):
+		s=s.replace(",","").replace("}","").replace("]","").replace("."," ")#.split(":")[0].split("\[")[0].split("$")[0]
+		out+=s+" "
+	return out	
+	
 def create_completion_list():
 	results=[]
 	if os.path.isfile("./.TexFlasher/config.xml"):
@@ -86,7 +93,7 @@ def create_completion_list():
 					#words={}
 					for word in line.split(" "):
 						try:
-							word=unicode(word.replace(",","").replace("}","").replace("]","").replace(".","").replace("\n","").lower())
+							word=unicode(sanatize(word).replace("\n","").lower())
 							#for w in words:
 							#	words[w]+=word+" "
 							#	results.append(words[w])
