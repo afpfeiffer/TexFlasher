@@ -1197,7 +1197,7 @@ class Flasher:
 	#def resize(self,event):
 	#	global WIDTH, HEIGHT
 	#	print WIDTH,HEIGHT
-	#	#self.c.config(width=WIDTH,height=WIDTH*0.6)	
+
 		
 
 	def __init__(self,selected_dir,stuffToDo=True):
@@ -1333,6 +1333,7 @@ class Flasher:
 			
 			
 	def reactAndInit(self,status, listPosition,update=True):
+		self.c.config(width=WIDTH,height=WIDTH*0.6) #check if window size changed	
 		if( listPosition >=0 and update):
 			flashcard_name=self.agenda[listPosition][0]
 			if status:
@@ -1396,6 +1397,7 @@ class Flasher:
 
 
 	def answer(self,flashcard_tag, listPosition):
+		self.c.config(width=WIDTH,height=WIDTH*0.6)	# check if window size changed
 		image = Image.open(self.selected_dir+"/Flashcards/"+flashcard_tag+"-2.png")
 		image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
 		flashcard = ImageTk.PhotoImage(image)
