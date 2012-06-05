@@ -954,8 +954,7 @@ def display_mult_fcs(fcs,title,button_title,button_command,button_image): #Synta
 	clear_window()
 	global search_canvas # scrolling wheel support needs that for some reason
 	Main.master.title("Search")
-	#Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer", height =2).grid(row=3, sticky=S,columnspan=2)
-	#Label(top,text=title).grid(row=0,columnspan=5)
+	Label(Main,text=title).grid(row=0,columnspan=5)
 	exec('menu_button=create_image_button(Main,"'+button_image+'",40,40)')
 	exec('menu_button.configure(text="%s",command=%s)'%(button_title,button_command))
 	exec('menu_button.grid(row=1,columnspan=5,sticky=N+W+E+S)')
@@ -1096,8 +1095,9 @@ def edit_fc(c,dir,fc_tag):
 	  c.false_b.config(state=DISABLED)
 	except:
 	  pass
-	frame=Frame(c)	
+	frame=Frame(c,height=c_height,width=c_width)	
 	frame.grid(sticky=E+W+N+S)
+	frame.grid_propagate(False) 	
 	#print c_width,c_height,WIDTH,HEIGHT,int(WIDTH*0.14256),int(WIDTH*0.043)
 	edit_text=create_textbox(frame,int(WIDTH*0.043),int(WIDTH*0.14256)) #TODO fit ro canvas
 	edit_text.insert(INSERT,content)
@@ -1799,25 +1799,25 @@ class TexFlasher(Frame):
 		Frame.__init__( self)
 		global Main
 		Main=self
+		
 		self.master.rowconfigure( 0, weight = 1 )
 		self.master.columnconfigure( 0, weight = 1 )	
 		
 		self.master.rowconfigure( 2, weight = 1 )
 					
-		self.configure(bd=10)		
-		self.grid(row=1,column=0,sticky=N+W+S+E)
-		
-		
+		self.configure(bd=10,height=WIDTH-60)	
+		self.grid(row=1,column=0,sticky=N+E+W)
+		self.grid_propagate(False) 	
 		self._version="unstable build"
-		
+
 		ws = self.master.winfo_screenwidth()
 		hs = self.master.winfo_screenheight()
 		# calculate position x, y
-		
-		HEIGHT=WIDTH
-		xs = (ws/2) - (int(WIDTH*1.005)/2) 
-		ys = (hs/2) - (HEIGHT/2)				
-		self.master.geometry(str(int(WIDTH*1.005))+"x"+str(HEIGHT)+"+"+str(xs)+"+"+str(ys))
+		Wi=WIDTH+20
+		Hi=WIDTH
+		xs = (ws/2) - (int(Wi)/2) 
+		ys = (hs/2) - (Hi/2)				
+		self.master.geometry(str(int(Wi))+"x"+str(Hi)+"+"+str(xs)+"+"+str(ys))
 		self.master.iconbitmap(iconbitmapLocation)
 		self.master.iconmask(iconbitmapLocation)		
 		self.master.protocol('WM_DELETE_WINDOW',lambda:saveFiles(self.master))
@@ -1826,7 +1826,7 @@ class TexFlasher(Frame):
 				
 		
 		Label(self.master,height=2,text="TexFlasher based on Leitner-Method",font=("Helvetica", 16,"bold")).grid(row=0,columnspan=8,sticky=E+W+N)		
-		Label(self.master,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer").grid(row=2,sticky=S+E+W)
+		Label(self.master,height=2,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer").grid(row=2,sticky=S+E+W)
 		menu()
 
 TexFlasher().mainloop()
