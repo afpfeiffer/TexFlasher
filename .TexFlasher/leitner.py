@@ -992,7 +992,7 @@ def display_mult_fcs(fcs,title,button_title,button_command,button_image): #Synta
 	exec("search_canvas.bind('<Button-4>', lambda event: event.widget.yview_scroll(-1, UNITS))")
 	exec("search_canvas.bind('<Button-5>', lambda event: event.widget.yview_scroll(1, UNITS)) ")
 	Search_frame.update_idletasks()
-	search_canvas.config(scrollregion=search_canvas.bbox("all"),width=WIDTH-10,height=HEIGHT-60)
+	search_canvas.config(scrollregion=search_canvas.bbox("all"),width=WIDTH-35,height=HEIGHT)
 
 
 def  disp_single_fc(image_path,tag,title=None):
