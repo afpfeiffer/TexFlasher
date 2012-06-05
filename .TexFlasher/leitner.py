@@ -1227,8 +1227,8 @@ class Flasher:
 		self.c.fc_det_row=1
 		fc_det_left = StringVar()
 		fc_det_right = StringVar()
-		Label(Main,anchor=W,width=40,textvariable=fc_det_left).grid(row=self.c.fc_det_row,column=0, columnspan=2,sticky=W)	
-		Label(Main,anchor=E,width=40,textvariable=fc_det_right).grid(row=self.c.fc_det_row, column=3,columnspan=2,sticky=E)
+		Label(Main,anchor=W,textvariable=fc_det_left).grid(row=self.c.fc_det_row,column=0, columnspan=2,sticky=W)	
+		Label(Main,anchor=E,textvariable=fc_det_right).grid(row=self.c.fc_det_row, column=3,columnspan=2,sticky=E)
 		self.c.fc_det_left=fc_det_left
 		self.c.fc_det_right=fc_det_right
 	
@@ -1280,8 +1280,8 @@ class Flasher:
 		self.c.true_false_row=7
 		true_b=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_correct.png",80,80)
 		false_b=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_wrong.png",80,80)
-		true_b.grid(row=self.c.true_false_row, column=0, sticky=E )
-		false_b.grid(row=self.c.true_false_row, column=4, sticky=W)
+		true_b.grid(row=self.c.true_false_row, column=0, sticky=E+W )
+		false_b.grid(row=self.c.true_false_row, column=4, sticky=W+E)
 		self.c.true_b=true_b
 		self.c.false_b=false_b
 	
@@ -1800,7 +1800,7 @@ class TexFlasher(Frame):
 		
 		self.master.rowconfigure( 2, weight = 1 )
 					
-		self.configure(bd=10,height=WIDTH-60)	
+		self.configure(bd=10,height=WIDTH*0.9)	
 		self.grid(row=1,column=0,sticky=N+E+W)
 		self.grid_propagate(False) 	
 		self._version="unstable build"
@@ -1808,7 +1808,7 @@ class TexFlasher(Frame):
 		ws = self.master.winfo_screenwidth()
 		hs = self.master.winfo_screenheight()
 		# calculate position x, y
-		Wi=WIDTH+20
+		Wi=WIDTH
 		Hi=WIDTH
 		xs = (ws/2) - (int(Wi)/2) 
 		ys = (hs/2) - (Hi/2)				
