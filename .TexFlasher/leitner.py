@@ -1194,10 +1194,16 @@ def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type):
 
 
 class Flasher:
+	#def resize(self,event):
+	#	global WIDTH, HEIGHT
+	#	print WIDTH,HEIGHT
+	#	#self.c.config(width=WIDTH,height=WIDTH*0.6)	
+		
+
 	def __init__(self,selected_dir,stuffToDo=True):
 		global Main
 		clear_window()#clear main window
-
+		#Main.master.bind("<Configure>", self.resize)
 		Main.master.title(selected_dir)
 
 		if( stuffToDo ):
@@ -1775,7 +1781,7 @@ Settings = { 'user':'',
 	}	
 readSettings( Settings )
 
-
+global WIDTH, HEIGHT
 WIDTH=800
 HEIGHT=int(WIDTH*0.7)
 
@@ -1790,8 +1796,16 @@ iconbitmapLocation = "@./.TexFlasher/pictures/icon2.xbm"
 
 
 class TexFlasher(Frame):
+	def resize(self,event):
+		global WIDTH, HEIGHT
+		WIDTH=self.master.winfo_width()-20
+		HEIGHT=int(WIDTH*0.7)
+		self.configure(bd=10,height=WIDTH*0.9,width=WIDTH)	
+		
 	def __init__( self ):
 		Frame.__init__( self)
+		global WIDTH, HEIGHT		
+		self.master.bind("<Configure>", self.resize)
 		global Main
 		Main=self
 		
@@ -1800,7 +1814,7 @@ class TexFlasher(Frame):
 		
 		self.master.rowconfigure( 2, weight = 1 )
 					
-		self.configure(bd=10,height=WIDTH*0.9)	
+		self.configure(bd=10,height=WIDTH*0.9,width=WIDTH)	
 		self.grid(row=1,column=0,sticky=N+E+W)
 		self.grid_propagate(False) 	
 		self._version="unstable build"
@@ -1808,7 +1822,7 @@ class TexFlasher(Frame):
 		ws = self.master.winfo_screenwidth()
 		hs = self.master.winfo_screenheight()
 		# calculate position x, y
-		Wi=WIDTH
+		Wi=WIDTH+20 #width of the outer window frame
 		Hi=WIDTH
 		xs = (ws/2) - (int(Wi)/2) 
 		ys = (hs/2) - (Hi/2)				
