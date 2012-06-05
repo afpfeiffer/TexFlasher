@@ -77,6 +77,34 @@ class HyperlinkManager:
                 self.links[tag]["action"](self.links[tag]["url"])
                 return
 
+def grabUrls(text):
+	#http://mail.python.org/pipermail/tutor/2002-September/017228.html
+	urls = '(?: %s)' % '|'.join("""http telnet gopher file wais ftp""".split())
+	ltrs = r'\w'
+	gunk = r'/#~:.?+=&%@!\-'
+	punc = r'.:?\-'
+	any = "%(ltrs)s%(gunk)s%(punc)s" % { 'ltrs' : ltrs,'gunk' : gunk,'punc' : punc }
+
+	url = r"""
+    \b                            # start at word boundary
+        %(urls)s    :             # need resource and a colon
+        [%(any)s]  +?             # followed by one or more
+                                  #  of any valid character, but
+                                  #  be conservative and take only
+                                  #  what you need to....
+    (?=                           # look-ahead non-consumptive assertion
+            [%(punc)s]*           # either 0 or more punctuation
+            (?:   [^%(any)s]      #  followed by a non-url char
+                |                 #   or end of the string
+                  $
+            )
+    )
+    """ % {'urls' : urls,
+           'any' : any,
+           'punc' : punc }
+
+	url_re = re.compile(url, re.VERBOSE | re.MULTILINE)
+	return url_re.findall(text)
 
 
 def create_textbox(win,height,width):
@@ -114,10 +142,10 @@ def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user,color,position):
 		hyperlink = HyperlinkManager(comment_field)
 		comment_field.grid(row=2,column=0)
 		if not content=="":
-			if re.findall(r'(https?://\S+)', content):
+			if len(grabUrls(content))>0:
 				_content=content.split()
 				for w in _content:
-					if re.findall(r'(https?://\S+)', w):
+					if len(grabUrls(w))>0:
 						comment_field.insert(INSERT, w, hyperlink.add(click,w))	
 					else:
 						comment_field.insert(INSERT, w)				
@@ -204,8 +232,6 @@ class RectTracker:
 		self.fix_size=(40,40)
 		self.tags_tag="tagger"
 		
-
-	  
 	def draw(self, start, end, **opts):
 		"""Draw the rectangle"""
 		if sqrt((start[0]-end[0])*(start[0]-end[0])+(start[1]-end[1])*(start[1]-end[1]))<20:
