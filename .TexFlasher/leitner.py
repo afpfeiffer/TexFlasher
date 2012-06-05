@@ -1227,7 +1227,7 @@ class Flasher:
 		self.c.fc_det_row=1
 		fc_det_left = StringVar()
 		fc_det_right = StringVar()
-		Label(Main,anchor=W,width=45,textvariable=fc_det_left).grid(row=self.c.fc_det_row,column=0, columnspan=2,sticky=W)	
+		Label(Main,anchor=W,width=40,textvariable=fc_det_left).grid(row=self.c.fc_det_row,column=0, columnspan=2,sticky=W)	
 		Label(Main,anchor=E,width=40,textvariable=fc_det_right).grid(row=self.c.fc_det_row, column=3,columnspan=2,sticky=E)
 		self.c.fc_det_left=fc_det_left
 		self.c.fc_det_right=fc_det_right
@@ -1257,9 +1257,7 @@ class Flasher:
 		self.c.back_b=back_b
 		self.c.edit_b=edit_b
 		
-		#spacer
-		#Label(top,height=1).grid(row=3,columnspan=5)
-	
+		#stats	
 		stat_height=40
 		stat_width=int(float(WIDTH)*0.95)
 		stat=Canvas(Main,width=stat_width, height=stat_height)
@@ -1272,7 +1270,6 @@ class Flasher:
 	
 		#fc_content
 		self.c.fc_row=5
-		#self.grid(row=self.c.fc_row,columnspan=5,sticky=N+S+W+E)
 		self.c.grid(row=self.c.fc_row,columnspan=5,sticky=N+E+W+S)
 	
 	
@@ -1493,8 +1490,6 @@ def hide_FlashFolder(filename):
 def reset_flash(filename):
 	if tkMessageBox.askyesno("Reset", "Do you really want to delete all learning progress for %s?"% filename.split("/")[-2]):
 		try:
-			os.remove(os.path.dirname(filename)+"/Users/"+Settings["user"]+".xml")
-			os.remove(os.path.dirname(filename)+"/Users/"+Settings["user"]+"_comment.xml")
 			os.remove(os.path.dirname(filename)+"/Users/"+Settings["user"]+".xml")
 			os.remove(os.path.dirname(filename)+"/Users/"+Settings["user"]+"_comment.xml")
 		except:
