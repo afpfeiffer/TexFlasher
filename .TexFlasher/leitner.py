@@ -477,7 +477,7 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
 
     D1= 50.0
     D2=0.6*(WIDTH*0.6)
-    zero= D1, float(HEIGHT)*0.45
+    zero= D1, float(HEIGHT)*0.6
     
 
     valMax=5
