@@ -1798,7 +1798,13 @@ class TexFlasher(Frame):
 		WIDTH=self.master.winfo_width()-20
 		HEIGHT=int(WIDTH*0.7)
 		self.configure(bd=10,height=WIDTH*0.9,width=WIDTH)	
-		
+		Wi=WIDTH+20 #width of the outer window frame
+		Hi=WIDTH
+		ws = self.master.winfo_screenwidth()
+		hs = self.master.winfo_screenheight()		
+		xs = (ws/2) - (int(Wi)/2) 
+		ys = (hs/2) - (Hi/2)				
+		self.master.geometry(str(int(Wi))+"x"+str(Hi)+"+"+str(xs)+"+"+str(ys))
 	def __init__( self ):
 		Frame.__init__( self)
 		global WIDTH, HEIGHT		
