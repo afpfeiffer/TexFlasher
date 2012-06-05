@@ -633,7 +633,7 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     Legende.create_rectangle( coord, ybasis+40, coord + 20, ybasis +58,width=0, fill= color )
     Legende.create_text( coord+25, ybasis+49, anchor=W, text = "Level 2 (improving)" )
     #Legende.create_line( 0, ybasis+65 , WIDTH, ybasis+65 )
-    Legende.create_text( float(WIDTH)*0.5 , ybasis + 90 , text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer",font=("Helvetica",8))
+   # Legende.create_text( float(WIDTH)*0.5 , ybasis + 90 , text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer",font=("Helvetica",8))
 
     
     if( len(dataSetB)-1 >2 ):
@@ -1464,7 +1464,7 @@ def saveFiles(master):
 		master.quit()
 		
 def create_new():
-	file = tkFileDialog.askopenfilename(parent=top,title='Choose a LaTeX file',initialdir='./',defaultextension=".tex",filetypes=[("all files","*.tex")])
+	file = tkFileDialog.askopenfilename(parent=Main,title='Choose a LaTeX file',initialdir='./',defaultextension=".tex",filetypes=[("all files","*.tex")])
 	if file != None:
 		update_config(file)
 		menu()
@@ -1566,7 +1566,7 @@ class MyDialog:
 
     def __init__(self, parent):
 
-        top = self.top = Toplevel(parent)
+        top = self.Main = Toplevel(parent)
 
         Label(top, text="Please enter a new flashfolder name:").pack()
 
@@ -1589,8 +1589,8 @@ class MyDialog:
         self.top.destroy()
         
 def create_folder():
-	d = MyDialog(top)
-	top.wait_window(d.top)
+	d = MyDialog(Main)
+	Main.wait_window(d.Main)
 
 	
 	
@@ -1657,7 +1657,7 @@ def menu():
 					exec('button_' + str(row_start)+'_open =create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_yellow.png",60,60)')
 					exec('button_' + str(row_start)+'_open.configure(width=70,state='+button_status+',command=lambda:Flasher("'+os.path.dirname(l.getAttribute('filename'))+'", True))')
 				else:
-					exec('button_' + str(row_start)+'_open =create_image_button("./.TexFlasher/pictures/Flashcard_folder.png",60,60)')
+					exec('button_' + str(row_start)+'_open =create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder.png",60,60)')
 					exec('button_' + str(row_start)+'_open.configure(width=70,state='+button_status+',command=lambda:Flasher("'+os.path.dirname(l.getAttribute('filename'))+'", False))')
 									
 				exec('button_' + str(row_start)+'_open.grid(row='+str(row_start)+',sticky=N+W+S+E,column='+str(start_column)+')')
