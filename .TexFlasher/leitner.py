@@ -29,6 +29,8 @@ global saveString
 global Menu
 global Settings 
 
+global Main
+
 import os
 import subprocess
 import sys
@@ -451,15 +453,15 @@ def drawHistory( HISTORY, stat, verbose=True, alwaysOnTop=False, maxLevel = 3 ):
 		
 def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     clear_window()
-    top.title(version+" - Statistics")
+    Main.master.title("Statistics")
 
 
-    menu_button=create_image_button(top,"./.TexFlasher/pictures/menu.png",40,40)
+    menu_button=create_image_button(Main,"./.TexFlasher/pictures/menu.png",40,40)
     menu_button.configure(text="Menu",command=lambda:menu())
     menu_button.grid(row=0,columnspan=7,sticky=N+W+S+E)
     #Balloon = Pmw.Balloon(top)
     #Balloon.bind(menu_button, "Return to Menu") 
-    Stats=Frame(top,border=10)
+    Stats=Frame(Main,border=10)
     Stats.grid(row=3,column=0)
     
     DAYS =[ 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun' ]
@@ -951,15 +953,15 @@ def create_image_button(window,path,width=None,height=None,border=None):
 def display_mult_fcs(fcs,title,button_title,button_command,button_image): #Syntax: fcs=[{"tag":fc_tag,"dir":fc_dir,"level":fc_level}, ...]
 	clear_window()
 	global search_canvas # scrolling wheel support needs that for some reason
-	top.title(version+" - Search")
-	Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer", height =2).grid(row=3, sticky=S,columnspan=2)
-	Label(top,text=title).grid(row=0,columnspan=5)
-	exec('menu_button=create_image_button(top,"'+button_image+'",40,40)')
+	Main.master.title("Search")
+	#Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer", height =2).grid(row=3, sticky=S,columnspan=2)
+	#Label(top,text=title).grid(row=0,columnspan=5)
+	exec('menu_button=create_image_button(Main,"'+button_image+'",40,40)')
 	exec('menu_button.configure(text="%s",command=%s)'%(button_title,button_command))
 	exec('menu_button.grid(row=1,columnspan=5,sticky=N+W+E+S)')
-	vscrollbar = AutoScrollbar(top)
+	vscrollbar = AutoScrollbar(Main)
 	vscrollbar.grid(row=2, column=2, sticky=N+S)
-	search_canvas = Canvas(top,yscrollcommand=vscrollbar.set)
+	search_canvas = Canvas(Main,yscrollcommand=vscrollbar.set)
 	search_canvas.grid(row=2, column=0, sticky=N+S+E+W)
 	vscrollbar.config(command=search_canvas.yview)
 	Search_frame = Frame(search_canvas,border=10)
@@ -1191,60 +1193,63 @@ def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type):
 ############################################################### run flasher ###########################################################
 
 
-class Flasher( Frame ):
-	def __init__( self ,parent, selected_dir,stuffToDo=True):
-		Frame.__init__( self )
-
-
+class Flasher:
+	def __init__(self,selected_dir,stuffToDo=True):
+		global Main
 		clear_window()#clear main window
 
-		self.master.title(version+" - "+selected_dir)
+		Main.master.title(selected_dir)
 
 		if( stuffToDo ):
 			date = datetime.now()
 		else:
 			date = datetime.now()+timedelta(days=1000)
 		self.selected_dir=selected_dir
-		
+		Main.columnconfigure(0,weight=1)
+		Main.columnconfigure(1,weight=1)
+		Main.columnconfigure(2,weight=1)
+		Main.columnconfigure(3,weight=1)
+		Main.columnconfigure(4,weight=1)
+								
 		self.ldb=load_leitner_db(self.selected_dir,Settings["user"])
 				
 		self.agenda,new=load_agenda(self.ldb,self.selected_dir, date)
 		
-		self.c=Canvas(self.master,width=WIDTH,height=WIDTH*0.6)
+		self.c=Canvas(Main,width=WIDTH,height=WIDTH*0.6)
 	
 		self.c.order = xml.parse(self.selected_dir+"/Flashcards/order.xml")
 		self.c.source = xml.parse(self.selected_dir+"/Details/source.xml")
 
 		#spacer
-		Label(self.master,height=1).grid(row=0,columnspan=5)
+		#Label(parent.master,height=1).grid(row=0,columnspan=5)
 		
 		#flashcard details
 		self.c.fc_det_row=1
 		fc_det_left = StringVar()
 		fc_det_right = StringVar()
-		Label(self.master,anchor=W,width=45,textvariable=fc_det_left).grid(row=self.c.fc_det_row,column=0, columnspan=2,sticky=W)	
-		Label(self.master,anchor=E,width=40,textvariable=fc_det_right).grid(row=self.c.fc_det_row, column=3,columnspan=2,sticky=E)
+		Label(Main,anchor=W,width=45,textvariable=fc_det_left).grid(row=self.c.fc_det_row,column=0, columnspan=2,sticky=W)	
+		Label(Main,anchor=E,width=40,textvariable=fc_det_right).grid(row=self.c.fc_det_row, column=3,columnspan=2,sticky=E)
 		self.c.fc_det_left=fc_det_left
 		self.c.fc_det_right=fc_det_right
 	
 		# menubar
 		self.c.menu_row=2
-		back_b=create_image_button(self.master,".TexFlasher/pictures/back.png",40,40)
+		back_b=create_image_button(Main,".TexFlasher/pictures/back.png",40,40)
 		back_b.grid(row=self.c.menu_row, column=0,sticky=W+E)	
 		
-		menu_button=create_image_button(self.master,"./.TexFlasher/pictures/menu.png",40,40)
+		menu_button=create_image_button(Main,"./.TexFlasher/pictures/menu.png",40,40)
 		menu_button.configure(text="Menu",command=lambda:menu())
 		menu_button.grid(row=self.c.menu_row,column=1,sticky=W+E)
 		
-		edit_b=create_image_button(self.master,"./.TexFlasher/pictures/latex.png",40,40)
+		edit_b=create_image_button(Main,"./.TexFlasher/pictures/latex.png",40,40)
 		edit_b.config(state=DISABLED)
 		edit_b.grid(row=self.c.menu_row,column=2,sticky=W+E)
 	
-		save_b=create_image_button(self.master,".TexFlasher/pictures/upload_now.png",40,40)
+		save_b=create_image_button(Main,".TexFlasher/pictures/upload_now.png",40,40)
 		save_b.config(state=DISABLED)
 		save_b.grid(row=self.c.menu_row, column=3,sticky=W+E)	
 	
-		clear_b=create_image_button(self.master,".TexFlasher/pictures/clear.png",40,40)
+		clear_b=create_image_button(Main,".TexFlasher/pictures/clear.png",40,40)
 		clear_b.configure(state=DISABLED)
 		clear_b.grid(row=self.c.menu_row, column=4,sticky=W+E)		
 		self.c.save_b=save_b
@@ -1257,7 +1262,7 @@ class Flasher( Frame ):
 	
 		stat_height=40
 		stat_width=int(float(WIDTH)*0.95)
-		stat=Canvas(self.master,width=stat_width, height=stat_height)
+		stat=Canvas(Main,width=stat_width, height=stat_height)
 		stat.grid(row=4, columnspan=5)
 		stat.height=stat_height
 		stat.width=stat_width
@@ -1272,12 +1277,12 @@ class Flasher( Frame ):
 	
 	
 		#spacer
-		Label(self.master,height=1).grid(row=6,columnspan=5)	
+		Label(Main,height=1).grid(row=6,columnspan=5)	
 	
 		#true false
 		self.c.true_false_row=7
-		true_b=create_image_button(self.master,"./.TexFlasher/pictures/Flashcard_correct.png",80,80)
-		false_b=create_image_button(self.master,"./.TexFlasher/pictures/Flashcard_wrong.png",80,80)
+		true_b=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_correct.png",80,80)
+		false_b=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_wrong.png",80,80)
 		true_b.grid(row=self.c.true_false_row, column=0, sticky=E )
 		false_b.grid(row=self.c.true_false_row, column=4, sticky=W)
 		self.c.true_b=true_b
@@ -1285,22 +1290,22 @@ class Flasher( Frame ):
 	
 		self.c.tag_buttons=[]
 		
-		q_b=create_image_button(self.master,".TexFlasher/pictures/question_fix.png",35,35)
+		q_b=create_image_button(Main,".TexFlasher/pictures/question_fix.png",35,35)
 		q_b.grid(row=self.c.true_false_row,column=2,sticky=N+W)
 		q_b.grid_remove()
 		self.c.q_b=q_b
 		
-		w_b=create_image_button(self.master,".TexFlasher/pictures/watchout_fix.png",35,35)
+		w_b=create_image_button(Main,".TexFlasher/pictures/watchout_fix.png",35,35)
 		w_b.grid(row=self.c.true_false_row,column=2,sticky=S+W)
 		w_b.grid_remove()
 		self.c.w_b=w_b
 		
-		r_b=create_image_button(self.master,".TexFlasher/pictures/repeat_fix.png",35,35)
+		r_b=create_image_button(Main,".TexFlasher/pictures/repeat_fix.png",35,35)
 		r_b.grid(row=self.c.true_false_row,column=2,sticky=N+E)
 		r_b.grid_remove()
 		self.c.r_b=r_b
 		
-		l_b=create_image_button(self.master,".TexFlasher/pictures/link_fix.png",35,35)
+		l_b=create_image_button(Main,".TexFlasher/pictures/link_fix.png",35,35)
 		l_b.grid(row=self.c.true_false_row,column=2,sticky=S+E)		    
 		l_b.grid_remove()
 		self.c.l_b=l_b
@@ -1319,7 +1324,7 @@ class Flasher( Frame ):
 	#	flow.show_gallery(flow_c,3, pdict)
 	
 		#footer
-		Label(self.master,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer",width=int(100.0*float(WIDTH/1000.))).grid(row=8,sticky=S,columnspan=5)
+		#Label(Main,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer",width=int(100.0*float(WIDTH/1000.))).grid(row=8,sticky=S,columnspan=5)
 	
 		self.reactAndInit(True , -1)
 			
@@ -1448,15 +1453,15 @@ def update_texfile( fname, user ):
 	menu()
 	
 
-def saveFiles():
+def saveFiles(master):
 	if checkIfNeedToSave( saveString ):
 		if tkMessageBox.askyesno("Quit?", "Do you want to save your changes on the server?"):
 			executeCommand( "bash .TexFlasher/scripts/save.sh "+ saveString, True )
-			top.destroy()
+			master.quit()
 		else:
-			top.destroy()	
+			master.quit()	
 	else:
-		top.destroy()
+		master.quit()
 		
 def create_new():
 	file = tkFileDialog.askopenfilename(parent=top,title='Choose a LaTeX file',initialdir='./',defaultextension=".tex",filetypes=[("all files","*.tex")])
@@ -1499,7 +1504,10 @@ def reset_flash(filename):
 
 
 def clear_window():
-	for widget in top.grid_slaves():
+	info=Main.grid_info()
+	Main.grid_remove()
+	Main.grid(row=info['row'],column=info['column'])
+	for widget in Main.grid_slaves():
 		widget.grid_forget()
 
 	
@@ -1597,25 +1605,31 @@ def check_tags(xml_path,tagtype):
 
 
 def menu():
+	global Main
 	bordersize=2
 	clear_window()
-	top.title(version+" - Menu") 
+	Main.columnconfigure(0,weight=0)
+	Main.columnconfigure(1,weight=1)
+	Main.columnconfigure(2,weight=0)
+	Main.columnconfigure(3,weight=0)
+	Main.columnconfigure(4,weight=0)	
+	Main.master.title("Menu") 
+
+		#self.rowconfigure( 1, weight = 2 )
+		#self.columnconfigure( 1, weight = 1 )	
 	button_size=str(40)
 	global saveString 
 	saveString = ""
-	Label(top,height=2,text="TexFlasher based on Leitner-Method",font=("Helvetica", 16,"bold")).grid(row=0,columnspan=8,sticky=E+W)
-	#if os.path.isfile("UPDATE"):
-		#Label(top,height=2,text="(update available)           ",fg="red",font=("Helvetica", 16)).grid(row=0,columnspan=2,sticky=E)
-	global Menu
-	Menu=Frame(top,border=10,width=int(WIDTH*1.005),height=HEIGHT*0.9)
-	Menu.grid_propagate(0)
-	Menu.grid(row=2,column=0,sticky=E+W)
-	Menu.columnconfigure(1, weight=3)
+
+
+
 	row_start=3
 	if os.path.isfile("./.TexFlasher/config.xml"):
 		tree = xml.parse("./.TexFlasher/config.xml")
 		config_xml = tree.getElementsByTagName('config')[0]		
 		for l in config_xml.childNodes:
+
+			Widgets={}
 			if l.tagName=="FlashFolder" and l.getAttribute('filename')!="" and os.path.isfile(l.getAttribute('filename')):
 				todo=0;
 				length=0
@@ -1637,44 +1651,44 @@ def menu():
 				new_status="NORMAL"					
 				#open folder
 				if todo-new>0:
-					exec('button_' + str(row_start)+'_open =create_image_button(Menu,"./.TexFlasher/pictures/Flashcard_folder_red.png",60,60)')
-					exec('button_' + str(row_start)+'_open.configure(width=70,state='+button_status+',command=lambda:Flasher(top,"'+os.path.dirname(l.getAttribute('filename'))+'", True))')	
+					exec('button_' + str(row_start)+'_open =create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_red.png",60,60)')
+					exec('button_' + str(row_start)+'_open.configure(width=70,state='+button_status+',command=lambda:Flasher("'+os.path.dirname(l.getAttribute('filename'))+'", True))')	
 				elif new >0:
-					exec('button_' + str(row_start)+'_open =create_image_button(Menu,"./.TexFlasher/pictures/Flashcard_folder_yellow.png",60,60)')
-					exec('button_' + str(row_start)+'_open.configure(width=70,state='+button_status+',command=lambda:Flasher(top,"'+os.path.dirname(l.getAttribute('filename'))+'", True))')
+					exec('button_' + str(row_start)+'_open =create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_yellow.png",60,60)')
+					exec('button_' + str(row_start)+'_open.configure(width=70,state='+button_status+',command=lambda:Flasher("'+os.path.dirname(l.getAttribute('filename'))+'", True))')
 				else:
-					exec('button_' + str(row_start)+'_open =create_image_button(Menu,"./.TexFlasher/pictures/Flashcard_folder.png",60,60)')
-					exec('button_' + str(row_start)+'_open.configure(width=70,state='+button_status+',command=lambda:Flasher(top,"'+os.path.dirname(l.getAttribute('filename'))+'", False))')
+					exec('button_' + str(row_start)+'_open =create_image_button("./.TexFlasher/pictures/Flashcard_folder.png",60,60)')
+					exec('button_' + str(row_start)+'_open.configure(width=70,state='+button_status+',command=lambda:Flasher("'+os.path.dirname(l.getAttribute('filename'))+'", False))')
 									
 				exec('button_' + str(row_start)+'_open.grid(row='+str(row_start)+',sticky=N+W+S+E,column='+str(start_column)+')')
 				#folder desc
-				exec('fc_folder_' + str(row_start)+'_desc=Label(Menu,justify=LEFT,text="'+l.getAttribute('filename').split("/")[-2]+'\\nlength: '+str(length)+'\\ntodo: '+str(todo-new)+', new: '+str(new)+'\\nupdated: '+l.getAttribute('lastReviewed')+'").grid(row='+str(row_start)+', column='+str(start_column+1)+',sticky=W)')
+				exec('fc_folder_' + str(row_start)+'_desc=Label(Main,justify=LEFT,text="'+l.getAttribute('filename').split("/")[-2]+'\\nlength: '+str(length)+'\\ntodo: '+str(todo-new)+', new: '+str(new)+'\\nupdated: '+l.getAttribute('lastReviewed')+'").grid(row='+str(row_start)+', column='+str(start_column+1)+',sticky=W)')
 
 				#tags
 				tag_xml_path=os.path.dirname(l.getAttribute('filename'))+"/Users/"+Settings['user']+"_comment.xml"
-				q_b=create_image_button(Menu,".TexFlasher/pictures/question_fix.png",40,40,0)
+				q_b=create_image_button(Main,".TexFlasher/pictures/question_fix.png",40,40,0)
 				q_b.grid(row=row_start,column=start_column+2,sticky=N+W+E+S)
 				q_length=check_tags(tag_xml_path,"question")
 				if q_length==None or q_length==0:
 				   q_b.config(state=DISABLED)
 				#else:
-				#   Label(Menu,text=str(q_length)).grid(row=row_start,column=start_column+2,sticky=S)
+				#   Label(Main,text=str(q_length)).grid(row=row_start,column=start_column+2,sticky=S)
 				exec("q_b.config(command=lambda:show_tagged('question','"+os.path.dirname(l.getAttribute('filename'))+"','"+tag_xml_path+"'))")
-				w_b=create_image_button(Menu,".TexFlasher/pictures/watchout_fix.png",40,40,0)
+				w_b=create_image_button(Main,".TexFlasher/pictures/watchout_fix.png",40,40,0)
 				w_b.grid(row=row_start,column=start_column+3,sticky=N+S+E+W)
 				w_length=check_tags(tag_xml_path,"watchout")
 				if w_length==None or w_length==0:
 				   w_b.config(state=DISABLED)	
 				exec("w_b.config(command=lambda:show_tagged('watchout','"+os.path.dirname(l.getAttribute('filename'))+"','"+tag_xml_path+"'))")
    
-				r_b=create_image_button(Menu,".TexFlasher/pictures/repeat_fix.png",40,40,0)
+				r_b=create_image_button(Main,".TexFlasher/pictures/repeat_fix.png",40,40,0)
 				r_b.grid(row=row_start,column=start_column+4,sticky=N+W+E+S)
 				r_length=check_tags(tag_xml_path,"repeat")
 				if r_length==None or r_length==0:
 				   r_b.config(state=DISABLED)	
 				exec("r_b.config(command=lambda:show_tagged('repeat','"+os.path.dirname(l.getAttribute('filename'))+"','"+tag_xml_path+"'))")
 
-				l_b=create_image_button(Menu,".TexFlasher/pictures/link_fix.png",40,40,0)
+				l_b=create_image_button(Main,".TexFlasher/pictures/link_fix.png",40,40,0)
 				l_b.grid(row=row_start,column=start_column+5,sticky=N+W+E+S)
 				l_length=check_tags(tag_xml_path,"link")
 				if l_length==None or l_length==0:
@@ -1689,62 +1703,57 @@ def menu():
 				else:
 					update_image="./.TexFlasher/pictures/update.png"
 				if l.getAttribute('lastReviewed')==l.getAttribute('created'):
-					exec('button_' + str(row_start)+'_update=create_image_button(Menu,"./.TexFlasher/pictures/update_now.png",'+button_size+','+button_size+')')
+					exec('button_' + str(row_start)+'_update=create_image_button(Main,"./.TexFlasher/pictures/update_now.png",'+button_size+','+button_size+')')
 					exec('button_' + str(row_start)+'_update.configure(command=lambda:update_texfile("'+l.getAttribute('filename')+'", "'+Settings["user"]+'"))')
 					exec('button_' + str(row_start)+'_update.grid(row='+str(row_start)+',column='+str(start_column+2)+',sticky=W+N+S+E)')
 					new_status="DISABLED"
 				else:
-					exec('button_' + str(row_start)+'_update=create_image_button(Menu,"'+update_image+'",'+button_size+','+button_size+')')
+					exec('button_' + str(row_start)+'_update=create_image_button(Main,"'+update_image+'",'+button_size+','+button_size+')')
 					exec('button_' + str(row_start)+'_update.configure(command=lambda:update_texfile("'+l.getAttribute('filename')+'","'+Settings["user"]+'"))')
 					exec('button_' + str(row_start)+'_update.grid(row='+str(row_start)+',column='+str(start_column+2)+',sticky=W+N+S+E)')		
 
 				#stats	
-				exec('button_' + str(row_start)+'_stat=create_image_button(Menu,"./.TexFlasher/pictures/stat.png",'+button_size+','+button_size+')')
+				exec('button_' + str(row_start)+'_stat=create_image_button(Main,"./.TexFlasher/pictures/stat.png",'+button_size+','+button_size+')')
 				exec('button_' + str(row_start)+'_stat.configure(state='+button_status+',command=lambda:statistics_nextWeek("'+os.path.dirname(l.getAttribute('filename'))+'"))')
 				exec('button_' + str(row_start)+'_stat.grid(row='+str(row_start)+',column='+str(start_column+3)+',sticky=N+S+W+E)')
 				#open tex file
-				exec('button_' + str(row_start)+'_tex =create_image_button(Menu,"./.TexFlasher/pictures/latex.png",'+button_size+','+button_size+')')
+				exec('button_' + str(row_start)+'_tex =create_image_button(Main,"./.TexFlasher/pictures/latex.png",'+button_size+','+button_size+')')
 				exec('button_' + str(row_start)+'_tex.configure(command=lambda:open_tex("'+l.getAttribute('filename')+'"))')
 				exec('button_' + str(row_start)+'_tex.grid(row='+str(row_start)+',column='+str(start_column+4)+',sticky=W+N+S+E)')
 				#log
-				exec('button_' + str(row_start)+'_log=create_image_button(Menu,"./.TexFlasher/pictures/'+window_type+'.png",'+button_size+','+button_size+')')
+				exec('button_' + str(row_start)+'_log=create_image_button(Main,"./.TexFlasher/pictures/'+window_type+'.png",'+button_size+','+button_size+')')
 				exec('button_' + str(row_start) + '_log.configure(state='+new_status+',command=lambda:show_log("'+os.path.dirname(l.getAttribute('filename'))+'"))')
 				exec('button_' + str(row_start)+'_log.grid(row='+str(row_start)+',column='+str(start_column+5)+',sticky=N+S+E+W)')
 				#reset
-				exec('button_' + str(row_start)+'_res=create_image_button(Menu,"./.TexFlasher/pictures/delete.png",'+button_size+','+button_size+')')
+				exec('button_' + str(row_start)+'_res=create_image_button(Main,"./.TexFlasher/pictures/delete.png",'+button_size+','+button_size+')')
 				exec('button_' + str(row_start)+'_res.configure(command=lambda:reset_flash("'+l.getAttribute('filename')+'"))')
 				exec('button_' + str(row_start)+'_res.grid(row='+str(row_start)+',column='+str(start_column+7)+',sticky=N+S+E)')
 				saveString += " "+ os.path.dirname(l.getAttribute('filename'))+"/Users/"+Settings["user"]+".xml"
 				saveString += "###"+ os.path.dirname(l.getAttribute('filename'))+"/Users/"+Settings["user"]+"_comment.xml"
 				#saveString += "###"+ os.path.dirname(l.getAttribute('filename'))+"/Users/questions.xml"
 				saveString += "###"+ l.getAttribute('filename') 
-				exec('Label(Menu,height=1).grid(row='+str(row_start+1)+')')
+				exec('Label(Main,height=1).grid(row='+str(row_start+1)+')')
 				row_start+=2	
 
 	#print saveString
-
 	#create button
-	create=create_image_button(Menu,"./.TexFlasher/pictures/Flashcard_folder_add.png",60,60)
+	create=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_add.png",60,60)
 	create.configure(width=70,command=create_new) 
-	create_n=create_image_button(Menu,"./.TexFlasher/pictures/Flashcard_folder_create.png",40,40)
+	create_n=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_create.png",40,40)
 	create_n.configure(width=70,command=create_folder)
 	if row_start > 3:
 		create.grid(row=1,column=0,sticky=W)
 		#search field
-		query=Search(Menu)
+		query=Search(Main)
 		query.set_completion_list(comp_list)
 		query.grid(row=1,column=1,columnspan=5,sticky=E+W+N+S)
-		#search_button=create_image_button(Menu,"./.TexFlasher/pictures/search.png",40,40)
-		#exec('search_button.configure(command=lambda:query.search_flashcard())')
-		#search_button.grid(row=1,column=2,sticky=N+E+W+S,columnspan=4)		
-		
+			
 		create_n.grid(row=1,column=8,columnspan=6,sticky=N+W+S+E)		
-		Label(Menu,height=1).grid(sticky=E+W,row=2,columnspan=10)
+		Label(Main,height=1).grid(sticky=E+W,row=2,columnspan=10)
 	else:
 		create_n.grid(row=row_start+2,columnspan=8)			
 		create.grid(row=row_start+1,columnspan=8)
 	#footer
-	Label(top,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer").grid(row=3,columnspan=8,sticky=S)
 
 def readSettings( Settings ):
 	Config = ConfigParser.ConfigParser()
@@ -1771,48 +1780,54 @@ Settings = { 'user':'',
 	}	
 readSettings( Settings )
 
-#sys.setrecursionlimit(2000)
-
-version="TexFlasher unstable build"
-
-
-class TexFlasher(Tk):
-    def __init__(self):
-        Tk.__init__(self)
-
-top = TexFlasher()
 
 WIDTH=800
-HEIGHT=int(WIDTH*0.7) +170
+HEIGHT=int(WIDTH*0.7)
 
 BD=2
 RESTART_TIME=5 
 
 IK=ImageKeeper()
 
-
-top.bind("<Escape>", lambda e: top.quit()) # quits texflasher if esc is pressed
-
 comp_list=create_completion_list()
 
 iconbitmapLocation = "@./.TexFlasher/pictures/icon2.xbm"
-top.iconbitmap(iconbitmapLocation)
-top.iconmask(iconbitmapLocation)
 
 
-# get screen width and height
-ws = top.winfo_screenwidth()
-hs = top.winfo_screenheight()
-# calculate position x, y
-xs = (ws/2) - (int(WIDTH*1.005)/2) 
-ys = (hs/2) - (HEIGHT/2)
+class TexFlasher(Frame):
+	def __init__( self ):
+		Frame.__init__( self)
+		global Main
+		Main=self
+		self.master.rowconfigure( 0, weight = 1 )
+		self.master.columnconfigure( 0, weight = 1 )	
+		
+		self.master.rowconfigure( 2, weight = 1 )
+					
+		self.configure(bd=10)		
+		self.grid(row=1,column=0,sticky=N+W+S+E)
+		
+		
+		self._version="unstable build"
+		
+		ws = self.master.winfo_screenwidth()
+		hs = self.master.winfo_screenheight()
+		# calculate position x, y
+		
+		HEIGHT=WIDTH
+		xs = (ws/2) - (int(WIDTH*1.005)/2) 
+		ys = (hs/2) - (HEIGHT/2)				
+		self.master.geometry(str(int(WIDTH*1.005))+"x"+str(HEIGHT)+"+"+str(xs)+"+"+str(ys))
+		self.master.iconbitmap(iconbitmapLocation)
+		self.master.iconmask(iconbitmapLocation)		
+		self.master.protocol('WM_DELETE_WINDOW',lambda:saveFiles(self.master))
+		self.master.bind("<Escape>", lambda e: self.master.quit()) # quits texflasher if esc is pressed		
+		self.master.title("TexFlasher - "+self._version)
+				
+		
+		Label(self.master,height=2,text="TexFlasher based on Leitner-Method",font=("Helvetica", 16,"bold")).grid(row=0,columnspan=8,sticky=E+W+N)		
+		Label(self.master,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer").grid(row=2,sticky=S+E+W)
+		menu()
 
-top.geometry(str(int(WIDTH*1.005))+"x"+str(HEIGHT)+"+"+str(xs)+"+"+str(ys))
-
-# root is your root window
-top.protocol('WM_DELETE_WINDOW',lambda:saveFiles())
-
-menu()
-
-top.mainloop()
+TexFlasher().mainloop()
 
