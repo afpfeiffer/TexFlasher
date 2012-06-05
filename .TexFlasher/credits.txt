@@ -1,7 +1,8 @@
 
-              OOOOO OOOO O   O   OOOO O     OOO  OOOO O  O OOOO OOOO
-                O   O     O O    O    O    O   O O    O  O O    O  O
-                O   OOO    O     OOO  O    OOOOO OOOO OOOO OOO  OOOO
-                O   O     O O    O    O    O   O    O O  O O    O O
-                O   OOOO O   O   O    OOOO O   O OOOO O  O OOOO O  O
-  
+ OOOOO OOOO O   O   OOOO O     OOO  OOOO O  O OOOO OOOO
+   O   O     O O    O    O    O   O O    O  O O    O  O
+   O   OOO    O     OOO  O    OOOOO OOOO OOOO OOO  OOOO
+   O   O     O O    O    O    O   O    O O  O O    O O
+   O   OOOO O   O   O    OOOO O   O OOOO O  O OOOO O  O
+	
+Copyright (c) 2012: Can Oezmen, Axel Pfeiffer
