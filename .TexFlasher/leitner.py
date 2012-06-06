@@ -1795,6 +1795,7 @@ iconbitmapLocation = "@./.TexFlasher/pictures/icon2.xbm"
 class TexFlasher(Frame):
 	def resize(self,event):
 		global WIDTH, HEIGHT
+		
 		WIDTH=self.master.winfo_width()-20
 		HEIGHT=int(WIDTH*0.7)
 		self.configure(bd=10,height=WIDTH*0.9,width=WIDTH)	
