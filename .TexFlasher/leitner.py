@@ -1837,7 +1837,8 @@ class TexFlasher(Frame):
 		self.master.title("TexFlasher - "+self._version)
 				
 		
-		Label(self.master,height=2,text="TexFlasher based on Leitner-Method",font=("Helvetica", 16,"bold")).grid(row=0,columnspan=8,sticky=E+W+N)		
+		if Settings["user"] is not  "x":
+			Label(self.master,height=2,text="TexFlasher based on Leitner-Method",font=("Helvetica", 16,"bold")).grid(row=0,columnspan=8,sticky=E+W+N)		
 		Label(self.master,height=2,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer").grid(row=2,sticky=S+E+W)
 		menu()
 
