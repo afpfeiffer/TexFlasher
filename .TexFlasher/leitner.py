@@ -533,7 +533,7 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
 						hspace = x1 - x0
 						vpos = 2
 						hpos = 5
-						while vpos+0.6*small_dy < vspace:
+						while vpos+small_dy < vspace:
 							while hpos +small_dx < hspace:
 								c.create_text( x0+ hpos , lastYpos + vpos, anchor="nw", text="L"+str(i),font=("Helvectica", "7"), fill=color, activefill="black" )
 								hpos += small_dx
