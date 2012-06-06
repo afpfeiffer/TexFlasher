@@ -456,6 +456,7 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     Main.master.title("Statistics")
     
     fontsize=int(float(WIDTH)*0.012)
+    DX=WIDTH*0.00125
 
 
     menu_button=create_image_button(Main,"./.TexFlasher/pictures/menu.png",40,40)
@@ -622,36 +623,36 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     Legende=Canvas(Stats, width=int(WIDTH*0.95))
     Legende.grid(row=3 , columnspan=5)
 
+
     color, dl = getColor(0, len(dataSetB))
-    ybasis = 50
-    coord= float(WIDTH)*0.5 -150
-    Legende.create_rectangle( coord, ybasis , coord + 20, ybasis +18,width=0, fill=color  )
-    Legende.create_text( coord+25, ybasis+9, anchor=W, text = "Level 0 (new)",font=("Helvectica", str(fontsize + 1) ))
+    ybasis = 50*DX
+    coord= float(WIDTH)*0.5 -150*DX
+    Legende.create_rectangle( coord, ybasis , coord + 20*DX, ybasis +18*DX,width=0, fill=color  )
+    Legende.create_text( coord+25*DX, ybasis+9*DX, anchor=W, text = "Level 0 (new)",font=("Helvectica", str(fontsize + 1) ))
     color, dl = getColor(1, len(dataSetB))
-    Legende.create_rectangle( coord, ybasis+20, coord + 20, ybasis +38,width=0, fill= color )
-    Legende.create_text( coord+25, ybasis+29, anchor=W, text = "Level 1 (bad)" ,font=("Helvectica", str(fontsize + 1)))
+    Legende.create_rectangle( coord, ybasis+20*DX, coord + 20*DX, ybasis +38*DX,width=0, fill= color )
+    Legende.create_text( coord+25*DX, ybasis+29*DX, anchor=W, text = "Level 1 (bad)" ,font=("Helvectica", str(fontsize + 1)))
     color, dl = getColor(2, len(dataSetB))
-    Legende.create_rectangle( coord, ybasis+40, coord + 20, ybasis +58,width=0, fill= color )
-    Legende.create_text( coord+25, ybasis+49, anchor=W, text = "Level 2 (improving)",font=("Helvectica", str(fontsize + 1) ))
+    Legende.create_rectangle( coord, ybasis+40*DX, coord + 20*DX, ybasis +58*DX,width=0, fill= color )
+    Legende.create_text( coord+25*DX, ybasis+49*DX, anchor=W, text = "Level 2 (improving)",font=("Helvectica", str(fontsize + 1) ))
     #Legende.create_line( 0, ybasis+65 , WIDTH, ybasis+65 )
 
-    
     if( len(dataSetB)-1 >2 ):
 			color, dl = getColor(3, len(dataSetB))
-			Legende.create_rectangle( coord+150, ybasis, coord + 170, ybasis+18,width=0, fill= color )
-			Legende.create_text( coord+175, ybasis+9, anchor=W, text = "Level 3 - "+str(2+dl)+" (good)",font=("Helvectica", str(fontsize + 1) ))
+			Legende.create_rectangle( coord+150*DX, ybasis, coord + 170*DX, ybasis+18*DX,width=0, fill= color )
+			Legende.create_text( coord+175*DX, ybasis+9*DX, anchor=W, text = "Level 3 - "+str(2+dl)+" (good)",font=("Helvectica", str(fontsize + 1) ))
 
     if( len(dataSetB)-1 >2+dl ):
 			color, dl = getColor(int( 0.5*(len(dataSetB)+3)), len(dataSetB)) 
-			Legende.create_rectangle( coord+150, ybasis+20, coord + 170, ybasis+38,width=0, fill= color )
-			Legende.create_text( coord+175, ybasis+29, anchor=W, text = "Level "+str(2+dl+1)+" - "+str(2+2*dl)+" (excellent)" ,font=("Helvectica", str(fontsize + 1)))
+			Legende.create_rectangle( coord+150*DX, ybasis+20*DX, coord + 170*DX, ybasis+38*DX,width=0, fill= color )
+			Legende.create_text( coord+175*DX, ybasis+29*DX, anchor=W, text = "Level "+str(2+dl+1)+" - "+str(2+2*dl)+" (excellent)" ,font=("Helvectica", str(fontsize + 1)))
 
     if( len(dataSetB)-1 >2+dl*2 ):
 			color, dl=getColor(len(dataSetB)-1, len(dataSetB)) 
-			Legende.create_rectangle( coord+150, ybasis+40, coord + 170, ybasis+58,width=0, fill= color )
-			Legende.create_text( coord+175, ybasis+49, anchor=W, text = "Level "+str(2+2*dl+1)+" - "+str(len(dataSetB)-1)+" (outstanding)" ,font=("Helvectica", str(fontsize + 1)))
+			Legende.create_rectangle( coord+150*DX, ybasis+40*DX, coord + 170*DX, ybasis+58*DX,width=0, fill= color )
+			Legende.create_text( coord+175*DX, ybasis+49*DX, anchor=W, text = "Level "+str(2+2*dl+1)+" - "+str(len(dataSetB)-1)+" (outstanding)" ,font=("Helvectica", str(fontsize + 1)))
     
-    stat_height=100
+    stat_height=WIDTH*0.12
     stat_width=int(float(WIDTH)*0.95)
     stat=Canvas(Stats,width=stat_width, height=stat_height)
     stat.grid(row=2, columnspan=2)
