@@ -533,7 +533,7 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
 						hspace = x1 - x0
 						vpos = 2
 						hpos = 5
-						while vpos+0.6*small_dy < vspace:
+						while vpos+small_dy < vspace:
 							while hpos +small_dx < hspace:
 								c.create_text( x0+ hpos , lastYpos + vpos, anchor="nw", text="L"+str(i),font=("Helvectica", "7"), fill=color, activefill="black" )
 								hpos += small_dx
@@ -1838,7 +1838,8 @@ class TexFlasher(Frame):
 		self.master.title("TexFlasher - "+self._version)
 				
 		
-		Label(self.master,height=2,text="TexFlasher based on Leitner-Method",font=("Helvetica", 16,"bold")).grid(row=0,columnspan=8,sticky=E+W+N)		
+		if Settings["user"] is not  "x":
+			Label(self.master,height=2,text="TexFlasher based on Leitner-Method",font=("Helvetica", 16,"bold")).grid(row=0,columnspan=8,sticky=E+W+N)		
 		Label(self.master,height=2,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer").grid(row=2,sticky=S+E+W)
 		menu()
 
