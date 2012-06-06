@@ -508,9 +508,8 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     assert(valMax >= 0)
 
     y_stretch = 0.6*(WIDTH*0.6)/valMax
-    y_gap = 20
-    x_stretch = 10
-    x_width = 37
+    x_stretch = float(WIDTH)*0.01
+    x_width = float(WIDTH)*0.045
     n = len(dataSetC)
 
     for x in range(len(dataSetC)):
@@ -527,8 +526,8 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
 					color, foo=getColor(i, len(dataSetB))
 					if( dataSetC[x][1][i] >= 1 ):					
 						c.create_rectangle(x0, lastYpos +dataSetC[x][1][i]*y_stretch  , x1-1, lastYpos, fill=color, width=1, outline="black")
-						small_dx=15
-						small_dy=10
+						small_dx=float(WIDTH)*0.015
+						small_dy=float(WIDTH)*0.01
 						vspace = dataSetC[x][1][i]*y_stretch
 						hspace = x1 - x0
 						vpos = 2
