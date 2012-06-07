@@ -459,6 +459,8 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     
     fontsize=int(float(WIDTH)*0.012)
     DX=WIDTH*0.00125
+    DY=HEIGHT*0.001221
+    #print DY
 
 
     menu_button=create_image_button(Main,"./.TexFlasher/pictures/menu.png",40,40)
@@ -473,15 +475,15 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     tday=dayToday()   
            
     global c
-    c = Canvas(Stats, width=int(float(WIDTH)*0.4999), height=int(WIDTH*0.5))  
+    c = Canvas(Stats, width=int(float(WIDTH)*0.4999), height=int(HEIGHT*0.5))  
     c.grid(row=0 , column=0, sticky=N+W+E)
     
     ymax=1
     for i in range(len(dataSetC)):
 			ymax = max(ymax, dataSetC[i][0])
 
-    D1= 50.0
-    D2=0.6*(WIDTH*0.5)
+    D1= 50.0*DX
+    D2=(HEIGHT*0.3)
     zero= D1, float(HEIGHT)*0.4
     
 
@@ -512,7 +514,7 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
 	
     assert(valMax >= 0)
 
-    y_stretch = 0.6*(WIDTH*0.6)/valMax
+    y_stretch = (HEIGHT*0.3)/valMax
     x_stretch = float(WIDTH)*0.01
     x_width = float(WIDTH)*0.045
     n = len(dataSetC)
@@ -567,12 +569,13 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     
     
     
-    c1 = Canvas(Stats, width=int(float(WIDTH)*0.47), height=int(WIDTH*0.5)) 
+    c1 = Canvas(Stats, width=int(float(WIDTH)*0.47), height=int(HEIGHT*0.5)) 
     c1.grid(row=0 , column=1, sticky=N)
 
     c1.create_text(int(float(WIDTH)*0.25), 20, anchor=S, text="Level status:",font=("Helvectica", "12"))
    
-    coords= float(WIDTH)*0.05 + 30, float(WIDTH)*0.1 -35 +30 ,float(WIDTH)*0.45 -30,float(WIDTH)*0.5 -35 -30
+    WIDTHHEIGHTMIN=min(WIDTH, HEIGHT)
+    coords= float(WIDTH)*0.25 - float(WIDTHHEIGHTMIN)*0.15 , float(HEIGHT)*0.25 - float(WIDTHHEIGHTMIN)*0.15 , float(WIDTH)*0.25 + float(WIDTHHEIGHTMIN)*0.15 , float(HEIGHT)*0.25 + float(WIDTHHEIGHTMIN)*0.15
 
     center = 0.5 *(coords[0] +coords[2]), 0.5*(coords[1]+coords[3])
 
@@ -627,47 +630,47 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
 
 
     color, dl = getColor(0, len(dataSetB))
-    ybasis = 50*DX
+    ybasis = 30*DY
     coord= float(WIDTH)*0.5 -150*DX
-    Legende.create_rectangle( coord, ybasis , coord + 20*DX, ybasis +18*DX,width=0, fill=color  )
-    Legende.create_text( coord+25*DX, ybasis+9*DX, anchor=W, text = "Level 0 (new)",font=("Helvectica", str(fontsize + 1) ))
+    Legende.create_rectangle( coord, ybasis , coord + 20*DX, ybasis +18*DY,width=0, fill=color  )
+    Legende.create_text( coord+25*DX, ybasis+9*DY, anchor=W, text = "Level 0 (new)",font=("Helvectica", str(fontsize + 1) ))
     color, dl = getColor(1, len(dataSetB))
-    Legende.create_rectangle( coord, ybasis+20*DX, coord + 20*DX, ybasis +38*DX,width=0, fill= color )
-    Legende.create_text( coord+25*DX, ybasis+29*DX, anchor=W, text = "Level 1 (bad)" ,font=("Helvectica", str(fontsize + 1)))
+    Legende.create_rectangle( coord, ybasis+20*DY, coord + 20*DX, ybasis +38*DY,width=0, fill= color )
+    Legende.create_text( coord+25*DX, ybasis+29*DY, anchor=W, text = "Level 1 (bad)" ,font=("Helvectica", str(fontsize + 1)))
     color, dl = getColor(2, len(dataSetB))
-    Legende.create_rectangle( coord, ybasis+40*DX, coord + 20*DX, ybasis +58*DX,width=0, fill= color )
-    Legende.create_text( coord+25*DX, ybasis+49*DX, anchor=W, text = "Level 2 (improving)",font=("Helvectica", str(fontsize + 1) ))
+    Legende.create_rectangle( coord, ybasis+40*DY, coord + 20*DX, ybasis +58*DY,width=0, fill= color )
+    Legende.create_text( coord+25*DX, ybasis+49*DY, anchor=W, text = "Level 2 (improving)",font=("Helvectica", str(fontsize + 1) ))
     #Legende.create_line( 0, ybasis+65 , WIDTH, ybasis+65 )
 
     if( len(dataSetB)-1 >2 ):
 			color, dl = getColor(3, len(dataSetB))
-			Legende.create_rectangle( coord+150*DX, ybasis, coord + 170*DX, ybasis+18*DX,width=0, fill= color )
-			Legende.create_text( coord+175*DX, ybasis+9*DX, anchor=W, text = "Level 3 - "+str(2+dl)+" (good)",font=("Helvectica", str(fontsize + 1) ))
+			Legende.create_rectangle( coord+150*DX, ybasis, coord + 170*DX, ybasis+18*DY,width=0, fill= color )
+			Legende.create_text( coord+175*DX, ybasis+9*DY, anchor=W, text = "Level 3 - "+str(2+dl)+" (good)",font=("Helvectica", str(fontsize + 1) ))
 
     if( len(dataSetB)-1 >2+dl ):
 			color, dl = getColor(int( 0.5*(len(dataSetB)+3)), len(dataSetB)) 
-			Legende.create_rectangle( coord+150*DX, ybasis+20*DX, coord + 170*DX, ybasis+38*DX,width=0, fill= color )
-			Legende.create_text( coord+175*DX, ybasis+29*DX, anchor=W, text = "Level "+str(2+dl+1)+" - "+str(2+2*dl)+" (excellent)" ,font=("Helvectica", str(fontsize + 1)))
+			Legende.create_rectangle( coord+150*DX, ybasis+20*DY, coord + 170*DX, ybasis+38*DY,width=0, fill= color )
+			Legende.create_text( coord+175*DX, ybasis+29*DY, anchor=W, text = "Level "+str(2+dl+1)+" - "+str(2+2*dl)+" (excellent)" ,font=("Helvectica", str(fontsize + 1)))
 
     if( len(dataSetB)-1 >2+dl*2 ):
 			color, dl=getColor(len(dataSetB)-1, len(dataSetB)) 
-			Legende.create_rectangle( coord+150*DX, ybasis+40*DX, coord + 170*DX, ybasis+58*DX,width=0, fill= color )
-			Legende.create_text( coord+175*DX, ybasis+49*DX, anchor=W, text = "Level "+str(2+2*dl+1)+" - "+str(len(dataSetB)-1)+" (outstanding)" ,font=("Helvectica", str(fontsize + 1)))
+			Legende.create_rectangle( coord+150*DX, ybasis+40*DY, coord + 170*DX, ybasis+58*DY,width=0, fill= color )
+			Legende.create_text( coord+175*DX, ybasis+49*DY, anchor=W, text = "Level "+str(2+2*dl+1)+" - "+str(len(dataSetB)-1)+" (outstanding)" ,font=("Helvectica", str(fontsize + 1)))
     
-    stat_height=WIDTH*0.12
+    stat_height=HEIGHT*0.15
     stat_width=int(float(WIDTH)*0.95)
     stat=Canvas(Stats,width=stat_width, height=stat_height)
     stat.grid(row=2, columnspan=2)
     stat.height=stat_height
     stat.width=stat_width
     Stats.stat=stat
-    Stats.stat.create_text( 1, 10, text="Average learning progress:", anchor=W,font=("Helvectica", "12"))
+    Stats.stat.create_text( 1, 10*DY, text="Average learning progress:", anchor=W,font=("Helvectica", "12"))
     drawTotalCardHistory( ldb, Stats.stat, fontsize+1 )
     #spacer
     Label(Stats,height=1).grid(row=1,columnspan=5)	#spacer
     #Label(top,height=1).grid(row=0,columnspan=5)
     
-    Legende.create_line( 0, ybasis-25 , WIDTH, ybasis-25, width=2 )
+    #Legende.create_line( 0, ybasis-25 , WIDTH, ybasis-25, width=2 )
 
     #mainloop()
 
