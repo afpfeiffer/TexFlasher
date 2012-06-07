@@ -49,6 +49,8 @@ import tkFileDialog
 from difflib import get_close_matches
 import itertools, collections
 import ConfigParser
+import gtk, pygtk
+
 
 #locals
 from tagger import *
@@ -1794,8 +1796,15 @@ readSettings( Settings )
 global WIDTH, HEIGHT
 
 
-HEIGHT=700
-WIDTH=int(HEIGHT*1)
+window = gtk.Window()
+screen = window.get_screen()
+HEIGHT=int(screen.get_height()*0.8)
+WIDTH=HEIGHT
+
+# just to be on the safe side
+if(screen.get_width() < WIDTH):
+	WIDTH = screen.get_width()
+
 
 
 
