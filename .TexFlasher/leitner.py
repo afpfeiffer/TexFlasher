@@ -348,9 +348,9 @@ def totalCardHistory( ldb, threshold=1 ):
 	TH[len(TH)-1][1]=0
 	return TH, maxLevel
 					
-def drawTotalCardHistory( ldb, stat ):
+def drawTotalCardHistory( ldb, stat, fontsize ):
 	HISTORY, maxLevel =totalCardHistory( ldb )
-	drawHistory( HISTORY, stat, True, True, maxLevel )					
+	drawHistory( HISTORY, stat, fontsize, True, True, maxLevel )					
 
 def cardHistory( flashcard ):
 	history_string=flashcard.getAttribute('levelHistory')
@@ -378,9 +378,9 @@ def cardHistory( flashcard ):
 
 def drawCardHistory( flashcard, stat ):
 	HISTORY=cardHistory( flashcard )
-	drawHistory( HISTORY, stat )
+	drawHistory( HISTORY, stat, 9 )
 	
-def drawHistory( HISTORY, stat, verbose=True, alwaysOnTop=False, maxLevel = 3 ):
+def drawHistory( HISTORY, stat, fontsize,  verbose=True, alwaysOnTop=False, maxLevel = 3 ):
 	height = stat.height
 	width = stat.width
 	
@@ -439,7 +439,7 @@ def drawHistory( HISTORY, stat, verbose=True, alwaysOnTop=False, maxLevel = 3 ):
 
 
 				if (level_n_end-level_n_begin )*dt >= 10:
-					stat.create_text( 1+level_n_begin*dt + 0.5*(level_n_end-level_n_begin )*dt, text_height , text=str(H[i][1]))
+					stat.create_text( 1+level_n_begin*dt + 0.5*(level_n_end-level_n_begin )*dt, text_height , text=str(H[i][1]),font=("Helvectica", str(fontsize)))
 				level_n_begin=H[i+1][0]
 				n_value = H[i+1][1]
 				
@@ -447,13 +447,16 @@ def drawHistory( HISTORY, stat, verbose=True, alwaysOnTop=False, maxLevel = 3 ):
 			if alwaysOnTop:
 				if (int(fmod(i,10)) == 0) and H[i][0]*dt < width - 50:
 					stat.create_line( 1 + H[i][0]*dt, height, 1+ H[i][0]*dt, height+30)
-					stat.create_text( 5 + H[i][0]*dt, height + 13, text="day "+ str(i), anchor=W )
+					stat.create_text( 5 + H[i][0]*dt, height + 13, text="day "+ str(i), anchor=W ,font=("Helvectica", str(fontsize )))
 			
 	
 		
 def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     clear_window()
     Main.master.title("Statistics")
+    
+    fontsize=int(float(WIDTH)*0.012)
+    DX=WIDTH*0.00125
 
 
     menu_button=create_image_button(Main,"./.TexFlasher/pictures/menu.png",40,40)
@@ -501,16 +504,15 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     for i in range(1, 1000):
 			c.create_line(zero[0], zero[1] - float(i*stepsize*D2)/float(valMax), int(float(WIDTH)*0.4999), zero[1]-float(i*stepsize*D2)/float(valMax), fill="grey50")
 			c.create_line(zero[0]-0.1*D1, zero[1] - float(i*stepsize*D2)/float(valMax), zero[0]+0.1*D1, zero[1]-float(i*stepsize*D2)/float(valMax))
-			c.create_text(zero[0]-0.1*D1, zero[1] - float(i*stepsize*D2)/float(valMax), anchor=E, text=str(i*stepsize))
+			c.create_text(zero[0]-0.1*D1, zero[1] - float(i*stepsize*D2)/float(valMax), anchor=E, text=str(i*stepsize),font=("Helvectica", str(fontsize + 1)))
 			if (ymax <= i*stepsize):
 				break
 	
     assert(valMax >= 0)
 
     y_stretch = 0.6*(WIDTH*0.6)/valMax
-    y_gap = 20
-    x_stretch = 10
-    x_width = 37
+    x_stretch = float(WIDTH)*0.01
+    x_width = float(WIDTH)*0.045
     n = len(dataSetC)
 
     for x in range(len(dataSetC)):
@@ -527,15 +529,15 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
 					color, foo=getColor(i, len(dataSetB))
 					if( dataSetC[x][1][i] >= 1 ):					
 						c.create_rectangle(x0, lastYpos +dataSetC[x][1][i]*y_stretch  , x1-1, lastYpos, fill=color, width=1, outline="black")
-						small_dx=15
-						small_dy=10
+						small_dx=float(WIDTH)*0.015
+						small_dy=float(WIDTH)*0.01
 						vspace = dataSetC[x][1][i]*y_stretch
 						hspace = x1 - x0
 						vpos = 2
 						hpos = 5
 						while vpos+small_dy < vspace:
 							while hpos +small_dx < hspace:
-								c.create_text( x0+ hpos , lastYpos + vpos, anchor="nw", text="L"+str(i),font=("Helvectica", "7"), fill=color, activefill="black" )
+								c.create_text( x0+ hpos , lastYpos + vpos, anchor="nw", text="L"+str(i),font=("Helvectica", str(fontsize - 1)), fill=color, activefill="black" )
 								hpos += small_dx
 							vpos += small_dy
 							hpos = 5
@@ -545,20 +547,20 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
 				
         if( dataSetC[x][0] > 0 ):
 					if( y1-y0 > 20 ):
-						c.create_text(0.5*(x0+x1), y0+2, anchor=N, text=str(dataSetC[x][0]))
+						c.create_text(0.5*(x0+x1), y0+2, anchor=N, text=str(dataSetC[x][0]),font=("Helvectica", str(fontsize + 1)))
 					else:
-						c.create_text(0.5*(x0+x1), y0-2, anchor=S, text=str(dataSetC[x][0]))
+						c.create_text(0.5*(x0+x1), y0-2, anchor=S, text=str(dataSetC[x][0]),font=("Helvectica", str(fontsize + 1)))
         daystring = DAYS[(tday+x)%7]
         #if x==0 :
 					#daystring="today"
-        c.create_text(0.5*(x0+x1), y1+20, text=daystring,font=("Helvectica", "9"))
+        c.create_text(0.5*(x0+x1), y1+20, text=daystring,font=("Helvectica", str(fontsize+1)))
         
     c.create_text(int(float(WIDTH)*0.25), 20, anchor=S, text="Workload in the next few days:",font=("Helvectica", "12"))
     c.create_line(0, zero[1] , int(float(WIDTH)*0.4999) , zero[1], width=2)
     c.create_line( zero[0], 35  , zero[0], zero[1]+D1 , width=2)
     c.create_line( zero, zero[0]-D1*0.9, zero[1]+D1*0.9)
-    c.create_text(0, zero[1]+D1*0.2, anchor=W, text="Cards")
-    c.create_text(D1*0.45, zero[1]+D1*0.8, anchor=W, text="Day")
+    c.create_text(1, zero[1]+D1*0.2, anchor=W, text="Cards",font=("Helvectica", str(fontsize + 1)))
+    c.create_text(D1*0.45, zero[1]+D1*0.8, anchor=W, text="Day",font=("Helvectica", str(fontsize + 1)))
     
     
     
@@ -609,7 +611,7 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
 				textPos = center[0] + distance*cos(winkel(initialvalue +0.5*w1)), center[1] -  distance*sin(winkel(initialvalue +0.5*w1))
 				#if l >0 :
 				color, foo = getColor(l, len(dataSetB))
-				c1.create_text( textPos, text=str(l) + " (" + str(int(round(dataSetB[l]*100.0,0))) + "%)",font=("Helvectica", "9") , activefill=color )
+				c1.create_text( textPos, text=str(l) + " (" + str(int(round(dataSetB[l]*100.0,0))) + "%)",font=("Helvectica", str(fontsize )), activefill=color )
 				#c1.create_text( textPos , text=str(l) ,font=("Helvectica", "12"))
 				#else:
 					#c1.create_text( textPos , text="N (" + str(int(round(dataSetB[l]*100.0,0))) + "%)",font=("Helvectica", "12"))
@@ -621,37 +623,36 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     Legende=Canvas(Stats, width=int(WIDTH*0.95))
     Legende.grid(row=3 , columnspan=5)
 
-    color, dl = getColor(0, len(dataSetB))
-    ybasis = 50
-    coord= float(WIDTH)*0.5 -150
-    Legende.create_rectangle( coord, ybasis , coord + 20, ybasis +18,width=0, fill=color  )
-    Legende.create_text( coord+25, ybasis+9, anchor=W, text = "Level 0 (new)" )
-    color, dl = getColor(1, len(dataSetB))
-    Legende.create_rectangle( coord, ybasis+20, coord + 20, ybasis +38,width=0, fill= color )
-    Legende.create_text( coord+25, ybasis+29, anchor=W, text = "Level 1 (bad)" )
-    color, dl = getColor(2, len(dataSetB))
-    Legende.create_rectangle( coord, ybasis+40, coord + 20, ybasis +58,width=0, fill= color )
-    Legende.create_text( coord+25, ybasis+49, anchor=W, text = "Level 2 (improving)" )
-    #Legende.create_line( 0, ybasis+65 , WIDTH, ybasis+65 )
-   # Legende.create_text( float(WIDTH)*0.5 , ybasis + 90 , text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer",font=("Helvetica",8))
 
-    
+    color, dl = getColor(0, len(dataSetB))
+    ybasis = 50*DX
+    coord= float(WIDTH)*0.5 -150*DX
+    Legende.create_rectangle( coord, ybasis , coord + 20*DX, ybasis +18*DX,width=0, fill=color  )
+    Legende.create_text( coord+25*DX, ybasis+9*DX, anchor=W, text = "Level 0 (new)",font=("Helvectica", str(fontsize + 1) ))
+    color, dl = getColor(1, len(dataSetB))
+    Legende.create_rectangle( coord, ybasis+20*DX, coord + 20*DX, ybasis +38*DX,width=0, fill= color )
+    Legende.create_text( coord+25*DX, ybasis+29*DX, anchor=W, text = "Level 1 (bad)" ,font=("Helvectica", str(fontsize + 1)))
+    color, dl = getColor(2, len(dataSetB))
+    Legende.create_rectangle( coord, ybasis+40*DX, coord + 20*DX, ybasis +58*DX,width=0, fill= color )
+    Legende.create_text( coord+25*DX, ybasis+49*DX, anchor=W, text = "Level 2 (improving)",font=("Helvectica", str(fontsize + 1) ))
+    #Legende.create_line( 0, ybasis+65 , WIDTH, ybasis+65 )
+
     if( len(dataSetB)-1 >2 ):
 			color, dl = getColor(3, len(dataSetB))
-			Legende.create_rectangle( coord+150, ybasis, coord + 170, ybasis+18,width=0, fill= color )
-			Legende.create_text( coord+175, ybasis+9, anchor=W, text = "Level 3 - "+str(2+dl)+" (good)" )
+			Legende.create_rectangle( coord+150*DX, ybasis, coord + 170*DX, ybasis+18*DX,width=0, fill= color )
+			Legende.create_text( coord+175*DX, ybasis+9*DX, anchor=W, text = "Level 3 - "+str(2+dl)+" (good)",font=("Helvectica", str(fontsize + 1) ))
 
     if( len(dataSetB)-1 >2+dl ):
 			color, dl = getColor(int( 0.5*(len(dataSetB)+3)), len(dataSetB)) 
-			Legende.create_rectangle( coord+150, ybasis+20, coord + 170, ybasis+38,width=0, fill= color )
-			Legende.create_text( coord+175, ybasis+29, anchor=W, text = "Level "+str(2+dl+1)+" - "+str(2+2*dl)+" (excellent)" )
+			Legende.create_rectangle( coord+150*DX, ybasis+20*DX, coord + 170*DX, ybasis+38*DX,width=0, fill= color )
+			Legende.create_text( coord+175*DX, ybasis+29*DX, anchor=W, text = "Level "+str(2+dl+1)+" - "+str(2+2*dl)+" (excellent)" ,font=("Helvectica", str(fontsize + 1)))
 
     if( len(dataSetB)-1 >2+dl*2 ):
 			color, dl=getColor(len(dataSetB)-1, len(dataSetB)) 
-			Legende.create_rectangle( coord+150, ybasis+40, coord + 170, ybasis+58,width=0, fill= color )
-			Legende.create_text( coord+175, ybasis+49, anchor=W, text = "Level "+str(2+2*dl+1)+" - "+str(len(dataSetB)-1)+" (outstanding)" )
+			Legende.create_rectangle( coord+150*DX, ybasis+40*DX, coord + 170*DX, ybasis+58*DX,width=0, fill= color )
+			Legende.create_text( coord+175*DX, ybasis+49*DX, anchor=W, text = "Level "+str(2+2*dl+1)+" - "+str(len(dataSetB)-1)+" (outstanding)" ,font=("Helvectica", str(fontsize + 1)))
     
-    stat_height=100
+    stat_height=WIDTH*0.12
     stat_width=int(float(WIDTH)*0.95)
     stat=Canvas(Stats,width=stat_width, height=stat_height)
     stat.grid(row=2, columnspan=2)
@@ -659,7 +660,7 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     stat.width=stat_width
     Stats.stat=stat
     Stats.stat.create_text( 1, 10, text="Average learning progress:", anchor=W,font=("Helvectica", "12"))
-    drawTotalCardHistory( ldb, Stats.stat )
+    drawTotalCardHistory( ldb, Stats.stat, fontsize+1 )
     #spacer
     Label(Stats,height=1).grid(row=1,columnspan=5)	#spacer
     #Label(top,height=1).grid(row=0,columnspan=5)
