@@ -631,7 +631,7 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
 
     color, dl = getColor(0, len(dataSetB))
     ybasis = 30*DY
-    coord= float(WIDTH)*0.5 -150*DX
+    coord= float(WIDTH)*0.5 -170*DX
     Legende.create_rectangle( coord, ybasis , coord + 20*DX, ybasis +18*DY,width=0, fill=color  )
     Legende.create_text( coord+25*DX, ybasis+9*DY, anchor=W, text = "Level 0 (new)",font=("Helvectica", str(fontsize + 1) ))
     color, dl = getColor(1, len(dataSetB))
@@ -644,18 +644,18 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
 
     if( len(dataSetB)-1 >2 ):
 			color, dl = getColor(3, len(dataSetB))
-			Legende.create_rectangle( coord+150*DX, ybasis, coord + 170*DX, ybasis+18*DY,width=0, fill= color )
-			Legende.create_text( coord+175*DX, ybasis+9*DY, anchor=W, text = "Level 3 - "+str(2+dl)+" (good)",font=("Helvectica", str(fontsize + 1) ))
+			Legende.create_rectangle( coord+170*DX, ybasis, coord + 190*DX, ybasis+18*DY,width=0, fill= color )
+			Legende.create_text( coord+195*DX, ybasis+9*DY, anchor=W, text = "Level 3 - "+str(2+dl)+" (good)",font=("Helvectica", str(fontsize + 1) ))
 
     if( len(dataSetB)-1 >2+dl ):
 			color, dl = getColor(int( 0.5*(len(dataSetB)+3)), len(dataSetB)) 
-			Legende.create_rectangle( coord+150*DX, ybasis+20*DY, coord + 170*DX, ybasis+38*DY,width=0, fill= color )
-			Legende.create_text( coord+175*DX, ybasis+29*DY, anchor=W, text = "Level "+str(2+dl+1)+" - "+str(2+2*dl)+" (excellent)" ,font=("Helvectica", str(fontsize + 1)))
+			Legende.create_rectangle( coord+170*DX, ybasis+20*DY, coord + 190*DX, ybasis+38*DY,width=0, fill= color )
+			Legende.create_text( coord+195*DX, ybasis+29*DY, anchor=W, text = "Level "+str(2+dl+1)+" - "+str(2+2*dl)+" (excellent)" ,font=("Helvectica", str(fontsize + 1)))
 
     if( len(dataSetB)-1 >2+dl*2 ):
 			color, dl=getColor(len(dataSetB)-1, len(dataSetB)) 
-			Legende.create_rectangle( coord+150*DX, ybasis+40*DY, coord + 170*DX, ybasis+58*DY,width=0, fill= color )
-			Legende.create_text( coord+175*DX, ybasis+49*DY, anchor=W, text = "Level "+str(2+2*dl+1)+" - "+str(len(dataSetB)-1)+" (outstanding)" ,font=("Helvectica", str(fontsize + 1)))
+			Legende.create_rectangle( coord+170*DX, ybasis+40*DY, coord + 190*DX, ybasis+58*DY,width=0, fill= color )
+			Legende.create_text( coord+195*DX, ybasis+49*DY, anchor=W, text = "Level "+str(2+2*dl+1)+" - "+str(len(dataSetB)-1)+" (outstanding)" ,font=("Helvectica", str(fontsize + 1)))
     
     stat_height=HEIGHT*0.15
     stat_width=int(float(WIDTH)*0.95)
@@ -1801,7 +1801,7 @@ global WIDTH, HEIGHT
 
 window = gtk.Window()
 screen = window.get_screen()
-HEIGHT=int(screen.get_height()*0.8)
+HEIGHT=int(screen.get_height()*0.9)
 WIDTH=HEIGHT
 
 # just to be on the safe side
