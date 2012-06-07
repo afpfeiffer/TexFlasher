@@ -41,6 +41,33 @@ import webbrowser
 
 ########################################################## Comment on fc ##############################################################
 
+
+def c2p(width,height,coords): #list [x0,y0,x1,y1,...,xn,yn]
+	perc=[]
+	for i in range(0,len(coords)):
+		if i%2==0 and not width==None:
+			perc_coord=float(coords[i])*100/float(width)
+		elif not height==None:
+			perc_coord=float(coords[i])*100/float(height)
+		perc.append(perc_coord)
+	if len(perc)==1:
+		return perc[0]
+	else:
+		return perc
+
+def p2c(width,height,perc):
+	coords=[]
+	for i in range(0,len(perc)):
+		if i%2==0 and not width==None:
+			coord_perc=float(perc[i])*float(width)/100
+		elif not height==None:
+			coord_perc=float(perc[i])*float(height)/100
+		coords.append(coord_perc)
+	if len(coords)==1:
+		return coords[0]
+	else:	
+		return coords
+	
 class HyperlinkManager:
 
     def __init__(self, text):
@@ -289,9 +316,21 @@ class RectTracker:
 					tags="old"+" "+timestamp+" "+self.canvas.tagtypes[tagtype]['old']+" "+fc_tag
 				
 					if self.canvas.tagtypes[tagtype]['type']=="rectangle":
-						self.canvas.create_rectangle(int(float(tag.getAttribute("startx"))),int(float(tag.getAttribute("starty"))),int(float(tag.getAttribute("endx"))),int(float(tag.getAttribute("endy"))),dash=[4,4], tags=tags,outline="red",fill="", width=2)
+						data=[tag.getAttribute("startx"),tag.getAttribute("starty"),tag.getAttribute("endx"),tag.getAttribute("endy")]
+						if tag.getAttribute("coord_type")=="percent":
+							coords=p2c(self.canvas.cget("width"),self.canvas.cget("height"),data)
+						else:
+							coords=p2c(self.canvas.cget("width"),self.canvas.cget("height"),c2p(800,480,data))
+							
+						self.canvas.create_rectangle(int(coords[0]),int(coords[1]),int(coords[2]),int(coords[3]),dash=[4,4], tags=tags,outline="red",fill="", width=2)
 					if self.canvas.tagtypes[tagtype]['type']=="image" and self.user==tag.getAttribute('user'):
-						self.canvas.create_image(float(tag.getAttribute('startx')),float(tag.getAttribute('starty')), image=self.canvas.tags_imgs[tagtype],tags=tags)
+						data=[tag.getAttribute("startx"),tag.getAttribute("starty")]
+						
+						if tag.getAttribute("coord_type")=="percent":
+							coords=p2c(self.canvas.cget("width"),self.canvas.cget("height"),data)
+						else:
+							coords=p2c(self.canvas.cget("width"),self.canvas.cget("height"),c2p(800,480,data))
+						self.canvas.create_image(int(coords[0]),int(coords[1]), image=self.canvas.tags_imgs[tagtype],tags=tags)
 					
 			except:
 				pass
@@ -321,6 +360,7 @@ class tag_tracker:
 		self.comment_field=False
 		self.current_item=False
 		self.current_tagtype=False
+		
 	def check_for_tag(self, event):
 		if not self.tag_win:
 			for item in self.canvas.find_overlapping(event.x-5, event.y-5, event.x+5, event.y+5):		    
@@ -393,6 +433,7 @@ def create_comment_canvas(c,dir,fc_tag,user):
 
 
 def savefile(canvas,fc_tag,user,tagtype,item,content):
+
 		tags=canvas.gettags(item)
 		flashcard_element=None
 		
@@ -422,9 +463,13 @@ def savefile(canvas,fc_tag,user,tagtype,item,content):
 			
 		tag_xml.appendChild(flashcard_element)
 		coord_names=['startx','starty','endx','endy']
-		for i in range(0,len(canvas.coords(item))):
-		  flashcard_element.setAttribute(coord_names[i], str(canvas.coords(item)[i]))
+
+		perc=c2p(canvas.cget("width"),canvas.cget("height"),canvas.coords(item))
+
+		for i in range(0,len(perc)):
+		  flashcard_element.setAttribute(coord_names[i], str(perc[i]))
 		flashcard_element.setAttribute('created',tags[1]+" "+tags[2])	
+		flashcard_element.setAttribute('coord_type',"percent")	
 		flashcard_element.setAttribute('user',user)
 
 		if content=="\n":

@@ -1195,9 +1195,13 @@ def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type):
 
 
 class Flasher:
+	def resize(self,width,height):
+		print width, height
 
 	def __init__(self,selected_dir,stuffToDo=True):
 		global Main
+		Main._running_classes["Flasher"]=self
+		
 		clear_window()#clear main window
 
 		Main.master.title(selected_dir)
@@ -1217,8 +1221,10 @@ class Flasher:
 				
 		self.agenda,new=load_agenda(self.ldb,self.selected_dir, date)
 		
-		self.c=Canvas(Main,width=WIDTH,height=WIDTH*0.6)
-	
+		
+		
+		self.c=Canvas(Main,width=Main.winfo_width(),height=Main.winfo_height()-240)
+
 		self.c.order = xml.parse(self.selected_dir+"/Flashcards/order.xml")
 		self.c.source = xml.parse(self.selected_dir+"/Details/source.xml")
 
@@ -1359,9 +1365,9 @@ class Flasher:
 
 		drawCardHistory( self.ldb.getElementsByTagName(flashcard_name)[0], self.c.stat )
 		image = Image.open(self.selected_dir+"/Flashcards/"+flashcard_name+"-1.png")
-		image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
+		image = image.resize((int(self.c.cget("width")),int(self.c.cget("height"))), Image.ANTIALIAS)
 		flashcard_image = ImageTk.PhotoImage(image)
-		self.c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard_image,tags=("frontside",flashcard_name))
+		self.c.create_image(int(float(self.c.cget("width"))/2), int(float(self.c.cget("height"))/2), image=flashcard_image,tags=("frontside",flashcard_name))
 		self.c.img=flashcard_image
 		self.c.bind("<Button-1>", lambda e:self.answer(flashcard_name, listPosition))
 		self.c.unbind("<Motion>")
@@ -1395,8 +1401,8 @@ class Flasher:
 	def answer(self,flashcard_tag, listPosition):
 		#self.c.config(width=WIDTH,height=WIDTH*0.6)	# check if window size changed
 		image = Image.open(self.selected_dir+"/Flashcards/"+flashcard_tag+"-2.png")
-		image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
-		flashcard = ImageTk.PhotoImage(image)
+		image = image.resize((int(self.c.cget("width")),int(self.c.cget("height"))), Image.ANTIALIAS)
+		flashcard_image = ImageTk.PhotoImage(image)
 		for im in self.c.find_withtag("frontside"):
 		   self. c.delete(im)
 		for item in self.c.find_withtag('old'):#first clear possible rects from canvas
@@ -1404,8 +1410,8 @@ class Flasher:
 		for item in self.c.find_withtag('elem'):#first clear possible rects from canvas
 			self.c.delete(item)	
 		
-		self.c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard,tags=("backside",flashcard_tag))	
-		self.c.img=flashcard			
+		self.c.create_image(int(float(self.c.cget("width"))/2), int(float(self.c.cget("height"))/2), image=flashcard_image,tags=("backside",flashcard_tag))	
+		self.c.img=flashcard_image			
 	
 		self.c.unbind("<Button-1>")
 		self.c.edit_b.configure(state=NORMAL,command=lambda:edit_fc(self.c,self.selected_dir,flashcard_tag))
@@ -1772,7 +1778,13 @@ def readSettings( Settings ):
 			Settings[thing] =  Config.get( "TexFlasher", thing )
 
 
+
+
+
 ##################################################################### Main ###############################################################################
+
+	
+	
 global Settings 
 Settings = { 'user':'',
 						'editor':''
@@ -1780,8 +1792,13 @@ Settings = { 'user':'',
 readSettings( Settings )
 
 global WIDTH, HEIGHT
-WIDTH=800
-HEIGHT=int(WIDTH*0.7)
+
+
+HEIGHT=600
+WIDTH=int(HEIGHT*1.3)
+
+
+
 
 BD=2
 RESTART_TIME=5 
@@ -1798,28 +1815,35 @@ class TexFlasher(Frame):
 		global WIDTH, HEIGHT
 		
 		WIDTH=self.master.winfo_width()-20
-		HEIGHT=int(WIDTH*0.7)
-		self.configure(bd=10,height=WIDTH*0.9,width=WIDTH)	
-		Wi=WIDTH+20 #width of the outer window frame
-		Hi=WIDTH
-		ws = self.master.winfo_screenwidth()
-		hs = self.master.winfo_screenheight()		
-		xs = (ws/2) - (int(Wi)/2) 
-		ys = (hs/2) - (Hi/2)				
-		self.master.geometry(str(int(Wi))+"x"+str(Hi)+"+"+str(xs)+"+"+str(ys))
+		HEIGHT=self.master.winfo_height()
+		self.configure(bd=10,height=p2c(None,HEIGHT,[90]),width=p2c(WIDTH,None,[100]))
+#		Wi=WIDTH+20 #width of the outer window frame
+#		Hi=WIDTH
+#		ws = self.master.winfo_screenwidth()
+#		hs = self.master.winfo_screenheight()		
+#		xs = (ws/2) - (int(Wi)/2) 
+#		ys = (hs/2) - (Hi/2)				
+#		self.master.geometry(str(int(Wi))+"x"+str(Hi)+"+"+str(xs)+"+"+str(ys))
+		
+		
 	def __init__( self ):
 		Frame.__init__( self)
 		global WIDTH, HEIGHT		
 		self.master.bind("<Configure>", self.resize)
 		global Main
 		Main=self
+		self._running_classes={}
 		
 		self.master.rowconfigure( 0, weight = 1 )
 		self.master.columnconfigure( 0, weight = 1 )	
-		
 		self.master.rowconfigure( 2, weight = 1 )
-					
-		self.configure(bd=10,height=WIDTH*0.9,width=WIDTH)	
+		header_height=20
+		footer_height=20		
+
+
+
+		
+		self.configure(bd=10,height=HEIGHT-footer_height-header_height,width=WIDTH)			
 		self.grid(row=1,column=0,sticky=N+E+W)
 		self.grid_propagate(False) 	
 		self._version="unstable build"
@@ -1828,20 +1852,24 @@ class TexFlasher(Frame):
 		hs = self.master.winfo_screenheight()
 		# calculate position x, y
 		Wi=WIDTH+20 #width of the outer window frame
-		Hi=WIDTH
+		Hi=HEIGHT
 		xs = (ws/2) - (int(Wi)/2) 
 		ys = (hs/2) - (Hi/2)				
 		self.master.geometry(str(int(Wi))+"x"+str(Hi)+"+"+str(xs)+"+"+str(ys))
 		self.master.iconbitmap(iconbitmapLocation)
-		self.master.iconmask(iconbitmapLocation)		
+		self.master.iconmask(iconbitmapLocation)	
+			
 		self.master.protocol('WM_DELETE_WINDOW',lambda:saveFiles(self.master))
 		self.master.bind("<Escape>", lambda e: self.master.quit()) # quits texflasher if esc is pressed		
 		self.master.title("TexFlasher - "+self._version)
 				
 		
-		if Settings["user"] is not  "x":
-			Label(self.master,height=2,text="TexFlasher based on Leitner-Method",font=("Helvetica", 16,"bold")).grid(row=0,columnspan=8,sticky=E+W+N)		
-		Label(self.master,height=2,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer").grid(row=2,sticky=S+E+W)
+		#if Settings["user"] is not  "x":
+		Header=Frame(self.master,height=header_height).grid(row=0,columnspan=8,sticky=E+W+N)
+		Label(self.master,height=2,text="TexFlasher based on Leitner-Method",font=("Helvetica", 16,"bold")).grid(row=0,sticky=E+W+N)		
+		Footer=Frame(self.master,height=footer_height).grid(row=2,sticky=S+E+W)
+		Label(Footer,height=2,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer").grid(row=3,sticky=S+E+W)
+		
 		menu()
 
 TexFlasher().mainloop()
