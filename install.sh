@@ -95,15 +95,18 @@ echo "#along with TexFlasher  If not, see <http://www.gnu.org/licenses/>.">> run
 # 	echo "You will be notified."
 # 	echo "bash .TexFlasher/checkForSourceUpdate.sh &" >> run-TexFlasher.sh
 # fi
+USERNAME=$1
 
-echo "username: $USER"
+if [ "$USERNAME" == "" ]; then
+	USERNAME=$USER
+fi
+
+echo "username: $USERNAME"
 echo -n "Press <Return> to accept or enter new username: "
 read ANSWER
 
-USERNAME=""
-if [ "$ANSWER" == "" ]; then
-	USERNAME=$USER
-else
+
+if [ "$ANSWER" != "" ]; then
 	USERNAME=$ANSWER
 fi
 echo "username: $USERNAME"
@@ -158,11 +161,6 @@ fi
 
 
 echo
-echo -n "Would you like to start TexFlasher now? (Y/n): "
-read ANSWER
-
-
-echo
 echo "writing settings to HD"
 echo "#This file was created automatically by the script 'install.sh'." >> settings
 echo "[TexFlasher]" >> settings
@@ -170,13 +168,11 @@ echo "user: $USERNAME" >> settings
 echo "editor: $TEXEDITOR" >> settings
 echo
 
-if [ "$ANSWER" != "n" ]; then
-	bash run-TexFlasher.sh
-else
-  echo "please run TexFlasher by typing \"./run-TexFlasher.sh\" in your bash."
-	echo
-	echo "done."
-fi
+
+echo "please run TexFlasher by typing \"./run-TexFlasher.sh\" in your bash."
+echo
+echo "done."
+
 
 
  
