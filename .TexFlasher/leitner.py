@@ -479,8 +479,8 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
 			ymax = max(ymax, dataSetC[i][0])
 
     D1= 50.0
-    D2=0.6*(WIDTH*0.6)
-    zero= D1, float(HEIGHT)*0.6
+    D2=0.6*(WIDTH*0.5)
+    zero= D1, float(HEIGHT)*0.4
     
 
     valMax=5
@@ -1794,8 +1794,8 @@ readSettings( Settings )
 global WIDTH, HEIGHT
 
 
-HEIGHT=600
-WIDTH=int(HEIGHT*1.3)
+HEIGHT=700
+WIDTH=int(HEIGHT*1.)
 
 
 
