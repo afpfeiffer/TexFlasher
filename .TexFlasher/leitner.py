@@ -1795,7 +1795,7 @@ global WIDTH, HEIGHT
 
 
 HEIGHT=700
-WIDTH=int(HEIGHT*1.)
+WIDTH=int(HEIGHT*1)
 
 
 
