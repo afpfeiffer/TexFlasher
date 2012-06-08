@@ -7,7 +7,7 @@ import sys
 
 FILE=sys.argv[1]
 
-print "Searching for accidently removed flashcards in svn history of file "+FILE+"\n"
+print "Searching for removed flashcards in svn history of file "+FILE+"\n"
 
 # assamble revisions
 process = subprocess.Popen(["bash", ".TexFlasher/scripts/getChangeRevisions.sh" , str(FILE) ] , stdout=subprocess.PIPE)
