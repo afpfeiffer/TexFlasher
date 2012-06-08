@@ -2,11 +2,12 @@
 
 # svn diff -r$2:$3 $1  | grep '\-\\fc{'
 
-DIFF="`svn diff -r$2:$3 $1  | grep '\\-\\\\fc{'`"
+DIFF="`svn diff -r$2:$3 $1  | grep -rniE '\\-\\\\fc{|\\-%fc'`"
 
 for thing in $DIFF; do
-	echo -n "-> "
-	echo $thing | cut -d '-' -f 2
+# 	echo -n "-> "
+# 	echo $thing | cut -d '-' -f 2
+	echo $thing 
 done
 
 if [ "$DIFF" != "" ]; then
