@@ -1801,7 +1801,7 @@ global WIDTH, HEIGHT
 
 window = gtk.Window()
 screen = window.get_screen()
-HEIGHT=int(screen.get_height()*0.9)
+HEIGHT=int ( min( screen.get_height(), screen.get_width())*0.9 )
 WIDTH=HEIGHT
 
 # just to be on the safe side
