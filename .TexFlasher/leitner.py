@@ -534,7 +534,7 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
 					if( dataSetC[x][1][i] >= 1 ):					
 						c.create_rectangle(x0, lastYpos +dataSetC[x][1][i]*y_stretch  , x1-1, lastYpos, fill=color, width=1, outline="black")
 						small_dx=float(WIDTH)*0.015
-						small_dy=float(WIDTH)*0.01
+						small_dy=float(WIDTH)*0.015
 						vspace = dataSetC[x][1][i]*y_stretch
 						hspace = x1 - x0
 						vpos = 2
@@ -1240,7 +1240,7 @@ class Flasher:
 		self.c.fc_det_row=1
 		fc_det_left = StringVar()
 		fc_det_right = StringVar()
-		Label(Main,anchor=W,textvariable=fc_det_left).grid(row=self.c.fc_det_row,column=0, columnspan=2,sticky=W)	
+		Label(Main,anchor=W,textvariable=fc_det_left).grid(row=self.c.fc_det_row,column=0, columnspan=3,sticky=W)	
 		Label(Main,anchor=E,textvariable=fc_det_right).grid(row=self.c.fc_det_row, column=3,columnspan=2,sticky=E)
 		self.c.fc_det_left=fc_det_left
 		self.c.fc_det_right=fc_det_right
