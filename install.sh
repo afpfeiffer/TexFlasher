@@ -39,7 +39,7 @@ which kile > /dev/null
 if [ $? -eq 0 ]; then
 	TEXEDITOR="`which kile`"
 fi
-echo "default latex editor: $TEXEDITOR"
+echo "Default latex editor: $TEXEDITOR"
 while [ 1 -eq 1 ]; do
 	echo -n "Press <Return> to accept or enter name of latex editor: "
 	read ANSWER
@@ -56,7 +56,7 @@ while [ 1 -eq 1 ]; do
 	fi
 done
 
-echo "latex editor: $TEXEDITOR "
+echo "Latex editor: $TEXEDITOR "
 
 which $TEXEDITOR > /dev/null
 if [ ! $? -eq 0 ]; then
@@ -101,7 +101,7 @@ if [ "$USERNAME" == "" ]; then
 	USERNAME=$USER
 fi
 
-echo "username: $USERNAME"
+echo "Username: $USERNAME"
 echo -n "Press <Return> to accept or enter new username: "
 read ANSWER
 
@@ -109,7 +109,7 @@ read ANSWER
 if [ "$ANSWER" != "" ]; then
 	USERNAME=$ANSWER
 fi
-echo "username: $USERNAME"
+echo "Username: $USERNAME"
 
 echo "clear" >> run-TexFlasher.sh
 echo "TEXFLASHDIR=$PWD" >> run-TexFlasher.sh
@@ -139,7 +139,7 @@ chmod a+x .TexFlasher/leitner.py
 echo -n "Would you like to create a desktop shortcut? (Y/n): "
 read ANSWER
 if [ "$ANSWER" != "n" ]; then
-	echo "creating link on Desktop"
+	echo "Creating link on Desktop."
 
 
 	if [ -f TexFlasher.desktop ]; then
@@ -161,17 +161,17 @@ fi
 
 
 echo
-echo "writing settings to HD"
-echo "#This file was created automatically by the script 'install.sh'." >> settings
+echo "Writing settings to HD"
+echo "#This file was created automatically by 'install.sh'." >> settings
 echo "[TexFlasher]" >> settings
 echo "user: $USERNAME" >> settings
 echo "editor: $TEXEDITOR" >> settings
 echo
 
 
-echo "please run TexFlasher by typing \"./run-TexFlasher.sh\" in your bash."
+echo "Please run TexFlasher by typing \"./run-TexFlasher.sh\" in your bash."
 echo
-echo "done."
+echo "Insallation complete. Please enjoy the TexFlasher."
 
 
 
