@@ -559,7 +559,7 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
 					#daystring="today"
         c.create_text(0.5*(x0+x1), y1+20, text=daystring,font=("Helvectica", str(fontsize+1)))
         
-    c.create_text(int(float(WIDTH)*0.25), 20, anchor=S, text="Workload in the next few days:",font=("Helvectica", "12"))
+    c.create_text(int(float(WIDTH)*0.25), 20, anchor=S, text="Workload in the next few days:",font=("Helvectica", str(fontsize+4)))
     c.create_line(0, zero[1] , int(float(WIDTH)*0.4999) , zero[1], width=2)
     c.create_line( zero[0], 35  , zero[0], zero[1]+D1 , width=2)
     c.create_line( zero, zero[0]-D1*0.9, zero[1]+D1*0.9)
@@ -572,7 +572,7 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     c1 = Canvas(Stats, width=int(float(WIDTH)*0.47), height=int(HEIGHT*0.5)) 
     c1.grid(row=0 , column=1, sticky=N)
 
-    c1.create_text(int(float(WIDTH)*0.25), 20, anchor=S, text="Level status:",font=("Helvectica", "12"))
+    c1.create_text(int(float(WIDTH)*0.25), 20, anchor=S, text="Level status:",font=("Helvectica", str(fontsize+4)))
    
     WIDTHHEIGHTMIN=min(WIDTH, HEIGHT)
     coords= float(WIDTH)*0.25 - float(WIDTHHEIGHTMIN)*0.15 , float(HEIGHT)*0.25 - float(WIDTHHEIGHTMIN)*0.15 , float(WIDTH)*0.25 + float(WIDTHHEIGHTMIN)*0.15 , float(HEIGHT)*0.25 + float(WIDTHHEIGHTMIN)*0.15
@@ -664,7 +664,7 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     stat.height=stat_height
     stat.width=stat_width
     Stats.stat=stat
-    Stats.stat.create_text( 1, 10*DY, text="Average learning progress:", anchor=W,font=("Helvectica", "12"))
+    Stats.stat.create_text( 1, 10*DY, text="Average learning progress:", anchor=W,font=("Helvectica", str(fontsize+4)))
     drawTotalCardHistory( ldb, Stats.stat, fontsize+1 )
     #spacer
     Label(Stats,height=1).grid(row=1,columnspan=5)	#spacer
