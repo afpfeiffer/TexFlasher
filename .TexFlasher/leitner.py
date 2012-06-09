@@ -1171,7 +1171,7 @@ def change_latex(file_path,fc_tag,content,theorem_type):
 def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type):
 	content=edit_text.get('1.0', END)
 	if os.path.isfile("./.TexFlasher/config.xml"):
-		try:
+		#try:
 			tree = xml.parse("./.TexFlasher/config.xml")
 			config_xml = tree.getElementsByTagName('config')[0]
 			for elem in config_xml.childNodes:
@@ -1183,14 +1183,14 @@ def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type):
 						exec('tkMessageBox.'+window_type+'( "Parse LaTex Logfile","%s")'%message)
 					else:
 						image = Image.open(os.path.dirname(elem.getAttribute('filename'))+"/Flashcards/"+fc_tag+"-2.png")
-						image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
+						image = image.resize((int(WIDTH),int(c.cget("height"))), Image.ANTIALIAS)
 						flashcard = ImageTk.PhotoImage(image)
-	 					c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard)
+	 					c.create_image(int(flashcard.width()/2), int(flashcard.height()/2), image=flashcard)
 	 					c.img=flashcard	
 						cancel_edit(c,dir,fc_tag,frame)							
 					break
-		except:
-			tkMessageBox.showerror("Error","Fatal error with %s! This is bad, because the card may have been deleted (not from latex) and we did not detect latex errors!"%fc_tag)
+		#except:
+		#	tkMessageBox.showerror("Error","Fatal error with %s! This is bad, because the card may have been deleted (not from latex) and we did not detect latex errors!"%fc_tag)
 	else:
 		tkMessageBox.showerror("Error","Fatal error while saving new content for %s: no config found!"%fc_tag)
 
@@ -1225,7 +1225,6 @@ class Flasher:
 		self.ldb=load_leitner_db(self.selected_dir,Settings["user"])
 				
 		self.agenda,new=load_agenda(self.ldb,self.selected_dir, date)
-		
 		
 		
 		self.c=Canvas(Main,width=Main.winfo_width(),height=Main.winfo_height()-240)
@@ -1370,9 +1369,11 @@ class Flasher:
 
 		drawCardHistory( self.ldb.getElementsByTagName(flashcard_name)[0], self.c.stat )
 		image = Image.open(self.selected_dir+"/Flashcards/"+flashcard_name+"-1.png")
-		image = image.resize((int(self.c.cget("width")),int(self.c.cget("height"))), Image.ANTIALIAS)
+		image = image.resize((int(WIDTH),int(self.c.cget("height"))), Image.ANTIALIAS)
+		
 		flashcard_image = ImageTk.PhotoImage(image)
-		self.c.create_image(int(float(self.c.cget("width"))/2), int(float(self.c.cget("height"))/2), image=flashcard_image,tags=("frontside",flashcard_name))
+		
+		self.c.create_image(int(flashcard_image.width()/2), int(flashcard_image.height()/2), image=flashcard_image,tags=("frontside",flashcard_name))
 		self.c.img=flashcard_image
 		self.c.bind("<Button-1>", lambda e:self.answer(flashcard_name, listPosition))
 		self.c.unbind("<Motion>")
@@ -1406,7 +1407,7 @@ class Flasher:
 	def answer(self,flashcard_tag, listPosition):
 		#self.c.config(width=WIDTH,height=WIDTH*0.6)	# check if window size changed
 		image = Image.open(self.selected_dir+"/Flashcards/"+flashcard_tag+"-2.png")
-		image = image.resize((int(self.c.cget("width")),int(self.c.cget("height"))), Image.ANTIALIAS)
+		image = image.resize((int(WIDTH),int(self.c.cget("height"))), Image.ANTIALIAS)
 		flashcard_image = ImageTk.PhotoImage(image)
 		for im in self.c.find_withtag("frontside"):
 		   self. c.delete(im)
@@ -1415,7 +1416,7 @@ class Flasher:
 		for item in self.c.find_withtag('elem'):#first clear possible rects from canvas
 			self.c.delete(item)	
 		
-		self.c.create_image(int(float(self.c.cget("width"))/2), int(float(self.c.cget("height"))/2), image=flashcard_image,tags=("backside",flashcard_tag))	
+		self.c.create_image(int(flashcard_image.width()/2), int(flashcard_image.height()/2), image=flashcard_image,tags=("backside",flashcard_tag))	
 		self.c.img=flashcard_image			
 	
 		self.c.unbind("<Button-1>")
