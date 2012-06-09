@@ -976,7 +976,7 @@ def display_mult_fcs(fcs,title,button_title,button_command,button_image): #Synta
 	i=0 #start at row	
 	iterator=fcs.__iter__()
 	images_row=[1,3] # increaese number of images per row by adding [1,3,6,9, ...]
-	size=WIDTH/len(images_row)-40
+	size=Main.winfo_width()/len(images_row)-40
 	for res in iterator:
 		for colu in images_row:
 			if colu>images_row[0]:
@@ -997,7 +997,7 @@ def display_mult_fcs(fcs,title,button_title,button_command,button_image): #Synta
 	exec("search_canvas.bind('<Button-4>', lambda event: event.widget.yview_scroll(-1, UNITS))")
 	exec("search_canvas.bind('<Button-5>', lambda event: event.widget.yview_scroll(1, UNITS)) ")
 	Search_frame.update_idletasks()
-	search_canvas.config(scrollregion=search_canvas.bbox("all"),width=WIDTH-35,height=HEIGHT)
+	search_canvas.config(scrollregion=search_canvas.bbox("all"),width=Main.winfo_width()-40,height=Main.winfo_height()-80)
 
 
 def  disp_single_fc(image_path,tag,title=None):
