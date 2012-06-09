@@ -1183,7 +1183,7 @@ def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type):
 						exec('tkMessageBox.'+window_type+'( "Parse LaTex Logfile","%s")'%message)
 					else:
 						image = Image.open(os.path.dirname(elem.getAttribute('filename'))+"/Flashcards/"+fc_tag+"-2.png")
-						image = image.resize((int(self.c.cget("width")),int(c.cget("height"))), Image.ANTIALIAS)
+						image = image.resize((int(c.cget("width")),int(c.cget("height"))), Image.ANTIALIAS)
 						flashcard = ImageTk.PhotoImage(image)
 	 					c.create_image(int(flashcard.width()/2), int(flashcard.height()/2), image=flashcard)
 	 					c.img=flashcard	
