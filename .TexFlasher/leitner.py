@@ -1211,8 +1211,12 @@ class Flasher:
 	def agenda_resort(self,sort):
 		self.agenda,new=load_agenda(self.ldb,self.selected_dir, self.date,sort)
 		self.reactAndInit(True , -1)
-		self.sort_b.config(state=DISABLED)
-		
+		if sort==True:
+			self.sort_b.config(command=lambda:self.agenda_resort(False),text="Sort by Date")
+		else:
+			self.sort_b.config(command=lambda:self.agenda_resort(True),text="Sort By Page")	
+
+			
 	def __init__(self,selected_dir,stuffToDo=True):
 		global Main
 		Main._running_classes["Flasher"]=self
