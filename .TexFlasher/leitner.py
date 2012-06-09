@@ -1183,7 +1183,7 @@ def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type):
 						exec('tkMessageBox.'+window_type+'( "Parse LaTex Logfile","%s")'%message)
 					else:
 						image = Image.open(os.path.dirname(elem.getAttribute('filename'))+"/Flashcards/"+fc_tag+"-2.png")
-						image = image.resize((int(WIDTH),int(c.cget("height"))), Image.ANTIALIAS)
+						image = image.resize((int(self.c.cget("width")),int(c.cget("height"))), Image.ANTIALIAS)
 						flashcard = ImageTk.PhotoImage(image)
 	 					c.create_image(int(flashcard.width()/2), int(flashcard.height()/2), image=flashcard)
 	 					c.img=flashcard	
@@ -1227,7 +1227,7 @@ class Flasher:
 		self.agenda,new=load_agenda(self.ldb,self.selected_dir, date)
 		
 		
-		self.c=Canvas(Main,width=Main.winfo_width(),height=Main.winfo_height()-240)
+		self.c=Canvas(Main,width=WIDTH,height=Main.winfo_height()-240)
 
 		self.c.order = xml.parse(self.selected_dir+"/Flashcards/order.xml")
 		self.c.source = xml.parse(self.selected_dir+"/Details/source.xml")
@@ -1369,7 +1369,7 @@ class Flasher:
 
 		drawCardHistory( self.ldb.getElementsByTagName(flashcard_name)[0], self.c.stat )
 		image = Image.open(self.selected_dir+"/Flashcards/"+flashcard_name+"-1.png")
-		image = image.resize((int(WIDTH),int(self.c.cget("height"))), Image.ANTIALIAS)
+		image = image.resize((int(self.c.cget("width")),int(self.c.cget("height"))), Image.ANTIALIAS)
 		
 		flashcard_image = ImageTk.PhotoImage(image)
 		
@@ -1407,7 +1407,7 @@ class Flasher:
 	def answer(self,flashcard_tag, listPosition):
 		#self.c.config(width=WIDTH,height=WIDTH*0.6)	# check if window size changed
 		image = Image.open(self.selected_dir+"/Flashcards/"+flashcard_tag+"-2.png")
-		image = image.resize((int(WIDTH),int(self.c.cget("height"))), Image.ANTIALIAS)
+		image = image.resize((int(self.c.cget("width")),int(self.c.cget("height"))), Image.ANTIALIAS)
 		flashcard_image = ImageTk.PhotoImage(image)
 		for im in self.c.find_withtag("frontside"):
 		   self. c.delete(im)
