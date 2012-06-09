@@ -1211,10 +1211,11 @@ class Flasher:
 	def agenda_resort(self,sort):
 		self.agenda,new=load_agenda(self.ldb,self.selected_dir, self.date,sort)
 		self.reactAndInit(True , -1)
-		if sort==True:
-			self.sort_b.config(command=lambda:self.agenda_resort(False),text="Sort by Date")
+		if sort==True:			
+			self.sort_b.config(image=self.datesort_img,command=lambda:self.agenda_resort(False),text="Sort by Date")
+
 		else:
-			self.sort_b.config(command=lambda:self.agenda_resort(True),text="Sort By Page")	
+			self.sort_b.config(image=self.pagesort_img,command=lambda:self.agenda_resort(True),text="Sort By Page")	
 
 			
 	def __init__(self,selected_dir,stuffToDo=True):
@@ -1253,9 +1254,10 @@ class Flasher:
 		self.c.fc_det_row=1
 		fc_det_left = StringVar()
 		fc_det_right = StringVar()
-		Label(Main,anchor=W,textvariable=fc_det_left).grid(row=self.c.fc_det_row,column=0, columnspan=2,sticky=W)	
-		self.sort_b=Button(Main,text="Sort by Pages",bd=BD,command=lambda:self.agenda_resort(True))
-		self.sort_b.grid(row=self.c.fc_det_row,column=2)
+		Label(Main,anchor=W,textvariable=fc_det_left).grid(row=self.c.fc_det_row,column=0, columnspan=2,sticky=W)
+
+		
+		
 		Label(Main,anchor=E,textvariable=fc_det_right).grid(row=self.c.fc_det_row, column=3,columnspan=2,sticky=E)
 		self.c.fc_det_left=fc_det_left
 		self.c.fc_det_right=fc_det_right
@@ -1316,25 +1318,37 @@ class Flasher:
 		self.c.tag_buttons=[]
 		
 		q_b=create_image_button(Main,".TexFlasher/pictures/question_fix.png",35,35)
-		q_b.grid(row=self.c.true_false_row,column=2,sticky=N+W)
+		q_b.grid(row=self.c.true_false_row,column=1,sticky=N+E)
 		q_b.grid_remove()
 		self.c.q_b=q_b
 		
 		w_b=create_image_button(Main,".TexFlasher/pictures/watchout_fix.png",35,35)
-		w_b.grid(row=self.c.true_false_row,column=2,sticky=S+W)
+		w_b.grid(row=self.c.true_false_row,column=1,sticky=S+E)
 		w_b.grid_remove()
 		self.c.w_b=w_b
 		
 		r_b=create_image_button(Main,".TexFlasher/pictures/repeat_fix.png",35,35)
-		r_b.grid(row=self.c.true_false_row,column=2,sticky=N+E)
+		r_b.grid(row=self.c.true_false_row,column=3,sticky=N+W)
 		r_b.grid_remove()
 		self.c.r_b=r_b
 		
 		l_b=create_image_button(Main,".TexFlasher/pictures/link_fix.png",35,35)
-		l_b.grid(row=self.c.true_false_row,column=2,sticky=S+E)		    
+		l_b.grid(row=self.c.true_false_row,column=3,sticky=S+W)		    
 		l_b.grid_remove()
 		self.c.l_b=l_b
+		image = Image.open(".TexFlasher/pictures/datesort.png")
+		image = image.resize((80,80), Image.ANTIALIAS)
+		sort_img = ImageTk.PhotoImage(image)		
+		self.datesort_img=sort_img
 		
+		image = Image.open(".TexFlasher/pictures/pagesort.png")
+		image = image.resize((80,80), Image.ANTIALIAS)
+		sort_img = ImageTk.PhotoImage(image)		
+		self.pagesort_img=sort_img
+					
+		self.sort_b=Button(Main,image=self.pagesort_img,text="Sort by Pages",bd=BD,command=lambda:self.agenda_resort(True))
+		self.sort_b.grid(row=self.c.true_false_row,column=2)
+				
 		self.c.tag_buttons=[q_b,w_b,r_b,l_b]	
 		#gallery
 	#	flow_c=Canvas(top,height=90,width=600,bd=3)
