@@ -131,7 +131,8 @@ def futureCardNumber( database, offset, offset2, maxLevel ):
 	return number, list(LEVELS)
 
 
-def load_agenda(ldb,dir,now=datetime.now()):
+
+def load_agenda(ldb,dir,now=datetime.now(),PageSort=False):
 	local_agenda={}
 	flashcards=ldb.childNodes
 	seconds_in_a_day = 60 * 60 * 24
@@ -153,9 +154,16 @@ def load_agenda(ldb,dir,now=datetime.now()):
 					local_agenda[elem.tagName]=diff.days * seconds_in_a_day + diff.seconds
 	except:
 		pass
+	if PageSort:
+		for elem in local_agenda:
+				place=int(order.getElementsByTagName(elem)[0].getAttribute("position"))
+				local_agenda[elem]=place				
+
 	sorted_agenda = sorted(local_agenda.iteritems(), key=itemgetter(1))
-	sorted_agenda.reverse()
-	sorted_new=sorted(new_fc.iteritems(), key=itemgetter(1))	
+	if not PageSort:
+		sorted_agenda.reverse()
+	sorted_new=sorted(new_fc.iteritems(), key=itemgetter(1))
+
 	return sorted_agenda+sorted_new,len(sorted_new)
 
 
@@ -1200,9 +1208,11 @@ def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type):
 
 
 class Flasher:
-	def resize(self,width,height):
-		print width, height
-
+	def agenda_resort(self,sort):
+		self.agenda,new=load_agenda(self.ldb,self.selected_dir, self.date,sort)
+		self.reactAndInit(True , -1)
+		self.sort_b.config(state=DISABLED)
+		
 	def __init__(self,selected_dir,stuffToDo=True):
 		global Main
 		Main._running_classes["Flasher"]=self
@@ -1210,11 +1220,11 @@ class Flasher:
 		clear_window()#clear main window
 
 		Main.master.title(selected_dir)
-
 		if( stuffToDo ):
 			date = datetime.now()
 		else:
 			date = datetime.now()+timedelta(days=1000)
+		self.date=date
 		self.selected_dir=selected_dir
 		Main.columnconfigure(0,weight=1)
 		Main.columnconfigure(1,weight=1)
@@ -1223,7 +1233,7 @@ class Flasher:
 		Main.columnconfigure(4,weight=1)
 								
 		self.ldb=load_leitner_db(self.selected_dir,Settings["user"])
-				
+						
 		self.agenda,new=load_agenda(self.ldb,self.selected_dir, date)
 		
 		
@@ -1239,7 +1249,9 @@ class Flasher:
 		self.c.fc_det_row=1
 		fc_det_left = StringVar()
 		fc_det_right = StringVar()
-		Label(Main,anchor=W,textvariable=fc_det_left).grid(row=self.c.fc_det_row,column=0, columnspan=3,sticky=W)	
+		Label(Main,anchor=W,textvariable=fc_det_left).grid(row=self.c.fc_det_row,column=0, columnspan=2,sticky=W)	
+		self.sort_b=Button(Main,text="Sort by Pages",bd=BD,command=lambda:self.agenda_resort(True))
+		self.sort_b.grid(row=self.c.fc_det_row,column=2)
 		Label(Main,anchor=E,textvariable=fc_det_right).grid(row=self.c.fc_det_row, column=3,columnspan=2,sticky=E)
 		self.c.fc_det_left=fc_det_left
 		self.c.fc_det_right=fc_det_right
