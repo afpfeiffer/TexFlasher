@@ -1,0 +1,2143 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage[german]{babel}
+\usepackage{amsmath, amsthm, amssymb}
+\usepackage{amsfonts}
+\usepackage{makeidx}
+\usepackage{hyperref}
+\usepackage{color} 
+\usepackage[colorinlistoftodos]{todonotes} 
+\usepackage{sectsty}
+
+% do not remove !
+\newcommand{\fc}[1]{\special{fc=#1}}
+%
+\newtheorem{sat}{Satz}[section]
+\newtheorem{bem}[sat]{Bemerkung}
+\newtheorem{lem}[sat]{Lemma}
+\newtheorem{fra}[sat]{Frage}
+
+\newtheorem{defi}[sat]{Definition}
+\newtheorem{ax}[sat]{Axiom}
+\newtheorem{folg}[sat]{Folgerung}
+\newtheorem{prop}[sat]{Proposition}
+
+
+
+\renewcommand{\todo}[1]{\begin{center}\fbox{\parbox{300\unitlength}{\textcolor{red}{\textbf{#1}}}}\end{center}}
+
+
+\newcommand{\beachte}[1]{\parbox{300\unitlength}{\textbf{Beachte: }\textbf{#1}}}
+
+
+\author{Can "Ozmen und Axel Pfeiffer}
+%
+\title{Zusammenfassungen}
+
+\makeindex
+
+\begin{document}
+
+
+\section*{Abzugrenzende Gebiete}
+\begin{itemize}
+\item \textbf{Euklidische Geometrie} (sp"ahrische oder klassische Geometrie)
+\item \textbf{nicht-euklidische Geometrie} (hyperbolische Geometrie)
+\item \textbf{Riemannsche Geometrie}
+\end{itemize}
+
+\section*{Zentrale S"atze}
+Vierscheitelsatz \footnote{\url{http://de.wikipedia.org/wiki/Vierscheitelsatz}},
+
+\section*{"Uberblick}
+
+\setcounter{section}{0}
+\section{Axiome der Euklidischen Ebene}
+\fc{inzidenzaxiome}
+\begin{ax}[Inzidenzaxiome\index{Inzidenzaxiome}\footnote{\url{http://de.wikipedia.org/wiki/Inzidenzgeometrie}}]
+\begin{enumerate}
+ \item Durch je zwei Punkte geht eine Gerade.
+ \item Durch je zwei verschiedene Punkte geht h"ochstens eine Gerade.
+\item Jede Gerade enth"alt mindestens zwei verschiedene Punkte.
+\item Es gibt drei Punkte, die nicht auf einer Geraden liegen.
+\end{enumerate}
+
+
+
+
+\end{ax}
+
+
+\fc{anordaxiome}
+\begin{ax}[Anordnungsaxiome (auf einer Geraden)\index{Anordnungsaxiome}\index{Zwischen-Relation}]
+A1. Falls $q$ zwischen $p$ und $r$ liegt, sind $p$, $q$ und $r$ paarweise verschiedene Punkte 
+auf einer Geraden. \\
+A2. Falls $q$ zwischen $p$ und $r$ liegt, liegt $q$ auch zwischen $r$ und $p$. \\
+A3. Zu je zwei verschiedenen Punkten $p$, $q$ gibt es einen Punkt $r$, so dass $q$ zwischen 
+$p$ und $r$ liegt.  \\
+A4. Von drei Punkten liegt h"ochstens einer zwischen den beiden anderen. \\
+A5. Seien $p$, $q$, $r$ drei Punkte, die nicht auf einer Geraden liegen, und sei $L$ eine
+Gerade, die keinen dieser Punkte enth"alt. Falls $L$ die Strecke $\overline{pq}$ schneidet, dann 
+schneidet $L$ auch genau eine der beiden Strecken $\overline{pr}$, $\overline{qr}$. 
+
+\end{ax}
+
+\begin{defi}[Seite von $\mathcal{G}$]
+\end{defi}
+
+\begin{defi}[Winkel]
+\end{defi}
+
+\begin{defi}[Parallel]
+\end{defi}
+
+\begin{ax}[Kongruenzaxiome\index{Kongruenzaxiome}]
+K1-K6 
+\end{ax}
+
+
+
+\fc{vollstaxiome}
+\begin{ax}[Vollst"andigkeitsaxiome\index{Vollstaendigkeitsaxiome}]
+{\bf V1(Archimedisches Axiom).} 
+Seien $p$, $q$, $r$ drei paarweise verschiedene Punkte auf einer Geraden
+$L$, so dass $p$ nicht zwischen $q$ und $r$ liegt. Konstruiert man Punkte $q_1= q, q_2,\dots$ 
+auf $L$ mit $\overline{q_iq_{i+1}} \equiv \overline{pq}$ f"ur alle $i \geq 1$, dann erh"alt man nach endlich vielen
+Schritten einen Punkt $q_k$, so dass $r$ zwischen $p$ und $q_k$ liegt.\\ 
+{\bf V2(Vollst"andigkeitsaxiom).}
+Die Geometrie $(\mathcal{P}, \mathcal{G}, \in, [,,], \equiv,\equiv)$ hat keine echte Erweiterung, die den 
+Axiomen I1-I4, A1-A5, K1-K6 und V1 gen"ugt.
+\end{ax}
+
+
+\fc{UnterschEuklHypGeo}
+\begin{fra}[Unterschied zwichen der euklidischen und Hyperbolischen Geometrie?]
+Die hyperbolische Geometrie erf"ullt alle Axiome der euklidischen Geometrie bis auf das Parallelenaxiom:
+
+\emph{Sei L eine Gerade, p ein Punkt, p nicht in L entahlten. Dann gibt es h"ochstens eine Gerade, die p enth"alt und L nicht schneidet.}
+
+
+\end{fra}
+
+
+\section{Kurven}
+\subsection{Die Bogenl"ange}
+
+\fc{defiIntervall}
+\begin{defi}[Intervall]
+Zusammenh"angende Teilmenge von $\mathbb R.$
+
+\end{defi}
+
+\fc{parametrKurve}
+\begin{defi}[Parametrisierte Kurve]
+Es sei $(M,d)$ ein metrischer Raum. Eine parametrisierte Kurve ist eine stetige Abbildung $\gamma:I\subset\mathbb R\cup\{-\infty,\infty\} \rightarrow M.$\index{parametrisierte Kurve}
+
+
+
+\end{defi}
+
+\fc{bogenlaenge}
+\begin{defi}[Bogenl"ange\index{Bogenl"ange}]
+Falls $I\neq\emptyset:$
+\[L(\gamma):=\sup\Big\lbrace\sum\limits_{i=1}^{N}d(\gamma(t_{i-1}),\gamma(t_i))\Big|N\in\mathbb N \text{ und }t_0<\dots<t_N\in I\Big\rbrace\]
+Sonst $L(\gamma):=0.$\\
+Falls $L(\gamma)<\infty$ hei"st $\gamma$ rektifizierbar\index{rektifizierbar} (Das Wort rektifizieren oder Rektifikation bedeutet gerade machen).
+\beachte{die Kurve muss nur stetig sein.}
+\end{defi}
+\fc{homoeomorphismus}
+\begin{defi}[Hom"oomorphismus]
+Eine stetige Funktion $\varphi:I\to\mathbb R$ hei"st Hom"oomorphismus wenn sie streng monoton w"achst oder f"allt, denn genau in diesem Fall besitzt sie eine stetige Umkehrfunktion!(die "ubrigens ebenfalls streng monoton w"achst oder f"allt).
+\end{defi}
+
+\fc{innereMetrikDefi}
+\begin{defi}[Innere Metrik]
+Sei $(M,d)$ metrischer Raum. Die innere Metrik auf $M$ ist definiert durch
+\[d_{Weg}(p,q)=\inf\Big\lbrace L(\gamma)\Big| a<b \in \mathbb R \text{ mit } \gamma(a)=p,\, \gamma(b)=q\Big\rbrace\]
+Falls $d_{Weg}=d$ gilt, hei"st $(M,d)$ innerer metrischer Raum\index{innerer metrischer Raum}.
+\end{defi}
+
+\fc{kuerzesteKurvedefi}
+\begin{defi}[K"urzeste parametrisierte Kurve\index{K"urzeste Kurve}]
+\[d_{Weg}(\gamma(a),\gamma(b))=L(\gamma|_{[a,b]})\]
+
+
+
+\end{defi}
+
+\fc{geodaetischedefi}
+\begin{defi}[Geod"atische\index{Geod"atische}]
+F"ur alle inneren Punkte $t\in I$ existieren Zahlen $a<t<b$ in $I$, so dass $\gamma|_{[a,b]}$ k"urzeste Kurve von $\gamma(a)$ nach $\gamma(b)$ ist. \beachte{Geod"atische ist nicht unbedingt global k"urzeste.}
+
+\end{defi}
+
+\fc{analBogenLaengeSat}
+\begin{sat}[Analytische Bogenl"ange]
+Sei $\gamma:(a,b)\subset I\subset[a,b]\to\mathbb R^n$ stkw. $C^1$ parametrisierte Kurve. Dann gilt
+\[L(\gamma)=\int\limits_{a}^{b}||\dot{\gamma}(t)||\,dt\in[0,\infty].\]
+\beachte{$\dot{\gamma}$ evtl. an endlich vielen Punkten nicht definiert, also uneigentliches Integral.}
+\end{sat}
+
+\fc{parameterTransDefi}
+\begin{defi}[Parametertransformation \& Umparametrisierung\index{Umparametrisierung}]
+Sei $\gamma:I\to\mathbb R^n$ stkw. $C^k$ parametrisierte Kurve. Eine Parametertransformation f"ur $\gamma$ ist ein Hom"oomorphismus $\varphi:J\to I$ mindestens stkw. $C^k.$ Die Kurve $\gamma\circ\varphi:J\to\mathbb R^n$ hei"st Umparametrisierung von $\gamma$.
+\end{defi}
+
+\fc{StkwCKKurve}
+\begin{defi}[Stkw. $C^k$-Kurve\index{stkw. $C^k$-Kurve}]
+Eine stkw. $C^k$-Kurve ist eine "Aquivalenzklasse stkw. $C^k$ parametrisierter Kurven bis auf Umparametrisierung mit Relation \glqq ist Umparametrisierung von\grqq.
+\[\gamma=\gamma\circ id,\quad\gamma_2=\gamma_1\circ\varphi\Leftrightarrow\gamma_1=\gamma_2 \circ \varphi^{-1}\]
+\beachte{Ziel parameterunabh"angige Gr"o"sen zu finden.}
+\end{defi}
+\fc{Richtungssinn}
+\begin{bem}[Richtungssinn]
+Eine parametrisierte Kurve $\gamma:I\to\mathbb R^n$ definiert in folgender Weise einen Richtungssinn: Ein Punkt $\gamma(t_1)$ liegt \glqq vor\grqq \ einem anderen Punkt $\gamma(t_2)$, wenn $t_1<t_2$ gilt.
+\end{bem} 
+
+\fc{gerichteteStkwCkKurve}
+\begin{defi}[Gerichtete stkw. $C^k$-Kurve\index{gerichtete stkw. $C^k$-Kurve}]
+Analog zu oben (stkw. $C^k$-Kurve), allerdings werden nur streng monoton steigende Umparametrisierungen betrachtet, d.h. die \glqq Parametrisierungen haben alle denselben Richtungssinn".
+
+Das heisst: was bei $C^k$-Kurven eine "Aquivalenzklasse war, spaltet sich nun in zwei auf (Parametertransformationen die streng monoton wachsen und streng monotan fallen).
+
+
+
+\end{defi}
+
+\fc{spurKurveDefi}
+\begin{defi}[Spur einer Kurve]
+Die Spur einer Kurve\index{Spur einer Kurve} ist die Menge ihrer Bildpunkte. 
+\end{defi}
+
+\fc{regulaereKurve}
+\begin{defi}[Regul"are Kurve]
+Eine $C^k$-Kurve mit $k\geq1$ hei"st regul"ar, wenn f"ur eine (und somit f"ur alle!) Parametrisierung $\gamma:I\to\mathbb R^n$ gilt
+\[\dot{\gamma}(t)\neq 0\quad \forall t\in I.\]
+
+
+\end{defi}
+
+
+\fc{parametrisierungNachBogenlaenge}
+\begin{defi}[Parametrisierung nach Bogenl"ange\index{Parametrisierung nach Bogenl"ange}]
+\[L(\gamma\Big|_{[a,b]})=b-a\quad\forall a<b\in I\]
+Ist $\gamma:I\to\mathbb R^n$ nach Bogenl"ange parametrisiert, hei"st der Parameter $t\in I$ Bogenl"angenparameter.
+\end{defi}
+
+\fc{parametrisierungNachBogenlaengeSat}
+\begin{sat}[Wann ist eine Kurve nach Bogenl"ange parametrisiert?]\ \\
+\begin{enumerate}
+\item Eine $C^k$-parametrisierte Kurve $\gamma:I\to\mathbb R^n$ mit $k>0$ ist genau dann nach der Bogenl"ange parametrisiert, wenn $\forall t\in I$ gilt, $||\dot{\gamma}(t)||=1.$
+\item Jede regul"are Kurve im $\mathbb R^n$ besitzt eine Parametrisierung nach der Bogenl"ange.
+\item ... diese ist eindeutig bis auf Parametertransformationen der Gestalt $\varphi(t)=c\pm t$ mit $c\in \mathbb R$.
+\end{enumerate}
+\begin{proof}
+\begin{enumerate}
+\item $\Rightarrow$ klar, $\Leftarrow$ mit Hauptsatz der Int. und Diff.-Rechnung.
+\item Stammfunktion von $t\mapsto||\dot{\gamma}(t)||$ mit Umkehrfunktion $\varphi$, dann mit Kettenregel und Ableitungsregel f"ur Umkehrfunktion zeigen $||\dot{(\gamma\circ\varphi)}(t)||=1.$
+\item Es gilt $\dot{\varphi}(t)=\pm\frac{||\dot{(\gamma\circ\varphi)}(t)||}{||\dot{\gamma}(\varphi(t))||}=\pm 1$.
+\end{enumerate}
+\end{proof}
+
+
+
+
+
+
+
+
+
+\end{sat}
+
+
+
+
+\subsection{Regul"are Kurven im $\mathbb{R}^n$}
+\fc{mdimumfkRn}
+\begin{defi}[$m$-dimensionale $C^k$- Untermannigfaltigkeit des $\mathbb R^n$]
+Ist eine Teilmenge $M\subset \mathbb R^n$, so dass zu jedem $p\in M$ eine Umgebung $U\subset\mathbb R^n$ von $p$ und eine Umgebung $V\subset\mathbb R^n$ von $0$ und ein $C^k$-Diffeomorphismus $\Phi:U\to V$ mit
+\[\Phi(M\cap U)=(\mathbb R^m\times\{0\})\cap V\]
+existiert. $\Phi$ hei"st auch Untermannigfaltigkeitskarte.
+\end{defi}
+
+\fc{kurven1dMannig}
+\begin{sat}[Kurven und Mannigfaltigkeiten\index{Mannigfaltigkeit}]\ \\
+
+  \begin{enumerate}
+     \item Sei $\gamma: I\rightarrow \mathbb{R}^n$ Parametrisierung einer regul"aren $C^k$-Kurve, und sei $t\in I$ ein Punkt im Inneren von I. Dann existiert ein offenes Teilintervall
+     $J\subset I$ mit $t\in J$, so dass die Spur von $\gamma |_J$ eine eindimensionale $C^k$-Untermannigfaltigkeit des $\mathbb{R}^n$ ist.
+     \item Sei $M$ eine eindimensionale $C^k$-Untermannigfaltigkeit von $\mathbb{R}^n$, dann existiert zu jedem $p\in M$ eine Umgebung $U\subset \mathbb{R}^n$
+      von $p$, so dass $M\cap U$ Spur einer $C^k$-regul"aren Kurve ist.
+  \end{enumerate}
+  \begin{proof}
+  \begin{enumerate}
+  \item Sei o.B.d.A $\dot{\gamma_1}\neq0$ w"ahle als Untermannigfaltigkeitskarte $\Phi(x_1,....,x_n)=(x_1,x_2-\gamma_2(\gamma^{-1}(x_1)),...,x_n-\gamma_n(\gamma^{-1}(x_1)))$ Umkehrabbildung einfach - durch + ersetzen.
+  \end{enumerate}
+  \end{proof}
+
+
+
+
+
+\end{sat}
+
+\beachte{Hier steht die positiv orientierte Gram-Schmidt-Basis\index{Gram-Schmidt-Basis}.}
+
+\fc{defposorient}
+\begin{defi}[Positiv orientierte Basis]
+ Eine Basis $(w_1, \dots, w_n)$ hei"st {\it positiv orientiert}, wenn $\det{(w_i^j)_{i,j}} > 0.$
+Zwei Basen hei"sen gleichorientiert, wenn die Determinante der Basiswechselmatrix positiv ist. Seien bspw. $g:W\to M$ und $f:W'\to M$ zwei Parametrisierungen und $\phi:W\to W'$ der Parameterwechel, dann sind die von $g$ und $f$ induzierten Basen des Tangentialraums gleichorientiert, falls die Jacobimatrix von $\phi$ positive Determinante hat.
+
+
+
+
+\end{defi}
+
+
+\fc{frenetkurvedefi}
+\begin{defi}[Frenet-Kurve und Frenet-n-Bein \index{Frenet-Kurve}]
+  Eine {\it Frenet-Kurve} im $\mathbb{R}^n$ ist eine gerichtete $C^k$-Kurve mit $k\geq n$, die eine Parametrisierung $\gamma: I\rightarrow \mathbb{R}^n$ besitzt, so dass 
+  $\gamma^{(1)}(t),...,\gamma^{(n-1)}(t)$ f"ur alle $t\in I$ ein linear unabh"angiges Tupel von Vektoren bilden. Es sei $\left( e_1,...,e_n \right)$ die positiv orientierte 
+  Gram-Schmidt-Basis zu $\left(\gamma^{(1)}(t),...,\gamma^{(n-1)}(t)\right)$, dann hei"st $e_i:I\rightarrow \mathbb{R}^n$ der i-te Frenet-Vektor zu $\gamma$.
+  Man nennt $\left( e_1,...,e_n \right)$ das {\it begleitende} oder {\it Frenet-n-Bein} zu $\gamma$ (oder auch die begleitende oder Frenet-Basis).
+\end{defi}
+
+\fc{ebenFrenetKurven}
+\begin{bem}[Frenet-Kurven in der Ebene]
+\begin{enumerate}
+\item Eine Kurve im $\mathbb{R}^2$ ist genau dann eine Frenet-Kurve, wenn sie von der Klasse $C^2$ und regul"ar
+ist.  
+\item Die Eigenschaft, dass $(\gamma^{(1)}(t),...,\gamma^{(n-1)}(t))$ linear unabh"angig sind, h"angt nicht von der gerichteten Parametrisierung ab. Beweis durch Induktion.
+\item Es gilt f"ur das Frenet-2-Bein 
+\[e_1=:(x,y)\ \Rightarrow \ e_2=(-y,x).\]
+im Komplexen also $ie_1=e_2$.
+\end{enumerate}
+
+\end{bem}
+
+
+\fc{frenetkurvesat}
+\begin{sat}[Frenet-Differentialgleichungen\index{Frenet-Kurve}]
+  Sei $\gamma: I\rightarrow \mathbb{R}^n$ eine (gerichtete) Bogenl"angenparametrisierung einer $C^k$-Frenet-Kurve, dann existieren Funktionen $\kappa_1,...,\kappa_{n-2}: I\rightarrow (0,\infty)$ 
+  und $\kappa_{n-1}:I\rightarrow \mathbb{R}$, 
+  so dass das begleitende Frenet-n-Bein die Frenet-Differentialgleichungen 
+  
+  \begin{equation*}\begin{aligned}
+   \dot{e}_1 &= \kappa_1 e_2,\\
+   \dot{e}_i &= \kappa_i e_{i+1}   -\kappa_{i-1} e_{i-1} \qquad \text{f"ur $i=2,...,n-1$},\\
+   \dot{e}_n &=  - \kappa_{n-1} e_{n-1} 
+  \end{aligned}\end{equation*}
+  erf"ullt. Dabei ist $k_i$ von der Klasse $C^{k-i-1}$.  
+\begin{proof}
+Positivit"at der Diagonalelemente  der Basiswechselmatrizen      von Gram-Schmidt f"uhrt zur Positivit"at der Kr"ummungen.  
+\end{proof}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{sat}
+\todo{Ist Bemerkung 2.28 (Skript) der einzige Grund, warum die $\kappa$ bis auf das $n-1$-te alle positiv sind?}
+
+\fc{frenetkruemmungdefi}
+\begin{defi}[Frenet-Kr"ummungen\index{Frenet-Kr"ummung@Frenet-Kr\""ummung}]
+  Die Funktionen $\kappa_1,...,\kappa_{n-1}$ hei"sen die Frenet-Kr"ummungen von $\gamma$, falls $\gamma$ eine gerichtete Bogenl"angenparametrisierung einer $C^k$-Frenet-Kurve ist.
+ \[\kappa_i(t):=\langle\dot{e}_i(t),e_{i+1}(t)\rangle>0 \quad (i+1 \leq n-1)\]
+ wobei
+ \[\dot{e}_i(t)=\sum\limits_{j=1}^i\Big(\dot a_{ij}(t)\gamma^{(j)}(t)+a_{ji}(t)\gamma^{(j+1)}(t)\Big)\]
+ und $a_{ij}$ die Faktoren der Basiswechselmatrix in das begleitende Frenet-n-Bein.
+
+\end{defi}
+\fc{eindeutigkeitFrenetKr}
+\begin{bem}[Eindeutigkeit der Frenet-Kr"ummung]
+\index{Frenet-Kr"ummung@Frenet-Kr\""ummung}
+ Die Frenet-Kr"ummungen sind geometrische Invarianten, dass hei"st, sie sind
+unabh"angig von der Parametrisierung der (gerichteten) Kurve. Da wir gerichtete
+Bogenl"angenparametrisierungen zur Definition benutzt haben, reicht es,
+Parametertransformationen der Form $t\rightarrow t+c,\quad c\in \mathbb{R}$ zu
+betrachten. Man erh"alt leicht, dass gilt
+\[\bar{\kappa}=\kappa(t+c)\]
+Also genauso eindeutig wie eine Parametrisierung nach Bogenl"ange.
+
+\end{bem}
+
+\fc{hsaKurvenTheorie}
+\begin{sat}[Hauptsatz der Kurventheorie]
+\index{Frenet-Kr"ummung@Frenet-Kr\""ummung}
+\index{Frenet-Kurve}
+\index{Hauptsatz der Kurventheorie}
+Sei $k\geq n$, seien Funktionen $\kappa_1,...,\kappa_{n-2}:I\rightarrow
+(0,\infty)$ und $\kappa_{n-1}: I\rightarrow \mathbb{R}$ mit $\kappa_i \in
+C^{k-i-1}(I)$, eine orientierte ONB $(e_1,...,e_n)$ von $\mathbb{R}^n$, $p\in
+\mathbb{R}^n$ und $t_0\in I$ gegeben, dann existiert genau eine
+$C^k$-Frenet-Kurve mit Bogenl"angenparametrisierung $\gamma:I\rightarrow
+\mathbb{R}^n$ und $\gamma(t_0)=p$, deren Frenet-Kr"ummungen gerade
+$\kappa_1,...,\kappa_{n-1}$ sind und deren Frenet-n-Bein an der Stelle $t_0$
+genau $(e_1,...,e_n)$ ist.
+
+\end{sat}
+\begin{proof}
+  Die Frenet-DGL bilden ein System linearer Differentialgleichungen ($n^2$ Variablen, $\kappa_1,...,\kappa_{n-1}$ sind die Koeffizienten).
+  Dieses besitzt nach dem Satz von Picard-Lindel"of (globale Variante!) eine eindeutige $C^{k-n+1}$-L"osung $(e_1,...,e_n): I\rightarrow \mathbb{R}^{n^2}$.
+  Um im Verlauf des Beweises $\gamma\in C^k$ zu erhalten, pr"ufen wir mit Hilfe der Frenet-DGL $e_i\in C^{k-i}$ (induktiv). 
+  Wir zeigen, dass $(e_1,...,e_n)\ \forall t$ eine ONB bilden.\todo{Axel: den Schritt check ich nicht}
+  Wir definieren schlie"slich $\gamma(t):=p+ \int_{t_0}^{t}e_1(s)ds$. Dann rechnen wir nach, dass $(e_1,...,e_n)$ die Eigenschaften 
+  3 und 4 der positiv orientierten Gram-Schmidt-Basis zu $\left(\gamma^{(1)}(t),...,\gamma^{(n-1)}(t)\right)$ erf"ullt (vgl. Seite 37, Mitte). 
+  Da die Eigenschaft 1 bereits nachgerechnet ist ($(e_1,...,e_n)$ ist eine positiv orientierte ONB) ist $(e_1,...,e_n)$ sogar die eindeutig bestimmte
+  positiv orientierte ONB zu $\left(\gamma^{(1)}(t),...,\gamma^{(n-1)}(t)\right)$ (vgl. S.37, Mitte) .Nach Definition 2.20 im Skript k"onnen 
+  wir $(e_1,...,e_n)$ ab sofort Frenet-Bein nennen und die Koeffizienten  $\kappa_1,...,\kappa_{n-1}$ sind somit die Frenet-Kr"ummungen 
+  (da $\gamma$ nach Bogenl"ange parametrisiert ist).
+\end{proof}
+
+\fc{euklIso}
+\begin{defi}[Euklidische Isometrie]
+Eine Abbildung $g:V\to V$ mit $V$ normierter Vektorraum, hei"st euklidische Isometrie, falls f"ur alle $x,y \in V$ gilt 
+\[||x-y||=||g(x)-g(y)||\]
+
+
+\beachte{z.B. $g(x)=Ax+b$ mit $A\in O(n)$ Drehmatrix.}
+
+
+
+\end{defi}
+
+\fc{geomInvarianzKurvenHauptsatz}
+\begin{folg}[Geometrische Invarianz von Frenet-Kurven (Folgerung aus dem Hauptsatz)]
+\index{Frenet-Kr"ummung@Frenet-Kr\""ummung}\index{Frenet-Kurve}
+ Seien $\gamma, \bar{\gamma}$ zwei nach Bogenl"ange parametrisierte
+Frenet-Kurven, deren Frenet-Kr"ummungen "ubereinstimmen. Dann existiert eine
+orientierungserhaltende Euklidische Isometrie $g\in E(n)$, so dass
+$\bar{\gamma} = g \circ \gamma$.
+\begin{proof}
+Sei $t_0\in I$ gegeben, dann existiert eine Matrix $A\in SO(n)$ mit $\bar{e_i}(t_0)=Ae_i(t_0)$. Sei $v=\bar{\gamma}(t_0)-A\gamma(t_0)$ und $g=(A,v)\in SO(n)\times \mathbb R^n$ ($g(p)=Ap+v$) dann stimmen $g\circ\gamma$ und $\bar\gamma$ im Punkt $t_0$ "uberein und haben f"ur alle $t\in I$
+das gleiche Frenet-n-bein (deshalb h"angt A eigentlich nicht von t ab) und deshalb gilt $\bar\gamma=g\circ\gamma$,
+ \end{proof}
+\end{folg}
+
+
+\subsection{Ebene Kurven}
+
+\fc{tangenteSchmiegkreisdefi}
+\begin{prop}[Tangente und Schmiegkreis ($\mathbb{R}^2$)]
+ \index{Frenet-Kr"ummung@Frenet-Kr\""ummung}
+ \index{Tangente}
+ \index{Schmiegkreis}
+Sei $\gamma$ eine nach Bogenl"ange parametrisierte, regul"are $C^2$-Kurve mit
+Frenet-n-Bein $e_1,e_2 : I \rightarrow \mathbb{R}^2$ und Kr"ummung
+$\kappa:I\rightarrow \mathbb{R}$, und sei $s_0\in I$.
+\begin{enumerate}
+ \item Die Tangente
+ \begin{align*}
+  T=\left\{\gamma(s_0) + t\dot{\gamma}(s_0)| t\in \mathbb{R}\right\}
+ \end{align*}
+ ber"uhrt $\gamma$ bei $s_0$ von erster Ordnung (von 2. Ordnung wenn
+$\kappa(s_0)=0$).
+\item Falls $\kappa(s_0)\not=0$, so existiert genau ein Kreis(Schmiegkreis), der $\gamma$ bei
+$s_0$ von zweiter Ordnung ber"uhrt, dieser hat den Mittelpunkt
+$\gamma(s_0)+\frac{1}{\kappa(s_0)}e_2(s_0)$ und Radius
+$\frac{1}{|\kappa(s_0)|}$. Dieser Kreis hei"st Schmiegkreis. Sein Mittelpunkt
+hei"st Brennpunkt\index{Brennpunkt}. Falls $\kappa\not=0$ auf ganz $I$
+ist, hei"st die Kurve der Brennpunkte Evolute.
+\index{Evolute}
+\end{enumerate} 
+\end{prop}
+\todo{Axel: zwei kleine Fragen zu dem Beweis}
+\begin{proof}
+\begin{enumerate}
+  \item 
+ Definiere Abstandsfunktion zwischen Tangente und Kurve
+ \begin{align*}
+ d(s):= d(\gamma(s),T):= \langle \gamma(s)-\gamma(s_0), e_2(s_0)\rangle
+ \end{align*}
+Ber"uhrung erster Ordnung gdw. $\dot d(s) = 0$, zweiter Ordnung falls $\ddot d(s) = 0$.
+\item Definiere Abstandsfunktion zwischen Kreis und Kurve
+\begin{align*}
+ d(s):= d(\gamma(s),p)-r= \sqrt{\langle \gamma(s)-p,\gamma(s)-p\rangle} -r
+ \end{align*}
+\end{enumerate}
+\end{proof}
+
+
+\beachte{Schmiegkreis, Brennpunkt und Evolute sind geom. Invarianten.}
+\fc{Traktrix}
+\begin{bem}[Traktrix und Kettenlinie]
+Als {\it Traktrix} bezeichnet man eine Schleppkurve, die durch die Trajektorie eines Massenpunktes am Ende eines gezogenen Seils der L"ange 1 gegeben ist,
+ dessen Anfang immer auf der
+x-Achse liegt. Die Evolute der Traktrix ist eine {\it Kettenlinie}.
+
+
+\end{bem}
+
+\fc{defevolvente}
+\begin{defi}[Evolvente]
+Sei $\gamma:I\to\mathbb R^n$ eine nach Bogenl"ange parametrisierte Kurve, dann ist die Evolvente $\beta:I\to\mathbb R^n$ f"ur $s_0\in I$
+gegeben durch
+\[\beta(s)=\gamma(s)-(s-s_0)\dot{\gamma}(s)\]
+\begin{enumerate}
+ \item Jede Kurve ist Evolute ihrer Evolventen (sofern wohldefiniert)
+\item Jede Kurve ist eine Evolvente ihrer Evolute (sofern wohldefiniert)
+\end{enumerate}
+\beachte{Evolvente und Evolute einer nach Bogenl"ange parametrisierten Kurve sind im Allgemeinen nicht nach Bogenl"ange parametrisiert.}
+\end{defi}
+
+\fc{einfachGeschlosseneKurve}
+\begin{defi}[(einfach) geschlossene Kurven ($\mathbb{R}^2$)]\index{geschlossene Kurve}\index{einfach geschlossene Kurve}
+ Eine $C^{k}-$ parametrisierte Kurve $\gamma: [a,b]\rightarrow \mathbb{R}^n$ hei"st $C^k$-geschlossen, 
+ wenn $\gamma^{(j)}(a) = \gamma^{(j)}(b),\ \forall j=0,...,k$. 
+ Die Kurve hei"st einfach $C^k$-geschlossen, wenn zus"atzlich $\gamma(t)\not=\gamma(t')\ \forall t,t'\in [a,b)$ mit $t\not=t'$.
+ 
+ Eine parametrisierte Kurve $\gamma$ hei"st periodisch, wenn f"ur ein $T>0$ gilt: $\gamma(t+T)=\gamma(t)$.
+ 
+ Eine Kurve hei"st (einfach) geschlossen, wenn sie eine (einfach) geschlossene Parametrisierung besitzt. Die L"ange einer 
+ geschlossenen parametrisierten Kurve $\gamma$ mit Periode $T=b-a$ ist $L(\gamma)=L(\gamma|_{[a,b]})$.
+\end{defi}
+
+\fc{umlaufzahl}
+\begin{defi}[Umlaufzahl ($\mathbb{R}^2$)]\index{Umlaufzahl}
+ Sei $\gamma:[a,b] \rightarrow \mathbb{R}^2$ eine $C^2$-geschlossene Bogenl"angenparametrisierung einer gerichteten Kurve.
+ Dann hei"st
+ \begin{equation*}\begin{aligned}
+  n_\gamma:=\frac{1}{2\pi}\int_a^b \kappa(s) ds
+ \end{aligned}\end{equation*}
+die Umlaufzahl der Kurve.
+
+\end{defi}
+
+\beachte{$\kappa$ (und damit $n_\gamma$) ist invariant unter orientierungserhaltenden euklidischen Bewegungen.}
+
+\fc{hopfscherUmlaufsatz}
+\begin{sat}[Hopfscher Umlaufsatz ($\mathbb{R}^2$)]\index{Hopfscher Umlaufsatz}\index{Umlaufzahl}
+  F"ur jede $C^2$-geschlossene regul"are Kurve $\gamma$ gilt $n_\gamma\in \mathbb{Z}$. Falls $\gamma$ einfach geschlossen ist,
+  gilt $n_\gamma = \pm 1$.
+\begin{proof}
+Identifiziere $\mathbb{R}^2$ mit $\mathbb{C}$.
+\begin{enumerate}
+  \item Definiere die Winkelfunktion \index{Winkelfunktion}
+  \begin{align*}
+   \alpha(s) = \alpha_0 + \int_a^s \kappa(t) dt 
+  \end{align*}
+  mit $\alpha_0$ gegeben durch $\dot\gamma(a)=e^{i\alpha_0}$. Es folgt $\dot\gamma(s)=e^{i\alpha(s)}$
+  (Wir verwenden $e_2=ie_1$, vgl. Skript).
+  Es gilt: $\dot\gamma(a)=\dot\gamma(b)\Rightarrow e^{i\alpha(a)} = e^{i\alpha(b)} \Rightarrow \alpha(b) = \alpha(a) + 2\pi z,$ f"ur ein $z\in \mathbb{Z}$.
+  Es ist also $n_\gamma=z\in \mathbb{Z}$.
+  \item Den zweiten Teil kann der Goette garantiert auch nicht auswendig, auch hier braucht man eine Winkelfunktion im Beweis, diese hat jetzt 2 Argumente.
+\end{enumerate}
+\end{proof}
+
+\end{sat}
+
+\fc{konvexeKurve}
+\begin{defi}[konvexe Kurve ($\mathbb{R}^2$)]
+\index{konvex}\index{konvexe Kurve}\index{konkav}
+  Eine einfach $C^1$-geschlossene gerichtete Kurve hei"st konvex (konkav), wenn f"ur eine Bogenl"angenparametrisierung
+  $\gamma:[a,b]\rightarrow \mathbb{R}^2$ mit Frenet-Zweibein $(e_1,e_2)$, und alle $s,t\in [a,b]$ gilt:
+  \begin{align*}
+   \langle \gamma(s)-\gamma(t), e_2(t)\rangle \geq 0 \quad (bzw.\ \leq 0) .
+  \end{align*}
+\end{defi}
+
+\fc{KonvexitaetKruemmung}
+\begin{sat}[Zusammenhang: Konvexit"at und Kr"ummung bei ebenen Kurven]
+\index{konvex}\index{Kr"ummung}
+  Eine einfach $C^2$-geschlossene, ebene Kurve ist genau dann konvex (konkav), wenn ihre Kr"ummung $\kappa$ "uberall nicht-negativ (nicht-positiv) ist.
+  \begin{proof}
+   Die Hinrichtung ist einfacher, hier verwendet man, dass $\forall t$ die Funktion $d_t(s)$ aus der Definition der Konvexit"at in $t$ 
+   ein Minimum hat (aufgrund der Konvexit"at). F"ur eine Bogenl"angenparametrisierung $\gamma $ gilt aber gleichzeitig: $\ddot d_t(t) = \kappa_1(t)$.
+   Daraus folgt dann sofort $\kappa_1(t) \geq 0$.\\
+   Die R"uckrichtung ist technischer und wird durch Widerspruch bewiesen. Man konstruiert eine Winkelfunktion und kann zeigen (technisch), dass diese die $\mathbb{S}^1$ zwei mal 
+   uml"auft, obwohl $\gamma$ einfach geschlossen ist. Das ist ein Widerspruch zum Hopfschen Umlaufsatz.
+  \end{proof}
+
+\end{sat}
+
+\fc{FlaecheEinesGebiets}
+\begin{defi}[Fl"ache eines beschr"ankten Gebiets im $\mathbb{R}^2$]
+ Sei $\Omega\subset \mathbb{R}^2$ ein beschr"anktes Gebiet, und seien $x,y$  die Standardkoordinaten des $\mathbb{R}^2$, dann definieren wir die Fl"ache von $\Omega $ als 
+ \begin{align*}
+  A(\Omega)=\int_\Omega dxdy.
+ \end{align*}
+\end{defi}
+
+\fc{FlaecheDurchKurve}
+\begin{prop}[Fl"acheninhalt  ($\mathbb{R}^2$) durch Kurve ermitteln]
+ Sei $\Omega \subset \mathbb{R}^2$ ein Gebiet, das von einer einfach geschlossenen gerichteten regul"aren Kurve mit Umlaufzahl 1 berandet wird, und sei
+ \begin{align*}
+  t\mapsto\gamma(t)=\left( \begin{matrix}
+                            x(t)\\y(t)
+                           \end{matrix}
+ \right)
+ \end{align*}
+ eine Parametrisierung dieser Kurve mit Periode $T$, dann gilt
+ \begin{align*}
+  A(\Omega) = \int^T_0x(t)\dot y(t) dt = -\int^T_0\dot x(t)y(t) dt = \frac12 \int^T_0 (x(t)\dot y(t) - \dot x(t)y(t))\  dt.
+ \end{align*}
+\end{prop}
+
+\fc{IsoperimetrischeUNGL}
+\begin{sat}[Isoperimetrische Ungleichung ($\mathbb{R}^2$)]
+  Sei $\Omega\subset \mathbb{R}^2$ ein Gebiet, dass von einer einfach geschlossenen regul"aren $C^1$-Kurve $\gamma$ berandet wird, dann gilt
+  \begin{equation*}\begin{aligned}
+   A(\Omega)\leq \frac{1}{4 \pi} L(\gamma)^2,
+  \end{aligned}\end{equation*}
+ und Gleichheit gilt genau dann, wenn $\gamma$ einen Kreis beschreibt.\\
+Zur Erinnerung: Sei der Umfang eines Kreises $U$ und $d$ der Durchmesser, dann gilt $d=\frac{U}{\pi}$. Die Formel f"ur den Fl"acheninhalt $A$ ist somit gegeben durch 
+\[A=\pi r^2=\frac{\pi d^2}{4}=\frac{1}{4\pi}U^2\]
+
+
+
+
+
+\end{sat}
+
+\subsection{Kurven im $\mathbb{R}^3$}
+
+\fc{FrenetimR3}
+\begin{bem}[Frenet-Kurven im $\mathbb{R}^3$]
+\index{Frenet-Kurve}
+  Eine regul"are Kurve $\gamma: I \rightarrow \mathbb{R}^3$ ist genau dann eine Frenet-Kurve, wenn sie von der Klasse $C^3$ ist und die Kr"ummung $\kappa_1$ nirgends verschwindet (d.h. wenn $\ddot \gamma$ stets von $\dot \gamma$ linear unabh"angig ist).
+\end{bem}
+
+
+\fc{KruemmungKurveR3}
+\begin{defi}[Kr"ummung, Windung(Torsion) einer Kurve im $\mathbb{R}^3$]
+\index{Windung}\index{Torsion}\index{Kr"ummung}
+Sei $\gamma :I \rightarrow \mathbb{R}^3$ eine nach der Bogenl"ange parametrisierte regul"are $C^2$-Kurve, dann hei"st $\kappa:=\|\ddot\gamma\|: I\rightarrow (0,\infty)$ die Kr"ummung  von $\gamma$.
+
+Sei $\gamma :I \rightarrow \mathbb{R}^3$ eine Frenet-Kurve, dann hei"st $\tau:=\kappa_2:I\rightarrow \mathbb{R}$ die Windung (Torsion) von $\gamma$.
+
+Falls $\gamma$ nach Bogenl"ange parametrisiert ist, gilt $\ddot\gamma=\dot e_1=\kappa_1\cdot e_2$, also stimmen $\kappa$ und $\kappa_1$ f"ur Frenet-Kurven "uberein. Der Satz von Fenchel gilt allerdings bereits f"ur regul"are $C^2$-Kurven.
+
+
+
+
+
+
+
+\end{defi}
+
+
+\fc{Fenchel1}
+\begin{sat}[Fenchel]
+\index{konvex}\index{Satz von Fenchel}
+  Sei $n\geq 3$, und sei $\gamma:[a,b]\rightarrow \mathbb{R}^n$ eine geschlossene, nach Bogenl"ange parametrisierte $C^2$-Kurve, dann gilt
+  \begin{equation*}\begin{aligned}
+   \int_a^b\kappa(s) ds \geq 2\pi \ ,
+  \end{aligned}\end{equation*}
+und Gleichheit gilt genau dann, wenn $\gamma$ in einem zweidimensionalen Unterraum verl"auft und dort konvex ($\Rightarrow$ einfach geschl.) ist, siehe auch Umlaufzahl im $\mathbb R^2$.
+%\todo{Beweisskizze hier?}
+
+
+
+
+\end{sat}
+
+\section{Die "au"sere Geometrie von Fl"achen}
+
+\subsection{Parametrisierte Fl"achenst"ucke}
+
+\fc{FlaecheUMFK}
+\begin{bem}[Fl"ache im $\mathbb{R}^3$]
+  Eine $C^k$-Fl"ache im $\mathbb{R}^3$ fassen wir als eine zweidimensionale $C^k$-Untermannigfaltigkeit des $\mathbb{R}^3$ auf.
+\end{bem}
+
+
+
+\fc{UMARN}
+\begin{defi}[Untermannigfaltigkeit des $\mathbb{R}^n$]
+\index{Untermannigfaltigkeit}
+\index{Untermannigfaltigkeitskarte}
+ Sei $k\in \mathbb{N}_0\cup \{\infty\}, m\leq n\in \mathbb{N}_0$. Eine
+$m$-dimensionale ($C^k$-) Untermannigfaltigkeit des $\mathbb{R}^n$ ist eine
+Teilmenge $M\subset \mathbb{R}^n$, so dass zu jedem $p\in M$ eine Umgebung
+$U^\Phi\subset \mathbb{R}^n$ von $p$, eine offene Menge $V^\Phi\subset
+\mathbb{R}^n$ und ein glatter (bzw. $C^k-$) Diffeomorphismus $\Phi:
+U^\Phi\rightarrow V^\Phi$ mit 
+\begin{align*}
+ M\cap U^\Phi = \Phi^{-1}(\mathbb{R}^m\times \{0\})
+\end{align*}
+existiert. Die Abbildung $\Phi$ hei"st auch Untermannigfaltigkeitskarte von $M$
+um $p$ und ihre  Einschr"ankung 
+\begin{align*}
+ \varphi=\Phi|_{U^\Phi \cap M}:U^\varphi=U^\Phi \cap M \rightarrow V^\Phi \cap
+(\mathbb{R}^m\times \{0\}) = V^\varphi
+\end{align*}
+hei"st Karte von $M$ um $p$.
+\end{defi}
+
+\fc{satvomregWer}
+\begin{sat}[vom regul"aren Wert]
+ \index{Satz vom regul"aren Wert@Satz vom regul""aren Wert}
+\index{Umkehrfunktion}
+ \index{regul"arer Wert@regul""arer Wert}
+ Sei $U\subset \mathbb{R}^3$ offen, $h:U\rightarrow \mathbb{R}$ eine
+$C^k$-Funktion mit $k\geq 1$, und sei $a\in \mathbb{R}$ ein regul"arer Wert von
+$h$, d.h. es gilt $dh(x)\not = 0\ \forall x\in h^{-1}(a)$, dann ist $h^{-1}(a)$
+eine $C^k$-Fl"ache im $\mathbb{R}^3$.
+\begin{proof}
+ Die Untermannigfaltigkeitskarte kann konkret angegeben werden und ist wegen des (lokalen) Umkehrsatzes (Analysis) ein Diffeomorphismus.
+\end{proof}
+
+\end{sat}
+
+\fc{Dimmersion}
+\begin{defi}[Immersion]
+ \index{Immersion}
+ Sei $U\subset \mathbb{R}^m$ offen, dann hei"st eine Abbildung $f:U\rightarrow
+\mathbb{R}^n$ Immersion, wenn das Differential $df_p \in Hom(\mathbb{R}^m,
+\mathbb{R}^n)=M_{n,m}(\mathbb{R})$ f"ur alle $p\in U$ injektiv ist.
+
+Beispielsweise ist eine parametrisierte Kurve genau dann eine Immersion, wenn
+sie regul"ar ist.
+
+Allgemeiner: sei $W\subset\mathbb R^m$ offen und $f\in C^k(W,\mathbb R^n)$, dann nennen wir $im\,f$ eine immersierte m-dimensionale $C^k$-Untermannigfaltigkeit des $\mathbb R^n.$ Eine parametrisierte $C^k$-Fl"ache ist eine immersierte zweidimensionale $C^k$-Umfk des $\mathbb R^3$. 
+ 
+\end{defi}
+
+
+\fc{Dparamimmer}
+\begin{defi}[Parametrisierung einer Untermannigfaltigkeit]
+\index{Immersion}
+\index{Untermannigfaltigkeit}
+\index{Parametrisierung}
+ Sei $M\subset \mathbb{R}^n$ eine m-dimensionale Untermannigfaltigkeit. Sei
+$W\subset \mathbb{R}^m$ offen. Dann hei"st eine Immersion $f:W\rightarrow M$
+eine Parametrisierung von $M$.
+\end{defi}
+
+
+\fc{WichtigeBsp1}
+\begin{bem}[Warum ist die 8 keine UMFk des $\mathbb R^2$?]
+Im Kreuzpunkt $p$ existiert keine stetige Abbildung von $\phi:U^\phi\cap M\subset\mathbb R^2\to\mathbb R$. Keine Aufteilung in mehrere Intervalle, da alle Arme $\phi(p)$ beranden m"ussen. Es kommt zum Widerspruch bei der Stetigkeit der Umkehrabbildung der (vermeindlichen) Karte.
+
+
+
+
+\end{bem}
+
+\fc{WichtigeBsp2}
+\begin{bem}[Gebe eine Kurve $\gamma:\mathbb R\to\mathbb R^2$ an die $C^k$ f"ur $k\in \mathbb{N}$ aber nicht regul"ar ist.]
+\begin{equation*}\begin{aligned}
+\gamma(t)=\begin{cases}(0,-e^{-\frac{1}{t}})&\text{f"ur }t<0,\\
+(0,0)&\text{f"ur }t=0,\\
+(e^{-\frac{1}{t}},0)&\text{f"ur } t>0.
+\end{cases}
+\end{aligned}\end{equation*}
+
+
+
+\end{bem}
+
+
+\fc{Sphaerflaeche}
+\begin{bem}[Warum ist die Sph"are $S^2$ eine Fl"ache?]
+Da die Funktion $h(x)=||x||^2$ glatt ist und den regul"aren Wert 1 hat: $\mathbb S^2=\{h^{-1}(1)\}$. Siehe Satz vom regul"arem Wert.
+
+
+
+\end{bem}
+
+
+\fc{Bparamumannig}
+\begin{bem}[Zusammenhang von Parametrisierung und Untermannigfaltigkeit]\ \\
+\index{Parametrisierung}
+\index{Untermannigfaltigkeit}
+\index{Umkehrfunktion}
+ \begin{enumerate}
+  \item Die Umkehrabbildung einer Untermannigfaltigkeitskarte ist eine
+Parametrisierung.
+\begin{proof}
+ Klar, weil die Umkehrabbildung jeder Karte eine Immersion ist.
+\end{proof}
+\item Jede Immersion parametrisiert lokal eine Untermannigfaltigkeit.
+\begin{proof}
+ Der Satz "uber die lokale Umkehrbarkeit liefert lokal eine Untermannigfaltigkeitskarte.
+\end{proof}
+\item ?? Umparametrisierung ??
+\item Im Allgemeinen ist eine parametrisierte Kurve keine Untermannigfaltigkeit lokal immer.
+\begin{proof}
+ Gegenbeispiel: liegende Acht: $\gamma(t)=\left( 2cos t, sin2t \right)^T$, Problem im Schnittpunkt.
+\end{proof}
+\beachte{Jede Parametrisierung einer regul"aren Kurve ist ein Immersion.}
+ \end{enumerate}
+
+
+\end{bem}
+
+
+\fc{Dtaratb}
+\begin{defi}[Tangentialraum, Tangentialb"undel]
+\index{Tangentialraum}\index{Tangentialb"undel@Tangentialb""undel}
+\index{Tangentialvektor} \index{Darstellung}
+Sei $M\subset \mathbb{R}^n$ eine m-dimensionale $C^k$-Untermannigfaltigkeit
+mit $k\geq 1$, sei $p\in M$, und sei $\Phi:U^\Phi \rightarrow V^\Phi$ eine
+Untermannigfaltigkeitskarte von $M$ um $p$. Der Tangentialraum $T_pM$ an $M$ im
+Punkt $p$ ist definiert als
+\begin{equation*}\begin{aligned}
+ T_pM=\left( d\Phi_p \right)^{-1}\left( \mathbb{R}^m\times \{0\} \right)=
+ \{v\in \mathbb{R}^n| d\Phi_p(v) \in \mathbb{R}^m\times \{0\}\}.
+\end{aligned}\end{equation*}
+Elemente von $T_pM$ hei"sen Tangentialvektoren an $M$ in $p$. Sei $v\in T_pM$
+und $\Phi$ wie oben, dann hei"st
+\begin{equation*}\begin{aligned}
+ v^\varphi := d\Phi_{p}(v)\in \mathbb{R}^m
+\end{aligned}\end{equation*}
+die Darstellung von $v$ in der Karte $\varphi=\Phi|_{U^\Phi\cap M}$. Das
+Tangentialb"undel an $M$ ist definiert als
+\begin{equation*}\begin{aligned}
+ TM=\dot\bigcup_{p\in M} T_pM= \{ (p,v)|p\in M, v\in T_pM \}.
+\end{aligned}\end{equation*}
+
+
+\end{defi}
+
+
+
+
+\fc{BumaTavdPar}
+\begin{bem}[Darstellung von Tangentialvektoren durch Parametrisierungen]
+ Da Untermannigfaltigkeitskarten Diffeomorphismen sind, k"onnen wir Vektoren auch
+durch Parametrisierungen darstellen. Es gilt:
+\begin{equation*}\begin{aligned}
+ T_pM=d(\Phi^{-1})_{\varphi(p)} (\mathbb{R}^m \times
+0)=d(\varphi^{-1})_{\varphi(p)}(\mathbb{R}^m)=df_{\varphi(p)}(\mathbb{R}^m)\subset
+\mathbb{R}^n,
+\end{aligned}\end{equation*}
+wobei wir $f=\varphi^{-1}$ setzen (wie in Skript: Bemerkung 3.5(1)). Dabei gilt
+offenbar  $v=df_{\varphi(p)}(v^\varphi)$.
+Wir k"onnen durch diese Formel also auch an parametrisierte
+Fl"achenst"ucke Tangentialvektoren definieren, denn nach Bemerkung (Skript: 3.5(2)) ist jede
+Parametrisierung lokal von diesem Typ. Die speziellen Vektoren 
+\begin{equation*}\begin{aligned}
+ \frac{\partial f}{\partial x_1}\arrowvert_x = df_x\left( \begin{matrix}
+                                               1\\0
+                                              \end{matrix}
+ \right), \qquad \frac{\partial f}{\partial x_2}\arrowvert_x = df_x\left(
+\begin{matrix}
+                                               0\\1
+                                              \end{matrix} \right)
+\qquad \in T_{f(x)}M
+\end{aligned}\end{equation*}
+hei"sen die Koordinatenvektoren von $f$ im Punkt $f(x)$.
+
+
+
+
+
+
+\end{bem}
+
+\fc{BtanVekRicAbl}
+\begin{bem}[Tangentialvektoren als Richtungsableitungen]
+Sei $v\in T_pM\subset \mathbb{R}^n$ und $h:\mathbb{R}^n\rightarrow \mathbb{R}$
+differenzierbar, dann definieren wir
+\begin{align*}
+ v(h)=dh_p(v) = \partial_v h(p)
+\end{align*}
+als Richtungsableitung von $h$ in Richtung $v$ an der Stelle $p$.
+\end{bem}
+
+
+\fc{BtanVekGesVek}
+\begin{bem}[Tangentialvektoren als Geschwindigkeitsvektoren von Kurven]
+Wir erhalten Tangentialvektoren auch als Geschwindigkeitsvektoren von Kurven,
+die auf $M$ verlaufen. Sei etwa $\gamma:I\rightarrow M\subset \mathbb{R}^n$
+eine Kurve und $\Phi:U^\Phi \rightarrow V^\Phi$ eine
+Untermannigfaltigkeitskarte mit $t\in I$ und $p=\gamma(t)\in
+U^\varphi = M \cap U^\Phi$. Nach Einschr"ankung von $\gamma$ gelte
+$Im(\gamma)\subset U^\varphi$, und wir setzen
+\begin{align*}
+ \gamma^\varphi = \varphi\circ \gamma : I\rightarrow V^\varphi.
+\end{align*}
+Aus der Kettenregel folgt:
+\begin{align*}
+ d\Phi_p(\dot\gamma(t))=\frac{d(\Phi\circ \gamma)}{dt}=\dot\gamma^\varphi(t)\in
+\mathbb{R}^m\times \{0\},
+\end{align*}
+also $\dot\gamma(t)\in T_pM$.
+\end{bem}
+
+\fc{GrInnereGeometrie}
+\begin{defi}[Gr"o"sen der inneren Geometrie]
+ Alle geometrischen Gr"o"sen, die bez"uglich einer Parametrisierung $f$ nur von der Metrik $g^f$ des Tangentialraums aber nicht von $f$ selbst abh"angen, hei"sen \glqq Gr"o"sen der inneren Geometrie".
+
+
+
+Anders ausgedr"uckt: Gr"o"sen der inneren Geometrie h"angen nicht von der Lage der Fl"ache im umgebenden Raum ab.
+
+
+
+
+\end{defi}
+
+
+\fc{DFundamentalform}
+\begin{defi}[Erste Fundamentalform]
+\index{erste Fundamentalform}
+\index{Skalarprodukt}
+Sei $M\subset \mathbb{R}^n$ eine $C^k$-Untermannigfaltigkeit mit $k\geq1$, und sei $p\in M$. Die erste Fundamentalform
+$g_p$ ist die Einschr"ankung des euklidischen Standard-Skalarprodukts des $\mathbb{R}^n$ auf $T_pM\subset \mathbb{R}^n$. 
+Sei $f:V\rightarrow M$ eine Parametrisierung und $x\in V $ mit $f(x)=p$, dann hei"st
+\begin{equation*}\begin{aligned}
+g^f_x=\left( f^*g \right)_x = g_p\left( df_x(\cdot), df_x(\cdot) \right) = \langle df_x(\cdot), df_x(\cdot)\rangle
+\end{aligned}\end{equation*}
+die Darstellung von $g$ bez"uglich der Parametrisierung $f$. Ist $f=\varphi^{-1}$ f"ur eine Karte $\varphi$, dann schreiben wir auch 
+$g^\varphi_x$ anstelle von $g_x^f$.
+  
+
+
+\end{defi}
+
+\fc{DLaengeWinkelTV}
+\begin{defi}[L"ange und Winkel von Tangentialvektoren auf einer Fl"ache]
+\index{erste Fundamentalform}
+\index{Tangentialvektor}
+\index{Skalarprodukt}
+\index{Winkel}
+\index{Norm}
+Seien $v,w \in T_pM$, dann hei"st 
+\begin{align*}
+ \| v \|_p = \sqrt{g_p(v,v)}
+\end{align*}
+die L"ange von $v$, und falls $v,w \not= 0$, hei"st
+\begin{align*}
+ \angle_p (v,w) = \arccos \frac{g_p(v,w)}{\| v \|_p\|w \|_p} 
+\end{align*}
+der Winkel zwischen $v$ und $w$. F"ur $v,w \in \mathbb{R}^m$ schreiben wir
+\begin{align*}
+  \| v \|_x^f = \| v \|_x^\varphi = \| df_x(v) \|_p \\
+  \text{und } \angle_x^f (v,w) = \angle_x^\varphi (v,w) = \angle_p(df_x(v),df_x(w))
+\end{align*}
+\end{defi}
+
+\fc{BSkalarprUntersch}
+\begin{bem}[Euklidisches Skalarprodukt und erste Fundamentalform]
+\index{erste Fundamentalform}
+\index{Skalarprodukt}
+Im allgemeinen stimmen die Euklidischen Gr"o"sen nicht mit den durch $f$
+induzierten "uberein, d.h. es gilt:
+\begin{align*}
+ g^f_x\not=g_x,\quad \|\cdot\|_x^f \not= \|\cdot\|_x,\quad \angle_x^f(\cdot,
+\cdot)\not=\angle_x(\cdot, \cdot).
+\end{align*}
+Falls doch $\angle_x^f(\cdot, \cdot) =\angle_x(\cdot, \cdot)$ gilt, hei"st $f$
+winkeltreu oder winkelerhaltend.
+\end{bem}
+
+\fc{DFlaechenintegral}
+\begin{defi}[Fl"achenintegral]
+\index{Fl"achenintegral@Fl""achenintegral}
+\index{Integral}
+\index{Fl"achenelement@Fl""achenelement}
+ Sei $M\subset \mathbb{R}^3$ eine Fl"ache, sei $f:V\rightarrow M $ eine
+injektive Parametrisierung, und sei $h: M\rightarrow \mathbb{R}$ eine Funktion.
+Falls $h\circ f:V^\varphi\rightarrow\mathbb{R}$ integrierbar ist, definieren
+wir das (Fl"achen-) Integral von $h$ "uber im($f$) als 
+\begin{equation*}\begin{aligned}
+ \int_{im(f)}h\ dA=\int_V(h\circ f)\ dA^f = \int_V h(f(x))\sqrt{det(g^f_x)}\
+dx_1 dx_2
+\end{aligned}\end{equation*}
+Dabei hei"st $dA^f = \sqrt{det(g^f_x)}dx_1 dx_2$  das Fl"achenelement der
+Parametrisierung $f$. Wir definieren den Fl"acheninhalt einer Teilmenge
+$U\subset im(f)$ durch
+\begin{equation*}\begin{aligned}
+ A(U)=\int_U\ dA=\int_{f^{-1}(U)}\ dA^f.
+\end{aligned}\end{equation*}
+\end{defi}
+
+
+\fc{PIntegralunabhKarte}
+\begin{prop}[Unabh"angigkeit des Fl"achenintegrals von der Parametrisierung]
+\index{Parametrisierung}
+\index{Fl"achenintegral@Fl""achenintegral}
+Seien $\varphi_1, \varphi_2$ zwei Karten von $M$ und $h:M\rightarrow
+\mathbb{R}$ eine Funktion mit $h|_{M\setminus (U^{\varphi_1}\cap
+U^{\varphi_2})} = 0$, dann gilt:
+\begin{align*}
+ \int_{U^{\varphi_1}} h\ dA = \int_{U^{\varphi_2}} h\ dA.
+\end{align*}
+\begin{proof}
+ Man berechnet
+ \begin{align*}
+  det(g_x^{f_1}) = det(d(\varphi_2\circ\varphi_1^{-1})_x)^2\ det(g_x^{f_2})
+ \end{align*}
+Mit diesem Hilfsmittel und den Definitionen von $ \int_{U^{\varphi_1}}dA $ und $ \int_{U^{\varphi_2}}dA$ ist 
+es eine straight-forward-Rechung.
+\end{proof}
+\end{prop}
+
+\fc{Dintegrierbar}
+\begin{defi}[Integrierbare Funktionen, Fl"acheninhalt]
+\index{Fl"acheninhalt@Fl""acheninhalt}
+\index{integrierbar}
+\index{Fl"achenintegral}
+Sei $M\subset \mathbb{R}^3$ eine Fl"ache. Eine Funktion $h:M\rightarrow
+\mathbb{R}$ hei"st integrierbar, wenn es Karten $\varphi_1, ..., \varphi_k$ von
+$M$ und Funktionen $h_1, ..., h_k$ auf $M$ mit $h=h_1+...+h_k$ gibt, so dass
+f"ur alle $i$ die Funktion $h_i$ au"serhalb von $U^{\varphi_i}$ verschwindet
+und $h_i\circ f_i$ integrierbar ist. In diesem Fall definieren wir das
+Fl"achenintegral von $h$ "uber $M$ als 
+\begin{align*}
+ \int _M h\ dA = \sum\limits_{i=1}^k \int_{U^{\varphi_i}}h_i\ dA.
+\end{align*}
+Falls die konstante Funktion 1 auf M integrierbar ist, definieren wir den
+Fl"acheninhalt
+\begin{align*}
+ A(M)=\int_M\ dA,
+\end{align*}
+ansonsten setzen wir $A(M)=\infty$.
+ 
+\end{defi}
+
+
+\subsection{Normalenfelder und Kr"ummungen}
+
+
+\fc{DNormalraum}
+\begin{defi}[Normalraum, Normalenb"undel]
+\index{Normalraum}
+\index{Normalenb"undel@Normalenb""undel}
+\index{Normalenvektor}
+\index{Einheitsvektorfeld}
+Dei $M\subset \mathbb{R}^n$ eine m-dimensionale differenzierbare Untermannigfaltigkeit. Das orthogonale Komplement
+\begin{align*}
+ N_pM=\left\{ v\in \mathbb{R}^3| \langle v,w\rangle=0\ \forall w\in T_pM \right\} 
+\end{align*}
+zu $T_pM$ in $\mathbb{R}^n$ hei"st Normalraum zu $M$ am Punkt $p$, und das Normalenb"undel ist definiert als
+\begin{align*}
+ NM= \dot\bigcup _{p\in M} N_pM=\{ (p,\nu)| p\in M, \nu \in N_pM \}.
+\end{align*}
+Elemente von $N_pM$ hei"sen Normalenvektoren im Punkt $p$.
+
+\end{defi}
+
+\fc{DVektorfeld}
+\begin{defi}[Vektorfeld]
+\index{Vektorfeld}
+\index{tangential}
+\index{Normalenfeld}
+  Sei $M\subset \mathbb{R}^n$ eine m-dimensionale differenzierbare Untermannigfaltigkeit. Ein $C^k$-Vektorfeld l"angs
+  M ist eine Abbildung $X:M\rightarrow \mathbb{R}^n$, so dass $X\circ f\in C^k(V,\mathbb{R}^n)$ f"ur alle Parametrisierungen 
+  $f:V\to M$. Ein Vektorfeld $X$ l"angs $M$ hei"st tangential an $M$, wenn $X_p\in T_pM$, und Normalenfeld, wenn 
+  $X_p\in N_pM$ f"ur alle $p\in M$. Ein Vektorfeld von konstanter euklidischer Norm 1 hei"st Einheitsvektorfeld.
+  
+  Sei $f:V\to U\subset M$ eine Parametrisierung, dann ist ein Vektorfeld l"angs $f$ eine Abbildung $X:V\rightarrow \mathbb{R}^3$.
+  Ein Vektorfeld  $X$ l"angs $f$ hei"st tangential (normal), wenn $X({x})\in T_{f(x)}M$ ($X({x})\in N_{f(x)}M$) f"ur alle $x\in V$.
+
+\end{defi}
+
+\fc{Dorient}
+\begin{defi}[Orientierung auf einem Vektorraum]
+ \index{Orientierung}
+ Zwei Basen eines endlichdimensionalen Vektorraums $X$ hei"sen gleich orientiert, wenn die Basiswechselmatrix eine positive Determinante hat.
+ Eine Orientierung von $X$  ist eine Teilmenge ${o}\subset X^r$ der Menge aller Basen von $X$, so dass von je zwei verschieden orientierten
+ Basen (d.h. $det\, B>0$ und $det\, B'<0$)von $X$ genau eine in ${o}$ liegt. Dann tr"agt jeder endlichdimensionale Vektorraum genau zwei Orientierungen.
+
+\end{defi}
+
+\fc{OrientEinheitsnormVek}
+\begin{bem}[Zusammenhang Orientierung und Einheitsnormalenvektor]
+Jeder Normalenvektor $\nu\in N_pM$ legt eine Orientierung 
+\[o=\{(v_1,v_2)\in T_pM^2|det(v_1,v_2,\nu)>0\}\]
+ auf $T_pM$ so fest, dass eine Basis $(v_1,v_2)$ von $T_pM$ genau dann positiv orientiert ist, wenn die Basis $(v_1,v_2,\nu)$ des $\mathbb R^3$ positiv orientiert ist.
+ Sei umgekehrt eine Orientierung auf $T_pM$ gegeben und sei eine positiv orientierte Basis $(v_1,v_2)$ gegeben, dann erhalten wir den zugeh"origen Einheitsnormalenvektor durch
+ \[\nu=\frac{v_1\times v_2}{||v_1\times v_2||}\]
+ diese Basis ist immer noch positiv orientiert, denn es gilt
+ \[det(v_1,v_2,\nu)=||v_1\times v_2||>0\]
+
+
+\end{bem}
+
+
+
+\fc{DOrientierung}
+\begin{defi}[orientierte Fl"ache]
+\index{orientierte Fl"ache@orientierte Fl""ache}
+\index{orientiert}
+\index{positiv orientiert}
+\index{orientierbar}
+\index{Gau"s-Abbildung@Gau""s-Abbildung}
+Eine orientierte Fl"ache  $(M,\nu)$ ist eine Fl"ache $M\subset \mathbb{R}^3$ mit einem Einheitsnormalenfeld $\nu:M\rightarrow\mathbb{R}^3$. 
+Die Abbildung $\nu:M\rightarrow \mathbb{S}^2$ hei"st auch Gau"s-Abbildung der orientierten Fl"ache. Eine Parametrisierung einer orientierten Fl"ache $(M,\nu)$ 
+hei"st positiv orientiert, wenn $\nu^f=\nu\circ f$. Eine Fl"ache M hei"st orientierbar, wenn ein solches Einheitsnormalenfeld existiert.
+
+\beachte{Definition von $\nu^f$:}
+\begin{equation*}\begin{aligned}
+ \nu^f=\frac{\frac{\partial f}{\partial x_1} \times \frac{\partial f}{\partial x_2}}{\|\frac{\partial f}{\partial x_1} \times \frac{\partial f}{\partial x_2}\|}.
+\end{aligned}\end{equation*}
+
+\beachte{Das Einheitsnormalenfeld ist somit mindestens stetig}
+
+\end{defi}
+
+
+\fc{DzweiteFundamentalform}
+\begin{defi}[zweite Fundamentalform, Weingarten-Operator]
+ \index{zweite Fundamentalform}
+ \index{Weingarten-Operator}
+ \index{Form-Operator}
+ Sei $(M,\nu)$ eine orientierte $C^2$-Fl"ache. Dann hei"st die Abbildung $S_p=-d\nu_p\in END(T_pM)$ der Form-Operator oder Weingarten-Operator
+ von $(M,\nu)$ im Punkt $p$. Die Bilinearform $h_p=g_p(S_p(\cdot),\cdot)$ auf $T_pM$ hei"st zweite Fundamentalform von $(M,\nu)$ im Punkt $p$.\\
+Das $d\nu_p(v)\in T_pM$ erhalten wir durch
+\[\langle v(\nu),\nu(p)\rangle=\sum\limits^{3}_{i=1}d\nu_i|_p(v)\cdot\nu_i(p)=\frac{1}{2}\sum\limits^{3}_{i=1}d(\nu_i^2)_p(v)=\frac12 v\langle\nu,\nu\rangle=0 \]\\
+\beachte{Es gilt: $v(\nu)=d\nu_p(v)=\partial_v\nu(p)$}
+
+
+
+
+\end{defi}
+
+\fc{BWOmitHIlfeParam}
+\begin{bem}[Weingarten-Operator, dargestellt mit Hilfe einer Parametrisierung]
+ \index{Weingarten-Operator}
+ \index{Form-Operator}
+ \index{Parametrisierung}
+ \index{Normalenfeld}
+ Sei $f:V\rightarrow M$ eine orientierte Parametrisierung von $M$, dann wird
+das Einheitsnormalenfeld von $M$ durch $\nu^f=\nu\circ f$ dargestellt. Nach der
+Kettenregel gilt
+\begin{equation*}\begin{aligned}
+ S_{f(x)}(df_x(v)) = -d\nu_{f(x)}(df_x(v)) = -d\nu^f_x(v) \in \mathbb{R}^3,
+\end{aligned}\end{equation*}
+also k"onnen wir den Weingarten-Operator darstellen durch
+\begin{equation*}\begin{aligned}
+ S_x^f = (df_x)^{-1}\circ S_{f(x)} \circ df_x \in M_2(\mathbb{R})
+\end{aligned}\end{equation*}
+mit
+\begin{equation*}\begin{aligned}
+ S_x^f(v) = -(df_x)^{-1}d\nu^f_x(v) 
+\end{aligned}\end{equation*}
+
+\beachte{Es gilt $S_p\in END (T_pM)$}
+
+\end{bem}
+
+\fc{BZFmitHIlfeParam}
+\begin{bem}[Zweite Fundamentalform, dargestellt mit Hilfe einer Parametrisierung]
+\index{zweite Fundamentalform}
+ \index{Parametrisierung}
+ \index{Normalenfeld}
+ Sei $f:V\rightarrow M$ eine orientierte Parametrisierung von $M$, dann wird
+das Einheitsnormalenfeld von $M$ durch $\nu^f=\nu\circ f$ dargestellt. 
+Die zweite Fundamentalform stellen wir bez"uglich $f$ dar durch
+\begin{align*}
+ h_x^f=h_{f(x)}(df_x(\cdot),df_x(\cdot))
+\end{align*}
+mit
+\begin{align*}
+ h_x^f(v,w)=-\langle d\nu_x^f(v), df_x(w) \rangle = -g_x^f\left( (df_x)^{-1}
+ (d\nu^f_x(v)),w \right)
+\end{align*}
+\end{bem}
+
+\fc{PDarstellungzweiteFF}
+\begin{prop}[Darstellung der zweiten Fundamentalform]
+ \index{zweite Fundamentalform}
+ \index{Weingarten-Operator}
+ \index{selbstadjungiert}
+ Sei $(M,\nu)$ eine orientierte $C^k$-Fl"ache im $\mathbb{R}^3$ mit $k\geq 2$ und sei
+ $f:V\rightarrow M$ eine orientierte Parametrisierung von $M$, dann gilt
+ \begin{align*}
+  h_x^f(v,w) = \langle d(d_\cdot (v))_x(w), \nu_x^f \rangle, \qquad
+  h_x^f = \left( \left\langle \frac{\partial^2 f}{\partial x_i \partial x_j}, \nu_x^f \right\rangle \right)_{i,j}.
+ \end{align*}
+Insbesondere ist die zweite Fundamentalform $h_p$ symmetrisch, und der Weingarten-Operator $S_p$ ist selbstadjungiert
+bez"uglich der ersten Fundamentalform $g_p$ f"ur alle $p\in M$.
+\begin{proof}
+ Da die Tangentialvektoren und das Normalenfeld in jedem Punkt orthogonal sind, kann man (in der Darstellung in $V$) das Skalarprodukt bilden $(=0)$ und diese
+ Funktion ableiten. Die Ableitung (der konstanten Funktion $0$) verschwindet, der Rest folgt dann
+ aus der Produktregel mit den entsprechenden Definitionen aus Bemerkung 3.25 (Skript).
+\end{proof}
+\end{prop}
+
+\fc{DHauptkruemmung}
+\begin{defi}[Hauptkr"ummungen, mittlere Kr"umung, Gau"skr"ummung]
+ \index{Eigenwert}
+ \index{Weingarten-Operator}
+ \index{Hauptkr"ummungen@Hauptkr""ummungen}
+ \index{Hauptkr"ummungsrichtungen@Hauptkr""ummungsrichtungen}
+ \index{mittlere Kr"ummung@mittlere Kr""ummung}
+ \index{Gau"skr"ummung@Gau""skr""ummung}
+ \index{mittlerer Kr"ummungsvektor@mittlerer Kr""ummungsvektor}
+ \index{mittleres Kr"ummungsfeld@mittleres Kr""ummungsfeld}
+ Sei $\left( M, \nu \right)$ eine orientierte $C^k$-Fl"ache mit $k\geq 2$, und 
+ sei $S_p$ ihr Weingarten-Operator im Punkt $p\in M$. Die Eigenwerte $\kappa_1(p),\kappa_2(p)$
+ von $S_p$ hei"sen die Hauptkr"ummungen von $M$ im Punkt $p$, und die zugeh"origen Eigenr"aume hei"sen Hauptkr"ummungsrichtungen. \\
+Falls $\kappa_1\neq\kappa_2$ sind die Hauptkr"ummungsrichtungen orthogonal, da der Weingarten-Operator $S_p$ selbstadjungiert ist.
+ 
+ Man nennt $H(p)=\frac{\kappa_1(p)+\kappa_2(p)}{2}=\frac12 tr(S_p)\in \mathbb{R}$ die mittlere Kr"ummung und 
+ $K(p)=\kappa_1(p)\kappa_2(p)=det(S_p)\in \mathbb{R}$ die Gau"skr"ummung von $M$ im Punkt $p$. Wir nennen
+ $H(p)\nu_p$ den mittleren Kr"ummungsvektor und das Vektorfeld $H\nu: M\rightarrow \mathbb{R}^3$ das mittlere Kr"ummungsfeld.
+
+\beachte{Die Hauptkr"ummungen und die mittlere Kr"ummung sind typische Gr"o"sen der "au"seren Geometrie.}
+
+\beachte{Die Gau"skr"ummung ist eine Gr"o"se der inneren Geometrie!}
+
+
+\end{defi}
+
+\fc{kruemmbem}
+\begin{bem}[zur Kr"ummung von Fl"achen]
+\begin{enumerate}
+\item Nach dem Satz "uber die Hauptachsentransformation stehen die Hauptkr"ummungsrichtungen (=Eigenr"aume von $S_p$) aufeinander senkrecht, falls $\kappa_1 \not= \kappa_2$ \\
+\item Die Kr"ummungsgr"o"sen h"angen von der Wahl von $\nu$ ab. Falls M nicht orientierbar ist, kann zumindest lokal von Kr"ummung gesprochen werden. \\
+\item Die Hauptkr"ummungen erh"alt man zur"uck als Nullstellen von 
+\[ X^2 - 2H(p)X + K(p). \] Die L"osungen dieser Gleichung sind immer reell. Daraus folgt $H^2(p) \geq K(p)$.
+\end{enumerate}
+
+
+
+\end{bem}
+
+
+\fc{SvonMeusnier}
+\begin{sat}[von Meusnier]
+\index{geod"atische Kr"ummung@geod""atische Kr""ummung}
+\index{Satz von Meusnier}
+ Sei $(M\nu)$ eine orientierte $C^k$-Fl"ache, und sei $\gamma:I\rightarrow M$ eine nach Bogenl"ange parametrisierte
+ $C^k$-Kurve auf $M$, wobei $k\geq 2$. Dann existiert eine $C^{k-2}$-Funktion  $\kappa:I\rightarrow \mathbb{R}$, so dass
+ \begin{equation*}\begin{aligned}
+  \ddot \gamma(t) = \kappa(t)\nu_{\gamma(t)} \times \dot\gamma(t)
+  + h_{\gamma(t)}\left( \dot\gamma(t),\dot\gamma(t) \right)\nu_{\gamma(t)}
+ \end{aligned}\end{equation*}
+ Insbesondere h"angt die Normalenkomponente von $\ddot\gamma(t)$ nur von $\dot\gamma(t)$ und $h$ ab.
+Die Funktion $\kappa$ hei"st die geod"atische Kr"ummung von $\gamma$.
+\begin{proof}
+ Die Vektoren $\left( \dot \gamma, \nu_{\gamma}\times \dot\gamma, \nu_{\gamma} \right)$ bilden f"ur alle $t$ eine ONB (sofern $\gamma$ nach Bogenl"ange parametrisiert ist).
+ Man erh"alt dann die Aussage, indem man $\ddot\gamma$ bez"uglich dieser ONB darstellt.
+\end{proof}
+
+\end{sat}
+
+\fc{FlLokalTaEb}
+\begin{sat}[Fl"ache lokal "uber der Tangentialebene parametrisiert]
+\index{Parametrisierung}
+ Sei $(M,\nu)$ eine orientierbare $C^l$-Fl"ache mit $l\geq 2$, sei $p\in M$, und sei $(v_1,v_2)$ eine ONB von $T_pM$.
+ Dann existiert eine Umgebung $V\subset \mathbb{R}^2$   von $0$ und eine $C^{l-2}$-Funktion $k:V\rightarrow \mathbb{R}$, 
+ so dass die Abbildung $f: V\rightarrow\mathbb{R}^3$ mit
+ \begin{equation*}\begin{aligned}
+  f(x)=p+x_1v_1+x_2v_2 + k(x)\nu_p
+ \end{aligned}\end{equation*}
+eine Parametrisierung von $M$ ist. F"ur diese Parametrisierung gilt
+\begin{equation*}\begin{aligned}
+ f(0)=p,\qquad g_0^f=\left( \begin{matrix} 1&0\\0&1 \end{matrix} \right),\qquad  (dg^f)_0 = 0 ,\\
+ k(0)=0, \qquad \frac{\partial k}{\partial x_i}|_0 = 0,\qquad und\qquad h_0^f(e_i,e_j) = \frac{\partial^2 k}{\partial x_i \partial x_j}|_0.
+\end{aligned}\end{equation*}
+\begin{proof}
+ Verschieben und Drehen des Koordinatensystems, so dass $p=0$ und $(v_1,v_2,\nu_p)=(e_1,e_2,e_3)$. Das bedeutet,
+ dass $e_1 $ und $e_2$ den Tangentialraum $T_pM$ aufspannen. F"ur eine Parametrisierung $\Psi:V\rightarrow M$ ist
+ $a:V'\rightarrow V=im\left( \left( \begin{matrix}
+                                  \Psi_1, \Psi_2
+                                 \end{matrix}
+ \right) \right)$ eine Bijektion (Axel: Frage zum Beweis).
+ Die Funktion  $f=\Psi\circ a^{-1}: V\rightarrow M$ hat die gew"unschten Eigenschaften, insbesondere setzen wir $k(x) = f_3(x)$.
+ Die restlichen Eigenschaften k"onnen leicht nachgerechnet werden.
+\end{proof}
+
+
+\end{sat}
+
+
+\fc{DelliptischUSW}
+\begin{defi}[elliptisch, hyperbolisch, parabolisch, Flachpunkt, Minimalfl"ache]
+ \index{elliptisch}
+ \index{hyperbolisch}
+ \index{parabolisch} 
+ \index{Flachpunkt} 
+ \index{Minimalfl"ache@Minimalfl""ache}
+ Sei $M$ eine $C^k$-Fl"ache mit $k\geq 2$. Ein Punkt $p\in M$ hei"st elliptisch, hyperbolisch, parabolisch oder Flachpunkt,
+ wenn $K_p>0,K_p<0$, $ K_p=0$ und $H_p\not=0$ bzw. $H_p=0$. Eine Fl"ache mit $H_p=0$ f"ur alle $p\in M$ hei"st Minimalfl"ache.
+
+\end{defi}
+
+\fc{LVarFlaeche}
+\begin{lem}[Variation des Fl"acheninhalts]
+Sei $f:V\rightarrow M$ eine Parametrisierung von $M$ und sei $l:M\rightarrow \mathbb{R}$ eine vorgegebene $C^2$-Funktion mit kompaktem Tr"ager in $im(f)$.
+F"ur $r\in \mathbb{R}$ betrachten wir $f_r:V\rightarrow U_r\subset \mathbb{R}^3$ mit
+\begin{align*}
+ f_r(x) = f(x) + r\ l(f(x))\ \nu^f(x). 
+\end{align*}
+Es gilt
+\begin{align*}
+ \frac{d}{dr}|_0 A(im(f_r)) = -\int_U 2l\ H\ dA.
+\end{align*}
+\begin{proof}
+ Im ersten Schritt berechnen wir $\frac{\partial}{\partial r}|_{r=0}g_x^{f_r} = -2 l ^f(x)h_x^f$. Mit Hilfe dieser Formel und einer
+ Formel zur Ableitung der Determinante einer Matrix $\left( \left( det(A)\right)'= det(A)\ tr(A'A^{-1}) \right)$ erhalten wir mit der 
+ mittleren Kr"ummung $H^f(\cdot)$
+ \begin{align*}
+  \frac{d}{dr}|_{r=0}det(g_x^{f_r})= ...=-4l^f(x)det(g_x^f)H^f(x),
+ \end{align*}
+d.h. einen Ausdruck f"ur die Ableitung des Quadrats des Fl"achenelements. Danach folgt die Aussage nach Integration und mit der Kettenregel.
+\end{proof}
+
+\end{lem}
+
+\subsection{Der Levi-Civita-Zusammenhang}
+
+\fc{VekNachVekAbl}
+\begin{bem}[Vektorfeld nach Vektorfeld ableiten]
+Seien $X,Y\in C^k(\mathbb R^n,\mathbb R^n)$ und 
+\[X_p=\sum\limits^n_{i=1}X_i(p)e_i\;\text{und}\;Y_p=\sum\limits^n_{i=1}Y_i(p)e_i\]
+Wir k"onnen $X$ nach $Y$ ableiten, daf"ur schreiben wir 
+\[dX_p(Y_p)=Y_p(X)=\sum\limits^n_{i,j=1}Y_j(p)\frac{\partial X_i}{\partial x_j}|_pe_i\in\mathbb R^n\]
+Die Richtungsabkleitungen bilden dann wieder die Komponenten eines Vektorfeldes $Y(X)$ auf $\mathbb R^n$.
+
+Sind $X$ und $Y$ keine konstanten Vektorfelder so gilt nichtmehr der Satz v. Schwarz. Sondern wir erhalten f"ur $h:\mathbb R^3\to\mathbb R$
+\[X_p(Y(h))-Y_p(X(h))=...=[X,Y]_p(h)\]
+
+\end{bem}
+
+
+
+
+\fc{DLieKlammer}
+\begin{defi}[Lie-Klammer]
+\index{Lie-Klammer}
+ Seien $X,Y$ Vektorfelder im $\mathbb{R}^n$, dann hei"st das Vektorfeld $[X,Y]$ mit
+ \begin{align*}
+  \left[X,Y\right]_p = X_p(Y) - Y_p(X)
+ \end{align*}
+die Lie-Klammer von $X$ und $Y$.
+\end{defi}
+
+
+\fc{BvertauschenvV}
+\begin{bem}[Richtungsableitungen kommutieren bis auf eine Lie-Klammer]
+  Wir wissen aus der Analysis, dass Richtungsableitungen (nach konstanten Vektorfeldern) kommutieren. F"ur Vektorfelder
+  $X,Y:\mathbb{R}^3\rightarrow \mathbb{R}^3$ und $h:\mathbb{R}^3\rightarrow \mathbb{R}$ gilt jedoch
+  \begin{align*}
+   X_p(Y(h)) - Y_p(X(h)) = ... =\left[ X,Y \right]_p(h). 
+  \end{align*}
+Somit kommutieren Richtungsableitungen nach nicht-konstanten Vektorfeldern nur bis auf die erste Ableitung nach ihrer Lie-Klammer.
+\end{bem}
+
+
+
+
+\fc{DTangentialerA}
+\begin{defi}[Tangentialer Anteil eines Vektors]
+ \index{tangential}
+ Sei $M\subset \mathbb{R}^3$ eine Fl"ache, sei $p\in M$, sei $\nu\in N_pM$ ein Einheitsnormalenvektor im Punkt
+ $p$,  und sei $v\in \mathbb{R}^3$, dann hei"st 
+ \begin{equation*}\begin{aligned}
+v^\top = v - \langle v, \nu\rangle \nu \in T_pM
+ \end{aligned}\end{equation*}
+der tangentiale Anteil von $v$ im Punkt $p$.
+
+\end{defi}
+
+
+\fc{DLeviCivita}
+\begin{defi}[kovariante Ableitung, Levi-Civita-Zusammenhang]
+ \index{kovariante Ableitung}
+ \index{Levi-Civita-Zusammenhang}
+ Sei $M\subset \mathbb{R}^3$ eine Fl"ache und $X,Y:M\rightarrow \mathbb{R}^3$ zwei tangentiale Vektorfelder l"angs $M$,
+ dann hei"st das Vektorfeld $\nabla_Y X$ mit
+ \begin{align*}
+  (\nabla_Y X)(p) = dX_p(Y_p)^\top = Y_p(X)^\top
+ \end{align*}
+die kovariante Ableitung von X nach Y, und die Ableitungsvorschrift $\nabla$, die zwei tangentialen Vektorfeldern l"angs $M$
+ein weiteres zuordnet, hei"st der Levi-Civita-Zusammenhang von $M$.
+\end{defi}
+
+\fc{PEigLeviC}
+\begin{prop}[Eigenschaften des Levi-Civita-Zusammenhangs]
+\index{Levi-Civita-Zusammenhang}
+ \index{derivativ}
+ \index{Leibniz-Regel}
+ \index{Zusammenhang}
+ \index{metrisch}
+ \index{riemannsch}
+ Es sei $\nabla$ der Levi-Civita-Zusammenhang auf einer $C^k$-Fl"ache $M\subset \mathbb{R}^3$ mit $k\geq 2$, es seien $X,Y,Z:M\rightarrow\mathbb{R}^3$
+ tangentiale Vektorfelder, und es seien $f\in C^0(M),\ g\in C^1(M)$. Die Eigenschaften 1-3 kann man zusammenfassen, indem man sagt: ``$\nabla$ ist ein Zusammenhang''.
+ \begin{enumerate}
+  \item  Die Ableitung $\nabla_Y X$ ist $C^0(M)$-linear, in $Y$, d.h. es gilt:\qquad
+  $ \nabla_{fY+gZ} X = f\nabla_Y X + g\nabla_Z X.$
+
+  \item  Die Ableitung $\nabla_Y X$ ist $\mathbb{R}$-linear, in $X$, d.h. f"ur $r,s\in \mathbb{R}$ gilt :\qquad
+$   \nabla_Y (rX +sZ) = r\nabla_Y X + s\nabla_Y Z.$
+
+  \item Die Ableitung $\nabla_Y X$ ist derivativ in $X$, d.h. es gilt die Leibniz-Regel:\qquad
+   $\nabla_Y (gX) = Y(g)\cdot X + g\cdot \nabla_X Y$
+
+
+ \item Sei $\nu$ ein lokales Einheitsnormalenfeld, dann gilt:\qquad
+  $Y(X) = \nabla_Y X + h(X,Y)\cdot \nu.$
+
+ \item Der Levi-Civita-Zusammenhang ist torsionsfrei, d.h. es gilt:\qquad
+  $\nabla_X Y - \nabla_Y X = \left[X,Y\right].$
+Insbesondere ist die Lie-Klammer tangentialer Vektorfelder l"angs $M$ wohldefiniert und tangential an $M$.
+ 
+ \item Der Levi-Civita-Zusammenhang ist metrisch oder auch riemannsch, d.h. es gilt eine weitere Leibniz-Regel:\qquad
+  $X(g(Y,Z)) = g(\nabla_X Y,Z) + g(Y, \nabla_X Z).$
+ \end{enumerate}
+
+
+
+\end{prop}
+
+\fc{DBasisfelder}
+\begin{defi}[Basisfelder auf $M$ in Abh"angigkeit von $f$]
+\index{Richtungsableitung}
+\index{Koordinatenvektorfelder}
+
+  Sei $f=\varphi^{-1}$ f"ur eine Karte $\varphi:U\rightarrow V$ von $M$. Wir verwenden die Koordinatenvektorfelder
+  $\frac{\partial f}{\partial x_1}, \frac{\partial f}{\partial x_2}$ aus Bemerkung 3.21(3) (Skript), um auf $U$ Basisfelder zu definieren durch
+  \begin{align*}
+   \frac{\partial}{\partial \varphi_i}|_p = \frac{\partial f}{\partial x_i}(\varphi(p)) \in T_pM.
+  \end{align*}
+F"ur die Richtungsableitung einer Funktion $h$ nach diesen Feldern schreiben wir dann:
+\begin{align*}
+ d_ph( \frac{\partial}{\partial \varphi_i}) = \frac{\partial h}{\partial \varphi_i},
+\end{align*}
+das hei"st, wir betrachten $h$ gewisserma"sen als Funktion in den Koordinaten $\varphi_1, \varphi_2$. Da $\frac{\partial}{\partial \varphi_i}|_p$
+bez"uglich der Karte $\varphi$ durch den Standardbasisvektor $e_i$ dargestellt wird, gilt
+\begin{align*}
+ \frac{\partial}{\partial \varphi_i} (h) = \frac{\partial(h\circ f)}{\partial x_i}
+\end{align*}
+
+\end{defi}
+
+\fc{DChristoffelS}
+\begin{defi}[Christoffel-Symbole]
+  \index{Christoffel-Symbol}
+  \index{Christoffel-Symbole erster Art}
+  \index{Christoffel-Symbole zweiter Art}
+  Die Koeffizienten $\Gamma^k_{ij}:U\rightarrow \mathbb{R}$ in
+  \begin{align*}
+   \nabla_{\frac{\partial}{\partial \varphi_i}|_p}\frac{\partial}{\partial \varphi_j}
+   =\sum\limits_{k=1}^2 \Gamma^k_{ij}(p)\frac{\partial}{\partial \varphi_k}
+  \end{align*}
+f"ur $i,j\in \{1,2\}$ hei"sen Christoffel-Symbole erster Art bez"uglich $f$, und die Koeffizienten
+\begin{align*}
+  \Gamma_{ijk}(p) = \left\langle  \nabla_{\frac{\partial}{\partial \varphi_i}|_p}\frac{\partial}{\partial \varphi_j}, \frac{\partial}{\partial \varphi_k} \right\rangle
+\end{align*}
+f"ur $i,j,k\in \{1,2\}$ hei"sen Christoffel-Symbole zweiter Art bez"uglich $f$.
+
+Nach Bemerkung 3.11(1)(Skript) gilt
+\begin{align*}
+  \left\langle  \frac{\partial}{\partial \varphi_i}|_{f(x)}, \frac{\partial}{\partial \varphi_j}|_{f(x)} \right\rangle
+  = \left\langle  \frac{\partial f}{\partial x_i}|_{x}, \frac{\partial f}{\partial x_j}|_{x} \right\rangle = (g_x^f)_{ij}
+\end{align*}
+
+Wir schreiben in Zukunft kurz $g_{ij}(x) = (g_x^f)_{ij}$ und  $g^{ij}(x) = \left((g_x^f)^{-1}\right)_{ij}$ f"ur die dazu inverse Matrix.
+Au"serdem schreiben wir $g_{ij}^\varphi(p) = g_{ij}(\varphi(p))$ und  $g^{ij}_\varphi(p) = g^{ij}(\varphi(p))$.
+\end{defi}
+
+\fc{BCSersteruzweiteruvm}
+\begin{bem}[Zusammenhang zwischen den Christoffel-Symbolen, Koordinatenvektorfelder als Basis des $T_pM$]
+
+   \index{Christoffel-Symbol}
+  \index{Christoffel-Symbole erster Art}
+  \index{Christoffel-Symbole zweiter Art}
+  \index{Koordinatenvektorfelder}
+\ \\  \begin{enumerate}
+   \item 
+  Die Christoffel-Symbole erster und zweiter Art h"angen zusammen "uber die Gleichungen
+  \begin{align*}
+   \Gamma_{ijk} = \sum\limits_{l=1}^2 g^\varphi_{kl} \Gamma^l_{ij},\qquad
+   \Gamma_{ij}^k = \sum\limits_{l=1}^2 g_\varphi^{kl} \Gamma_{ijl}.
+  \end{align*}
+  \item
+  Es seien $X, Y$ zwei beliebige tangentiale Vektorfelder an $M$, dann existieren Funktionen 
+  $X_1^\varphi,X_2^\varphi, Y_1^\varphi, Y_2^\varphi : U\rightarrow \mathbb{R}$, so dass
+  \begin{align*}
+   X|_U = \sum\limits_{i=1}^2 X_i^\varphi \frac{\partial}{\partial\varphi_i}, \qquad
+   Y|_U = \sum\limits_{j=1}^2 Y_j^\varphi \frac{\partial}{\partial\varphi_j},
+  \end{align*}
+da die Koordinatenvektorfelder $\frac{\partial}{\partial\varphi_1}, \frac{\partial}{\partial\varphi_2}$ an jedem Punkt $p \in im(f)$
+eine Basis von $T_pM$ bilden. Wir folgern aus Proposition 3.41(1)-(3)(Skript), dass
+\begin{align*}
+ \nabla_X Y = ... = \sum\limits_{i,k=1}^2 X_i^\varphi \left( \frac{\partial Y_k^\varphi}{\partial \varphi_i}
+  + \sum\limits_{j=1}^2 Y_j^\varphi \Gamma_{ij}^k \right)\frac{\partial }{\partial \varphi_k}.
+\end{align*}
+
+\end{enumerate}
+
+\end{bem}
+
+\fc{LievonKoordsVer}
+\begin{bem}[Die Lie-Klammer der Koordinatenvektorfelder verschwindet]
+\index{Satz von Schwarz}
+\index{Lie-Klammer}
+Es gilt zun"achst 
+\begin{equation*}\begin{aligned}\frac{\partial}{\partial\varphi_i}|_p = \frac{\partial f}{\partial x_i}|_{\varphi(p)} = df_{\varphi(p)}(e_i)\end{aligned}\end{equation*}
+Komponentenweises Ableiten wie in Bemerkung 3.9(4) liefert:
+\begin{equation*}\begin{aligned}
+ \frac{\partial}{\partial\varphi_i}|_p \left( \frac{\partial}{\partial\varphi_j} \right)
+ = d\left( \frac{\partial}{\partial\varphi_j} \circ f \right)_{\varphi(p)}\left( e_i \right)
+ = d\left( \frac{\partial f}{\partial x_j} \right)_{\varphi(p)}\left( e_i \right)
+ = \frac{\partial^2 f}{\partial x_j \partial x_i}|_{\varphi(p)}.
+\end{aligned}\end{equation*}
+Da nach dem Satz von Schwarz die zweiten Ableitungen vertauschen, gilt:
+\begin{equation*}\begin{aligned}
+\left[ \frac{\partial}{\partial\varphi_i}, \frac{\partial}{\partial\varphi_j}\right]_p = 0.
+\end{aligned}\end{equation*}
+
+
+\end{bem}
+
+
+
+\fc{PeigenschaftenC}
+\begin{prop}[Symmetrie, Metrizit"at und Koszul-Formeln der Christoffel-Symbole]
+ \index{Christoffel-Symbole}
+ \index{symmetrie}
+ \index{metrizit"at@metrizit""at}
+ \index{Koszul-Formeln}
+ Sei $f:V\rightarrow M \subset \mathbb{R}^3$ eine Parametrisierung einer Fl"ache, und seien $i,j,k\in \{1,2\}$,
+ dann gelten f"ur die Christoffel-Symbole die folgenden Beziehungen:
+ \begin{enumerate}
+  \item  Symmetrie:
+  \begin{equation*}\begin{aligned}
+   \Gamma^k_{ij} = \Gamma^k_{ji}, \qquad \Gamma_{ijk} = \Gamma_{jik}.
+  \end{aligned}\end{equation*}
+\item Metrizit"at:
+\begin{equation*}\begin{aligned}
+ \frac{\partial g_{ij}^\varphi}{\partial \varphi_k} = \Gamma_{kij} + \Gamma_{kji}.
+\end{aligned}\end{equation*}
+\item Koszul-Formeln:
+\begin{equation*}\begin{aligned}
+ \Gamma_{ijk} = \frac12 \left( \frac{\partial g_{jk}^\varphi}{\partial \varphi_i} + \frac{\partial g_{ik}^\varphi}{\partial \varphi_j} - \frac{\partial g_{ij}^\varphi}{\partial \varphi_k}\right), \\ 
+ \Gamma^k_{ij} = \frac12 \sum\limits_{l=1}^2 g^{kl}_\varphi \left( \frac{\partial g_{jl}^\varphi}{\partial \varphi_i} + \frac{\partial g_{il}^\varphi}{\partial \varphi_j} - \frac{\partial g_{ij}^\varphi}{\partial \varphi_l}\right)
+ \end{aligned}\end{equation*}
+ \end{enumerate}
+\begin{proof}
+ Alle Aussagen folgen mehr oder weniger direkt aus Proposition 3.41 (5,6) (Skript)und Bemerkung 3.43 (1) (Skript). 3 folgt aus 1 und 2.
+\end{proof}
+
+\end{prop}
+
+\fc{FausECS}
+\begin{folg}[(Einfache) Folgerungen aus den Eigenschaften der Christoffel-Symbole]
+\index{Christoffel-Symbole}
+\begin{enumerate}
+ \item Der Levi-Civita-Zusammenhang ist eine Gr"o"se der inneren Geometrie, d.h. er h"angt nur von der ersten
+ Fundamentalform ab und nicht von der Lage der Fl"ache im umgebenden $\mathbb{R}^3$.
+ \begin{proof}
+  Folgt aus der Definition der Christoffel-Symbole zusammen mit den Koszul-Formeln.
+ \end{proof}
+\item 
+F"ur die Parametrisierung $f$ von $M$ um $p=f(0)$ aus Satz 3.33(Skript) gilt $\Gamma_{ij}^k(p) = \Gamma_{ijk}(p)=0$.
+\begin{proof}
+ Es geht hierbei um die lokale Parametrisierung eienr Fl"ache ``"uber dem $T_pM$''. Dabei war $g^f_0$ eine konstante Matrix,
+ daher verschwinden die Ableitungen nach den Koeffizienten und die Aussage folgt aus den Koszul-Formeln, vergleiche dazu (Skript S.81, unten).
+\end{proof}
+\end{enumerate}
+\end{folg}
+
+
+
+\fc{DHesseFormUSW}
+\begin{defi}[Hesse-Form, zweite kovariante Ableitung, Riemannscher Kr"ummungstensor]
+ \index{Hesse-Form}
+ \index{zweite kovariante Ableitung}
+ \index{Riemannscher Kr"ummungstensor}
+ \index{Levi-Civita-Zusammenhang}
+ Sei $M\subset \mathbb{R}^3$ eine  Fl"ache mit Levi-Civita-Zusammenhang $\nabla$, sei $k$ eine Funktion auf $M$, und
+ seien $X,Y,Z$ Vektorfelder auf $M$. Die Hesse-Form ist definiert durch
+ \begin{equation*}\begin{aligned}
+  d^2k(X,Y) = X(Y(k)) - (\nabla_XY)(k).
+ \end{aligned}\end{equation*}
+Die zweite kovariante Ableitung von $Z$ nach $X$ und $Y$ ist definiert durch 
+\begin{equation*}\begin{aligned}
+ \nabla^2_{X,Y} Z = \nabla_X\left( \nabla_Y Z \right) - \nabla_{\nabla_X Y}Z.
+\end{aligned}\end{equation*}
+Der Riemannsche Kr"ummungstensor ist definiert durch 
+\begin{equation*}\begin{aligned}
+R_{X,Y}Z =  \nabla^2_{X,Y} Z - \nabla^2_{Y,X} Z.
+\end{aligned}\end{equation*}
+
+
+
+
+\end{defi}
+
+\fc{PEHesseformusw}
+\begin{prop}[Eigenschaften von Hesseform, zweiter kovarianter Ableitung und Riemannschem Kr"ummungstensor]
+ \index{Hesse-Form}
+ \index{zweite kovariante Ableitung}
+ \index{Riemannscher Kr"ummungstensor}
+ \index{Levi-Civita-Zusammenhang}
+Sei $M\subset \mathbb{R}^3$ eine $C^l$-Fl"ache mit $l\geq 3$, und sei $\nabla$ der Levi-Civita-Zusammenhang.
+Dann gilt:
+\begin{enumerate}
+ \item Die Hesseform ist symmetrisch und $C^1$-bilinear.
+ \item Die zweite kovariante Ableitung $\nabla^2$ ist $C^1$-linear in den ersten beiden Argumenten.
+ \item Der Riemannsche Kr"ummungstensor R ist $C^2$-linear in allen drei Argumenten und f"ur je vier 
+ tangentiale Vektorfelder $X,Y,Z,W$ gilt:
+ \begin{equation*}\begin{aligned}
+  R_{X,Y}Z + R_{Y,X}Z = 0,\qquad \langle R_{X,Y}Z, W \rangle + \langle Z, R_{X,Y}W \rangle = 0.
+ \end{aligned}\end{equation*}
+
+\end{enumerate}
+\begin{proof}
+zu 1. (sogar) $C^0$-Linearit"at im ersten Argument folgt aus 
+\[(fX)(Y(k))-(\nabla_{fX}Y)(k)=f(X(Y(k))-(\nabla_XY)(k))\]
+die im zweiten Argument folgt aus der Symmetrie, welche wir mit der Torsionsfreiheit des LCZs und Bemerkung 3.38 erhalten.
+\end{proof}
+
+
+\end{prop}
+
+\fc{BadesKrTe}
+\begin{bem}[Darstellung des Riemannschen Kr"ummungstensors durch Koeffizienten]
+ \index{Riemannscher Kr"ummungstensor}
+ Wir k"onnen den Riemannschen Kr"ummungstensor "ahnlich wie den Zusammenhang $\nabla$ durch Funktionen
+ $R^l_{ijk}$ bzw. $R_{ijkl}: U\rightarrow \mathbb{R}$ mit $i,j,k,l\in {1,2}$ darstellen durch
+ \begin{align*}
+  R_{\frac{\partial}{\partial{\varphi_i}}, \frac{\partial}{\partial{\varphi_j}}}\frac{\partial}{\partial{\varphi_k}}
+  = \sum\limits_{l=1}^2 R^l_{ijk}\frac{\partial}{\partial{\varphi_l}},\qquad 
+  R_{ijkl} = \left\langle R_{\frac{\partial}{\partial{\varphi_i}}, \frac{\partial}{\partial{\varphi_j}}}\frac{\partial}{\partial{\varphi_k}}, \frac{\partial}{\partial{\varphi_l}} \right\rangle
+ \end{align*}
+Wie im Beweis der Folgerung 3.49(Skript) erh"alt man f"ur beliebige Vektorfelder die Formel
+\begin{align*}
+ R_{X,Y}Z = \sum\limits_{i,j,k,l=1}^2 X^\varphi_i Y^\varphi_j Z^\varphi_k R^l_{ijk} \frac{\partial}{\partial{\varphi_l}}
+\end{align*}
+\end{bem}
+
+
+\fc{BEigDarKrTe}
+\begin{bem}[Eigenschaften des Riemannschen Kr"ummungstensors]
+ \index{Riemannscher Kr"ummungstensor}
+ Wir verwenden die Darstellung:
+\begin{equation*}\begin{aligned}
+ R_{X,Y}Z = \sum\limits_{i,j,k,l=1}^2 X^\varphi_i Y^\varphi_j Z^\varphi_k R^l_{ijk} \frac{\partial}{\partial{\varphi_l}}.
+\end{aligned}\end{equation*}
+\begin{enumerate}
+ \item Es gilt wie bei den Christoffel-Symbolen
+ \begin{equation*}\begin{aligned}
+  R_{ijkl} = \sum\limits_{m=1}^2 R^m_{ijk}g^\varphi_{ml},\qquad
+  R^l_{ijk} = \sum\limits_{m=1}^2 R_{ijkm}g^{ml}_\varphi
+ \end{aligned}\end{equation*}
+ 
+ \item
+ Wegen der Antisymmetrien des Kr"ummungstensors in Proposition 3.48(3)(Skript) gilt
+ $R_{ijkl}=0$ falls $i=j$ oder $k=l$, f"ur die verbleibenden Ausdr"ucke folgt
+ $R_{1221}=-R_{1212} = -R_{2121} = R_{2112},$ d.h. der Riemannsche Kr"ummungstensor wird durch die 
+ Funktion $R_{1221}:U\rightarrow \mathbb{R}$ vollst"andig bestimmt.
+ \item
+\end{enumerate}
+\beachte{Falls $X,Y,Z:\mathbb R^n\to\mathbb R^n$ gilt $R_{X,Y}Z=0$ unabh"angig von $X,Y,Z$.}
+
+\end{bem}
+
+\fc{DkovablBV}
+\begin{defi}[kovariante Ableitung einer Bilinearform]
+\index{kovariante Ableitung}
+\index{Bilinearform}
+\index{parallel}
+\index{metrisch}
+ Sei $B$ eine $C^k$-Bilinearform auf einer Fl"ache $M$, und seien $X,Y,Z$ Vektorfelder auf $M$.
+ Dann definieren wir die kovariante Ableitung $\nabla_X B$ von $B$ durch
+ \begin{align*}
+  \left( \nabla_X B \right)(Y,Z) = X(B(Y,Z)) - B(\nabla_X Y,Z) - B(Y,\nabla_X Z).
+ \end{align*}
+Umformuliert kann man sich diese Formel besser merken:
+\[X(B(Y,Z))=\left( \nabla_X B \right)(Y,Z) + B(\nabla_X Y,Z) + B(Y,\nabla_X Z).\]
+
+
+\end{defi}
+
+\fc{Bzkovabl}
+\begin{bem}[zur kovarianten Ableitung von Bilinearformen]
+\index{kovariante Ableitung}
+\index{Bilinearform}
+\begin{enumerate}
+\item $\nabla B$ ist in allen drei Argumenten $C^k$-linear. F"ur die ersten beiden Argumente ist das klar, f"ur das Dritte folgt dies aus
+\begin{align*}
+(\nabla_X B)(Y,hZ) = h(\nabla_X B)(Y,Z) + X(h)B(Y,Z) - B(Y,X(h)Z).
+\end{align*}
+Wie in Bemerkung 3.49 h"angt $\nabla B$ nur von den Argumenten im Punkt $p$ ab (und nicht von deren Ableitung oder Werten auf einer kleinen Umgebung von $p$).
+\item Dass der Levi-Civita-Zusammenhang metrisch ist (Proposition 3.41(6)) kann man nun durch
+\begin{align*}
+ \nabla g = 0
+\end{align*}
+ausdr"ucken.
+\item
+Es gilt die allgemeine Produktregel
+\begin{align*}
+ X(B(Y,Z)) = (\nabla_X B)(Y,Z) + B(\nabla_X Y,Z) + B(Y,\nabla_X Z).
+\end{align*}
+\end{enumerate}
+
+
+
+\end{bem}
+
+\fc{TheoremaEgregium}
+\begin{sat}[Gau"s-Gleichung, Codazzi-Mainardi-Gleichung]
+\index{Gau"s-Gleichung@Gau""s-Gleichung}
+\index{Theorema Egregium}
+\index{Codazzi-Mainardi-Gleichung}
+\index{Levi-Civita-Zusammenhang}
+\index{Kr"ummungstensor@Kr""ummungstensor}
+\index{zweite Fundamentalform}
+\index{Weingarten-Operator}
+\index{Gau"skr"ummung@Gau""skr""ummung}
+Sei $M\subset \mathbb{R}^3$ eine $C^3$-Fl"ache mit Levi-Civita-Zusammenhang $\nabla$, 
+Kr"ummungstensor $R$, zweiter Fundamentalform h, Weingarten-Operator $S$ und Gau"skr"ummung K, und 
+seien $X,Y,Z$ \textcolor{red}{(Axel: tangeltiale)} Vektorfelder auf $M$. Dann gelten die folgenden Gleichungen.
+\begin{enumerate}
+ \item Theorema Egregium oder Gau"s-Gleichung.
+ \begin{equation*}\begin{aligned}
+  R_{X,Y}Z = h(Y,Z)S(X) - h(X,Z)S(Y) = K\cdot \left( \left\langle Y,Z\right\rangle X - \langle X,Z\rangle Y \right).
+ \end{aligned}\end{equation*}
+\item
+Codazzi-Mainardi-Gleichung.
+\begin{equation*}\begin{aligned}
+ (\nabla_X h)(Y,Z) = (\nabla_Y h)(X,Z).
+\end{aligned}\end{equation*}
+\end{enumerate}
+\begin{proof}
+ Zu 1: Die erste Gleichung folgt aus einer etwas un"ubersichtlichen aber einfachen Rechnung, deren Basis die Gleichung
+ (Bemerkung 3.38): $X(Y(Z)) - Y(X(Z)) = [X,Y](Z)$ ist. Es wird die Leibniz-Regel (Proposition 3.41(3)) von $\nabla$ und mehrfach Proposition 3.41(4)
+ verwendet.
+\end{proof}
+
+\beachte{Aus der C-M-Gleichung und der Symmetrie von $h$ folgt leicht, dass die Trilinearform $\nabla h$ in allen Argumenten symmetrisch ist.}
+
+
+
+
+
+\end{sat}
+
+\fc{folgausGauss}
+\begin{folg}[aus der Gau"s-Gleichung]
+ \index{Gau"s-Gleichung@Gau""s-Gleichung}
+Die Gau"s-Kr"ummung ist eine Gr"o"se der inneren Geometrie.
+\begin{proof}
+ Man berechnet mit Hilfe der Gau"s-Gleichung f"ur eine ONB $(e_1,e_2)$ von $T_pM$:
+ \begin{align*}
+  R_{1221}=\left\langle R_{e_1,e_2} e_2, e_1 \right\rangle = ... = K(p).
+ \end{align*}
+Die linke Seite kann man (nach Bemerkung 3.50(3)(Skript)) durch Christoffel-Symbole ausdr"ucken, die wiederum mit Hilfe von Ableitungen der ersten Fundamentalform geschrieben werden k"onnen (3.44(3)(Skript)).
+
+\end{proof}
+
+\end{folg}
+
+
+
+
+\section{Innere Geometrie der Fl"achen}
+\subsection{Geod"atische}
+\fc{DriemannscheMetrik}
+\begin{defi}[Riemannsche Metrik]
+ \index{Riemannsche Metrik}
+ Es sei $U\subset \mathbb{R}^2$ offen. Eine Riemannsche Metrik der Klasse $C^k$ auf $U$ ist eine
+ $C^k$-Funktion $g=\left( g_{ij} \right)_{i,j}:U\rightarrow M_2(\mathbb{R})$, so dass $g_x$ f"ur alle 
+ $x\in U$ symmetrisch und positiv definit ist. F"ur $v,w\in \mathbb{R}^2$ setzen wir 
+ \begin{align*}
+  g_p(v,w) = v^t\cdot g_p\cdot w = \sum\limits_{i,j=1}^2 v_i w_j g_{ij}(p).
+ \end{align*}
+F"ur zwei Vektorfelder $X,Y:U\rightarrow \mathbb{R}^2$ bezeichnet $g(X,Y):U\rightarrow \mathbb{R}$ die Funktion
+$x\mapsto g_p(X_p,Y_p)$.
+\end{defi}
+
+\fc{PLeviCivitaInnere}
+\begin{prop}[Zusammenhang auf der inneren Geometrie]
+ \index{Levi-Civita-Zusammenhang}
+ \index{Leibniz-Regel}
+ Es sei $g$ eine Riemannsche Metrik auf $U$, dann existiert genau eine Abbildung
+ $\nabla: \mathfrak{X}(U)\times \mathfrak{X}(U) \rightarrow \mathfrak{X}(U)$ mit den Eigenschaften
+ \begin{enumerate}
+  \item $\nabla$ ist $C^0$-linear im ersten Argument.
+  \item $\nabla$ ist $\mathbb{R}$-linear im zweiten Argument.
+  \item Es gilt die Leibniz-Regel: $\nabla_X \left( fY \right) = X(f)\cdot Y + f\cdot \nabla_X Y$.
+  \item $\nabla$ ist torsionsfrei: $\nabla_X Y - \nabla_Y X = [X,Y]$.
+  \item $\nabla$ ist metrisch: $\nabla g = 0$.
+ \end{enumerate}
+
+\begin{proof}
+Eindeutigkeit folgt mit hilfe der Christoffelsymbole und den Konszul-Formeln
+\end{proof}
+
+\end{prop}
+
+\fc{DLeviCivitaInnere}
+\begin{defi}[Levi-Civita-Zusammenhang, zweite kovariante Ableitung, Riemannscher Kr"ummungstensor, Gau"skr"ummung (innere Geometrie)]
+\index{Levi-Civita-Zusammenhang}
+\index{Kr"ummungstensor@Kr""ummungstensor}
+\index{zweite kovariante Ableitung}
+\index{Gau"skr"ummung@Gau""skr""ummung}
+Es sei $g$ eine Riemannsche Metrik auf $U\subset \mathbb{R}^n$, dann hei"st der soeben konstruierte Zusammenhang 
+ $\nabla$ der Levi-Civita-Zusammenhang auf $(U,g)$. F"ur $X,X,Z\in \mathfrak{X}(U)$ definieren wie die zweite kovariante Ableitung
+ und den Riemannschen Kr"ummungstensor durch
+ \begin{align*}
+  \nabla^2_{X,Y}Z = \nabla_X\nabla_Y Z - \nabla_{\nabla_X Y}Z,\\
+  \text{und }\quad R_{X,Y}Z =  \nabla^2_{X,Y}Z -  \nabla^2_{Y,X}Z = \nabla_X\nabla_Y Z - \nabla_Y\nabla_X Z - \nabla_{\left[ X,Y\right]} Z
+ \end{align*}
+Die Gau"skr"ummung von $(U,g)$ ist definiert als
+\begin{align*}
+ K=det(g^{-1})\cdot g\left( R_{\frac{\partial}{\partial \varphi_1},\frac{\partial}{\partial \varphi_2}}\frac{\partial}{\partial \varphi_2}, \frac{\partial}{\partial \varphi_1} \right).
+\end{align*}
+\end{defi}
+
+\fc{DKonformRiemanMetrik}
+\begin{defi}[konforme Riemannsche Metrik]
+\index{Riemannsche Metrik}
+Eine Riemannsche Metrik hei"st konform, wenn 
+\begin{align*}
+  g_{ij} = u^2 \cdot \delta_{ij}
+\end{align*}
+f"ur eine Funktion $u: U\rightarrow \mathbb{R}$ ohne Nullstellen gilt.
+\end{defi}
+
+
+\fc{PLeviuRKkonformMetrik}
+\begin{prop}[Christoffel-Symbole und Gau"s-Kr"ummung f"ur eine konforme Metrik (innere Geometrie)]
+  \index{Christoffel-Symbole}
+  \index{Gau"s-Kr"ummung}
+  gegeben 
+  Sei $g=u^2\langle\cdot,\cdot\rangle$ eine konforme Metrik auf $U\subset \mathbb{R}^2$, dann werden die Christoffel-Symbole und die Gau"s-Kr"ummung
+  gegeben durch:
+  \begin{align*}
+   \Gamma _{ij}^k = u^{-1} \left( \frac{\partial u}{\partial x_i}\delta_{j,k} 
+   + \frac{\partial u}{\partial x_j}\delta_{i,k}
+   - \frac{\partial u}{\partial x_k}\delta_{i,j}
+   \right),\\
+   K = -u^{-3}\left( \frac{\partial^2 u}{\partial x_1^2} + \frac{\partial^2 u}{\partial x_2^2} \right)   
+   + u^{-4}\left( \left( \frac{\partial u}{\partial x_1} \right)^2 + \left( \frac{\partial u}{\partial x_2} \right)^2 \right).
+  \end{align*}
+
+\end{prop}
+
+
+\fc{VlaengsF}
+\begin{defi}[Vektorfeld l"angs einer Abbildung]
+\index{Vektorfeld l"angs einer Abbildung@Vektorfeld l""angs einer Abbildung}
+ Sei $A\subset \mathbb{R}^n$ (meist $n=1,2$) und $F:A\rightarrow U$ differenzierbar, dann ist ein Vektorfeld l"angs
+ $F$ eine Abbildung 
+ \begin{align*}
+  X:A\rightarrow \mathbb{R}^2.
+ \end{align*}
+Dabei fassen wir $X(a)$ als Vektor im Punkt $F(a)$ auf f"ur alle $a\in A$. Wir schreiben $\mathfrak{X}(F)$
+f"ur den Raum aller Vektorfelder l"angs $F$. Als Beispiel betrachte die partiellen Ableitungen $\frac{\partial F}{\partial a_i}\in \mathfrak{X}(F)$
+f"ur alle $i=1,...,n$. Allgemeiner sei $Y$ ein Vektorfeld auf $A$, dann ist $dF(Y)\in \mathfrak{X}(F)$ mit
+\begin{align*}
+ dF(Y)|_a = dF_a(Y_a)\in \mathbb{R}^2.
+\end{align*}
+F"ur jedes $X\in \mathfrak{X}(U)$ ist ebenfalls $X\circ F \in \mathfrak{X}(F)$ ein Vektorfeld l"angs $F$.
+
+\end{defi}
+
+\fc{ZshgentlangABB}
+\begin{prop}[Eigenschaften des Zusammenhangs entlang einer Abbildung]
+Es gibt eine eindeutige Ableitungsvorschrift $\nabla^F:\mathfrak{X}(A) \times \mathfrak{X}(F) \rightarrow \mathfrak{X}(F)$ wobei $F:A\to U$
+mit folgenden Eigenschaften.
+\begin{enumerate}
+ \item $\nabla^F$ ist $C^0(A)$-linear im ersten Argument.
+ \item $\nabla^F$ ist $\mathbb{R}$-linear im zweiten Argument.
+\item F"ur $f\in C^1(A), X\in \mathfrak{X}(A)$ und $V\in \mathfrak{X}(F)$ gilt die Leibnizregel
+\begin{align*}
+ \nabla^F_X(fV) = X(F)\cdot V + f\cdot \nabla^F_XV.
+\end{align*}
+\item Sei $X\in \mathfrak{X}(A)$, $Y\in \mathfrak{X}(U)$ und $a\in A$, dann gilt
+\begin{align*}
+  \nabla^F_X(Y\circ F)|_a = \nabla_{dF_a(X_a)}Y.
+\end{align*}
+
+
+\item $\nabla^F$ ist torsionsfrei, d.h. f"ur $X,Y\in \mathfrak{X}(A)$ gilt
+\begin{align*}
+ \nabla^F_X\left( dF(Y) \right) - \nabla^F_Y\left( dF(X) \right) = dF\left( \left[X,Y \right] \right).
+\end{align*}
+\item $\nabla^F$ ist metrisch, d.h. f"ur $X\in \mathfrak{X}(A), V,W\in \mathfrak{X}(F)$ gilt
+\begin{align*}
+ X\left( g\left( V,W \right) \right) = 
+ g\left( \nabla^F_XV, W \right) + g\left(V, \nabla^F_XW \right):A\rightarrow \mathbb{R}.
+\end{align*}
+
+\end{enumerate}
+
+
+
+
+\end{prop}
+
+
+\fc{DlCZlFF1}
+\begin{defi}[Levi-Civita-Zusammenhang l"angs einer Abbildung]
+  \index{Levi-Civita-Zusammenhang l"angs einer Abbildung@Levi-Civita-Zusammenhang l""angs einer Abbildung}
+  Sei $g$ eine Riemannsche Metrik auf $U$ mit Levi-Civita-Zusammenhang $\nabla$, und sei $F:A\rightarrow U$  differenzierbar.
+  Dann hei"st $\nabla^F$ der Levi-Civita-Zusammenhang l"angs $F$.
+\end{defi}
+
+
+\fc{DlCZlFF2}
+\begin{defi}[Geod"atische Linie]
+  \index{Geod"atische Linie@Geod""atische Linie}
+  
+
+
+  Eine parametrisierte Kurve  $\gamma:I\rightarrow U$ hei"st Geod"atische Linie (kurz: Geod"atische), wenn $\nabla^\gamma_{\frac{\partial}{\partial t}}\dot\gamma=0$, dabei ist $\dot\gamma\in\mathfrak{X}(\gamma)$ und $\frac{\partial}{\partial t}\in\mathfrak{X}(I).$
+
+
+Siehe dazu auch Satz von Meusnier, demnach gilt f"ur die geod"atische Kr"ummung $\kappa$
+\[\kappa\cdot\nu\times\dot\gamma=\ddot\gamma^T=\nabla_{\dot{\gamma}}\dot\gamma =\nabla^\gamma_{\frac {\partial}{\partial t}}\dot\gamma \]
+also ist die obige Aussage "aquivalent dazu, dass die geod"atische Kr"ummung verschwindet.
+
+
+\beachte{
+\[\nabla_{\dot{\gamma}}\dot\gamma =\nabla_{d\gamma(e_1)}\dot\gamma=\nabla^\gamma_{\frac{\partial}{\partial t}}\dot\gamma\]
+da $\frac{\partial}{\partial t}\in \mathfrak{X}(I)$}
+
+
+
+
+
+
+\end{defi}
+
+\fc{DlCZlFF3}
+\begin{defi}[Parametrisierung nach g-Bogenl"ange]
+  \index{g-Bogenl"ange}
+  
+  Eine Kurve $\gamma:I\rightarrow U$ ist nach g-Bogenl"ange parametrisiert, falls $g(\dot \gamma,\dot \gamma)=1$ auf ganz $I$.
+\end{defi}
+
+
+\fc{SersteVarderBogenl}
+\begin{sat}[Erste Variation der Bogenl"ange]
+Sei g eine Riemannsche Metrik auf $U\subset \mathbb{R}^2$, sei $\gamma:I=[a,b]\rightarrow U$
+ nach g-Bogenl"ange parametrisiert, und sei $h:I\times \left( -\varepsilon,\varepsilon \right)\rightarrow U$
+ eine Variation von $\gamma$. Dann gilt
+ \begin{align*}
+  \frac{d}{ds}\Big|_{s=0}L(\gamma_s) = g\left(\frac{\partial h}{\partial s},\frac{\partial h}{\partial t}\right)|_{t=a}^{t=b}\Big|_{s=0}
+  - \int_a^b g\left( \frac{\partial h}{\partial s}\Big|_{s=0}, \nabla^\gamma_{\frac{\partial }{\partial t}} \dot\gamma \right)dt
+ \end{align*}
+E gilt dabei $\nabla^\gamma_{\frac{\partial }{\partial t}} \dot\gamma \in\mathfrak{X}(\gamma)$. $I\times (-\epsilon,\epsilon))$ ist 2-dim UMFk des $\mathbb R^2$ mit Karte Id also Basis von $T_pI\times (-\epsilon,\epsilon))$ gegeben durch $\frac{\partial}{\partial t}(h)=\partial_t(h\circ Id)$ und $\frac{\partial}{\partial s}(h)=\partial_s(h\circ Id)$ siehe Seite 79.
+
+\begin{proof} Die Behauptung folgt aus
+\[\frac{d}{ds}\Big|_{s=0}L(\gamma_s)=\frac{d}{ds}\Big|_{s=0}\int\limits^{b}_{a}\sqrt{g(\dot\gamma_s(t),\dot\gamma_s(t))}dt\]
+und dann mit der Kettenregel, Metrizit"at von $\nabla^h$, Satz von Schwarz und wieder der Metrizit"at. Dann verwendet man noch, dass
+\[\nabla^h_{\frac{\partial}{\partial t}}\frac{\partial h}{\partial t}\Big|_{s=0}=\nabla^\gamma_{\frac{\partial}{\partial t}}\dot\gamma\]
+\end{proof}
+
+
+
+
+
+
+
+
+
+
+\end{sat}
+
+\fc{FkuerzesteGeod}
+\begin{folg}[K"urzeste Kurven sind geod"atische (Linien)]
+Sei $\gamma:[a,b]\rightarrow M$   eine Kurve mit minimaler L"ange zwischen den Punkten $p=\gamma(a)$ und $q=\gamma(b)$. Dann ist
+$\gamma$ Umparametrisierung einer Geod"atischen.
+\begin{proof}
+ Wir betrachten Variationen $h(t,s)$ mit $h(a,s) = p, h(b,s) = q \forall s$. Dann gilt an den Intervallenden $\frac{\partial h}{\partial s} = 0$.
+ Satz 4.9 liefert die um einen Term reduzierte Gleichung
+  \begin{align*}
+  \frac{d}{ds}|_{s=0}L(\gamma_s) =   - \int_a^b g\left( \frac{\partial h}{\partial s}\Big|_{s=0}, \nabla^\gamma_{\frac{\partial }{\partial t}} \dot\gamma \right)dt\ .
+ \end{align*}
+ Da $\gamma$ minimale L"ange hat verschwindet die linke Seite f"ur jede Variation $h$, daraus folgt 
+ $\nabla^\gamma_{\frac{\partial }{\partial t}} \dot\gamma = 0$, die Definition einer geod"atischen Linie.
+\end{proof}
+
+\end{folg}
+
+\subsection{Der lokale Satz von Gau"s-Bonnet}
+
+\fc{D1Form}
+\begin{defi}[Eins-Form (Pfaffsche Form)]
+  Eine Eins-Form oder Pfaffsche Form der Klasse $C^k$ auf $U$ ist eine $C^k(U)$-lineare Abbildung
+  \begin{align*}
+   \alpha: \mathfrak{X}(U)\rightarrow C^k(U).
+  \end{align*}
+Die Menge aller n-Formen auf $U$ bezeichnen wir mit $\Omega^n(U).$
+F"ur ein Vektorfeld $X $ auf $U$ folgt sofort
+\begin{align*}
+ \alpha(X) = \alpha\left( X_1 \frac{\partial}{\partial x_1} + X_2 \frac{\partial}{\partial x_2}\right) 
+ =X_1 \alpha\left(\frac{\partial}{\partial x_1}\right) + X_2 \alpha\left(\frac{\partial}{\partial x_2}\right) :=
+ X_1 \alpha_1 + X_2 \alpha_2
+\end{align*}
+Daf"ur schreiben wir auch kurz 
+\begin{align*}
+ \alpha = \alpha_1 dx_1 +\alpha_2 dx_2.
+\end{align*}
+mit $dx_i(X)=X_i.$
+Insbesondere h"angt $\alpha\left( X \right)|_p$ nur von $\alpha_1|_p,\alpha_2|_p$ und $X|_p$ ab.
+Beispielsweise kann man nun das Volumenelement 
+\[dA=\sqrt{det(g)}dx_1dx_2\]
+als Zwei-Form auffassen.  
+
+
+
+\end{defi}
+
+\fc{DkurvInt}
+\begin{defi}[Kurvenintegral]
+ Es sei $\gamma:[a,b]\rightarrow U$ eine parametrisierte $C^k$-Kurve mit $k\geq 1$, dann definieren wir das Kurvenintegral
+ \begin{align*}
+  \int_\gamma \alpha = \int _a^b \alpha\left( \dot\gamma(t) \right)dt.
+ \end{align*}
+Es h"angt nicht von der gerichteten Parametrisierung ab, wie man durch Umparametrisierung nachrechnen kann! 
+
+\end{defi}
+
+\fc{DposUml}
+\begin{defi}[Positiver Umlauf]
+Sei $\gamma:[a,b]\rightarrow U$ eine parametrisierte st"uckweise $C^k$-Kurve mit $k\geq 1$. Wir sagen, dass $\gamma$ eine kompakte Teilmenge  $\Omega\subset U$ positiv uml"auft, 
+wenn $\gamma$ einfach geschlossen ist, die Spur $im(\gamma)$ genau der Rand von $\Omega$ ist und der orientierte Einheitsnormalenvektor
+in Richtung $\Omega$ zeigt.
+
+\end{defi}
+
+\fc{SatzvonGreen}
+\begin{sat}[von Green]
+Es sei $\gamma: [a,b] \rightarrow U$ eine st"uckweise $C^1$-Kurve, die eine kompakte Menge $\Omega$ positiv uml"auft, und es sei $\alpha= a_1 dx_1 + a_2dx_2$ eine 
+Eins-Form auf U. Dann gilt
+\begin{align*}
+\int_{\gamma} \alpha = \int_\Omega \left( \frac{\partial a_2}{\partial x_1} - \frac{\partial a_1}{\partial x_2} \right) dx_1dx_2.
+\end{align*}
+
+\end{sat}
+
+
+
+\fc{PEFuGk}
+\begin{prop}[Eins-Form und Gau"s-Kr"ummung]
+Indem wir das Gram-Schmidt-Verfahren punktweise auf die Standardbasis $(e_1 , e_2 )$ des $\mathbb{R}^2$ anwenden,
+erhalten wir zwei Vektorfelder $v_1 , v_2$ auf $U$ , die an jedem Punkt $p \in U$ eine
+orientierte Orthonormalbasis bez"uglich der Metrik $g_p$ bilden.
+Es existiert eine Eins-Form $\alpha \in \Omega^1 (U)$, so dass
+\begin{align*}
+ \nabla_X v_1 = \alpha(X) v_2,\quad \nabla_X v_2 = - \alpha(X) v_1
+\end{align*}
+f"ur jedes Vektorfeld $X \in \mathfrak{X}(U)$. Außerdem gilt
+\begin{align*}
+ \frac{\partial a_2}{\partial x_1} - \frac{\partial a_1}{\partial x_2} = -K\sqrt{det (g)}.
+\end{align*}
+\end{prop}
+
+\fc{GaussBonnetLokal}
+\begin{sat}[Gau"s-Bonnet; lokale Fassung]
+Es sei $U\subset \mathbb{R}^2$ ein Gebiet mit einer Riemannschen Metrik $g$, und es sei $\gamma:[a,b]\rightarrow U$
+eine nach Bogenl"ange parametrisierte, $C^2$-geschlossene Kurve, die eine Teilmenge $\Omega \subset U$ positiv uml"auft. Dann gilt
+\begin{align*}
+ \int_\Omega KdA + \int_a^b \kappa(t)dt = 2 \pi.
+\end{align*}
+\beachte{Da 
+\[ \int_\Omega KdA =- \int_a^b \kappa(t)dt +2 \pi.\]
+D.h. Verzerrt man die Mannigfaltigkeit, so "andert sich die Gaußkrümmung an den einzelnen Punkten. Der Satz sagt aus, dass das Integral über die Krümmung, also die Gesamtkrümmung, unverändert bleibt, wenn man den Rand festh"alt.
+}
+\end{sat}
+
+
+\fc{DWinkelInnere}
+\begin{defi}[gerichteter $g$-Winkel]
+ Wir definieren einen gerichteten $g$-Winkel $\angle_p(v,w) \in (-\pi, \pi)$ f"ur Vektoren $v,w\in T_pU = \mathbb{R}^2\setminus\{0\}$, so dass $w$
+ kein negatives Vielfaches von $v$ ist, durch
+ \begin{align*}
+  \angle_p(v,w) = \begin{cases}
+                  \quad  \arccos \frac{g_p(v,w)}{\|v\|_p\|w\|_p} & \text{falls $(v,w)$ positiv orientiert ist, und}\\
+                   - \arccos \frac{g_p(v,w)}{\|v\|_p\|w\|_p} &\text{sonst.}
+                  \end{cases}
+ \end{align*}
+Den Fall, dass $w$ negatives Vielfaches von $v$ ist, m"ussen wir gesondert betrachten.
+
+\end{defi}
+
+\fc{DgInnenwinkel}
+\begin{defi}[$g$-Innenwinkel einer Ecke $\gamma(t_i)$]
+F"ur eine st"uckweise $C^k$-Kurve definieren wir an den "`unglatten"' Stellen $t_i$ die Grenzwerte
+$\dot\gamma^-(t_i), \dot\gamma^+(t_i)$ f"ur die links- bzw. rechtsseitige Ableitung. 
+Wir definieren den $g$-Innenwinkel eines Gebiets $\Omega$ an der Ecke $\gamma(t_i)$ durch
+\begin{align*}
+ \angle_{\gamma(t_i)}(\Omega) = \pi - \angle_{\gamma(t_i)}\left( \dot\gamma^-(t_i),  \dot\gamma^+(t_i) \right) \in [0,2\pi].
+\end{align*}
+Sollte $\dot\gamma^-(t_i) = - \dot\gamma^+(t_i)$ sein, so definieren wir $\angle_{\gamma(t_i)}\left( \dot\gamma^-(t_i),  \dot\gamma^+(t_i) \right)=\pm \pi$,
+je nachdem ob es sich um eine konvexe oder eine konkave Ecke von $\Omega$ handelt.
+\end{defi}
+
+\fc{FUmlaufmitWinkel}
+\begin{folg}[Gau"s-Bonnet; lokale Fassung; st"uckweise glatte Kurven]
+  Es sei $U\subset \mathbb{R}^2$ ein Gebiet mit einer Riemannschen Metrik $g$, und sei $\gamma:[a,b]\rightarrow U$ eine nach
+  Bogenl"ange parametrisierte st"uckweise $C^2$-Kurve, die eine Teilmenge $\Omega\subset U$ positiv uml"auft. Es seien
+  $a=t_0<...<t_n=b$ so gew"ahlt, dass  $\gamma|_{[t_{i-1}, t_i]}\in C^2\left( [t_{i-1},t_i], U\right)$ f"ur alle $i=1,...,n$. Dann gilt
+  \begin{align*}
+   \int_\Omega K dA + \sum\limits_{i=1}^n \int_{t_{i-1}}^{t_i} \kappa(t)dt + \sum\limits_{i=1}^n \angle_{\gamma(t_i)} \left( \dot\gamma^-(t_i),  \dot\gamma^+(t_i) \right) = 2\pi
+  \end{align*}
+"Aquivalent dazu gilt
+\begin{align*}
+    \int_\Omega K dA + \sum\limits_{i=1}^n \int_{t_{i-1}}^{t_i} \kappa(t)dt + \sum\limits_{i=1}^n \angle_{\gamma(t_i)} \left( \Omega \right) = (2-n)\pi
+\end{align*}
+
+\end{folg}
+
+\fc{FASpherHyp}
+\begin{folg}[Fl"acheninhalt von sph"arischen und hyperbolischen Dreiecken]
+Sei $\triangle$ ein sph"arisches bzw. hyperbolisches Dreieck mit den Winkeln $\alpha, \beta $ und $ \gamma$. Dann hat $\triangle$ den Fl"acheninhalt
+\begin{align*}
+ A(\triangle)=\alpha+\beta+\gamma -\pi,\qquad bzw.\qquad A(\triangle)=\pi - \alpha-\beta-\gamma.
+\end{align*}
+
+\end{folg}
+
+\subsection{Kompakte Fl"achen und der globale Satz von Gau"s-Bonnet}
+
+\fc{Dtriangul}
+\begin{defi}[Triangulierung einer kompakten Fl"ache]
+Eine Triangulierung einer kompakten Fl"ache $M$ ohne Rand besteht aus:
+\begin{enumerate}
+  \item $E$ paarweise verschiedenen Punkten $p_1, .., p_E \in M$;
+  \item $K$ Kurven $\gamma_1,...,\gamma_E$ in $M,\ \gamma_j:[a_j,b_j]\rightarrow M$, mit $\gamma_j(a_j), \gamma_j(b_j) \in \{ p_1,...,p_K\}$,
+  so dass die Einschr"ankungen $\gamma_j|_{(a_j,b_j)}$ paarweise disjunkt sind und die Punkte $p_1,..,p_E$ aus Punkt 1 nicht treffen;
+  \item den $F$ Zusammenhangskomponenten $D_1,...,D_F$ von 
+  $M\setminus \left( \{p_1,...,p_E\}\cup im(\gamma_1)\cup...\cup im(\gamma_K) \right)$, wobei $\overline{D}_i$ jeweils hom"oomorph
+  zu einem Polygon in der Ebene ist, so dass die Punkte $p_k\in \partial D_i$ aus Punkt 1 auf die Ecken und die Kurven  
+  $im(\gamma_j)\subset \partial D_i$ aus Punkt 2 auf die Kanten des Polygons abgebildet werden.
+\end{enumerate}
+Wir nennen eine solche Triangulierung glatt, wenn alle Kurven $\gamma_j$ in Punkt 2 glatt sind und die Hom"oomorphismen aus Punkt 3 als 
+Diffeomorphismen gew"ahlt werden k"onnen. Man kann zeigen, dass jede kompakte glatte Fl"ache eine glatte Triangulierung zul"asst.
+
+
+
+\end{defi}
+
+\fc{DEulerzahl}
+\begin{defi}[Eulerzahl einer Triangulierung]
+  Die Eulerzahl einer Triangulierung ist gegeben durch
+  \begin{align*}
+   \chi = E-K+F\in \mathbb{Z}.
+  \end{align*}
+  F"ur die $S^2$ ist die Eulerzahl 2, das folgt aus dem Eulerschen Polyedersatz.
+wobei mit E die Anzahl der Ecken, K die Anzahl der Kanten und mit F die Anzahl der Zusammenhangskomponenten in der Triangulierung gemeint ist.
+
+\end{defi}
+
+\fc{SGaussBonnetGlobal}
+\begin{sat}[Gau"s-Bonnet; globale Fassung]
+ Sei $M$  eine kompakte Fl"ache mit Riemannscher Metrik $g$ und Gau"s-Kr"ummung $K$, dann gilt
+ \begin{equation*}\begin{aligned}
+  2\pi\ \chi(M) = \int_M K\ dA.
+ \end{aligned}\end{equation*}
+(Insbesondere h"angt die Eulerzahl $\chi(M)$ nicht von der Wahl der Triangulierung ab, und die totale Gau"s-Kr"ummung 
+$\int_M K\ dA$ h"angt nicht von der Wahl der Metrik $g$ auf $M$ ab.
+
+\beachte{Wikipedia: Verzerrt man die Mannigfaltigkeit, so bleibt ihre Euler-Charakteristik unver"andert, im Gegensatz zur Gau"skr"ummung an den einzelnen Punkten. Der Satz sagt aus, dass das Integral über die Kr"ummung, also die Gesamtkrümmung, unver"andert bleibt.}
+\end{sat}
+
+
+
+\printindex
+\end{document}
