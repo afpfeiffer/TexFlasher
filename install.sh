@@ -169,9 +169,11 @@ echo "editor: $TEXEDITOR" >> settings
 echo
 
 
-echo "Please run TexFlasher by typing \"./run-TexFlasher.sh\" in your bash."
-echo
-echo "Insallation complete. Please enjoy the TexFlasher."
+
+
+# echo "Please run TexFlasher by typing \"./run-TexFlasher.sh\" in your bash."
+# echo
+# echo "Insallation complete. Please enjoy the TexFlasher."
 
 
 
