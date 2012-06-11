@@ -1,9 +1,17 @@
-#!/bin/sh
-set -e
+#!/bin/bash
 
 #remove sratrupscript
 rm /usr/local/bin/texflasher
 
-# TODO remove user-data
+# remove user-data
+echo -n "Would you like to keep your flashcards and latex source files (recommended)? (Y/n): "
+read ANSWER
+if [ "$ANSWER" == "n" ]; then
+	rm -rf $HOME/TexFlasher
+else
+	rm -rf $HOME/TexFlasher/.TexFlasher
+	rm $HOME/TexFlasher/install.sh
+	rm $HOME/TexFlasher/run-TexFlasher.sh
+fi
 
 exit 0
