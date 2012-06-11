@@ -1589,7 +1589,7 @@ def show_tagged(tagtype,dir,tag_path):
 	for elem in all_fcs:
 	  if len(parent.getElementsByTagName(elem['tag']))>0:
 	     tagged.append(elem)
-	display_mult_fcs(tagged,"Tagged in "+dir,"Menu","lambda:menu()","./.TexFlasher/pictures/menu.png")
+	display_mult_fcs(tagged,str(len(tagged))+ " tagged \""+tagtype+"\" in "+dir,"Menu","lambda:menu()","./.TexFlasher/pictures/menu.png")
 
         
         
