@@ -14,7 +14,7 @@ set -e
 # NOTE attemp2
 startupscript=/usr/local/bin/texflasher
 echo "#!/bin/sh" > $startupscript
-echo "if [ ! -d \$HOME/TexFlasher/.TexFlasher ]; then " >> $startupscript
+echo "if [ ! -d \$HOME/TexFlasher ]; then " >> $startupscript
 echo "  cp -r /opt/texflasher $HOME/TexFlasher " >> $startupscript
 echo "  cd $HOME/TexFlasher " >> $startupscript
 echo "  bash install.sh " >> $startupscript

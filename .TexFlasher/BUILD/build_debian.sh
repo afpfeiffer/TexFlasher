@@ -9,6 +9,7 @@ rm -rf src/.gitignore
 
 rm -rf tree/
 mkdir -p tree/opt/
+cp -r src tree/opt/texflasher
 cp -r DEBIAN tree
 
 dpkg --build tree ./ 
