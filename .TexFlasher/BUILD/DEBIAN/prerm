@@ -9,9 +9,9 @@ read ANSWER
 if [ "$ANSWER" == "n" ]; then
 	rm -rf $HOME/TexFlasher
 else
-	rm -rf $HOME/TexFlasher/.TexFlasher
-	rm $HOME/TexFlasher/install.sh
-	rm $HOME/TexFlasher/run-TexFlasher.sh
+	cd $HOME/TexFlasher
+	bash uninstall.sh
+	rm uninstall.sh
 fi
 
 exit 0

@@ -152,8 +152,13 @@ if [ "$ANSWER" != "n" ]; then
 	echo "Terminal=false" >> TexFlasher.desktop
 	echo "Exec=$PWD/run-TexFlasher.sh" >> TexFlasher.desktop
 	echo "Name=TexFlasher" >> TexFlasher.desktop
+	echo "Comment=Flashcard manager with latex support." >> TexFlasher.desktop
 	echo "Icon=$PWD/.TexFlasher/pictures/icon.png" >> TexFlasher.desktop
+	echo "Categories=Office;Application;" >> TexFlasher.desktop
 	chmod a+x  TexFlasher.desktop
+	if [ -d $HOME/.local/share/applications ]; then
+	 cp TexFlasher.desktop ~/.local/share/applications
+	fi
 
 	mv TexFlasher.desktop ~/Desktop/
 	
