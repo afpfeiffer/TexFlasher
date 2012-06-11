@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+
+#remove sratrupscript
+rm /usr/local/bin/texflasher
+
+# TODO remove user-data
+
+exit 0
