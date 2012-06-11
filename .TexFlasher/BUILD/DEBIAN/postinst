@@ -1,0 +1,29 @@
+#!/bin/sh
+set -e
+
+
+# NOTE attemp1
+# USR=$(basename $HOME)
+# cp -r /etc/texflasher $HOME/TexFlasher
+# cd $HOME/TexFlasher
+# /bin/bash install.sh $USR
+# cd $HOME
+# chown -R $USR TexFlasher/
+
+
+# NOTE attemp2
+startupscript=/usr/local/bin/texflasher
+echo "#!/bin/sh" > $startupscript
+echo "if [ ! -d \$HOME/TexFlasher ]; then " >> $startupscript
+echo "  cp -r /opt/texflasher $HOME/TexFlasher " >> $startupscript
+echo "  cd $HOME/TexFlasher " >> $startupscript
+echo "  bash install.sh " >> $startupscript
+echo "fi " >> $startupscript
+echo >> $startupscript
+echo "cd $HOME/TexFlasher " >> $startupscript
+echo "bash run-TexFlasher.sh " >> $startupscript
+echo "exit 0 ">> $startupscript
+
+chmod a+x $startupscript
+
+exit 0
