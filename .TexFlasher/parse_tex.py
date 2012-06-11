@@ -45,7 +45,7 @@ def parse_dvi_dump(source_path):
 	theorems={}
 	doc_start=False
 	page=[]
-	pagemarker=""
+	pagemarker=[None]
 	number=""
 	fc_tag=None
 	current_section={"section":None,"subsection":None,"subsubsection":None}
@@ -242,9 +242,9 @@ def parse_tex(fcard_dir,source_path):
 	else:
 		print "Fatal Error: No flashcard_markers  found!"
 		sys.exit()
-try:		
-	parse_tex(sys.argv[1],sys.argv[2])
-except SystemExit:
-	print "SystemExit"
-except:
-	print "Syntax:\n  flashcard_directory\n source_directory \n (jeweils ohne / am ende!)\n"
+#try:		
+parse_tex(sys.argv[1],sys.argv[2])
+#except SystemExit:
+#	print "SystemExit"
+#except:
+#	print "Syntax:\n  flashcard_directory\n source_directory \n (jeweils ohne / am ende!)\n"
