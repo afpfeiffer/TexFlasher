@@ -164,7 +164,7 @@ def load_agenda(ldb,dir,now=datetime.now(),PageSort=False):
 		sorted_agenda.reverse()
 	sorted_new=sorted(new_fc.iteritems(), key=itemgetter(1))
 
-	return sorted_agenda+sorted_new,len(sorted_new)
+	return sorted_agenda+sorted_new,sorted_new
 
 
 def update_flashcard(fc_tag,ldb,selected_dir,attr_name,attr_value,lastReviewed=strftime("%Y-%m-%d %H:%M:%S", localtime()),ask=False):
@@ -1209,7 +1209,7 @@ def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type):
 
 class Flasher:
 	def agenda_resort(self,sort):
-		self.agenda,new=load_agenda(self.ldb,self.selected_dir, self.date,sort)
+		self.agenda,self.new_cards=load_agenda(self.ldb,self.selected_dir, self.date,sort)
 		self.reactAndInit(True , -1)
 		if sort==True:			
 			self.sort_b.config(image=self.datesort_img,command=lambda:self.agenda_resort(False),text="Sort by Date")
@@ -1239,7 +1239,7 @@ class Flasher:
 								
 		self.ldb=load_leitner_db(self.selected_dir,Settings["user"])
 						
-		self.agenda,new=load_agenda(self.ldb,self.selected_dir, date)
+		self.agenda,self.new_cards=load_agenda(self.ldb,self.selected_dir, date)
 		
 		
 		self.c=Canvas(Main,width=WIDTH,height=Main.winfo_height()-240)
@@ -1427,11 +1427,12 @@ class Flasher:
 		
 		level = self.ldb.getElementsByTagName(flashcard_name)[0].getAttribute('level')
 		color, foo = getColor( int(level), 7)
-		page=self.c.source.getElementsByTagName(flashcard_name)[0].getAttribute('page')
+		page=self.c.source.getElementsByTagName(flashcard_name)[0].getAttribute('page') #PAGE IN FC LIST
+		pagemarker=self.c.source.getElementsByTagName(flashcard_name)[0].getAttribute('pagemarker') #PAGE IN ORIGINAL
 		fc_pos=int(self.c.order.getElementsByTagName(flashcard_name)[0].getAttribute('position'))
 	
 		self.c.fc_det_left.set("Flashcards (left today / total number): "+str(flashcardsTodo-listPosition)+" / "+str(totalNumberCards))	
-	   	self.c.fc_det_right.set("Flashcardnr.: "+str(fc_pos)+", Page: "+str(page)+", Level: "+ str(level) +"  ")
+	   	self.c.fc_det_right.set("Tag: "+flashcard_name+", Nr.: "+str(fc_pos)+", Page: "+str(pagemarker))
 
 
 	def answer(self,flashcard_tag, listPosition):
@@ -1676,8 +1677,9 @@ def menu():
 				length=0
 				#try:
 				ldb= load_leitner_db(os.path.dirname(l.getAttribute('filename')),Settings["user"])
-				today,new=load_agenda(ldb,os.path.dirname(l.getAttribute('filename')))
+				today,new_cards=load_agenda(ldb,os.path.dirname(l.getAttribute('filename')))
 				todo=len(today)
+				new=len(new_cards)
 				length=len(ldb.childNodes)
 			#	except:
 			#		pass

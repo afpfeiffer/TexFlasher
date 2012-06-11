@@ -45,6 +45,7 @@ def parse_dvi_dump(source_path):
 	theorems={}
 	doc_start=False
 	page=[]
+	pagemarker=[]
 	number=""
 	fc_tag=None
 	current_section={"section":None,"subsection":None,"subsubsection":None}
@@ -62,17 +63,19 @@ def parse_dvi_dump(source_path):
 	          elif doc_start and sections.get(matches[0], False):			
 			section_type=sections[matches[0]]['type']
 			current_section[section_type]=sections[matches[0]]
+		if doc_start and re.compile("xxx: 'PageMarker=(.*?)'").findall(l):#we got pagem
+			pagemarker=re.compile("xxx: 'PageMarker=(.*?)'").findall(l)[0]
 		if doc_start and re.compile("xxx: 'fc=(.*?)'").findall(l):#we got fc_tag
 		  matches=re.compile("xxx: 'fc=(.*?)'").findall(l)
 		  fc_tag=matches[0]
-		  theorems[fc_tag]={"page":None,"number":None,"section_name":None,"section_number":None,"subsection_name":None,"subsection_number":None,"subsubsection_name":None,"subsubsection_number":None}
+		  theorems[fc_tag]={"page":None,"pagemarker":None,"number":None,"section_name":None,"section_number":None,"subsection_name":None,"subsection_number":None,"subsubsection_name":None,"subsubsection_number":None}
 		  for meta in current_section:
 			if not current_section[meta]==None:
 			  theorems[fc_tag][meta+"_name"]=current_section[meta]['name']
 			  theorems[fc_tag][meta+"_number"]=current_section[meta]['number']
 			
 		  theorems[fc_tag]['page']=page[0]
-		  
+		  theorems[fc_tag]['pagemarker']=pagemarker[0]		  
 	for fc_tag in theorems:
 		element=doc.createElement(fc_tag)
 		fc_meta.appendChild(element)
