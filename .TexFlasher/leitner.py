@@ -1429,6 +1429,8 @@ class Flasher:
 		color, foo = getColor( int(level), 7)
 		page=self.c.source.getElementsByTagName(flashcard_name)[0].getAttribute('page') #PAGE IN FC LIST
 		pagemarker=self.c.source.getElementsByTagName(flashcard_name)[0].getAttribute('pagemarker') #PAGE IN ORIGINAL
+		if pagemarker==None:
+			pagemarker="unset"
 		fc_pos=int(self.c.order.getElementsByTagName(flashcard_name)[0].getAttribute('position'))
 	
 		self.c.fc_det_left.set("Flashcards (left today / total number): "+str(flashcardsTodo-listPosition)+" / "+str(totalNumberCards))	
@@ -1846,6 +1848,7 @@ if(screen.get_width() < WIDTH):
 
 
 BD=2
+
 RESTART_TIME=5 
 
 IK=ImageKeeper()
