@@ -45,7 +45,7 @@ def parse_dvi_dump(source_path):
 	theorems={}
 	doc_start=False
 	page=[]
-	pagemarker=[]
+	pagemarker=""
 	number=""
 	fc_tag=None
 	current_section={"section":None,"subsection":None,"subsubsection":None}
@@ -60,11 +60,11 @@ def parse_dvi_dump(source_path):
 		  elif doc_start and fc_tag and matches[0].startswith("sat."):
 			number=matches[0].replace("sat.","")
 			theorems[fc_tag]["number"]=number
-	          elif doc_start and sections.get(matches[0], False):			
+		  elif doc_start and sections.get(matches[0], False):			
 			section_type=sections[matches[0]]['type']
 			current_section[section_type]=sections[matches[0]]
 		if doc_start and re.compile("xxx: 'PageMarker=(.*?)'").findall(l):#we got pagem
-			pagemarker=re.compile("xxx: 'PageMarker=(.*?)'").findall(l)[0]
+		  pagemarker=re.compile("xxx: 'PageMarker=(.*?)'").findall(l)
 		if doc_start and re.compile("xxx: 'fc=(.*?)'").findall(l):#we got fc_tag
 		  matches=re.compile("xxx: 'fc=(.*?)'").findall(l)
 		  fc_tag=matches[0]
@@ -242,9 +242,9 @@ def parse_tex(fcard_dir,source_path):
 	else:
 		print "Fatal Error: No flashcard_markers  found!"
 		sys.exit()
-#try:		
-parse_tex(sys.argv[1],sys.argv[2])
-#except SystemExit:
-#	print "SystemExit"
-#except:
-#	print "Syntax:\n  flashcard_directory\n source_directory \n (jeweils ohne / am ende!)\n"
+try:		
+	parse_tex(sys.argv[1],sys.argv[2])
+except SystemExit:
+	print "SystemExit"
+except:
+	print "Syntax:\n  flashcard_directory\n source_directory \n (jeweils ohne / am ende!)\n"
