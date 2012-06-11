@@ -168,6 +168,10 @@ echo "user: $USERNAME" >> settings
 echo "editor: $TEXEDITOR" >> settings
 echo
 
+if [ ! -f .TexFlasher/config.xml ]; then
+	echo "<config><FlashFolder created=\"2012-05-07 14:49:00\" filename=\"$PWD/Example-elDG/Vorbereitung.tex\" lastReviewed=\"2012-05-07 14:49:00\"/></config>"
+	echo "<config><FlashFolder created=\"2012-05-07 14:49:00\" filename=\"$PWD/Example-elDG/Vorbereitung.tex\" lastReviewed=\"2012-05-07 14:49:00\"/></config>" >>  .TexFlasher/config.xml
+fi
 
 
 
