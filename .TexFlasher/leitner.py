@@ -40,8 +40,10 @@ import xml.dom.minidom as xml
 from operator import itemgetter
 from time import strftime, strptime, ctime, localtime, mktime
 from datetime import datetime, timedelta
-from Tkinter import *
 from math import *
+
+
+from Tkinter import *
 import tkFont
 import tkMessageBox
 import Image, ImageTk
@@ -49,7 +51,6 @@ import tkFileDialog
 from difflib import get_close_matches
 import itertools, collections
 import ConfigParser
-import gtk, pygtk
 
 
 #locals
@@ -1830,14 +1831,10 @@ readSettings( Settings )
 global WIDTH, HEIGHT
 
 
-window = gtk.Window()
-screen = window.get_screen()
-HEIGHT=int ( min( screen.get_height(), screen.get_width())*0.9 )
-WIDTH=HEIGHT
+
 
 # just to be on the safe side
-if(screen.get_width() < WIDTH):
-	WIDTH = screen.get_width()
+
 
 
 
@@ -1883,7 +1880,12 @@ class TexFlasher(Frame):
 		header_height=20
 		footer_height=20		
 
-
+		ws = self.master.winfo_screenwidth()
+		hs = self.master.winfo_screenheight()
+		HEIGHT=int ( min( hs, ws)*0.9 )
+		WIDTH=HEIGHT
+		if(ws < WIDTH):
+		  WIDTH = ws	
 
 		
 		self.configure(bd=10,height=HEIGHT-footer_height-header_height,width=WIDTH)			
@@ -1891,8 +1893,7 @@ class TexFlasher(Frame):
 		self.grid_propagate(False) 	
 		self._version="unstable build"
 
-		ws = self.master.winfo_screenwidth()
-		hs = self.master.winfo_screenheight()
+	
 		# calculate position x, y
 		Wi=WIDTH+20 #width of the outer window frame
 		Hi=HEIGHT
