@@ -1,0 +1,17 @@
+#!/bin/bash
+
+#remove sratrupscript
+rm /usr/local/bin/texflasher
+
+# remove user-data
+echo -n "Would you like to keep your flashcards and latex source files (recommended)? (Y/n): "
+read ANSWER
+if [ "$ANSWER" == "n" ]; then
+	rm -rf $HOME/TexFlasher
+else
+	cd $HOME/TexFlasher
+	bash uninstall.sh
+	rm uninstall.sh
+fi
+
+exit 0

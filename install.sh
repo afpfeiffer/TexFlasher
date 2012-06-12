@@ -152,8 +152,13 @@ if [ "$ANSWER" != "n" ]; then
 	echo "Terminal=false" >> TexFlasher.desktop
 	echo "Exec=$PWD/run-TexFlasher.sh" >> TexFlasher.desktop
 	echo "Name=TexFlasher" >> TexFlasher.desktop
+	echo "Comment=Flashcard manager with latex support." >> TexFlasher.desktop
 	echo "Icon=$PWD/.TexFlasher/pictures/icon.png" >> TexFlasher.desktop
+	echo "Categories=Office;Application;" >> TexFlasher.desktop
 	chmod a+x  TexFlasher.desktop
+	if [ -d $HOME/.local/share/applications ]; then
+	 cp TexFlasher.desktop ~/.local/share/applications
+	fi
 
 	mv TexFlasher.desktop ~/Desktop/
 	
@@ -168,10 +173,16 @@ echo "user: $USERNAME" >> settings
 echo "editor: $TEXEDITOR" >> settings
 echo
 
+if [ ! -f .TexFlasher/config.xml ]; then
+	echo "<config><FlashFolder created=\"2012-05-07 14:49:00\" filename=\"$PWD/Example-elDG/Vorbereitung.tex\" lastReviewed=\"2012-05-07 14:49:00\"/></config>"
+	echo "<config><FlashFolder created=\"2012-05-07 14:49:00\" filename=\"$PWD/Example-elDG/Vorbereitung.tex\" lastReviewed=\"2012-05-07 14:49:00\"/></config>" >>  .TexFlasher/config.xml
+fi
 
-echo "Please run TexFlasher by typing \"./run-TexFlasher.sh\" in your bash."
-echo
-echo "Insallation complete. Please enjoy the TexFlasher."
+
+
+# echo "Please run TexFlasher by typing \"./run-TexFlasher.sh\" in your bash."
+# echo
+# echo "Insallation complete. Please enjoy the TexFlasher."
 
 
 
