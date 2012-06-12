@@ -478,16 +478,8 @@ def savefile(canvas,fc_tag,user,tagtype,item,content):
 		flashcard_element.setAttribute('created',tags[1]+" "+tags[2])	
 		flashcard_element.setAttribute('coord_type',"percent")	
 		flashcard_element.setAttribute('user',user)
-
-		if content=="\n":
-			content=""
-		try:
-			if content[-1]=="\n":
-				content=content[:-1]
-			if content[-1]==" ":
-				content=content[:-1]			
-		except:
-			pass
+		while content[-1]=="\n":
+			content=content[:-1]
 		flashcard_element.setAttribute('comment',content.encode('utf-8'))
 		xml_file = open(canvas.tagtypes[tagtype]['xml_path'], "w")
 		parent.writexml(xml_file)

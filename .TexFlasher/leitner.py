@@ -1179,6 +1179,8 @@ def change_latex(file_path,fc_tag,content,theorem_type):
 	
 def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type):
 	content=edit_text.get('1.0', END)
+	while content[-1]=="\n":
+		content=content[:-1]
 	if os.path.isfile("./.TexFlasher/config.xml"):
 		#try:
 			tree = xml.parse("./.TexFlasher/config.xml")
