@@ -165,7 +165,7 @@ def parse_tex(fcard_dir,source_path):
 								  
 						      fc_header+="\\renewcommand{\\the"+sec_type+"}{"+fc_sec+"}\n"
 						      fc_header+=fc_sec_color
-						      fc_section+="\\section{"+fc_sec_name+"}"
+						      fc_section+="\\"+sec_type+"{"+fc_sec_name+"}"
 						  except:
 						    pass						
 						
