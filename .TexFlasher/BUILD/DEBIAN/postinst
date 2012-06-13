@@ -14,15 +14,32 @@ set -e
 # NOTE attemp2
 startupscript=/usr/local/bin/texflasher
 echo "#!/bin/bash" > $startupscript
-echo "if [ ! -d \$HOME/TexFlasher/.TexFlasher ]; then " >> $startupscript
-echo "  mkdir $HOME/TexFlasher " >> $startupscript
-echo "  cp -r /opt/texflasher/* $HOME/TexFlasher/ " >> $startupscript
-echo "  cp -r /opt/texflasher/.TexFlasher $HOME/TexFlasher/ " >> $startupscript
-echo "  cd $HOME/TexFlasher " >> $startupscript
+echo "DIR=\$HOME/TexFlasher " >> $startupscript
+# echo "while [ 1 -eq 1 ]; do " >> $startupscript
+# echo "  echo \"Default TexFlasher directory is \$DIR.\" " >> $startupscript
+# echo "  echo -n \"Please press <Return> to accept or enter new directory: \" " >> $startupscript
+# echo "  read ANSWER " >> $startupscript
+# echo "  if [ \"\$ANSWER\" == \"\" ]; then " >> $startupscript
+# echo "		break " >> $startupscript
+# echo "	else " >> $startupscript
+# echo "		if [ ! -d \$ANSWER ]; then " >> $startupscript
+# echo "			DIR=\$ANSWER " >> $startupscript
+# echo "			break " >> $startupscript
+# echo "		else " >> $startupscript
+# echo "			echo \"Error: directory \$ANSWER exists\" " >> $startupscript
+# echo "		fi " >> $startupscript
+# echo "	fi " >> $startupscript
+# echo "done " >> $startupscript
+# echo "echo \"Installing into \$DIR\" " >> $startupscript
+echo "if [ ! -d \$DIR/.TexFlasher ]; then " >> $startupscript
+echo "  mkdir -p \$DIR " >> $startupscript
+echo "  cp -r /opt/texflasher/* \$DIR/ " >> $startupscript
+echo "  cp -r /opt/texflasher/.TexFlasher \$DIR/ " >> $startupscript
+echo "  cd \$DIR " >> $startupscript
 echo "  bash install.sh " >> $startupscript
 echo "fi " >> $startupscript
 echo >> $startupscript
-echo "cd $HOME/TexFlasher " >> $startupscript
+echo "cd \$DIR " >> $startupscript
 echo "bash run-TexFlasher.sh " >> $startupscript
 echo "exit 0 ">> $startupscript
 

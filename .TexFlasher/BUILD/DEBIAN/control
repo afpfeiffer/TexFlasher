@@ -1,6 +1,6 @@
 Package: texflasher
-Version: 12.06
-Section: study 
+Version: 12.07
+Section: office 
 Priority: optional
 Architecture: all
 Essential: no
