@@ -713,14 +713,22 @@ def show_pie_level(event,pie_data,radius):
 
 #################################################################################### Get FC Info
 
-def get_fc_info(dir,tag,ldb=None):
+def get_fc_info(dir,tag,ldb=None,source=None):
 	if not ldb:
 		ldb=load_leitner(dir,Settings["user"])
+	if not source:
+		source_file= xml.parse(dir+"/Details/source.xml")		
+	info={}
 	for elem in ldb.childNodes:
 		if elem.tagName==tag:
-			return elem	
+			info["ldb"]=elem	
 			break
-
+	for elem in source_file.getElementsByTagName("fc_meta_info")[0].childNodes:
+		if elem.tagName==tag:
+			info["source"]=elem
+			break
+	return info
+	
 def get_fc_desc(fc_dir,tag,tex_file=False,xml_file=False):
 
 	if not tex_file:	
@@ -1018,7 +1026,7 @@ def  disp_single_fc(image_path,tag,title=None):
 	win.iconmask(iconbitmapLocation)
 
 	c=Canvas(win,width=WIDTH,height=WIDTH*0.6)
-	c.grid(row=3,columnspan=4)
+	c.grid(row=3,rowspan=5,columnspan=4)
 	image = Image.open(image_path)
 	image = image.resize((WIDTH, int(WIDTH*0.6)), Image.ANTIALIAS)
 	flashcard = ImageTk.PhotoImage(image)
@@ -1035,7 +1043,7 @@ def  disp_single_fc(image_path,tag,title=None):
 	
 	clear_b=create_image_button(win,".TexFlasher/pictures/clear.png",40,40)
 	clear_b.configure(state=DISABLED)
-	clear_b.grid(row=1, column=3,sticky=E+S+W+N)		
+	clear_b.grid(row=1, column=3,columnspan=2,sticky=E+S+W+N)		
 
 	edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,os.path.dirname(image_path).replace("/Flashcards",""),tag))
 	
@@ -1053,36 +1061,43 @@ def  disp_single_fc(image_path,tag,title=None):
 	
 	c.fc_row=3
 	c.tag_buttons=[]
-
-	q_b=create_image_button(win,".TexFlasher/pictures/question_fix.png",20,20)
-	q_b.grid(row=c.fc_row,column=0,sticky=N+W)
+	q_b=create_image_button(win,".TexFlasher/pictures/question_fix.png",35,35)
+	q_b.grid(row=c.fc_row,column=4,sticky=N)
 	#q_b.grid_remove()
 	c.q_b=q_b
-	w_b=create_image_button(win,".TexFlasher/pictures/watchout_fix.png",20,20)
-	w_b.grid(row=c.fc_row,column=0,sticky=S+W)
+	w_b=create_image_button(win,".TexFlasher/pictures/watchout_fix.png",35,35)
+	w_b.grid(row=c.fc_row+1,column=4)
 	#w_b.grid_remove()
 	c.w_b=w_b
-	r_b=create_image_button(win,".TexFlasher/pictures/repeat_fix.png",20,20)
+	r_b=create_image_button(win,".TexFlasher/pictures/repeat_fix.png",35,35)
 
-	r_b.grid(row=c.fc_row,column=3,sticky=N+E)
+	r_b.grid(row=c.fc_row+2,column=4)
 	#r_b.grid_remove()
 	c.r_b=r_b
-	l_b=create_image_button(win,".TexFlasher/pictures/link_fix.png",20,20)
+	l_b=create_image_button(win,".TexFlasher/pictures/link_fix.png",35,35)
 
-	l_b.grid(row=c.fc_row,column=3,sticky=S+E)		    
+	l_b.grid(row=c.fc_row+3,column=4)		    
 	#l_b.grid_remove()
 	c.l_b=l_b
 
-	c.tag_buttons=[q_b,w_b,r_b,l_b]	
+	wi_b=create_image_button(win,".TexFlasher/pictures/wiki.png",35,35)
+
+	wi_b.grid(row=c.fc_row+4,column=4,sticky=S)		    
+	#l_b.grid_remove()
+	c.wi_b=wi_b	
+	
+	c.tag_buttons=[q_b,w_b,r_b,l_b,wi_b]	
 	
 	c.l_b.config(command=c.rect.link_tag)
 	c.r_b.config(command=c.rect.repeat_tag)
 	c.w_b.config(command=c.rect.watchout_tag)
-	c.q_b.config(command=c.rect.question_tag)	
+	c.q_b.config(command=c.rect.question_tag)
+	c.wi_b.config(command=c.rect.wiki_tag)
+	
 	ldb=load_leitner_db(os.path.dirname(image_path)+"/../",Settings["user"])
-	fc_info=get_fc_info(os.path.dirname(image_path)+"/../",tag,ldb)
-	
-	
+	fc_info=get_fc_info(os.path.dirname(image_path)+"/../",tag,ldb,None)
+	pagemarker=fc_info["source"].getAttribute("pagemarker")
+	Label(win,text="Page: "+pagemarker+", Created: "+fc_info["ldb"].getAttribute("created")+", Level: "+fc_info["ldb"].getAttribute("level")).grid(row=c.fc_row+5,columnspan=5)
 	stat_height=40
 	stat_width=int(float(WIDTH)*0.95)
 	stat=Canvas(win,width=stat_width, height=stat_height)
