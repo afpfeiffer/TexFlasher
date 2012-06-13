@@ -4,10 +4,11 @@ Section: office
 Priority: optional
 Architecture: all
 Essential: no
-Depends:   libgpg-error0, python (<< 3.0.0), fontconfig-config, libxaw7, ttf-indic-fonts-core
+Depends: python (<< 3.0.0), fontconfig-config, imagemagick, xterm, dvipng, texlive-latex-base, texlive-latex-recommended, texlive-base, texlive-math-extra, texlive-latex-extra, texlive-science, python-tk, python-imaging-tk, python-configglue
 Recommends: mozilla
 Installed-Size: 512
 Maintainer: Axel Pfeiffer [afpfeiffer@googlemail.com]
-Description: TexFlasher is a flashcard manager (studying tool), that
-             has a powerful latex support. Flashcards can be created 
-             from existing latex source files within seconds.
+Description: TexFlasher is a flashcard creator/manager.
+             TexFlasher is a flashcard creator/manager with powerful latex 
+             support. Flashcards can be created from existing latex source 
+             files within seconds.
