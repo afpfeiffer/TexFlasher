@@ -1733,7 +1733,7 @@ def menu():
 									
 				exec('button_' + str(row_start)+'_open.grid(row='+str(row_start)+',sticky=N+W+S+E,column='+str(start_column)+')')
 				#folder desc
-				exec('fc_folder_' + str(row_start)+'_desc=Label(Main,justify=LEFT,text="'+l.getAttribute('filename').split("/")[-2]+'\\nlength: '+str(length)+'\\ntodo: '+str(todo-new)+', new: '+str(new)+'\\nupdated: '+l.getAttribute('lastReviewed')+'").grid(row='+str(row_start)+', column='+str(start_column+1)+',sticky=W)')
+				exec('fc_folder_' + str(row_start)+'_desc=Label(Main,justify=LEFT,text="'+l.getAttribute('filename').split("/")[-2]+'\\nlength: '+str(length)+'\\ntodo: '+str(todo-new)+', new: '+str(new)+'\\nupdated: '+l.getAttribute('lastReviewed').rpartition(':')[0].partition('-')[2].replace('-','/')+'").grid(row='+str(row_start)+', column='+str(start_column+1)+',sticky=W)')
 
 				#tags
 				tag_xml_path=os.path.dirname(l.getAttribute('filename'))+"/Users/"+Settings['user']+"_comment.xml"
@@ -1918,8 +1918,8 @@ class TexFlasher(Frame):
 
 		ws = self.master.winfo_screenwidth()
 		hs = self.master.winfo_screenheight()
-		HEIGHT=int ( min( hs, ws)*0.9 )
-		WIDTH=HEIGHT
+		HEIGHT=int ( min( hs, ws)*0.93 )
+		WIDTH=int(0.95*HEIGHT)
 		if(ws < WIDTH):
 		  WIDTH = ws	
 
