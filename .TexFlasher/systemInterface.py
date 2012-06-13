@@ -62,13 +62,25 @@ def checkIfNeedToSave( files ):
 	else:
 		return True
 		
+
+###
+# Returns true if and only if the OS is Mac OS X
+def onOSX():
+	return sys.platform == 'darwin'
+
 def executeCommand( command ,wait=True):
 	win = Toplevel()
-	cmd="\""+str(command)+"; exit; sh\""
-	if not wait:
-		os.system('xterm -geometry 110x42 -sb -e '+ cmd +' &' )
+	if onOSX():
+		if wait:
+			subprocess.call( command, shell=True )
+		else:
+			subprocess.Popen( command, shell=True )
 	else:
-		os.system('xterm -geometry 110x42 -sb -e '+ cmd )		
+		cmd="\""+str(command)+"; exit; sh\""
+		if not wait:
+			os.system('xterm -geometry 110x42 -sb -e '+ cmd +' &' )
+		else:
+			os.system('xterm -geometry 110x42 -sb -e '+ cmd )
 	win.destroy()
 
 	
@@ -145,4 +157,3 @@ def update_config(filename):
 	xml_file.close()
 	
 
-	
