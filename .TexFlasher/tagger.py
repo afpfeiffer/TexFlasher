@@ -37,7 +37,10 @@ import tkFileDialog
 from difflib import get_close_matches
 import itertools, collections
 import ConfigParser
+
 import webbrowser
+import urllib
+import json
 
 ########################################################## Comment on fc ##############################################################
 
@@ -149,7 +152,96 @@ def create_textbox(win,height,width):
 def click(url):
 	new = 2
 	webbrowser.open(url,new=new)
-    
+
+	
+tkinter_umlauts=['odiaeresis', 'adiaeresis', 'udiaeresis', 'Odiaeresis', 'Adiaeresis', 'Udiaeresis', 'ssharp']
+
+	
+	
+class wiki(Entry):
+        """
+        Subclass of Tkinter.Entry that features autocompletion.
+        
+        To enable autocompletion use set_completion_list(list) to define 
+        a list of possible strings to hit.
+        To cycle through hits use down and up arrow keys.
+        """ 
+        def clear_search(self,event):
+		self._def_value.set("")
+		self.configure(font=("Helvetica",10,'bold'),fg="black",textvariable=self._def_value)
+        
+        def __init__( self, parent, **options ):
+        	Entry.__init__( self, parent, **options )
+        	self._def_value=StringVar()
+		self.configure(highlightthickness=0,font=("Helvetica",10,"bold"),textvariable=self._def_value,bd =5,bg=None,fg="gray",justify=CENTER)
+		self.bind("<Button-1>", self.clear_search)
+		self._def_value.set("Search Wikipedia")    
+		self._hits = []
+		self._hit_index = 0
+		self.position = 0
+		self.bind('<KeyRelease>', self.handle_keyrelease)
+		self._completion_list =()
+
+        def autocomplete(self, delta=0):
+		self.search_wiki()
+                """autocomplete the Entry, delta may be 0/1/-1 to cycle through possible hits"""
+                if delta: # need to delete selection otherwise we would fix the current position
+                        self.delete(self.position, Tkinter.END)
+                else: # set position to end so selection starts where textentry ended
+                        self.position = len(self.get())
+                # collect hits
+                _hits = []
+                for element in self._completion_list:
+                        if element.startswith(self.get().lower()):
+                                _hits.append(element)
+                # if we have a new hit list, keep this in mind
+                if _hits != self._hits:
+                        self._hit_index = 0
+                        self._hits=_hits
+                # only allow cycling if we are in a known hit list
+                if _hits == self._hits and self._hits:
+                        self._hit_index = (self._hit_index + delta) % len(self._hits)
+                # now finally perform the auto completion
+                if self._hits:
+                        self.delete(0,END)
+                        self.insert(0,self._hits[self._hit_index])
+                        self.select_range(self.position,END)
+                       
+        def search_wiki(self):
+		
+		search_query=self.get().replace(" ","+")
+		# set similarity sensitivity
+		data=urllib.urlopen("http://de.wikipedia.org/w/api.php?action=opensearch&search="+search_query+"&namespace=0&suggest=").read()	
+		res=eval(data)
+			## display search results
+		print res
+		for re in res[1]:
+		  	self._completion_list+=(unicode(re.lower().encode("utf-8")),)
+	
+        def handle_keyrelease(self, event):
+                """event handler for the keyrelease event on this widget"""
+                if event.keysym == "BackSpace":
+                        self.delete(self.index(INSERT), END) 
+                        self.position = self.index(END)
+                
+                if event.keysym == "Left":
+                        if self.position < self.index(END): # delete the selection
+                                self.delete(self.position, END)
+                        else:
+                                self.position = self.position-1 # delete one character
+                                self.delete(self.position, END)
+                if event.keysym == "Right":
+                        self.position = self.index(END) # go to end (no selection)
+                if event.keysym == "Down":
+                        self.autocomplete(1) # cycle to next hit
+                if event.keysym == "Up":
+                        self.autocomplete(-1) # cycle to previous hit
+                # perform normal autocomplete if event is a single key or an umlaut
+                if len(event.keysym) == 1 or event.keysym in tkinter_umlauts:
+                        self.autocomplete()
+              #  if event.keysym == "Return":
+               # 		self.search_flashcard()
+		
 def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user,color,position):
 		frame=Frame(canvas,bd=5,bg=color)
 		content=""
@@ -169,6 +261,9 @@ def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user,color,position):
 			break
 		  except:
 		    pass
+		#if content=="" and tagtype=="wiki":
+		#  comment_field=wiki(frame)	
+		#else:
 		comment_field=create_textbox(frame,5,30)
 		hyperlink = HyperlinkManager(comment_field)
 		comment_field.grid(row=2,column=0)
@@ -227,6 +322,15 @@ class RectTracker:
 	  self.canvas.tag_fix="rep"
 	  self.canvas.tag_follow=("repeat",self.tags_tag)
 
+	def wiki_tag(self):
+	  image = Image.open(".TexFlasher/pictures/wiki.png")
+	  image = image.resize(self.follow_size, Image.ANTIALIAS)
+	  image = ImageTk.PhotoImage(image)
+	  self.canvas.tag_follow_image=image
+	  self.canvas.current_tag="wiki"
+	  self.canvas.tag_fix="wi"
+	  self.canvas.tag_follow=("wiki",self.tags_tag)	  
+	  
 	def watchout_tag(self):
 	  image = Image.open(".TexFlasher/pictures/watchout_fix.png")
 	  image = image.resize(self.follow_size, Image.ANTIALIAS)
@@ -243,6 +347,7 @@ class RectTracker:
 		self.user=user
 		self.tag_xml_path=dir+"/Users/"+user+"_comment.xml"
 		self.canvas.tagtypes={}
+		self.canvas.tagtypes["wiki"]={"init":self.wiki_tag,"xml_path":self.tag_xml_path,"new":"wi","old":"owi","type":"image","image_path":".TexFlasher/pictures/wiki.png","command":tag_command}		
 		self.canvas.tagtypes["rect"]={"xml_path":self.tag_xml_path,"new":"re","old":"ore","type":"rectangle","command":tag_command}
 		self.canvas.tagtypes["link"]={"init":self.link_tag,"xml_path":self.tag_xml_path,"new":"li","old":"oli","type":"image","image_path":".TexFlasher/pictures/link_fix.png","command":tag_command}
 		self.canvas.tagtypes["question"]={"init":self.question_tag,"xml_path":self.tag_xml_path,"new":"qu","old":"oqu","type":"image","image_path":".TexFlasher/pictures/question_fix.png","command":tag_command}
