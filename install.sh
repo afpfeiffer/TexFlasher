@@ -156,9 +156,8 @@ if [ "$ANSWER" != "n" ]; then
 	echo "Icon=$PWD/.TexFlasher/pictures/icon.png" >> TexFlasher.desktop
 	echo "Categories=Office;Application;" >> TexFlasher.desktop
 	chmod a+x  TexFlasher.desktop
-	if [ -d $HOME/.local/share/applications ]; then
-	 cp TexFlasher.desktop ~/.local/share/applications
-	fi
+
+	cp TexFlasher.desktop ~/.local/share/applications
 
 	mv TexFlasher.desktop ~/Desktop/
 	
