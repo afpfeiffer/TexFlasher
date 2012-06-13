@@ -1179,8 +1179,8 @@ def change_latex(file_path,fc_tag,content,theorem_type):
 	
 def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type):
 	content=edit_text.get('1.0', END)
-	while content[-1]=="\n":
-		content=content[:-1]
+	#while content[-1]=="\n":
+	#	content=content[:-1]
 	if os.path.isfile("./.TexFlasher/config.xml"):
 		#try:
 			tree = xml.parse("./.TexFlasher/config.xml")
@@ -1339,20 +1339,27 @@ class Flasher:
 		l_b.grid(row=self.c.true_false_row,column=3,sticky=S+W)		    
 		l_b.grid_remove()
 		self.c.l_b=l_b
+		
+		wiki_b=create_image_button(Main,".TexFlasher/pictures/wiki.png",35,35)
+		wiki_b.grid(row=self.c.true_false_row,column=2,sticky=N)		    
+		wiki_b.grid_remove()
+		self.c.wiki_b=wiki_b
+				
+		
 		image = Image.open(".TexFlasher/pictures/datesort.png")
-		image = image.resize((80,80), Image.ANTIALIAS)
+		image = image.resize((35,35), Image.ANTIALIAS)
 		sort_img = ImageTk.PhotoImage(image)		
 		self.datesort_img=sort_img
 		
 		image = Image.open(".TexFlasher/pictures/pagesort.png")
-		image = image.resize((80,80), Image.ANTIALIAS)
+		image = image.resize((35,35), Image.ANTIALIAS)
 		sort_img = ImageTk.PhotoImage(image)		
 		self.pagesort_img=sort_img
 					
 		self.sort_b=Button(Main,image=self.pagesort_img,text="Sort by Pages",bd=BD,command=lambda:self.agenda_resort(True))
-		self.sort_b.grid(row=self.c.true_false_row,column=2)
+		self.sort_b.grid(row=self.c.true_false_row,column=2,sticky=S)
 				
-		self.c.tag_buttons=[q_b,w_b,r_b,l_b]	
+		self.c.tag_buttons=[q_b,w_b,r_b,l_b,wiki_b]	
 		#gallery
 	#	flow_c=Canvas(top,height=90,width=600,bd=3)
 	#	flow_c.grid(row=c.true_false_row,column=1,columnspan=3)
@@ -1471,7 +1478,8 @@ class Flasher:
 		self.c.r_b.config(command=self.c.rect.repeat_tag)
 		self.c.w_b.config(command=self.c.rect.watchout_tag)
 		self.c.q_b.config(command=self.c.rect.question_tag)
-	
+		self.c.wiki_b.config(command=self.c.rect.wiki_tag)
+
 		#fc_pos=int(c.order.getElementsByTagName(flashcard_tag)[0].getAttribute('position'))
 		#c.flow.goto(fc_pos)
 		
@@ -1743,6 +1751,12 @@ def menu():
 				   l_b.config(state=DISABLED)	
 				exec("l_b.config(command=lambda:show_tagged('link','"+os.path.dirname(l.getAttribute('filename'))+"','"+tag_xml_path+"'))")
 
+				wiki_b=create_image_button(Main,".TexFlasher/pictures/wiki.png",40,40,0)
+				wiki_b.grid(row=row_start,column=start_column+6,sticky=N+W+E+S)
+				wiki_length=check_tags(tag_xml_path,"wiki")
+				if wiki_length==None or wiki_length==0:
+				   wiki_b.config(state=DISABLED)	
+				exec("wiki_b.config(command=lambda:show_tagged('wiki','"+os.path.dirname(l.getAttribute('filename'))+"','"+tag_xml_path+"'))")
 				start_column+=6
 				
 				#update
@@ -1794,7 +1808,7 @@ def menu():
 		#search field
 		query=Search(Main)
 		query.set_completion_list(comp_list)
-		query.grid(row=1,column=1,columnspan=5,sticky=E+W+N+S)
+		query.grid(row=1,column=1,columnspan=6,sticky=E+W+N+S)
 			
 		create_n.grid(row=1,column=8,columnspan=6,sticky=N+W+S+E)		
 		Label(Main,height=1).grid(sticky=E+W,row=2,columnspan=10)
