@@ -23,7 +23,6 @@ global c
 global velocity,autorotate	
 global xold,maximages,centerrec 
 
-global search_canvas # scrolling wheel support needs that for some reason
 
 global saveString 
 global Menu
@@ -708,7 +707,7 @@ def show_pie_level(event,pie_data,radius):
 		for elem in all_fcs:
 			if elem['level']==str(level):
 				fcs.append(elem)
-		display_mult_fcs(fcs,"%s flashcard(s) at level %s in %s"%(str(len(fcs)),str(level),dir.split("/")[-1]),"Go Back","lambda:statistics_nextWeek('%s')"%(dir),"./.TexFlasher/pictures/stat.png")
+		display_mult_fcs(fcs,"%s flashcard(s) at level %s in %s"%(str(len(fcs)),str(level),dir.split("/")[-1]))
 
 
 #################################################################################### Get FC Info
@@ -877,7 +876,7 @@ class Search(Entry):
 						search_results.append(res)												
 			## display search results
 			if len(search_results)>0:
-				display_mult_fcs(search_results,"Found "+str(len(search_results))+" search results for \""+search_query+"\"","Menu","lambda:menu()","./.TexFlasher/pictures/menu.png")
+				display_mult_fcs(search_results,"Found "+str(len(search_results))+" search results for \""+search_query+"\"")
 				self.add_search_query(search_query,search_results)
 			else:
 				self.delete(0,END)
@@ -973,14 +972,13 @@ def create_image_button(window,path,width=None,height=None,border=None):
 
 
 
-def display_mult_fcs(fcs,title,button_title,button_command,button_image): #Syntax: fcs=[{"tag":fc_tag,"dir":fc_dir,"level":fc_level}, ...]
+def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":fc_dir,"level":fc_level}, ...]
 	clear_window()
-	global search_canvas # scrolling wheel support needs that for some reason
-	Main.master.title("Search")
-	Label(Main,text=title).grid(row=0,columnspan=5)
-	exec('menu_button=create_image_button(Main,"'+button_image+'",40,40)')
-	exec('menu_button.configure(text="%s",command=%s)'%(button_title,button_command))
-	exec('menu_button.grid(row=1,columnspan=5,sticky=N+W+E+S)')
+	Main.master.title(title)
+	menu_button=create_image_button(Main,".TexFlasher/pictures/menu.png",40,40)
+	menu_button.configure(command=lambda:menu())
+	
+	menu_button.grid(row=1,columnspan=5,sticky=N+W+E+S)
 	vscrollbar = AutoScrollbar(Main)
 	vscrollbar.grid(row=2, column=2, sticky=N+S)
 	search_canvas = Canvas(Main,yscrollcommand=vscrollbar.set)
@@ -990,10 +988,29 @@ def display_mult_fcs(fcs,title,button_title,button_command,button_image): #Synta
 	Search_frame.columnconfigure(0, weight=1)
 	Search_frame.grid(row=0,column=0)
 	Label(Search_frame,width=1).grid(column=2,rowspan=100)
-	i=0 #start at row	
+	i=0 #start at row
+	if not folders:
+	  folders={}
+	  for elem in fcs:
+	    try:
+	      folders[elem['dir']]['count']+=1
+	      folders[elem['dir']]['fcs'].append(elem)
+	    except:
+	      folders[elem['dir']]={"count":1,"fcs":[elem],"dir":elem['dir']}
+
+	if len(folders)>1:
+	  i=1
+	  buttons_frame=Frame(Main)
+	  buttons_frame.grid(row=0)
+	  Label(buttons_frame,text="Found ").grid(row=0,column=0)
+	  for dir in folders:
+	    b=Button(buttons_frame,bd=0,text=str(folders[dir]['count'])+" in "+dir.split("/")[-1],command=lambda data=folders[dir]:display_mult_fcs(data["fcs"],title,folders))
+	    b.grid(row=0,column=i)
+	    i+=1
 	iterator=fcs.__iter__()
 	images_row=[1,3] # increaese number of images per row by adding [1,3,6,9, ...]
 	size=Main.winfo_width()/len(images_row)-40
+	
 	for res in iterator:
 		for colu in images_row:
 			if colu>images_row[0]:
@@ -1002,17 +1019,18 @@ def display_mult_fcs(fcs,title,button_title,button_command,button_image): #Synta
 				except:
 					break
 			button=create_image_button(Search_frame,res['dir']+"/Flashcards/"+res['tag']+"-1.png",size,int(size*0.6))
-			exec('button.configure(command=lambda:disp_single_fc("'+res['dir']+"/Flashcards/"+res['tag']+"-2.png"+'","'+res['tag']+'","'+res['tag']+' in '+res['dir'].split("/")[-1]+' level '+res['level']+'"))')
+			button.configure(command=lambda data=res:disp_single_fc(data['dir']+"/Flashcards/"+data['tag']+"-2.png",data['tag'],data['tag']+' in '+data['dir'].split("/")[-1]+' level '+data['level']))
 			button.grid(row=str(i+1),column=colu)
-			exec("button.bind('<Button-4>', lambda event: search_canvas.yview_scroll(-1, UNITS))")
-			exec("button.bind('<Button-5>', lambda event: search_canvas.yview_scroll(1, UNITS)) ")
+			button.bind('<Button-4>', lambda event: search_canvas.yview_scroll(-1, UNITS))
+			button.bind('<Button-5>', lambda event: search_canvas.yview_scroll(1, UNITS))
 			dist=Label(Search_frame,height=1).grid(row=str(i+2),column=colu)
+			setattr(search_canvas,res['tag']+res['dir'],button.img)
 		i+=3
 	search_canvas.create_window(0, 0, anchor=NW, window=Search_frame)
-	exec("Search_frame.bind('<Button-4>', lambda event: search_canvas.yview_scroll(-1, UNITS))")
-	exec("Search_frame.bind('<Button-5>', lambda event: search_canvas.yview_scroll(1, UNITS)) ")			
-	exec("search_canvas.bind('<Button-4>', lambda event: event.widget.yview_scroll(-1, UNITS))")
-	exec("search_canvas.bind('<Button-5>', lambda event: event.widget.yview_scroll(1, UNITS)) ")
+	Search_frame.bind('<Button-4>', lambda event: search_canvas.yview_scroll(-1, UNITS))
+	Search_frame.bind('<Button-5>', lambda event: search_canvas.yview_scroll(1, UNITS)) 			
+	search_canvas.bind('<Button-4>', lambda event: event.widget.yview_scroll(-1, UNITS))
+	search_canvas.bind('<Button-5>', lambda event: event.widget.yview_scroll(1, UNITS)) 
 	Search_frame.update_idletasks()
 	search_canvas.config(scrollregion=search_canvas.bbox("all"),width=Main.winfo_width()-40,height=Main.winfo_height()-80)
 
@@ -1618,7 +1636,7 @@ def show_tagged(tagtype,dir,tag_path):
 	for elem in all_fcs:
 	  if len(parent.getElementsByTagName(elem['tag']))>0:
 	     tagged.append(elem)
-	display_mult_fcs(tagged,str(len(tagged))+ " tagged \""+tagtype+"\" in "+dir,"Menu","lambda:menu()","./.TexFlasher/pictures/menu.png")
+	display_mult_fcs(tagged,str(len(tagged))+ " tagged \""+tagtype+"\" in "+dir)
 
         
         
