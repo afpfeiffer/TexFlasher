@@ -163,7 +163,6 @@ def load_agenda(ldb,dir,now=datetime.now(),PageSort=False):
 	if not PageSort:
 		sorted_agenda.reverse()
 	sorted_new=sorted(new_fc.iteritems(), key=itemgetter(1))
-
 	return sorted_agenda+sorted_new,sorted_new
 
 
@@ -1229,8 +1228,9 @@ def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type):
 						image = Image.open(os.path.dirname(elem.getAttribute('filename'))+"/Flashcards/"+fc_tag+"-2.png")
 						image = image.resize((int(c.cget("width")),int(c.cget("height"))), Image.ANTIALIAS)
 						flashcard = ImageTk.PhotoImage(image)
-	 					c.create_image(int(flashcard.width()/2), int(flashcard.height()/2), image=flashcard)
+	 					c.create_image(int(flashcard.width()/2), int(flashcard.height()/2), image=flashcard,tag="frontside")
 	 					c.img=flashcard	
+	 					c.tag_lower("frontside","old")
 						cancel_edit(c,dir,fc_tag,frame)							
 					break
 		#except:
