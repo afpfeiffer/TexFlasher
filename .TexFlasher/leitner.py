@@ -40,7 +40,7 @@ from operator import itemgetter
 from time import strftime, strptime, ctime, localtime, mktime
 from datetime import datetime, timedelta
 from math import *
-
+from codecs import open
 
 from Tkinter import *
 import tkFont
@@ -96,7 +96,7 @@ def load_leitner_db(leitner_dir,user):
 				flashcard_element.setAttribute('level',"0")
 				flashcard_element.setAttribute('levelHistory',"0_("+strftime("%Y-%m-%d %H:%M:%S", localtime())+")")
 				flashcard_element.setAttribute('created',strftime("%Y-%m-%d %H:%M:%S", localtime()))
-	xml_file = open(leitner_dir+"/Users/"+Settings["user"]+".xml", "w")
+	xml_file = open(leitner_dir+"/Users/"+Settings["user"]+".xml", "w","utf-8")
 	ldb.writexml(xml_file)
 	#pretty_xml = ldb.toprettyxml()
 	#xml_file.writelines(pretty_xml)
@@ -182,7 +182,7 @@ def update_flashcard(fc_tag,ldb,selected_dir,attr_name,attr_value,lastReviewed=s
 			flashcard_element.setAttribute(attr_name, str(attr_value))
 	
 		if update==True:
-			xml_file = open(selected_dir+"/Users/"+Settings["user"]+".xml", "w")
+			xml_file = open(selected_dir+"/Users/"+Settings["user"]+".xml", "w","utf-8")
 			ldb.writexml(xml_file)
 			xml_file.close()
 	except:
@@ -732,7 +732,7 @@ def get_fc_desc(fc_dir,tag,tex_file=False,xml_file=False):
 	if not tex_file:	
 		try:
 			tex_file_path=get_flashfolder_path(fc_dir)
-			tex_file=open(tex_file_path,"r")
+			tex_file=open(tex_file_path,"r", "utf-8")
 		except:
 			print "Fatal Error: Cannot open file: "+tex_file_path+"!"
 			sys.exit()
@@ -849,7 +849,7 @@ class Search(Entry):
 					current_dir=fc_elem['dir']
 					current_source_xml=xml.parse(fc_elem['dir']+"/Details/source.xml")
 					tex_file_path=get_flashfolder_path(fc_elem['dir'])
-					current_tex_file=open(tex_file_path,"r")
+					current_tex_file=open(tex_file_path,"r", "utf-8")
 					current_order_xml=xml.parse(fc_elem['dir']+"/Flashcards/order.xml")
 				fc_name,theorem_name,theorem_type,fc_content=get_fc_desc(fc_elem['dir'],fc_elem['tag'],current_tex_file,current_order_xml)
 				fc_sections=get_fc_section(fc_elem['dir'],fc_elem['tag'],current_source_xml)	
@@ -1174,7 +1174,7 @@ def cancel_edit(c,dir,fc_tag,frame):
 
 
 def change_latex(file_path,fc_tag,content,theorem_type):
-	file=open(file_path,"r")
+	file=open(file_path,"r","utf-8")
 	tag=False
 	new_latex=[]
 
@@ -1198,7 +1198,7 @@ def change_latex(file_path,fc_tag,content,theorem_type):
 		if re.compile('fc\{(\w+)\}\n').findall(line):
 			new_fcs.append(line)	
 	if old_fcs==new_fcs: #check if # of fcs has'nt changed
-		new_file=open(file_path,"w")
+		new_file=open(file_path,"w", "utf-8")
 		for line in new_latex:
 			#print line
 			new_file.writelines(line)
@@ -1574,7 +1574,7 @@ def hide_FlashFolder(filename):
 	for elem in config_xml.childNodes:
 		if elem.getAttribute('filename')==filename:
 			config_xml.removeChild(elem)
-	xml_file = open("./.TexFlasher/config.xml", "w")
+	xml_file = open("./.TexFlasher/config.xml", "w", "utf-8")
 	config_xml.writexml(xml_file)
 	xml_file.close()
 	menu()
