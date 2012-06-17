@@ -4,7 +4,7 @@ Section: office
 Priority: optional
 Architecture: all
 Essential: no
-Depends: python (<< 3.0.0), fontconfig-config, imagemagick, xterm, dvipng, texlive-latex-base, texlive-latex-recommended, texlive-base, texlive-math-extra, texlive-latex-extra, texlive-science, python-tk, python-imaging-tk, python-configglue
+Depends: python (<< 3.0.0), fontconfig-config, imagemagick, xterm, dvipng, texlive-latex-base, texlive-latex-recommended, texlive-base, texlive-latex-extra, python-tk, python-imaging-tk, python-configglue
 Recommends: mozilla
 Installed-Size: 512
 Maintainer: Axel Pfeiffer [afpfeiffer@googlemail.com]
