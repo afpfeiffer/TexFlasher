@@ -111,10 +111,14 @@ def parse_tex(fcard_dir,source_path):
 	# get tex header
 	end_header_marker_status=""
 	for line in source_tex:
-		if re.compile('\\\\documentclass\[').findall(line):
+		line=line.lstrip()#remove leading whitspaces tab etc
+		if line.startswith("%"):
+		    line=source_tex.next()
+		    
+		if re.compile('^\\\\documentclass\[').findall(line):
 			tex_header+="\documentclass[avery5388,frame]{flashcards}\n"
-		elif re.compile('\\\\newtheorem.*?\{(.*?)\}.*?\{(.*?)\}.*?').findall(line):
-			matches=re.compile('\\\\newtheorem.*?\{(.*?)\}.*?\{(.*?)\}.*?').findall(line)		
+		elif re.compile('^\\\\newtheorem.*?\{(.*?)\}.*?\{(.*?)\}.*?').findall(line):
+			matches=re.compile('^\\\\newtheorem.*?\{(.*?)\}.*?\{(.*?)\}.*?').findall(line)		
 			theorems[matches[0][0]]=matches[0][1]
 			tex_header+="\\newtheorem{"+matches[0][0]+"}{"+matches[0][1]+"}[section]\n"
 
@@ -135,7 +139,10 @@ def parse_tex(fcard_dir,source_path):
 	fcard_title=""
 	fcard_desc=""
 	for line in source_tex:
-		matches=re.compile('\\\\fc\{(\w+)\}\n').findall(line)
+		line=line.lstrip()
+		if line.startswith("%"):
+		    line=source_tex.next()		
+		matches=re.compile('^\\\\fc\{(\w+)\}\n').findall(line)
 		try:#fails if no fc_marker in line!
 			fcard_title=matches[0]
 			element=doc.createElement(fcard_title)
@@ -146,9 +153,9 @@ def parse_tex(fcard_dir,source_path):
 		except:
 			pass
 		#check if we are in flashcard and not at the end
-		if ((fcard_title!="") and (not re.compile('\\\\end{'+fcard_desc+'}').findall(line))):
+		if ((fcard_title!="") and (not re.compile('^\\\\end{'+fcard_desc+'}').findall(line))):
 			if fcard_title not in fcards:		
-				matches=re.compile('\\\\begin\{(\w+)\}\[(.*?)\]').findall(line)
+				matches=re.compile('^\\\\begin\{(\w+)\}\[(.*?)\]').findall(line)
 				try:
 					if len(matches[0][1])>0:
 						fc_meta=meta.getElementsByTagName(fcard_title)[0]
@@ -199,7 +206,7 @@ def parse_tex(fcard_dir,source_path):
 				#else:			
 				fcards[fcard_title]+=line				
 		#check if we are at the end of a flashcard!
-		elif fcard_title!="" and re.compile('\\\\end{'+fcard_desc+'}').findall(line):
+		elif fcard_title!="" and re.compile('^\\\\end{'+fcard_desc+'}').findall(line):
 			fcards[fcard_title]+="%#end_content#%\n\end{flashcard}\n"
 			#check if flashcard is ok
 			if re.compile('\\\\begin{flashcard}').findall(fcards[fcard_title]) and re.compile('\\\\end{flashcard}').findall(fcards[fcard_title]):

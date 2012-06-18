@@ -1182,20 +1182,21 @@ def change_latex(file_path,fc_tag,content,theorem_type):
 	new_fcs=[] # -%-
 
 	for line in file:
-		if re.compile('fc\{(\w+)\}\n').findall(line):
+	    
+		if re.compile('^\\\\fc\{(\w+)\}\n').findall(line.lstrip()):
 			old_fcs.append(line)
-		if re.compile('fc\{'+fc_tag+'\}\n').findall(line):	
+		if re.compile('^\\\\fc\{'+fc_tag+'\}\n').findall(line.lstrip()):	
 			tag=True
 			new_latex.append(line)
-		if re.compile('begin\{'+theorem_type+'\}').findall(line) and tag:
+		if re.compile('^\\\\begin\{'+theorem_type+'\}').findall(line.lstrip()) and tag:
 			new_latex.append(line+content)
-		if re.compile('end\{'+theorem_type+'\}').findall(line) and tag:
+		if re.compile('^\\\\end\{'+theorem_type+'\}').findall(line.lstrip()) and tag:
 			tag=False
 		if not tag:
 			new_latex.append(line)
 	file.close()
 	for line in new_latex:
-		if re.compile('fc\{(\w+)\}\n').findall(line):
+		if re.compile('^\\\\fc\{(\w+)\}\n').findall(line.lstrip()):
 			new_fcs.append(line)	
 	if old_fcs==new_fcs: #check if # of fcs has'nt changed
 		new_file=open(file_path,"w", "utf-8")
@@ -1204,7 +1205,7 @@ def change_latex(file_path,fc_tag,content,theorem_type):
 			new_file.writelines(line)
 		new_file.close()
 	else:
-		raise	
+		print "Error while saving, some cards would have been deleted."	
 	
 
 	
