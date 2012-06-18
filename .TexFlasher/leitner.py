@@ -886,25 +886,25 @@ class Search(Entry):
         		
         	
                 """event handler for the keyrelease event on this widget"""
-                if event.keysym == "BackSpace":
-                        self.delete(self.index(INSERT), END) 
-                        self.position = self.index(END)
+                #if event.keysym == "BackSpace":
+                        #self.delete(self.index(INSERT), END) 
+                        #self.position = self.index(END)
                 
-                if event.keysym == "Left":
-                        if self.position < self.index(END): # delete the selection
-                                self.delete(self.position, END)
-                        else:
-                                self.position = self.position-1 # delete one character
-                                self.delete(self.position, END)
-                if event.keysym == "Right":
-                        self.position = self.index(END) # go to end (no selection)
-                if event.keysym == "Down":
-                        self.autocomplete(1) # cycle to next hit
-                if event.keysym == "Up":
-                        self.autocomplete(-1) # cycle to previous hit
-                # perform normal autocomplete if event is a single key or an umlaut
-                if len(event.keysym) == 1 or event.keysym in tkinter_umlauts:
-                        self.autocomplete()
+                #if event.keysym == "Left":
+                        #if self.position < self.index(END): # delete the selection
+                                #self.delete(self.position, END)
+                        #else:
+                                #self.position = self.position-1 # delete one character
+                                #self.delete(self.position, END)
+                #if event.keysym == "Right":
+                        #self.position = self.index(END) # go to end (no selection)
+                #if event.keysym == "Down":
+                        #self.autocomplete(1) # cycle to next hit
+                #if event.keysym == "Up":
+                        #self.autocomplete(-1) # cycle to previous hit
+                ## perform normal autocomplete if event is a single key or an umlaut
+                #if len(event.keysym) == 1 or event.keysym in tkinter_umlauts:
+                        #self.autocomplete()
                 if event.keysym == "Return":
                 		self.search_flashcard()
                 			 
@@ -1900,7 +1900,7 @@ RESTART_TIME=5
 
 IK=ImageKeeper()
 
-comp_list=create_completion_list()
+comp_list=()#create_completion_list()
 
 iconbitmapLocation = "@./.TexFlasher/pictures/icon2.xbm"
 
