@@ -204,7 +204,7 @@ def parse_tex(fcard_dir,source_path):
 				#else:			
 				fcards[fcard_title]+=line				
 		#check if we are at the end of a flashcard!
-		elif fcard_title!="" and re.compile('^\\\\end{'+fcard_desc+'}').findall(line):
+		elif fcard_title!="" and re.compile('^\\\\end{'+fcard_desc+'}').findall(line.lstrip()):
 			fcards[fcard_title]+="%#end_content#%\n\end{flashcard}\n"
 			#check if flashcard is ok
 			if re.compile('\\\\begin{flashcard}').findall(fcards[fcard_title]) and re.compile('\\\\end{flashcard}').findall(fcards[fcard_title]):
