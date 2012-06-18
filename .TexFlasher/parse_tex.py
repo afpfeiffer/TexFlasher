@@ -111,14 +111,13 @@ def parse_tex(fcard_dir,source_path):
 	# get tex header
 	end_header_marker_status=""
 	for line in source_tex:
-		line=line.lstrip()#remove leading whitspaces tab etc
-		if line.startswith("%"):
+		if line.lstrip().startswith("%"):
 		    line=source_tex.next()
 		    
-		if re.compile('^\\\\documentclass\[').findall(line):
+		if re.compile('^\\\\documentclass\[').findall(line.lstrip()):
 			tex_header+="\documentclass[avery5388,frame]{flashcards}\n"
-		elif re.compile('^\\\\newtheorem.*?\{(.*?)\}.*?\{(.*?)\}.*?').findall(line):
-			matches=re.compile('^\\\\newtheorem.*?\{(.*?)\}.*?\{(.*?)\}.*?').findall(line)		
+		elif re.compile('^\\\\newtheorem.*?\{(.*?)\}.*?\{(.*?)\}.*?').findall(line.lstrip()):
+			matches=re.compile('^\\\\newtheorem.*?\{(.*?)\}.*?\{(.*?)\}.*?').findall(line.lstrip())		
 			theorems[matches[0][0]]=matches[0][1]
 			tex_header+="\\newtheorem{"+matches[0][0]+"}{"+matches[0][1]+"}[section]\n"
 
@@ -139,10 +138,9 @@ def parse_tex(fcard_dir,source_path):
 	fcard_title=""
 	fcard_desc=""
 	for line in source_tex:
-		line=line.lstrip()
-		if line.startswith("%"):
+		if line.lstrip().startswith("%"):
 		    line=source_tex.next()		
-		matches=re.compile('^\\\\fc\{(\w+)\}\n').findall(line)
+		matches=re.compile('^\\\\fc\{(\w+)\}\n').findall(line.lstrip())
 		try:#fails if no fc_marker in line!
 			fcard_title=matches[0]
 			element=doc.createElement(fcard_title)
@@ -153,9 +151,9 @@ def parse_tex(fcard_dir,source_path):
 		except:
 			pass
 		#check if we are in flashcard and not at the end
-		if ((fcard_title!="") and (not re.compile('^\\\\end{'+fcard_desc+'}').findall(line))):
+		if ((fcard_title!="") and (not re.compile('^\\\\end{'+fcard_desc+'}').findall(line.lstrip()))):
 			if fcard_title not in fcards:		
-				matches=re.compile('^\\\\begin\{(\w+)\}\[(.*?)\]').findall(line)
+				matches=re.compile('^\\\\begin\{(\w+)\}\[(.*?)\]').findall(line.lstrip())
 				try:
 					if len(matches[0][1])>0:
 						fc_meta=meta.getElementsByTagName(fcard_title)[0]
