@@ -1837,7 +1837,7 @@ def menu():
 	create.configure(width=70,command=create_new) 
 	create_n=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_create.png",40,40)
 	create_n.configure(width=70,command=create_folder)
-	Label(Main,text=Quotes.get_quote()).grid(row=1,columnspan=14)	
+	Label(Main,text=Quotes.get_quote(),wraplength=WIDTH-40).grid(row=1,columnspan=14)	
 	if row_start > 4:
 		create.grid(row=2,column=0,sticky=W)
 		#search field
@@ -1912,7 +1912,8 @@ class quotes:
 		for quote in file:
 			self.quotes.append(quote)
 		file.close()		
-		self.random_quote=self.random_quote=self.quotes[random.randint(0,len(self.quotes))]
+		self.random=random.randint(0,len(self.quotes)-1)
+		self.random_quote=self.random_quote=self.quotes[self.random]
 		
 	def get_quote(self):
 		return self.random_quote
