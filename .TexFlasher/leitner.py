@@ -835,6 +835,10 @@ class Search(Entry):
                        
         def search_flashcard(self):
 		search_query=self.get()
+		self._def_value.set("searching flashcards ...") 
+		self.configure(fg="gray")
+		
+		self.update()
 		# set similarity sensitivity
 		thresh=0.7 #marker and title
 		current_dir=""
@@ -865,7 +869,7 @@ class Search(Entry):
 			for res in match_info_name:
 				if not len(search_query.split(" "))>0:
 					if len(get_close_matches(search_query.lower(),res['query'].lower().split(" "),cutoff=thresh))>0:			
-						search_results.append(res)
+						search_results.append(res)						
 				else:
 					match_count=0
 					for s in search_query.lower().split(" "):
@@ -1009,7 +1013,7 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 	iterator=fcs.__iter__()
 	images_row=[1,3] # increaese number of images per row by adding [1,3,6,9, ...]
 	size=Main.winfo_width()/len(images_row)-40
-	
+	Main.update()
 	for res in iterator:
 		for colu in images_row:
 			if colu>images_row[0]:
@@ -1024,6 +1028,7 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 			button.bind('<Button-5>', lambda event: search_canvas.yview_scroll(1, UNITS))
 			dist=Label(Search_frame,height=1).grid(row=str(i+2),column=colu)
 			setattr(search_canvas,res['tag']+res['dir'],button.img)
+			Main.update()
 		i+=3
 	search_canvas.create_window(0, 0, anchor=NW, window=Search_frame)
 	Search_frame.bind('<Button-4>', lambda event: search_canvas.yview_scroll(-1, UNITS))
