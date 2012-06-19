@@ -937,11 +937,22 @@ class ImageKeeper:
 	  
 	def add_image(self,path,width=None,height=None):
 	  image = Image.open(path)
+	  im_width,im_height=image.size
+
 	  if width and height:
 	    image = image.resize((width, height), Image.ANTIALIAS)
 	    self.images[path+"X"+str(width)+"Y"+str(height)]=ImageTk.PhotoImage(image)
 	  else:
-	    self.images[path]=ImageTk.PhotoImage(image)
+	    if width:
+	    	height=int(width*1/(im_width/float(im_height)))
+	    	image = image.resize((width, height), Image.ANTIALIAS)
+	    	self.images[path+"X"+str(width)+"Y"+str(height)]=ImageTk.PhotoImage(image)
+	    elif height:
+	    	width=int(height*1/(im_height/float(im_width)))
+	    	image = image.resize((width, height), Image.ANTIALIAS)
+	    	self.images[path+"X"+str(width)+"Y"+str(height)]=ImageTk.PhotoImage(image)
+	    else:	    	    	
+	    	self.images[path]=ImageTk.PhotoImage(image)
 	  return ImageTk.PhotoImage(image)
 	    
 	def get_image(self,path,width=None,height=None):
@@ -1985,7 +1996,11 @@ class TexFlasher(Frame):
 		
 		#if Settings["user"] is not  "x":
 		Header=Frame(self.master,height=header_height).grid(row=0,columnspan=8,sticky=E+W+N)
-		Label(self.master,height=2,text="TexFlasher based on Leitner-Method",font=("Helvetica", 16,"bold")).grid(row=0,sticky=E+W+N)		
+		logo=IK.get_image(".TexFlasher/pictures/newlogo.png",None,60)
+		Logo=Label(self.master,image=logo,height=80)
+		Logo.img=logo
+		Logo.grid(row=0,sticky=E+W+N)		
+		
 		Footer=Frame(self.master,height=footer_height).grid(row=2,sticky=S+E+W)
 		Label(Footer,height=2,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer").grid(row=3,sticky=S+E+W)
 		
