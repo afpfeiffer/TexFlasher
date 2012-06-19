@@ -835,7 +835,7 @@ class Search(Entry):
                        
         def search_flashcard(self):
 		search_query=self.get()
-		self._def_value.set("searching flashcards ...") 
+		self._def_value.set("searching please wait...") 
 		self.configure(fg="gray")
 		
 		self.update()
@@ -953,15 +953,7 @@ class ImageKeeper:
 def create_image_button(window,path,width=None,height=None,border=None):	
 #	button_image = Image.open(path)
 	if width and height:
-		STRS=path.partition("-1")
-		thumbname=STRS[0]+"-thumb"+str(int(width))+"x"+str(int(height))+STRS[2]
-		if os.path.isfile(thumbname):
-			try:
-				button_image = IK.get_image(thumbname)
-			except:
-				button_image = IK.get_image(path,width,height)
-		else:
-			button_image = IK.get_image(path,width,height)	
+		button_image = IK.get_image(path,width,height)	
 	if border==None:
 		button=Button(window,image=button_image,bd=BD)
 	else:
@@ -1001,12 +993,11 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 	    except:
 	      folders[elem['dir']]={"count":1,"fcs":[elem],"dir":elem['dir']}
 
-	if len(folders)>1:
-	  i=1
-	  buttons_frame=Frame(Main)
-	  buttons_frame.grid(row=0)
-	  Label(buttons_frame,text="Found ").grid(row=0,column=0)
-	  for dir in folders:
+	i=1
+	buttons_frame=Frame(Main)
+	buttons_frame.grid(row=0)
+	Label(buttons_frame,text="Found "+str(len(fcs))+":").grid(row=0,column=0)
+	for dir in folders:
 	    b=Button(buttons_frame,bd=0,text=str(folders[dir]['count'])+" in "+dir.split("/")[-1],command=lambda data=folders[dir]:display_mult_fcs(data["fcs"],title,folders))
 	    b.grid(row=0,column=i)
 	    i+=1
