@@ -840,7 +840,7 @@ class Search(Entry):
 		
 		self.update()
 		# set similarity sensitivity
-		thresh=0.7 #marker and title
+		thresh=0.7 
 		current_dir=""
 		current_source_xml=None
 		current_tex_file=None
@@ -864,7 +864,6 @@ class Search(Entry):
 				except:
 					pass
 					#TODO: Sometimes encoding error!
-					#print "Search error with "+str(fc_elem)
 			search_results=[]
 			for res in match_info_name:
 				if not len(search_query.split(" "))>0:
@@ -975,6 +974,7 @@ def create_image_button(window,path,width=None,height=None,border=None):
 
 
 
+	
 def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":fc_dir,"level":fc_level}, ...]
 	clear_window()
 	Main.master.title(title)
@@ -1013,7 +1013,13 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 	iterator=fcs.__iter__()
 	images_row=[1,3] # increaese number of images per row by adding [1,3,6,9, ...]
 	size=Main.winfo_width()/len(images_row)-40
+	search_canvas.create_window(0, 0, anchor=NW, window=Search_frame)
+	Search_frame.bind('<Button-4>', lambda event: search_canvas.yview_scroll(-1, UNITS))
+	Search_frame.bind('<Button-5>', lambda event: search_canvas.yview_scroll(1, UNITS)) 			
+	search_canvas.bind('<Button-4>', lambda event: event.widget.yview_scroll(-1, UNITS))
+	search_canvas.bind('<Button-5>', lambda event: event.widget.yview_scroll(1, UNITS)) 
 	Main.update()
+	
 	for res in iterator:
 		for colu in images_row:
 			if colu>images_row[0]:
@@ -1030,13 +1036,9 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 			setattr(search_canvas,res['tag']+res['dir'],button.img)
 			Main.update()
 		i+=3
-	search_canvas.create_window(0, 0, anchor=NW, window=Search_frame)
-	Search_frame.bind('<Button-4>', lambda event: search_canvas.yview_scroll(-1, UNITS))
-	Search_frame.bind('<Button-5>', lambda event: search_canvas.yview_scroll(1, UNITS)) 			
-	search_canvas.bind('<Button-4>', lambda event: event.widget.yview_scroll(-1, UNITS))
-	search_canvas.bind('<Button-5>', lambda event: event.widget.yview_scroll(1, UNITS)) 
-	Search_frame.update_idletasks()
-	search_canvas.config(scrollregion=search_canvas.bbox("all"),width=Main.winfo_width()-40,height=Main.winfo_height()-80)
+
+		Search_frame.update_idletasks()
+		search_canvas.config(scrollregion=search_canvas.bbox("all"),width=Main.winfo_width()-40,height=Main.winfo_height()-80)
 
 
 def  disp_single_fc(image_path,tag,title=None):
