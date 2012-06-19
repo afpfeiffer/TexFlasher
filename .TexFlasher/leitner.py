@@ -41,6 +41,8 @@ from time import strftime, strptime, ctime, localtime, mktime
 from datetime import datetime, timedelta
 from math import *
 from codecs import open
+import random
+
 
 from Tkinter import *
 import tkFont
@@ -1710,7 +1712,7 @@ def menu():
 
 
 
-	row_start=3
+	row_start=4
 	if os.path.isfile("./.TexFlasher/config.xml"):
 		tree = xml.parse("./.TexFlasher/config.xml")
 		config_xml = tree.getElementsByTagName('config')[0]		
@@ -1835,15 +1837,16 @@ def menu():
 	create.configure(width=70,command=create_new) 
 	create_n=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_create.png",40,40)
 	create_n.configure(width=70,command=create_folder)
-	if row_start > 3:
-		create.grid(row=1,column=0,sticky=W)
+	Label(Main,text=Quotes.get_quote()).grid(row=1,columnspan=14)	
+	if row_start > 4:
+		create.grid(row=2,column=0,sticky=W)
 		#search field
 		query=Search(Main)
 		query.set_completion_list(comp_list)
-		query.grid(row=1,column=1,columnspan=6,sticky=E+W+N+S)
+		query.grid(row=2,column=1,columnspan=6,sticky=E+W+N+S)
 			
-		create_n.grid(row=1,column=8,columnspan=6,sticky=N+W+S+E)		
-		Label(Main,height=1).grid(sticky=E+W,row=2,columnspan=10)
+		create_n.grid(row=2,column=8,columnspan=6,sticky=N+W+S+E)		
+		Label(Main,height=1).grid(sticky=E+W,row=3,columnspan=10)
 	else:
 		create_n.grid(row=row_start+2,columnspan=8)			
 		create.grid(row=row_start+1,columnspan=8)
@@ -1900,7 +1903,25 @@ IK=ImageKeeper()
 
 comp_list=()#create_completion_list()
 
+
+class quotes:
+	def __init__(self):
+		self.quotes_path=".TexFlasher/math_quotes.txt"
+		file=open(self.quotes_path,"r")
+		self.quotes=[]
+		for quote in file:
+			self.quotes.append(quote)
+		file.close()		
+		self.random_quote=self.random_quote=self.quotes[random.randint(0,len(self.quotes))]
+		
+	def get_quote(self):
+		return self.random_quote
+
+
+Quotes=quotes()
+
 iconbitmapLocation = "@./.TexFlasher/pictures/icon2.xbm"
+
 
 
 class TexFlasher(Frame):
