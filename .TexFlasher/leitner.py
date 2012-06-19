@@ -787,12 +787,12 @@ class Search(Entry):
         """ 
         def clear_search(self,event):
 		self._def_value.set("")
-		self.configure(font=("Helvetica",14,'bold'),fg="black",textvariable=self._def_value)
+		self.configure(font=("Sans",14,'bold'),fg="black",textvariable=self._def_value)
         
         def __init__( self, parent, **options ):
         	Entry.__init__( self, parent, **options )
         	self._def_value=StringVar()
-		self.configure(highlightthickness=0,font=("Helvetica",20,"bold"),textvariable=self._def_value,bd =5,bg=None,fg="gray",justify=CENTER)
+		self.configure(highlightthickness=0,font=("Sans",20,"bold"),textvariable=self._def_value,bd =5,bg=None,fg="gray",justify=CENTER)
 		self.bind("<Button-1>", self.clear_search)
 		self._def_value.set("Search ...")    
 		self._hits = []
@@ -1763,7 +1763,13 @@ def menu():
 									
 				exec('button_' + str(row_start)+'_open.grid(row='+str(row_start)+',sticky=N+W+S+E,column='+str(start_column)+')')
 				#folder desc
-				exec('fc_folder_' + str(row_start)+'_desc=Label(Main,justify=LEFT,text="'+l.getAttribute('filename').split("/")[-2]+'\\nlength: '+str(length)+'\\ntodo: '+str(todo-new)+', new: '+str(new)+'\\nupdated: '+l.getAttribute('lastReviewed').rpartition(':')[0].partition('-')[2].replace('-','/')+'").grid(row='+str(row_start)+', column='+str(start_column+1)+',sticky=W)')
+				Desc=Frame(Main)
+				Desc.grid(row=row_start, column=start_column+1,sticky=W)
+				Label(Desc,justify=LEFT,font=("Sans",12),text=l.getAttribute('filename').split("/")[-2]).grid(row=0,column=0,sticky=W)
+				Label(Desc,justify=LEFT,text='length: '+str(length)+', todo: '+str(todo-new)+', new: '+str(new)).grid(row=1,column=0,sticky=W)
+				Label(Desc,justify=LEFT,text='updated: '+l.getAttribute('lastReviewed').rpartition(':')[0].partition('-')[2].replace('-','/')).grid(row=3,column=0,sticky=W)
+				
+				#+'\\nl+'\\ntodo: '+str(todo-new)+', new: '+str(new)+'\\n.grid(row=row_start, column=start_column+1,sticky=W)
 
 				#tags
 				tag_xml_path=os.path.dirname(l.getAttribute('filename'))+"/Users/"+Settings['user']+"_comment.xml"
@@ -2002,7 +2008,7 @@ class TexFlasher(Frame):
 		Logo.grid(row=0,sticky=E+W+N)		
 		
 		Footer=Frame(self.master,height=footer_height).grid(row=2,sticky=S+E+W)
-		Label(Footer,height=2,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer").grid(row=3,sticky=S+E+W)
+		Label(Footer,height=2,font=("Sans",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer").grid(row=3,sticky=S+E+W)
 		
 		menu()
 
