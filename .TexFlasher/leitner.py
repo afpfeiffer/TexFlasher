@@ -787,12 +787,14 @@ class Search(Entry):
         """ 
         def clear_search(self,event):
 		self._def_value.set("")
-		self.configure(font=("Sans",14,'bold'),fg="black",textvariable=self._def_value)
+		c_height=p2c(Main.winfo_width(),Main.winfo_height(),[2,2])[0]
+		self.configure(font=("Sans",int(c_height)),fg="black",textvariable=self._def_value)
         
         def __init__( self, parent, **options ):
         	Entry.__init__( self, parent, **options )
         	self._def_value=StringVar()
-		self.configure(highlightthickness=0,font=("Sans",20,"bold"),textvariable=self._def_value,bd =5,bg=None,fg="gray",justify=CENTER)
+        	c_height=p2c(Main.winfo_width(),Main.winfo_height(),[2,2])[0]
+		self.configure(highlightthickness=0,font=("Sans",int(c_height)),textvariable=self._def_value,bd =5,bg=None,fg="gray",justify=CENTER)
 		self.bind("<Button-1>", self.clear_search)
 		self._def_value.set("Search ...")    
 		self._hits = []
@@ -940,16 +942,16 @@ class ImageKeeper:
 	  im_width,im_height=image.size
 
 	  if width and height:
-	    image = image.resize((width, height), Image.ANTIALIAS)
+	    image = image.resize((int(width), int(height)), Image.ANTIALIAS)
 	    self.images[path+"X"+str(width)+"Y"+str(height)]=ImageTk.PhotoImage(image)
 	  else:
 	    if width:
 	    	height=int(width*1/(im_width/float(im_height)))
-	    	image = image.resize((width, height), Image.ANTIALIAS)
+	    	image = image.resize((int(width), int(height)), Image.ANTIALIAS)
 	    	self.images[path+"X"+str(width)+"Y"+str(height)]=ImageTk.PhotoImage(image)
 	    elif height:
 	    	width=int(height*1/(im_height/float(im_width)))
-	    	image = image.resize((width, height), Image.ANTIALIAS)
+	    	image = image.resize((int(width), int(height)), Image.ANTIALIAS)
 	    	self.images[path+"X"+str(width)+"Y"+str(height)]=ImageTk.PhotoImage(image)
 	    else:	    	    	
 	    	self.images[path]=ImageTk.PhotoImage(image)
@@ -965,8 +967,8 @@ class ImageKeeper:
 	    
 def create_image_button(window,path,width=None,height=None,border=None):	
 #	button_image = Image.open(path)
-	if width and height:
-		button_image = IK.get_image(path,width,height)	
+#	if width and height:
+	button_image = IK.get_image(path,width,height)	
 	if border==None:
 		button=Button(window,image=button_image,bd=BD)
 	else:
@@ -989,9 +991,11 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 	menu_button.grid(row=1,columnspan=5,sticky=N+W+E+S)
 	vscrollbar = AutoScrollbar(Main)
 	vscrollbar.grid(row=2, column=2, sticky=N+S)
+	
 	search_canvas = Canvas(Main,yscrollcommand=vscrollbar.set)
 	search_canvas.grid(row=2, column=0, sticky=N+S+E+W)
 	vscrollbar.config(command=search_canvas.yview)
+	
 	Search_frame = Frame(search_canvas,border=10)
 	Search_frame.columnconfigure(0, weight=1)
 	Search_frame.grid(row=0,column=0)
@@ -1022,7 +1026,7 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 	Search_frame.bind('<Button-5>', lambda event: search_canvas.yview_scroll(1, UNITS)) 			
 	search_canvas.bind('<Button-4>', lambda event: event.widget.yview_scroll(-1, UNITS))
 	search_canvas.bind('<Button-5>', lambda event: event.widget.yview_scroll(1, UNITS)) 
-	Main.update()
+	Search_frame.update()
 	
 	for res in iterator:
 		for colu in images_row:
@@ -1038,7 +1042,7 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 			button.bind('<Button-5>', lambda event: search_canvas.yview_scroll(1, UNITS))
 			dist=Label(Search_frame,height=1).grid(row=str(i+2),column=colu)
 			setattr(search_canvas,res['tag']+res['dir'],button.img)
-			Main.update()
+			Search_frame.update()
 		i+=3
 
 		Search_frame.update_idletasks()
@@ -1268,7 +1272,7 @@ class Flasher:
 			
 	def __init__(self,selected_dir,stuffToDo=True):
 		global Main
-		Main._running_classes["Flasher"]=self
+
 		
 		clear_window()#clear main window
 
@@ -1708,6 +1712,14 @@ def menu():
 	global Main
 	bordersize=2
 	clear_window()
+	Main.update()
+	
+	folder_width,folder_height=p2c(Main.winfo_width(),Main.winfo_height(),[7,7])				
+	b_width,b_height=p2c(Main.winfo_width(),Main.winfo_height(),[5,5])
+	
+	
+	button_size=str(int(b_height))
+		
 	Main.columnconfigure(0,weight=0)
 	Main.columnconfigure(1,weight=1)
 	Main.columnconfigure(2,weight=0)
@@ -1717,7 +1729,7 @@ def menu():
 
 		#self.rowconfigure( 1, weight = 2 )
 		#self.columnconfigure( 1, weight = 1 )	
-	button_size=str(40)
+
 	global saveString 
 	saveString = ""
 
@@ -1751,29 +1763,30 @@ def menu():
 					button_status="DISABLED"
 				new_status="NORMAL"					
 				#open folder
+
 				if todo-new>0:
-					exec('button_' + str(row_start)+'_open =create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_red.png",60,60)')
-					exec('button_' + str(row_start)+'_open.configure(width=70,state='+button_status+',command=lambda:Flasher("'+os.path.dirname(l.getAttribute('filename'))+'", True))')	
+					exec('button_' + str(row_start)+'_open =create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_red.png",None,'+str(folder_height)+')')
+					exec('button_' + str(row_start)+'_open.configure(state='+button_status+',command=lambda:Flasher("'+os.path.dirname(l.getAttribute('filename'))+'", True))')	
 				elif new >0:
-					exec('button_' + str(row_start)+'_open =create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_yellow.png",60,60)')
-					exec('button_' + str(row_start)+'_open.configure(width=70,state='+button_status+',command=lambda:Flasher("'+os.path.dirname(l.getAttribute('filename'))+'", True))')
+					exec('button_' + str(row_start)+'_open =create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_yellow.png",None,'+str(folder_height)+')')
+					exec('button_' + str(row_start)+'_open.configure(state='+button_status+',command=lambda:Flasher("'+os.path.dirname(l.getAttribute('filename'))+'", True))')
 				else:
-					exec('button_' + str(row_start)+'_open =create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder.png",60,60)')
-					exec('button_' + str(row_start)+'_open.configure(width=70,state='+button_status+',command=lambda:Flasher("'+os.path.dirname(l.getAttribute('filename'))+'", False))')
+					exec('button_' + str(row_start)+'_open =create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder.png",None,'+str(folder_height)+')')
+					exec('button_' + str(row_start)+'_open.configure(state='+button_status+',command=lambda:Flasher("'+os.path.dirname(l.getAttribute('filename'))+'", False))')
 									
 				exec('button_' + str(row_start)+'_open.grid(row='+str(row_start)+',sticky=N+W+S+E,column='+str(start_column)+')')
 				#folder desc
 				Desc=Frame(Main)
 				Desc.grid(row=row_start, column=start_column+1,sticky=W)
-				Label(Desc,justify=LEFT,font=("Sans",12,"bold"),text=l.getAttribute('filename').split("/")[-2]).grid(row=0,column=0,sticky=W)
-				Label(Desc,justify=LEFT,text='length: '+str(length)+', todo: '+str(todo-new)+', new: '+str(new)).grid(row=1,column=0,sticky=W)
-				Label(Desc,justify=LEFT,text='updated: '+l.getAttribute('lastReviewed').rpartition(':')[0].partition('-')[2].replace('-','/')).grid(row=3,column=0,sticky=W)
+				Label(Desc,justify=LEFT,font=("Sans",int(0.2*folder_height),"bold"),text=l.getAttribute('filename').split("/")[-2]).grid(row=0,column=0,sticky=W)
+				Label(Desc,justify=LEFT,font=("Sans",int(0.2*folder_height)),text='length: '+str(length)+', todo: '+str(todo-new)+', new: '+str(new)).grid(row=1,column=0,sticky=W)
+				Label(Desc,justify=LEFT,font=("Sans",int(0.2*folder_height)),text='updated: '+l.getAttribute('lastReviewed').rpartition(':')[0].partition('-')[2].replace('-','/')).grid(row=3,column=0,sticky=W)
 				
 				#+'\\nl+'\\ntodo: '+str(todo-new)+', new: '+str(new)+'\\n.grid(row=row_start, column=start_column+1,sticky=W)
 
 				#tags
 				tag_xml_path=os.path.dirname(l.getAttribute('filename'))+"/Users/"+Settings['user']+"_comment.xml"
-				q_b=create_image_button(Main,".TexFlasher/pictures/question_fix.png",40,40,0)
+				q_b=create_image_button(Main,".TexFlasher/pictures/question_fix.png",None,b_height,0)
 				q_b.grid(row=row_start,column=start_column+2,sticky=N+W+E+S)
 				q_length=check_tags(tag_xml_path,"question")
 				if q_length==None or q_length==0:
@@ -1781,28 +1794,28 @@ def menu():
 				#else:
 				#   Label(Main,text=str(q_length)).grid(row=row_start,column=start_column+2,sticky=S)
 				exec("q_b.config(command=lambda:show_tagged('question','"+os.path.dirname(l.getAttribute('filename'))+"','"+tag_xml_path+"'))")
-				w_b=create_image_button(Main,".TexFlasher/pictures/watchout_fix.png",40,40,0)
+				w_b=create_image_button(Main,".TexFlasher/pictures/watchout_fix.png",None,b_height,0)
 				w_b.grid(row=row_start,column=start_column+3,sticky=N+S+E+W)
 				w_length=check_tags(tag_xml_path,"watchout")
 				if w_length==None or w_length==0:
 				   w_b.config(state=DISABLED)	
 				exec("w_b.config(command=lambda:show_tagged('watchout','"+os.path.dirname(l.getAttribute('filename'))+"','"+tag_xml_path+"'))")
    
-				r_b=create_image_button(Main,".TexFlasher/pictures/repeat_fix.png",40,40,0)
+				r_b=create_image_button(Main,".TexFlasher/pictures/repeat_fix.png",None,b_height,0)
 				r_b.grid(row=row_start,column=start_column+4,sticky=N+W+E+S)
 				r_length=check_tags(tag_xml_path,"repeat")
 				if r_length==None or r_length==0:
 				   r_b.config(state=DISABLED)	
 				exec("r_b.config(command=lambda:show_tagged('repeat','"+os.path.dirname(l.getAttribute('filename'))+"','"+tag_xml_path+"'))")
 
-				l_b=create_image_button(Main,".TexFlasher/pictures/link_fix.png",40,40,0)
+				l_b=create_image_button(Main,".TexFlasher/pictures/link_fix.png",None,b_height,0)
 				l_b.grid(row=row_start,column=start_column+5,sticky=N+W+E+S)
 				l_length=check_tags(tag_xml_path,"link")
 				if l_length==None or l_length==0:
 				   l_b.config(state=DISABLED)	
 				exec("l_b.config(command=lambda:show_tagged('link','"+os.path.dirname(l.getAttribute('filename'))+"','"+tag_xml_path+"'))")
 
-				wiki_b=create_image_button(Main,".TexFlasher/pictures/wiki.png",40,40,0)
+				wiki_b=create_image_button(Main,".TexFlasher/pictures/wiki.png",None,b_height,0)
 				wiki_b.grid(row=row_start,column=start_column+6,sticky=N+W+E+S)
 				wiki_length=check_tags(tag_xml_path,"wiki")
 				if wiki_length==None or wiki_length==0:
@@ -1850,11 +1863,11 @@ def menu():
 
 	#print saveString
 	#create button
-	create=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_add.png",60,60)
-	create.configure(width=70,command=create_new) 
-	create_n=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_create.png",40,40)
-	create_n.configure(width=70,command=create_folder)
-	Label(Main,text=Quotes.get_quote(),wraplength=WIDTH-40,font=("Sans",10,"italic")).grid(row=1,columnspan=14)	
+	create=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_add.png",None,folder_height)
+	create.configure(command=create_new) 
+	create_n=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_create.png",None,b_height)
+	create_n.configure(command=create_folder)
+	Label(Main,text=Quotes.get_quote(),wraplength=WIDTH-40,font=("Sans",int(0.15*folder_height),"italic")).grid(row=1,columnspan=14)	
 	if row_start > 4:
 		create.grid(row=2,column=0,sticky=W)
 		#search field
@@ -1948,7 +1961,11 @@ class TexFlasher(Frame):
 		
 		WIDTH=self.master.winfo_width()-20
 		HEIGHT=self.master.winfo_height()
-		self.configure(bd=10,height=p2c(None,HEIGHT,[90]),width=p2c(WIDTH,None,[100]))
+		self.configure(bd=10,height=p2c(None,HEIGHT,[92]),width=p2c(WIDTH,None,[100]))
+		logo_height=p2c(HEIGHT,HEIGHT,[7,7])[0]		
+		self.Logo.configure(text="TeXFlasher based on Leitner-Method",justify=CENTER,font=("Sans",int(0.3*logo_height),"bold"))	
+		footer_height=p2c(HEIGHT,HEIGHT,[1,1])[0]			
+		self.copyright.configure(font=("Sans",int(0.8*footer_height)),justify=CENTER,text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer")			
 #		Wi=WIDTH+20 #width of the outer window frame
 #		Hi=WIDTH
 #		ws = self.master.winfo_screenwidth()
@@ -1956,7 +1973,7 @@ class TexFlasher(Frame):
 #		xs = (ws/2) - (int(Wi)/2) 
 #		ys = (hs/2) - (Hi/2)				
 #		self.master.geometry(str(int(Wi))+"x"+str(Hi)+"+"+str(xs)+"+"+str(ys))
-		
+
 		
 	def __init__( self ):
 		Frame.__init__( self)
@@ -1964,13 +1981,12 @@ class TexFlasher(Frame):
 		self.master.bind("<Configure>", self.resize)
 		global Main
 		Main=self
-		self._running_classes={}
+
 		
 		self.master.rowconfigure( 0, weight = 1 )
 		self.master.columnconfigure( 0, weight = 1 )	
 		self.master.rowconfigure( 2, weight = 1 )
-		header_height=20
-		footer_height=20		
+	
 
 		ws = self.master.winfo_screenwidth()
 		hs = self.master.winfo_screenheight()
@@ -1979,8 +1995,7 @@ class TexFlasher(Frame):
 		if(ws < WIDTH):
 		  WIDTH = ws	
 
-		
-		self.configure(bd=10,height=HEIGHT-footer_height-header_height,width=WIDTH)			
+		self.configure(bd=10,height=p2c(None,HEIGHT,[90]),width=p2c(WIDTH,None,[100]))		
 		self.grid(row=1,column=0,sticky=N+E+W)
 		self.grid_propagate(False) 	
 		self._version="unstable build"
@@ -2001,15 +2016,22 @@ class TexFlasher(Frame):
 				
 		
 		#if Settings["user"] is not  "x":
-		Header=Frame(self.master,height=header_height).grid(row=0,columnspan=8,sticky=E+W+N)
-		logo=IK.get_image(".TexFlasher/pictures/logo.png",None,60)
-		Logo=Label(self.master,image=logo,height=80)
-		Logo.img=logo
-		Logo.grid(row=0,sticky=E+W+N)		
-		
-		Footer=Frame(self.master,height=footer_height).grid(row=2,sticky=S+E+W)
-		Label(Footer,height=2,font=("Sans",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer").grid(row=3,sticky=S+E+W)
-		
+
+		Header=Frame(self.master).grid(row=0,columnspan=8,sticky=E+W+N)
+		logo_height=p2c(HEIGHT,HEIGHT,[7,7])[0]
+		#logo=IK.get_image(".TexFlasher/pictures/logo.png",None,logo_height)
+		self.Logo=Label(Header)
+		self.Logo.configure(text="TeXFlasher based on Leitner-Method",justify=CENTER,font=("Sans",int(0.3*logo_height),"bold"))
+			
+		#self.Logo.img=logo
+		self.Logo.grid(row=0,sticky=E+W+N)		
+	
+
+		Footer=Frame(self.master).grid(row=2,sticky=S+E+W)
+		self.copyright=Label(Footer)
+		footer_height=p2c(HEIGHT,HEIGHT,[1,1])[0]			
+		self.copyright.configure(font=("Sans",int(0.8*footer_height)),justify=CENTER,text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer")
+		self.copyright.grid()
 		menu()
 
 TexFlasher().mainloop()
