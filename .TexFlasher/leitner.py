@@ -1721,6 +1721,7 @@ def menu():
 	global saveString 
 	saveString = ""
 
+	fontSizeDiff=int(750.0/float(WIDTH))
 
 
 	row_start=4
@@ -1765,9 +1766,9 @@ def menu():
 				#folder desc
 				Desc=Frame(Main)
 				Desc.grid(row=row_start, column=start_column+1,sticky=W)
-				Label(Desc,justify=LEFT,font=("Sans",12,"bold"),text=l.getAttribute('filename').split("/")[-2]).grid(row=0,column=0,sticky=W)
-				Label(Desc,justify=LEFT,text='length: '+str(length)+', todo: '+str(todo-new)+', new: '+str(new)).grid(row=1,column=0,sticky=W)
-				Label(Desc,justify=LEFT,text='updated: '+l.getAttribute('lastReviewed').rpartition(':')[0].partition('-')[2].replace('-','/')).grid(row=3,column=0,sticky=W)
+				Label(Desc,justify=LEFT,font=("Sans",12 - fontSizeDiff,"bold"),text=l.getAttribute('filename').split("/")[-2]).grid(row=0,column=0,sticky=W)
+				Label(Desc,justify=LEFT,font=("Sans",9- fontSizeDiff),text='length: '+str(length)+', todo: '+str(todo-new)+', new: '+str(new)).grid(row=1,column=0,sticky=W)
+				Label(Desc,justify=LEFT,font=("Sans",9- fontSizeDiff),text='updated: '+l.getAttribute('lastReviewed').rpartition(':')[0].partition('-')[2].replace('-','/')).grid(row=3,column=0,sticky=W)
 				
 				#+'\\nl+'\\ntodo: '+str(todo-new)+', new: '+str(new)+'\\n.grid(row=row_start, column=start_column+1,sticky=W)
 
@@ -1854,7 +1855,7 @@ def menu():
 	create.configure(width=70,command=create_new) 
 	create_n=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_create.png",40,40)
 	create_n.configure(width=70,command=create_folder)
-	Label(Main,text=Quotes.get_quote(),wraplength=WIDTH-40,font=("Sans",10,"italic")).grid(row=1,columnspan=14)	
+	Label(Main,text=Quotes.get_quote(),wraplength=WIDTH-40,font=("Sans",10-fontSizeDiff,"italic")).grid(row=1,columnspan=14)	
 	if row_start > 4:
 		create.grid(row=2,column=0,sticky=W)
 		#search field
@@ -1975,7 +1976,7 @@ class TexFlasher(Frame):
 		ws = self.master.winfo_screenwidth()
 		hs = self.master.winfo_screenheight()
 		HEIGHT=int ( min( hs, ws)*0.93 )
-		WIDTH=int(0.95*HEIGHT)
+		WIDTH=int(0.98*HEIGHT)
 		if(ws < WIDTH):
 		  WIDTH = ws	
 
