@@ -1765,7 +1765,7 @@ def menu():
 				#folder desc
 				Desc=Frame(Main)
 				Desc.grid(row=row_start, column=start_column+1,sticky=W)
-				Label(Desc,justify=LEFT,font=("Sans",12),text=l.getAttribute('filename').split("/")[-2]).grid(row=0,column=0,sticky=W)
+				Label(Desc,justify=LEFT,font=("Sans",12,"bold"),text=l.getAttribute('filename').split("/")[-2]).grid(row=0,column=0,sticky=W)
 				Label(Desc,justify=LEFT,text='length: '+str(length)+', todo: '+str(todo-new)+', new: '+str(new)).grid(row=1,column=0,sticky=W)
 				Label(Desc,justify=LEFT,text='updated: '+l.getAttribute('lastReviewed').rpartition(':')[0].partition('-')[2].replace('-','/')).grid(row=3,column=0,sticky=W)
 				
