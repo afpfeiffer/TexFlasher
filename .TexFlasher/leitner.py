@@ -1733,6 +1733,7 @@ def menu():
 	global saveString 
 	saveString = ""
 
+	fontSizeDiff=int(750.0/float(WIDTH))
 
 
 	row_start=4
@@ -1778,11 +1779,11 @@ def menu():
 				#folder desc
 				Desc=Frame(Main)
 				Desc.grid(row=row_start, column=start_column+1,sticky=W)
+
 				Label(Desc,justify=LEFT,font=("Sans",int(0.2*folder_height),"bold"),text=l.getAttribute('filename').split("/")[-2]).grid(row=0,column=0,sticky=W)
 				Label(Desc,justify=LEFT,font=("Sans",int(0.2*folder_height)),text='length: '+str(length)+', todo: '+str(todo-new)+', new: '+str(new)).grid(row=1,column=0,sticky=W)
 				Label(Desc,justify=LEFT,font=("Sans",int(0.2*folder_height)),text='updated: '+l.getAttribute('lastReviewed').rpartition(':')[0].partition('-')[2].replace('-','/')).grid(row=3,column=0,sticky=W)
-				
-				#+'\\nl+'\\ntodo: '+str(todo-new)+', new: '+str(new)+'\\n.grid(row=row_start, column=start_column+1,sticky=W)
+
 
 				#tags
 				tag_xml_path=os.path.dirname(l.getAttribute('filename'))+"/Users/"+Settings['user']+"_comment.xml"
@@ -1863,11 +1864,13 @@ def menu():
 
 	#print saveString
 	#create button
+
 	create=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_add.png",None,folder_height)
 	create.configure(command=create_new) 
 	create_n=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_create.png",None,b_height)
 	create_n.configure(command=create_folder)
 	Label(Main,text=Quotes.get_quote(),wraplength=WIDTH-40,font=("Sans",int(0.15*folder_height),"italic")).grid(row=1,columnspan=14)	
+
 	if row_start > 4:
 		create.grid(row=2,column=0,sticky=W)
 		#search field
@@ -1991,7 +1994,7 @@ class TexFlasher(Frame):
 		ws = self.master.winfo_screenwidth()
 		hs = self.master.winfo_screenheight()
 		HEIGHT=int ( min( hs, ws)*0.93 )
-		WIDTH=int(0.95*HEIGHT)
+		WIDTH=int(0.98*HEIGHT)
 		if(ws < WIDTH):
 		  WIDTH = ws	
 
