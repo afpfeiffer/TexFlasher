@@ -1557,7 +1557,7 @@ def update_texfile( fname, user ):
 
 def saveFiles(master):
 	if checkIfNeedToSave( saveString ):
-		if tkMessageBox.askyesno("Quit?", "Do you want to save your changes on the server?"):
+		if tkMessageBox.askyesno("Save?", "Do you want to save your changes on the server?"):
 			executeCommand( "bash .TexFlasher/scripts/save.sh "+ saveString, True )
 			master.quit()
 		else:
@@ -1566,7 +1566,7 @@ def saveFiles(master):
 		master.quit()
 		
 def create_new():
-	file = tkFileDialog.askopenfilename(parent=Main,title='Choose a LaTeX file',initialdir='./',defaultextension=".tex",filetypes=[("all files","*.tex")])
+	file = tkFileDialog.askopenfilename(parent=Main,title='Choose LaTeX file',initialdir='./',defaultextension=".tex",filetypes=[("all files","*.tex")])
 	if file != None:
 		update_config(file)
 		menu()
@@ -1593,7 +1593,7 @@ def hide_FlashFolder(filename):
 
 
 def reset_flash(filename):
-	if tkMessageBox.askyesno("Reset", "Do you really want to delete all learning progress for %s?"% filename.split("/")[-2]):
+	if tkMessageBox.askyesno("Delete?", "Do you really want to delete %s?"% filename.split("/")[-2]):
 		try:
 			os.remove(os.path.dirname(filename)+"/Users/"+Settings["user"]+".xml")
 			os.remove(os.path.dirname(filename)+"/Users/"+Settings["user"]+"_comment.xml")
@@ -1854,7 +1854,7 @@ def menu():
 	create.configure(width=70,command=create_new) 
 	create_n=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_create.png",40,40)
 	create_n.configure(width=70,command=create_folder)
-	Label(Main,text=Quotes.get_quote(),wraplength=WIDTH-40).grid(row=1,columnspan=14)	
+	Label(Main,text=Quotes.get_quote(),wraplength=WIDTH-40,font=("Sans",10,"italic")).grid(row=1,columnspan=14)	
 	if row_start > 4:
 		create.grid(row=2,column=0,sticky=W)
 		#search field
@@ -1938,7 +1938,7 @@ class quotes:
 
 Quotes=quotes()
 
-iconbitmapLocation = "@./.TexFlasher/pictures/icon2.xbm"
+iconbitmapLocation = "@./.TexFlasher/pictures/icon.xbm"
 
 
 
