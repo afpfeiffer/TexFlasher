@@ -2002,7 +2002,7 @@ class TexFlasher(Frame):
 		
 		#if Settings["user"] is not  "x":
 		Header=Frame(self.master,height=header_height).grid(row=0,columnspan=8,sticky=E+W+N)
-		logo=IK.get_image(".TexFlasher/pictures/newlogo.png",None,60)
+		logo=IK.get_image(".TexFlasher/pictures/logo.png",None,60)
 		Logo=Label(self.master,image=logo,height=80)
 		Logo.img=logo
 		Logo.grid(row=0,sticky=E+W+N)		
