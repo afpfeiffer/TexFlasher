@@ -389,11 +389,12 @@ def cardHistory( flashcard ):
 
 def drawCardHistory( flashcard, stat ):
 	HISTORY=cardHistory( flashcard )
-	drawHistory( HISTORY, stat, 9 )
+	drawHistory( HISTORY, stat, Main.f_normal )
 	
 def drawHistory( HISTORY, stat, fontsize,  verbose=True, alwaysOnTop=False, maxLevel = 3 ):
 	height = stat.height
 	width = stat.width
+	
 	
 	if alwaysOnTop:
 		height -= 20
@@ -1130,7 +1131,7 @@ def  disp_single_fc(image_path,tag,title=None):
 	fc_info=get_fc_info(os.path.dirname(image_path)+"/../",tag,ldb,None)
 	pagemarker=fc_info["source"].getAttribute("pagemarker")
 	Label(win,text="Page: "+pagemarker+", Created: "+fc_info["ldb"].getAttribute("created")+", Level: "+fc_info["ldb"].getAttribute("level")).grid(row=c.fc_row+5,columnspan=5)
-	stat_height=40
+	stat_height=Main.b_normal
 	stat_width=int(float(WIDTH)*0.95)
 	stat=Canvas(win,width=stat_width, height=stat_height)
 	stat.grid(row=2, columnspan=5)
@@ -1340,7 +1341,7 @@ class Flasher:
 		self.c.edit_b=edit_b
 		
 		#stats	
-		stat_height=40
+		stat_height=Main.b_normal
 		stat_width=int(float(WIDTH)*0.95)
 		stat=Canvas(Main,width=stat_width, height=stat_height)
 		stat.grid(row=4, columnspan=5)
