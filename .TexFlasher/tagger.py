@@ -39,8 +39,7 @@ import itertools, collections
 import ConfigParser
 
 import webbrowser
-import urllib
-import json
+
 
 ########################################################## Comment on fc ##############################################################
 
@@ -141,8 +140,8 @@ def grabTag(tags,text):
 		return True	
 
 
-def create_textbox(win,height,width):
-	textbox = Text(win, height=height, width=width)	
+def create_textbox(win):
+	textbox = Text(win)	
 	# create a vertical scrollbar to the right of the listbox
 	yscroll = Scrollbar(command=textbox.yview, orient='vertical')
 	#yscroll.grid(row=row, column=column+1, sticky='ns')
@@ -153,97 +152,10 @@ def click(url):
 	new = 2
 	webbrowser.open(url,new=new)
 
-	
-tkinter_umlauts=['odiaeresis', 'adiaeresis', 'udiaeresis', 'Odiaeresis', 'Adiaeresis', 'Udiaeresis', 'ssharp']
 
-	
-	
-class wiki(Entry):
-        """
-        Subclass of Tkinter.Entry that features autocompletion.
-        
-        To enable autocompletion use set_completion_list(list) to define 
-        a list of possible strings to hit.
-        To cycle through hits use down and up arrow keys.
-        """ 
-        def clear_search(self,event):
-		self._def_value.set("")
-		self.configure(font=("Helvetica",10,'bold'),fg="black",textvariable=self._def_value)
-        
-        def __init__( self, parent, **options ):
-        	Entry.__init__( self, parent, **options )
-        	self._def_value=StringVar()
-		self.configure(highlightthickness=0,font=("Helvetica",10,"bold"),textvariable=self._def_value,bd =5,bg=None,fg="gray",justify=CENTER)
-		self.bind("<Button-1>", self.clear_search)
-		self._def_value.set("Search Wikipedia")    
-		self._hits = []
-		self._hit_index = 0
-		self.position = 0
-		self.bind('<KeyRelease>', self.handle_keyrelease)
-		self._completion_list =()
-
-        def autocomplete(self, delta=0):
-		self.search_wiki()
-                """autocomplete the Entry, delta may be 0/1/-1 to cycle through possible hits"""
-                if delta: # need to delete selection otherwise we would fix the current position
-                        self.delete(self.position, Tkinter.END)
-                else: # set position to end so selection starts where textentry ended
-                        self.position = len(self.get())
-                # collect hits
-                _hits = []
-                for element in self._completion_list:
-                        if element.startswith(self.get().lower()):
-                                _hits.append(element)
-                # if we have a new hit list, keep this in mind
-                if _hits != self._hits:
-                        self._hit_index = 0
-                        self._hits=_hits
-                # only allow cycling if we are in a known hit list
-                if _hits == self._hits and self._hits:
-                        self._hit_index = (self._hit_index + delta) % len(self._hits)
-                # now finally perform the auto completion
-                if self._hits:
-                        self.delete(0,END)
-                        self.insert(0,self._hits[self._hit_index])
-                        self.select_range(self.position,END)
-                       
-        def search_wiki(self):
-		
-		search_query=self.get().replace(" ","+")
-		# set similarity sensitivity
-		data=urllib.urlopen("http://de.wikipedia.org/w/api.php?action=opensearch&search="+search_query+"&namespace=0&suggest=").read()	
-		res=eval(data)
-			## display search results
-		print res
-		for re in res[1]:
-		  	self._completion_list+=(unicode(re.lower().encode("utf-8")),)
-	
-        def handle_keyrelease(self, event):
-                """event handler for the keyrelease event on this widget"""
-                if event.keysym == "BackSpace":
-                        self.delete(self.index(INSERT), END) 
-                        self.position = self.index(END)
-                
-                if event.keysym == "Left":
-                        if self.position < self.index(END): # delete the selection
-                                self.delete(self.position, END)
-                        else:
-                                self.position = self.position-1 # delete one character
-                                self.delete(self.position, END)
-                if event.keysym == "Right":
-                        self.position = self.index(END) # go to end (no selection)
-                if event.keysym == "Down":
-                        self.autocomplete(1) # cycle to next hit
-                if event.keysym == "Up":
-                        self.autocomplete(-1) # cycle to previous hit
-                # perform normal autocomplete if event is a single key or an umlaut
-                if len(event.keysym) == 1 or event.keysym in tkinter_umlauts:
-                        self.autocomplete()
-              #  if event.keysym == "Return":
-               # 		self.search_flashcard()
 		
 def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user,color,position):
-		frame=Frame(canvas,bd=5,bg=color)
+		frame=Frame(canvas,bd=5,bg=color,height=100,width=200)
 		content=""
 		creator=""
 		fg="black"
@@ -261,10 +173,10 @@ def tag_command(tagtype,xml_path,tags,fc_tag,canvas,item,user,color,position):
 			break
 		  except:
 		    pass
-		#if content=="" and tagtype=="wiki":
-		#  comment_field=wiki(frame)	
-		#else:
-		comment_field=create_textbox(frame,5,30)
+		frame.rowconfigure( 2, weight = 1 )
+		frame.columnconfigure( 0, weight = 1 )	
+		frame.grid_propagate(False) 
+		comment_field=create_textbox(frame)
 		hyperlink = HyperlinkManager(comment_field)
 		comment_field.grid(row=2,column=0)
 		if not content=="":
@@ -487,7 +399,7 @@ class tag_tracker:
 						frame,self.comment_field=self.canvas.tagtypes[tagtype]['command'](tagtype,self.canvas.tagtypes[tagtype]['xml_path'],self.canvas.gettags(item),self.fc_tag,self.canvas,item,self.user,"lightgray",position)
 						self.current_tagtype=tagtype
 						self.current_item=item
-						self.tag_win=self.canvas.create_window(coords[0],coords[1]+25,window=frame,tag="info_win")	    
+						self.tag_win=self.canvas.create_window(event.x,event.y,window=frame,tag="info_win")	    
 
 						self.comment_field.focus_set()				
 

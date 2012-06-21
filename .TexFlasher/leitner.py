@@ -20,8 +20,8 @@
 
 global comp_list
 global c
-global velocity,autorotate	
-global xold,maximages,centerrec 
+#global velocity,autorotate	
+#global xold,maximages,centerrec 
 
 
 global saveString 
@@ -795,7 +795,7 @@ class Search(Entry):
         	Entry.__init__( self, parent, **options )
         	self._def_value=StringVar()
         	c_height=p2c(Main.winfo_width(),Main.winfo_height(),[2,2])[0]
-		self.configure(highlightthickness=0,font=("Sans",Main.f_large),textvariable=self._def_value,bd =5,bg=None,fg="gray",justify=CENTER)
+		self.configure(highlightthickness=0,font=("Sans",Main.f_large,"bold"),textvariable=self._def_value,bd =5,bg=None,fg="gray",justify=CENTER)
 		self.bind("<Button-1>", self.clear_search)
 		self._def_value.set("Search ...")    
 		self._hits = []
@@ -1130,7 +1130,7 @@ def  disp_single_fc(image_path,tag,title=None):
 	ldb=load_leitner_db(os.path.dirname(image_path)+"/../",Settings["user"])
 	fc_info=get_fc_info(os.path.dirname(image_path)+"/../",tag,ldb,None)
 	pagemarker=fc_info["source"].getAttribute("pagemarker")
-	Label(win,text="Page: "+pagemarker+", Created: "+fc_info["ldb"].getAttribute("created")+", Level: "+fc_info["ldb"].getAttribute("level"),font=("Sans",Main.f_normal)).grid(row=c.fc_row+5,columnspan=5)
+	Label(win,text="Page: "+pagemarker+", Created: "+fc_info["ldb"].getAttribute("created"),font=("Sans",Main.f_normal)).grid(row=c.fc_row+5,columnspan=5)
 	stat_height=Main.b_normal
 	stat_width=int(float(WIDTH)*0.95)
 	stat=Canvas(win,width=stat_width, height=stat_height)
@@ -1865,7 +1865,7 @@ def menu():
 	create.configure(command=create_new) 
 	create_n=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_create.png",None,Main.b_normal)
 	create_n.configure(command=create_folder)
-	Label(Main,text=Quotes.get_quote(),wraplength=WIDTH-40,font=("Sans",Main.f_tiny,"italic")).grid(row=1,columnspan=14)	
+	Label(Main,text=Quotes.get_quote(),wraplength=WIDTH-40,font=("Sans",Main.f_normal,"italic")).grid(row=1,columnspan=14)	
 
 	if row_start > 4:
 		create.grid(row=2,column=0,sticky=W)
@@ -1983,29 +1983,28 @@ class TexFlasher(Frame):
 		Frame.__init__( self)
 		global WIDTH, HEIGHT		
 		self.master.bind("<Configure>", self.resize)
+		self.master.bind("<Configure>", self.resize)
+
 		global Main
 		Main=self
 
-		
 		self.master.rowconfigure( 0, weight = 1 )
 		self.master.columnconfigure( 0, weight = 1 )	
 		self.master.rowconfigure( 2, weight = 1 )
 	
-
 		ws = self.master.winfo_screenwidth()
 		hs = self.master.winfo_screenheight()
 		HEIGHT=int ( min( hs, ws)*0.93 )
 		WIDTH=int(0.98*HEIGHT)
 		if(ws < WIDTH):
 		  WIDTH = ws	
-
-		self.configure(bd=int(p2c(WIDTH,WIDTH,[1,1])[0]),height=p2c(None,HEIGHT,[90]),width=p2c(WIDTH,None,[100]))	
-		
+		  
+		#Main Frame Settings
+		self.configure(bd=int(p2c(WIDTH,WIDTH,[1,1])[0]),height=p2c(None,HEIGHT,[90]),width=p2c(WIDTH,None,[100]))			
 		self.grid(row=1,column=0,sticky=N+E+W)
 		self.grid_propagate(False) 	
 		self._version="unstable build"
 
-	
 		# calculate position x, y
 		Wi=WIDTH+20 #width of the outer window frame
 		Hi=HEIGHT
@@ -2014,19 +2013,16 @@ class TexFlasher(Frame):
 		self.master.geometry(str(int(Wi))+"x"+str(Hi)+"+"+str(xs)+"+"+str(ys))
 		self.master.iconbitmap(iconbitmapLocation)
 		self.master.iconmask(iconbitmapLocation)	
-			
+		
+		#master bindings
 		self.master.protocol('WM_DELETE_WINDOW',lambda:saveFiles(self.master))
 		self.master.bind("<Escape>", lambda e: self.master.quit()) # quits texflasher if esc is pressed		
 		self.master.title("TexFlasher - "+self._version)
 
-		
-		
-			
-
 		#Button type heights
-		self.b_tiny=p2c(self.winfo_width(),self.winfo_height(),[3,3])[1]
-		self.b_normal=p2c(self.winfo_width(),self.winfo_height(),[5,5])[1]
-		self.b_large=p2c(self.winfo_width(),self.winfo_height(),[7,7])[1]
+		self.b_tiny=p2c(self.winfo_width(),self.winfo_height(),[3,3])[1] #3% Height of Main
+		self.b_normal=p2c(self.winfo_width(),self.winfo_height(),[5,5])[1]#5% Height of Main
+		self.b_large=p2c(self.winfo_width(),self.winfo_height(),[7,7])[1]#7% Height of Main
 		#fontsizes
 		self.f_tiny=int(0.17*self.b_normal)
 		self.f_normal=int(0.3*self.b_normal)
