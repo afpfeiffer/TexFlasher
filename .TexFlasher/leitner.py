@@ -1159,12 +1159,14 @@ def edit_fc(c,dir,fc_tag):
 	except:
 	  pass
 	frame=Frame(c,height=c_height,width=c_width)	
-	frame.grid(sticky=E+W+N+S)
-	frame.master.rowconfigure( 0, weight = 1 )
-	frame.master.columnconfigure( 0, weight = 1 )	
-	frame.grid_propagate(False) 	
 
-	edit_text=create_textbox(frame) #TODO fit ro canvas
+	frame.rowconfigure( 0, weight = 1 )
+	frame.columnconfigure( 0, weight = 1 )	
+	frame.grid_propagate(False) 	
+	frame.grid()
+	
+	edit_text=create_textbox(frame) 
+	edit_text.config(width=c_height,height=c_width)
 	edit_text.insert(INSERT,content)
 	edit_text.grid(row=0,column=0)
 
@@ -1980,12 +1982,12 @@ class TexFlasher(Frame):
 		self.f_tiny=int(0.17*self.b_normal)
 		self.f_normal=int(0.3*self.b_normal)
 		self.f_large=int(0.5*self.b_normal)
-		
+	
 	def __init__( self ):
 		Frame.__init__( self)
 		global WIDTH, HEIGHT		
 		self.master.bind("<Configure>", self.resize)
-		self.master.bind("<Configure>", self.resize)
+
 
 		global Main
 		Main=self
@@ -2042,7 +2044,7 @@ class TexFlasher(Frame):
 		self.Logo.grid(row=0,sticky=E+W+N)		
 		Footer=Frame(self.master).grid(row=2,sticky=S+E+W)
 		self.copyright=Label(Footer)
-		self.copyright.configure(font=("Sans",int(0.8*footer_height)),justify=CENTER,text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer")
+		self.copyright.configure(font=("Sans",int(footer_height)),justify=CENTER,text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer")
 		self.copyright.grid()
 		menu()
 
