@@ -1672,21 +1672,27 @@ class MyDialog:
 
         self.e = Entry(top)
         self.e.pack(padx=5)
+        Label(top, text="Please enter the URL of an existing svn\n repository containing flashcards (optional):").pack()
+        
+        self.e1 = Entry(top)
+        self.e1.pack(padx=25)
 
         b = Button(top, text="Create", command=self.ok)
         b.pack(pady=5)
 
     def ok(self):
 
-        print "value is", self.e.get()
+        #print "value is", self.e.get()
         if self.e.get():
         	value=self.e.get().strip(" \n\r")
-        	os.system("bash .TexFlasher/scripts/createFolder.sh "+value)
+        	repo=self.e1.get()
+        	#print repo
+        	os.system("bash .TexFlasher/scripts/createFolder.sh "+value+" "+repo)
 		dir=os.path.abspath("./"+value+"/")
 		#print dir
 		update_config(dir+"/Vorbereitung.tex")
 		menu()
-        self.top.destroy()
+        self.Main.destroy()
         
 def create_folder():
 	d = MyDialog(Main)

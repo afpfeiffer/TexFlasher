@@ -35,8 +35,18 @@ if [ -d "$foldername" ]; then
 	exit 1
 fi
 
-mkdir -vp $foldername/Flashcards
-mkdir -vp $foldername/Users
-mkdir -vp $foldername/Details
+if [ $2 ]; then
+	svn info $2 &> /dev/null
+	VALID=$?
+	if [ ! $VALID ]; then
+		echo "Error: svn URL not valid!"
+		exit 1
+	fi
+	svn co $2 $1
+else
+	mkdir -vp $foldername/Flashcards
+	mkdir -vp $foldername/Users
+	mkdir -vp $foldername/Details
 
-cp .TexFlasher/Example.tex -vp $foldername/Vorbereitung.tex
+	cp .TexFlasher/Example.tex -vp $foldername/Vorbereitung.tex
+fi
