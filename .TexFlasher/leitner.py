@@ -1160,11 +1160,13 @@ def edit_fc(c,dir,fc_tag):
 	  pass
 	frame=Frame(c,height=c_height,width=c_width)	
 	frame.grid(sticky=E+W+N+S)
+	frame.master.rowconfigure( 0, weight = 1 )
+	frame.master.columnconfigure( 0, weight = 1 )	
 	frame.grid_propagate(False) 	
-	#print c_width,c_height,WIDTH,HEIGHT,int(WIDTH*0.14256),int(WIDTH*0.043)
-	edit_text=create_textbox(frame,int(WIDTH*0.043),int(WIDTH*0.14256)) #TODO fit ro canvas
+
+	edit_text=create_textbox(frame) #TODO fit ro canvas
 	edit_text.insert(INSERT,content)
-	edit_text.grid(sticky=N+W+E+S)
+	edit_text.grid(row=0,column=0)
 
 	c.clear_b.config(state=NORMAL)
 	c.save_b.config(state=NORMAL)
