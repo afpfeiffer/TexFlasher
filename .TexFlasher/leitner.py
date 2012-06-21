@@ -986,7 +986,7 @@ def create_image_button(window,path,width=None,height=None,border=None):
 def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":fc_dir,"level":fc_level}, ...]
 	clear_window()
 	Main.master.title(title)
-	menu_button=create_image_button(Main,".TexFlasher/pictures/menu.png",40,40)
+	menu_button=create_image_button(Main,".TexFlasher/pictures/menu.png",None,Main.b_normal)
 	menu_button.configure(command=lambda:menu())
 	
 	menu_button.grid(row=1,columnspan=5,sticky=N+W+E+S)
@@ -1014,9 +1014,9 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 	i=1
 	buttons_frame=Frame(Main)
 	buttons_frame.grid(row=0)
-	Label(buttons_frame,text="Found "+str(len(fcs))+":").grid(row=0,column=0)
+	Label(buttons_frame,font=("Sans",Main.f_normal),text="Found "+str(len(fcs))+":").grid(row=0,column=0)
 	for dir in folders:
-	    b=Button(buttons_frame,bd=0,text=str(folders[dir]['count'])+" in "+dir.split("/")[-1],command=lambda data=folders[dir]:display_mult_fcs(data["fcs"],title,folders))
+	    b=Button(buttons_frame,bd=0,font=("Sans",Main.f_normal),text=str(folders[dir]['count'])+" in "+dir.split("/")[-1],command=lambda data=folders[dir]:display_mult_fcs(data["fcs"],title,folders))
 	    b.grid(row=0,column=i)
 	    i+=1
 	iterator=fcs.__iter__()
@@ -1066,21 +1066,21 @@ def  disp_single_fc(image_path,tag,title=None):
 	c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard)	
 	c.img=flashcard
 	#c.bind("<Button-1>", lambda e: win.destroy())
-	edit_b=create_image_button(win,"./.TexFlasher/pictures/latex.png",40,40)
+	edit_b=create_image_button(win,"./.TexFlasher/pictures/latex.png",None,Main.b_normal)
 #	edit_b.config(state=DISABLED)
 	edit_b.grid(row=1,column=1,sticky=N+E+W+S)
 
-	save_b=create_image_button(win,".TexFlasher/pictures/upload_now.png",40,40)
+	save_b=create_image_button(win,".TexFlasher/pictures/upload_now.png",None,Main.b_normal)
 	save_b.config(state=DISABLED)
 	save_b.grid(row=1, column=2,sticky=W+S+E+N)	
 	
-	clear_b=create_image_button(win,".TexFlasher/pictures/clear.png",40,40)
+	clear_b=create_image_button(win,".TexFlasher/pictures/clear.png",None,Main.b_normal)
 	clear_b.configure(state=DISABLED)
 	clear_b.grid(row=1, column=3,columnspan=2,sticky=E+S+W+N)		
 
 	edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,os.path.dirname(image_path).replace("/Flashcards",""),tag))
 	
-	back_b=create_image_button(win,".TexFlasher/pictures/back.png",40,40)
+	back_b=create_image_button(win,".TexFlasher/pictures/back.png",None,Main.b_normal)
 	back_b.grid(row=1, column=0,sticky=W+N+E+S)		
 	back_b.config(command=lambda: win.destroy())
 	
@@ -1094,26 +1094,26 @@ def  disp_single_fc(image_path,tag,title=None):
 	
 	c.fc_row=3
 	c.tag_buttons=[]
-	q_b=create_image_button(win,".TexFlasher/pictures/question_fix.png",35,35)
+	q_b=create_image_button(win,".TexFlasher/pictures/question_fix.png",None,Main.b_normal)
 	q_b.grid(row=c.fc_row,column=4,sticky=N)
 	#q_b.grid_remove()
 	c.q_b=q_b
-	w_b=create_image_button(win,".TexFlasher/pictures/watchout_fix.png",35,35)
+	w_b=create_image_button(win,".TexFlasher/pictures/watchout_fix.png",None,Main.b_normal)
 	w_b.grid(row=c.fc_row+1,column=4)
 	#w_b.grid_remove()
 	c.w_b=w_b
-	r_b=create_image_button(win,".TexFlasher/pictures/repeat_fix.png",35,35)
+	r_b=create_image_button(win,".TexFlasher/pictures/repeat_fix.png",None,Main.b_normal)
 
 	r_b.grid(row=c.fc_row+2,column=4)
 	#r_b.grid_remove()
 	c.r_b=r_b
-	l_b=create_image_button(win,".TexFlasher/pictures/link_fix.png",35,35)
+	l_b=create_image_button(win,".TexFlasher/pictures/link_fix.png",None,Main.b_normal)
 
 	l_b.grid(row=c.fc_row+3,column=4)		    
 	#l_b.grid_remove()
 	c.l_b=l_b
 
-	wi_b=create_image_button(win,".TexFlasher/pictures/wiki.png",35,35)
+	wi_b=create_image_button(win,".TexFlasher/pictures/wiki.png",None,Main.b_normal)
 
 	wi_b.grid(row=c.fc_row+4,column=4,sticky=S)		    
 	#l_b.grid_remove()
@@ -1130,7 +1130,7 @@ def  disp_single_fc(image_path,tag,title=None):
 	ldb=load_leitner_db(os.path.dirname(image_path)+"/../",Settings["user"])
 	fc_info=get_fc_info(os.path.dirname(image_path)+"/../",tag,ldb,None)
 	pagemarker=fc_info["source"].getAttribute("pagemarker")
-	Label(win,text="Page: "+pagemarker+", Created: "+fc_info["ldb"].getAttribute("created")+", Level: "+fc_info["ldb"].getAttribute("level")).grid(row=c.fc_row+5,columnspan=5)
+	Label(win,text="Page: "+pagemarker+", Created: "+fc_info["ldb"].getAttribute("created")+", Level: "+fc_info["ldb"].getAttribute("level"),font=("Sans",Main.f_normal)).grid(row=c.fc_row+5,columnspan=5)
 	stat_height=Main.b_normal
 	stat_width=int(float(WIDTH)*0.95)
 	stat=Canvas(win,width=stat_width, height=stat_height)
