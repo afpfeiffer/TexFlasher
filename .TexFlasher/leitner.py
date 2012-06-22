@@ -466,7 +466,7 @@ def drawHistory( HISTORY, stat, fontsize,  verbose=True, alwaysOnTop=False, maxL
 		
 def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     clear_window()
-    Main.master.title("Statistics")
+    Main.master.title(Main._title_base+" "+Main._version+" - Statistics")
     
     fontsize=int(float(WIDTH)*0.012)
     DX=WIDTH*0.00125
@@ -986,7 +986,7 @@ def create_image_button(window,path,width=None,height=None,border=None):
 	
 def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":fc_dir,"level":fc_level}, ...]
 	clear_window()
-	Main.master.title(title)
+	Main.master.title(Main._title_base+" "+Main._version+" - "+title)
 	menu_button=create_image_button(Main,".TexFlasher/pictures/menu.png",None,Main.b_normal)
 	menu_button.configure(command=lambda:menu())
 	
@@ -1282,7 +1282,7 @@ class Flasher:
 		
 		clear_window()#clear main window
 
-		Main.master.title(selected_dir)
+		Main.master.title(Main._title_base+" "+Main._version+" - "+selected_dir)
 		if( stuffToDo ):
 			date = datetime.now()
 		else:
@@ -1746,7 +1746,7 @@ def menu():
 	Main.columnconfigure(2,weight=0)
 	Main.columnconfigure(3,weight=0)
 	Main.columnconfigure(4,weight=0)	
-	Main.master.title("Menu") 
+	Main.master.title(Main._title_base+" "+Main._version+" - Menu") 
 
 		#self.rowconfigure( 1, weight = 2 )
 		#self.columnconfigure( 1, weight = 1 )	
@@ -2031,7 +2031,9 @@ class TexFlasher(Frame):
 		#Main Frame Settings
 		self.configure(bd=int(p2c(WIDTH,WIDTH,[1,1])[0]),height=p2c(None,HEIGHT,[90]),width=p2c(WIDTH,None,[100]))			
 		self.grid(row=1,column=0,sticky=N+E+W)
-		self.grid_propagate(False) 	
+		self.grid_propagate(False) 
+			
+		self._title_base="TeXFlasher"
 		self._version="unstable build"
 
 		# calculate position x, y
@@ -2046,7 +2048,7 @@ class TexFlasher(Frame):
 		#master bindings
 		self.master.protocol('WM_DELETE_WINDOW',lambda:saveFiles(self.master))
 		self.master.bind("<Escape>", lambda e: self.master.quit()) # quits texflasher if esc is pressed		
-		self.master.title("TexFlasher - "+self._version)
+		self.master.title(self._title_base+" "+self._version)
 
 		#Button type heights
 		self.b_tiny=p2c(self.winfo_width(),self.winfo_height(),[3,3])[1] #3% Height of Main
