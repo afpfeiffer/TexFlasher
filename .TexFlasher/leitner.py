@@ -852,7 +852,7 @@ class Search(Entry):
 		current_tex_file=None
 		current_order_xml=None
 		if len(search_query)>0 and not search_query=="Search ...":		
-			match_info_name=[]
+			search_in=[]
 			all_fcs=get_all_fcs()
 			for fc_elem in all_fcs:
 				if not fc_elem['dir']==current_dir: #load files needed for get_... funktions to speed up search
@@ -865,23 +865,36 @@ class Search(Entry):
 				fc_sections=get_fc_section(fc_elem['dir'],fc_elem['tag'],current_source_xml)	
 				try:
 
-					fc_elem['query']=fc_name+" "+theorem_name+" "+sanatize(fc_content)+" "+fc_elem['tag']+" "+fc_sections
-					match_info_name.append(fc_elem)
+					fc_elem['query']={"front":fc_name+" "+theorem_name+" "+fc_elem['tag']+" "+fc_sections,"content":sanatize(fc_content)}
+					search_in.append(fc_elem)
 				except:
 					pass
 					#TODO: Sometimes encoding error!
-			search_results=[]
-			for res in match_info_name:
-				if not len(search_query.split(" "))>0:
-					if len(get_close_matches(search_query.lower(),res['query'].lower().split(" "),cutoff=thresh))>0:			
-						search_results.append(res)						
+			search_front_results=[]
+			search_content_results=[]
+
+			i=0
+			for res in search_in:
+				patterns_front = [r'\b%s\b' % re.escape(s.strip()) for s in res["query"]["front"].lower().split()]
+				patterns_content = [r'\b%s\b' % re.escape(s.strip()) for s in res["query"]["content"].lower().split()]				
+				there_front = re.compile('|'.join(patterns_front))
+				there_content = re.compile('|'.join(patterns_content))				
+				match_count=0
+				for w in re.escape(search_query.lower().strip()).split():	
+					if there_front.search(w):
+						match_count+=1
+				if match_count>=len(search_query.lower().split()):
+					search_front_results.append(res)
 				else:
-					match_count=0
-					for s in search_query.lower().split(" "):
-						if len(get_close_matches(s,res['query'].lower().split(" "),cutoff=thresh))>0 or len(get_close_matches(s,[res['query'].lower()],cutoff=thresh))>0 or len(get_close_matches(s,res['query'].lower().split("-"),cutoff=thresh))>0:						
+					match_count=0				
+					for w in re.escape(search_query.lower().strip()).split():	
+						if there_content.search(w):
 							match_count+=1
-					if match_count==len(search_query.split(" ")):
-						search_results.append(res)												
+					if match_count>=len(search_query.lower().split()):
+						search_content_results.append(res)					
+					
+			search_results=search_front_results+search_content_results
+					
 			## display search results
 			if len(search_results)>0:
 				display_mult_fcs(search_results,"Found "+str(len(search_results))+" search results for \""+search_query+"\"")
