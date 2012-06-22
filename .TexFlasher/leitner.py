@@ -59,7 +59,7 @@ import ConfigParser
 from tagger import *
 from systemInterface import *
 from gallery import *
-#import Pmw
+from tooltip import *
 
 
 ######################################################################## leitner_db management ##############################################
@@ -1717,7 +1717,6 @@ class MyDialog:
 
         b = Button(top, text="Create", command=self.ok)
         b.pack(pady=5)
-
     def ok(self):
 
         #print "value is", self.e.get()
@@ -1898,9 +1897,11 @@ def menu():
 
 	create=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_add.png",None,Main.b_large)
 	create.configure(command=create_new) 
+	ToolTip(create,"Open flaschcards script")
 	create_n=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_create.png",None,Main.b_normal)
 	create_n.configure(command=create_folder)
-	Label(Main,text=Quotes.get_quote(),wraplength=WIDTH-40,font=("Sans",Main.f_normal,"italic")).grid(row=1,columnspan=14)	
+	ToolTip(create_n,"Create new flaschards folder")
+	#Label(Main,text=Quotes.get_quote(),wraplength=WIDTH-40,font=("Sans",Main.f_normal,"italic")).grid(row=1,columnspan=14)	
 
 	if row_start > 4:
 		create.grid(row=2,column=0,sticky=W)
@@ -1983,7 +1984,7 @@ class quotes:
 		return self.random_quote
 
 
-Quotes=quotes()
+#Quotes=quotes()
 
 iconbitmapLocation = "@./.TexFlasher/pictures/icon.xbm"
 
