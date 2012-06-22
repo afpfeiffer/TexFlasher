@@ -1564,6 +1564,23 @@ def update_texfile( fname, user ):
 	
 
 def saveFiles(master):
+	try:
+	  tree = xml.parse("./.TexFlasher/config.xml")
+	  try: 
+		size=tree.getElementsByTagName("size")[0]
+		size.setAttribute("width",str(WIDTH))
+		size.setAttribute("height",str(HEIGHT))
+	  except:
+		parent=tree.getElementsByTagName("config")[0]
+		size=tree.createElement("size")
+		parent.appendChild(size)
+		size.setAttribute("width",str(WIDTH))
+		size.setAttribute("height",str(HEIGHT))
+	  xml_file = open("./.TexFlasher/config.xml", "w","utf-8")
+	  tree.writexml(xml_file)
+	  xml_file.close()	  
+	except:
+	  pass
 	if checkIfNeedToSave( saveString ):
 		if tkMessageBox.askyesno("Save?", "Do you want to save your changes on the server?"):
 			executeCommand( "bash .TexFlasher/scripts/save.sh "+ saveString, True )
@@ -1999,14 +2016,17 @@ class TexFlasher(Frame):
 	
 		ws = self.master.winfo_screenwidth()
 		hs = self.master.winfo_screenheight()
-		HEIGHT=int ( min( hs, ws)*0.8 )
-
-		if socket.gethostname() == "mokmok":
-			HEIGHT=int ( min( hs, ws)*0.93 )
-		
-		WIDTH=int(0.98*HEIGHT)
-		if(ws < WIDTH):
-		  WIDTH = ws	
+		last_size=False
+		try:
+		    tree = xml.parse("./.TexFlasher/config.xml")
+		    last_size = tree.getElementsByTagName('size')[0]
+		    WIDTH=int(last_size.getAttribute("width"))
+		    HEIGHT=int(last_size.getAttribute("height"))			
+		except:
+		  HEIGHT=int ( min( hs, ws)*0.8 )
+		  WIDTH=int(0.98*HEIGHT)
+		  if(ws < WIDTH):
+		    WIDTH = ws	
 		  
 		#Main Frame Settings
 		self.configure(bd=int(p2c(WIDTH,WIDTH,[1,1])[0]),height=p2c(None,HEIGHT,[90]),width=p2c(WIDTH,None,[100]))			
