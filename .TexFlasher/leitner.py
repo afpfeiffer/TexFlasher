@@ -1998,7 +1998,7 @@ class TexFlasher(Frame):
 	
 		ws = self.master.winfo_screenwidth()
 		hs = self.master.winfo_screenheight()
-		HEIGHT=int ( min( hs, ws)*0.93 )
+		HEIGHT=int ( min( hs, ws)*0.8 )
 		WIDTH=int(0.98*HEIGHT)
 		if(ws < WIDTH):
 		  WIDTH = ws	
