@@ -135,7 +135,7 @@ def futureCardNumber( database, offset, offset2, maxLevel ):
 
 
 
-def load_agenda(ldb,dir,now=datetime.now(),PageSort=False):
+def load_agenda(ldb,dir,now=datetime.now(),PageSort=True):
 	local_agenda={}
 	flashcards=ldb.childNodes
 	seconds_in_a_day = 60 * 60 * 24
@@ -1407,7 +1407,7 @@ class Flasher:
 		img = IK.get_image(".TexFlasher/pictures/pagesort.png",None,Main.b_tiny)	
 		self.pagesort_img=img
 					
-		self.sort_b=Button(Main,image=self.pagesort_img,text="Sort by Pages",bd=BD,command=lambda:self.agenda_resort(True))
+		self.sort_b=Button(Main,image=self.pagesort_img,text="Sort by Pages",bd=BD,command=lambda:self.agenda_resort(False))
 		self.sort_b.grid(row=self.c.true_false_row,column=2,sticky=S)
 				
 		self.c.tag_buttons=[q_b,w_b,r_b,l_b,wiki_b]	
