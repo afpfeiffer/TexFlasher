@@ -1269,11 +1269,11 @@ class Flasher:
 	def agenda_resort(self,sort):
 		self.agenda,self.new_cards=load_agenda(self.ldb,self.selected_dir, self.date,sort)
 		self.reactAndInit(True , -1)
-		if sort==True:			
-			self.sort_b.config(image=self.datesort_img,command=lambda:self.agenda_resort(False),text="Sort by Date")
+		if sort==False:			
+			self.sort_b.config(image=self.datesort_img,command=lambda:self.agenda_resort(True),text="Sort by Date")
 
 		else:
-			self.sort_b.config(image=self.pagesort_img,command=lambda:self.agenda_resort(True),text="Sort By Page")	
+			self.sort_b.config(image=self.pagesort_img,command=lambda:self.agenda_resort(False),text="Sort By Page")	
 
 			
 	def __init__(self,selected_dir,stuffToDo=True):
