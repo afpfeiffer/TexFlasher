@@ -42,6 +42,7 @@ from datetime import datetime, timedelta
 from math import *
 from codecs import open
 import random
+import socket
 
 
 from Tkinter import *
@@ -1999,6 +2000,10 @@ class TexFlasher(Frame):
 		ws = self.master.winfo_screenwidth()
 		hs = self.master.winfo_screenheight()
 		HEIGHT=int ( min( hs, ws)*0.8 )
+
+		if socket.gethostname() == "mokmok":
+			HEIGHT=int ( min( hs, ws)*0.93 )
+		
 		WIDTH=int(0.98*HEIGHT)
 		if(ws < WIDTH):
 		  WIDTH = ws	
