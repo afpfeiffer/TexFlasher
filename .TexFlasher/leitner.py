@@ -1894,27 +1894,38 @@ def menu():
 
 	#print saveString
 	#create button
-
-	create=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_add.png",None,Main.b_large)
+	toolbar=Frame(Main)
+	
+	create=create_image_button(toolbar,"./.TexFlasher/pictures/Flashcard_folder_add.png",None,Main.b_large)
 	create.configure(command=create_new) 
 	ToolTip(create,"Open flaschcards script")
-	create_n=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_create.png",None,Main.b_normal)
+	create_n=create_image_button(toolbar,"./.TexFlasher/pictures/Flashcard_folder_create.png",None,Main.b_large)
 	create_n.configure(command=create_folder)
 	ToolTip(create_n,"Create new flaschards folder")
 	#Label(Main,text=Quotes.get_quote(),wraplength=WIDTH-40,font=("Sans",Main.f_normal,"italic")).grid(row=1,columnspan=14)	
 
 	if row_start > 4:
-		create.grid(row=2,column=0,sticky=W)
+		toolbar.grid(row=2,column=0,columnspan=100,sticky=E+W+N+S)
+		toolbar.rowconfigure(0,weight=1)
+		toolbar.columnconfigure(0,weight=1)
+		toolbar.columnconfigure(1,weight=1)
+		toolbar.columnconfigure(2,weight=1)
+		create.grid(row=0,column=0,sticky=E+W+N+S)
 		#search field
-		query=Search(Main)
+		query=Search(toolbar)
 		query.set_completion_list(comp_list)
-		query.grid(row=2,column=1,columnspan=6,sticky=E+W+N+S)
+		query.grid(row=0,column=1,sticky=E+W+N+S)
 			
-		create_n.grid(row=2,column=8,columnspan=6,sticky=N+W+S+E)		
+		create_n.grid(row=0,column=2,sticky=E+W+N+S)		
+
 		Label(Main,height=1).grid(sticky=E+W,row=3,columnspan=10)
 	else:
-		create_n.grid(row=row_start+2,columnspan=8)			
-		create.grid(row=row_start+1,columnspan=8)
+		toolbar.grid(row=2,column=0,columnspan=10,sticky=E+W+N+S)
+		toolbar.rowconfigure(0,weight=1)
+		toolbar.columnconfigure(0,weight=1)
+		toolbar.columnconfigure(1,weight=1)
+		create_n.grid(row=0,column=0,sticky=E+W+N+S)			
+		create.grid(row=0,column=1,sticky=E+W+N+S)
 	#footer
 
 def readSettings( Settings ):
