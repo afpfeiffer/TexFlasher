@@ -841,7 +841,7 @@ class Search(Entry):
                        
         def search_flashcard(self):
 		search_query=self.get()
-		self._def_value.set("searching please wait...") 
+		self._def_value.set("searching, please wait...") 
 		self.configure(fg="gray")
 		
 		self.update()
