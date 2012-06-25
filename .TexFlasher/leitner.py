@@ -59,7 +59,7 @@ import ConfigParser
 from tagger import *
 from systemInterface import *
 from gallery import *
-#import Pmw
+from tooltip import *
 
 
 ######################################################################## leitner_db management ##############################################
@@ -135,7 +135,7 @@ def futureCardNumber( database, offset, offset2, maxLevel ):
 
 
 
-def load_agenda(ldb,dir,now=datetime.now(),PageSort=False):
+def load_agenda(ldb,dir,now=datetime.now(),PageSort=True):
 	local_agenda={}
 	flashcards=ldb.childNodes
 	seconds_in_a_day = 60 * 60 * 24
@@ -466,7 +466,7 @@ def drawHistory( HISTORY, stat, fontsize,  verbose=True, alwaysOnTop=False, maxL
 		
 def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     clear_window()
-    Main.master.title("Statistics")
+    Main.master.title(Main._title_base+" "+Main._version+" - Statistics")
     
     fontsize=int(float(WIDTH)*0.012)
     DX=WIDTH*0.00125
@@ -852,7 +852,7 @@ class Search(Entry):
 		current_tex_file=None
 		current_order_xml=None
 		if len(search_query)>0 and not search_query=="Search ...":		
-			match_info_name=[]
+			search_in=[]
 			all_fcs=get_all_fcs()
 			for fc_elem in all_fcs:
 				if not fc_elem['dir']==current_dir: #load files needed for get_... funktions to speed up search
@@ -865,23 +865,36 @@ class Search(Entry):
 				fc_sections=get_fc_section(fc_elem['dir'],fc_elem['tag'],current_source_xml)	
 				try:
 
-					fc_elem['query']=fc_name+" "+theorem_name+" "+sanatize(fc_content)+" "+fc_elem['tag']+" "+fc_sections
-					match_info_name.append(fc_elem)
+					fc_elem['query']={"front":fc_name+" "+theorem_name+" "+fc_elem['tag']+" "+fc_sections,"content":sanatize(fc_content)}
+					search_in.append(fc_elem)
 				except:
 					pass
 					#TODO: Sometimes encoding error!
-			search_results=[]
-			for res in match_info_name:
-				if not len(search_query.split(" "))>0:
-					if len(get_close_matches(search_query.lower(),res['query'].lower().split(" "),cutoff=thresh))>0:			
-						search_results.append(res)						
+			search_front_results=[]
+			search_content_results=[]
+
+			i=0
+			for res in search_in:
+				patterns_front = [r'\b%s\b' % re.escape(s.strip()) for s in res["query"]["front"].lower().split()]
+				patterns_content = [r'\b%s\b' % re.escape(s.strip()) for s in res["query"]["content"].lower().split()]				
+				there_front = re.compile('|'.join(patterns_front))
+				there_content = re.compile('|'.join(patterns_content))				
+				match_count=0
+				for w in re.escape(search_query.lower().strip()).split():	
+					if there_front.search(w):
+						match_count+=1
+				if match_count>=len(search_query.lower().split()):
+					search_front_results.append(res)
 				else:
-					match_count=0
-					for s in search_query.lower().split(" "):
-						if len(get_close_matches(s,res['query'].lower().split(" "),cutoff=thresh))>0 or len(get_close_matches(s,[res['query'].lower()],cutoff=thresh))>0 or len(get_close_matches(s,res['query'].lower().split("-"),cutoff=thresh))>0:						
+					match_count=0				
+					for w in re.escape(search_query.lower().strip()).split():	
+						if there_content.search(w):
 							match_count+=1
-					if match_count==len(search_query.split(" ")):
-						search_results.append(res)												
+					if match_count>=len(search_query.lower().split()):
+						search_content_results.append(res)					
+					
+			search_results=search_front_results+search_content_results
+					
 			## display search results
 			if len(search_results)>0:
 				display_mult_fcs(search_results,"Found "+str(len(search_results))+" search results for \""+search_query+"\"")
@@ -986,7 +999,7 @@ def create_image_button(window,path,width=None,height=None,border=None):
 	
 def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":fc_dir,"level":fc_level}, ...]
 	clear_window()
-	Main.master.title(title)
+	Main.master.title(Main._title_base+" "+Main._version+" - "+title)
 	menu_button=create_image_button(Main,".TexFlasher/pictures/menu.png",None,Main.b_normal)
 	menu_button.configure(command=lambda:menu())
 	
@@ -1269,11 +1282,11 @@ class Flasher:
 	def agenda_resort(self,sort):
 		self.agenda,self.new_cards=load_agenda(self.ldb,self.selected_dir, self.date,sort)
 		self.reactAndInit(True , -1)
-		if sort==True:			
-			self.sort_b.config(image=self.datesort_img,command=lambda:self.agenda_resort(False),text="Sort by Date")
+		if sort==False:			
+			self.sort_b.config(image=self.datesort_img,command=lambda:self.agenda_resort(True),text="Sort by Date")
 
 		else:
-			self.sort_b.config(image=self.pagesort_img,command=lambda:self.agenda_resort(True),text="Sort By Page")	
+			self.sort_b.config(image=self.pagesort_img,command=lambda:self.agenda_resort(False),text="Sort By Page")	
 
 			
 	def __init__(self,selected_dir,stuffToDo=True):
@@ -1282,7 +1295,7 @@ class Flasher:
 		
 		clear_window()#clear main window
 
-		Main.master.title(selected_dir)
+		Main.master.title(Main._title_base+" "+Main._version+" - "+selected_dir)
 		if( stuffToDo ):
 			date = datetime.now()
 		else:
@@ -1407,7 +1420,7 @@ class Flasher:
 		img = IK.get_image(".TexFlasher/pictures/pagesort.png",None,Main.b_tiny)	
 		self.pagesort_img=img
 					
-		self.sort_b=Button(Main,image=self.pagesort_img,text="Sort by Pages",bd=BD,command=lambda:self.agenda_resort(True))
+		self.sort_b=Button(Main,image=self.pagesort_img,text="Sort by Pages",bd=BD,command=lambda:self.agenda_resort(False))
 		self.sort_b.grid(row=self.c.true_false_row,column=2,sticky=S)
 				
 		self.c.tag_buttons=[q_b,w_b,r_b,l_b,wiki_b]	
@@ -1704,7 +1717,6 @@ class MyDialog:
 
         b = Button(top, text="Create", command=self.ok)
         b.pack(pady=5)
-
     def ok(self):
 
         #print "value is", self.e.get()
@@ -1746,7 +1758,7 @@ def menu():
 	Main.columnconfigure(2,weight=0)
 	Main.columnconfigure(3,weight=0)
 	Main.columnconfigure(4,weight=0)	
-	Main.master.title("Menu") 
+	Main.master.title(Main._title_base+" "+Main._version+" - Menu") 
 
 		#self.rowconfigure( 1, weight = 2 )
 		#self.columnconfigure( 1, weight = 1 )	
@@ -1885,9 +1897,11 @@ def menu():
 
 	create=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_add.png",None,Main.b_large)
 	create.configure(command=create_new) 
+	ToolTip(create,"Open flaschcards script")
 	create_n=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_create.png",None,Main.b_normal)
 	create_n.configure(command=create_folder)
-	Label(Main,text=Quotes.get_quote(),wraplength=WIDTH-40,font=("Sans",Main.f_normal,"italic")).grid(row=1,columnspan=14)	
+	ToolTip(create_n,"Create new flaschards folder")
+	#Label(Main,text=Quotes.get_quote(),wraplength=WIDTH-40,font=("Sans",Main.f_normal,"italic")).grid(row=1,columnspan=14)	
 
 	if row_start > 4:
 		create.grid(row=2,column=0,sticky=W)
@@ -1970,7 +1984,7 @@ class quotes:
 		return self.random_quote
 
 
-Quotes=quotes()
+#Quotes=quotes()
 
 iconbitmapLocation = "@./.TexFlasher/pictures/icon.xbm"
 
@@ -2031,7 +2045,9 @@ class TexFlasher(Frame):
 		#Main Frame Settings
 		self.configure(bd=int(p2c(WIDTH,WIDTH,[1,1])[0]),height=p2c(None,HEIGHT,[90]),width=p2c(WIDTH,None,[100]))			
 		self.grid(row=1,column=0,sticky=N+E+W)
-		self.grid_propagate(False) 	
+		self.grid_propagate(False) 
+			
+		self._title_base="TeXFlasher"
 		self._version="unstable build"
 
 		# calculate position x, y
@@ -2046,7 +2062,7 @@ class TexFlasher(Frame):
 		#master bindings
 		self.master.protocol('WM_DELETE_WINDOW',lambda:saveFiles(self.master))
 		self.master.bind("<Escape>", lambda e: self.master.quit()) # quits texflasher if esc is pressed		
-		self.master.title("TexFlasher - "+self._version)
+		self.master.title(self._title_base+" "+self._version)
 
 		#Button type heights
 		self.b_tiny=p2c(self.winfo_width(),self.winfo_height(),[3,3])[1] #3% Height of Main
