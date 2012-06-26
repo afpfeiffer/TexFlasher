@@ -68,6 +68,9 @@ def parse_dvi_dump(source_path):
 		if doc_start and re.compile("xxx: 'fc=(.*?)'").findall(l):#we got fc_tag
 		  matches=re.compile("xxx: 'fc=(.*?)'").findall(l)
 		  fc_tag=matches[0]
+		  if not re.match('^[A-Za-z]+$', fc_tag):
+		  	print "Fatal Error: Tag contains invalid letters: %s"%fc_tag
+		  	sys.exit() 				  
 		  theorems[fc_tag]={"page":None,"pagemarker":None,"number":None,"section_name":None,"section_number":None,"subsection_name":None,"subsection_number":None,"subsubsection_name":None,"subsubsection_number":None}
 		  for meta in current_section:
 			if not current_section[meta]==None:
@@ -90,7 +93,7 @@ def parse_dvi_dump(source_path):
 
 
 def parse_tex(fcard_dir,source_path):
-	meta=parse_dvi_dump(source_path)
+	meta=parse_dvi_dump(source_path)		
 	try:
 		source_tex=open(source_path+"/source.tex","r")
 	except:
@@ -143,11 +146,20 @@ def parse_tex(fcard_dir,source_path):
 		matches=re.compile('^\\\\fc\{(.*?)\}\n').findall(line.lstrip())
 		try:#fails if no fc_marker in line!
 			fcard_title=matches[0]
+			try:
+				if len(meta.getElementsByTagName(fcard_title))==0:
+					sys.exit()			
+			except:
+				sys.exit()
 			element=doc.createElement(fcard_title)
 			order_db.appendChild(element)
 			#check for doubles
 			if fcard_title in fcards:
 				print "Fatal Error: flashcard_marker "+fcard_title+" used multiple times!"
+				sys.exit()
+		except SystemExit:
+			print "Fatal Error: Marker error: %s"%(fcard_title) 	
+			sys.exit()				
 		except:
 			pass
 		#check if we are in flashcard and not at the end
@@ -248,4 +260,4 @@ parse_tex(sys.argv[1],sys.argv[2])
 #except SystemExit:
 #	print "SystemExit"
 #except:
-#	print "Syntax:\n  flashcard_directory\n source_directory \n (jeweils ohne / am ende!)\n"
+#print "Syntax:\n  flashcard_directory\n source_directory \n (jeweils ohne / am ende!)\n"
