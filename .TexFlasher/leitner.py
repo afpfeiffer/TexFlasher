@@ -875,22 +875,21 @@ class Search(Entry):
 
 			i=0
 			for res in search_in:
-				patterns_front = [r'\b%s\b' % re.escape(s.strip()) for s in res["query"]["front"].lower().split()]
-				patterns_content = [r'\b%s\b' % re.escape(s.strip()) for s in res["query"]["content"].lower().split()]				
-				there_front = re.compile('|'.join(patterns_front))
-				there_content = re.compile('|'.join(patterns_content))				
+				patterns_front = res["query"]["front"].lower().strip().split()
+				patterns_content = res["query"]["content"].lower().strip().split()				
+				
 				match_count=0
-				for w in re.escape(search_query.lower().strip()).split():	
-					if there_front.search(w):
+				for w in search_query.lower().strip().split():	
+					if len(get_close_matches(w,patterns_front,cutoff=thresh))>0:
 						match_count+=1
-				if match_count>=len(search_query.lower().split()):
+				if match_count>=len(search_query.lower().strip().split()):
 					search_front_results.append(res)
 				else:
 					match_count=0				
-					for w in re.escape(search_query.lower().strip()).split():	
-						if there_content.search(w):
+					for w in search_query.lower().strip().split():	
+						if len(get_close_matches(w,patterns_front,cutoff=thresh))>0:
 							match_count+=1
-					if match_count>=len(search_query.lower().split()):
+					if match_count>=len(search_query.lower().strip().split()):
 						search_content_results.append(res)					
 					
 			search_results=search_front_results+search_content_results
