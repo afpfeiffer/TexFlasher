@@ -1054,6 +1054,8 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 			button.grid(row=str(i+1),column=colu)
 			button.bind('<Button-4>', lambda event: search_canvas.yview_scroll(-1, UNITS))
 			button.bind('<Button-5>', lambda event: search_canvas.yview_scroll(1, UNITS))
+			button.bind('<Enter>',lambda event,data=res,b=button: show_backside(b,data['tag'],data['dir']+"/Flashcards/"+data['tag']+"-2.png",size,int(size*0.6)))
+			button.bind('<Leave>',lambda event,data=res,b=button: show_backside(b,data['tag'],data['dir']+"/Flashcards/"+data['tag']+"-1.png",size,int(size*0.6)))							
 			dist=Label(Search_frame,height=1).grid(row=str(i+2),column=colu)
 			setattr(search_canvas,res['tag']+res['dir'],button.img)
 			Search_frame.update()
@@ -1061,6 +1063,12 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 
 		Search_frame.update_idletasks()
 		search_canvas.config(scrollregion=search_canvas.bbox("all"),width=Main.winfo_width()-40,height=Main.winfo_height()-80)
+
+def show_backside(button,tag,path,width=None,height=None):
+	back=IK.get_image(path,width,height)
+	button.config(image=back)
+	button.img=back
+	button.update()
 
 
 def  disp_single_fc(image_path,tag,title=None):
