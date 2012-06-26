@@ -864,7 +864,6 @@ class Search(Entry):
 				fc_name,theorem_name,theorem_type,fc_content=get_fc_desc(fc_elem['dir'],fc_elem['tag'],current_tex_file,current_order_xml)
 				fc_sections=get_fc_section(fc_elem['dir'],fc_elem['tag'],current_source_xml)	
 				try:
-
 					fc_elem['query']={"front":fc_name+" "+theorem_name+" "+fc_elem['tag']+" "+fc_sections,"content":sanatize(fc_content)}
 					search_in.append(fc_elem)
 				except:
@@ -892,20 +891,17 @@ class Search(Entry):
 					if match_count>=len(search_query.lower().strip().split()):
 						search_content_results.append(res)					
 					
-			search_results=search_front_results+search_content_results
-					
+			search_results=search_front_results+search_content_results					
 			## display search results
 			if len(search_results)>0:
-				display_mult_fcs(search_results,"Found "+str(len(search_results))+" search results for \""+search_query+"\"")
+				display_mult_fcs(search_results,"Search results for \""+search_query+"\"")
 				#self.add_search_query(search_query,search_results)
 			else:
 				self.delete(0,END)
 				self.insert(0,"Nothing found!" )
 
 	
-        def handle_keyrelease(self, event):
-        		
-        	
+        def handle_keyrelease(self, event):      	
                 """event handler for the keyrelease event on this widget"""
                 if event.keysym == "BackSpace":
                         self.delete(self.index(INSERT), END) 
@@ -949,8 +945,7 @@ class AutoScrollbar(Scrollbar):
 # TODO Alter schwede, size=BOOL(>1) (=true) size>1 oder was?
 class ImageKeeper:  
 	def __init__(self):
-	  self.images={}
-	  
+	  self.images={}	  
 	def add_image(self,path,width=None,height=None):
 	  image = Image.open(path)
 	  im_width,im_height=image.size
@@ -980,19 +975,14 @@ class ImageKeeper:
 	    return self.add_image(path,width,height)
 	    
 def create_image_button(window,path,width=None,height=None,border=None):	
-#	button_image = Image.open(path)
-#	if width and height:
 	button_image = IK.get_image(path,width,height)	
 	if border==None:
 		button=Button(window,image=button_image,bd=BD)
 	else:
-		button=Button(window,image=button_image,bd=border)
-	  
+		button=Button(window,image=button_image,bd=border)	  
 	button.img=button_image
 	button.grid()
 	return button
-
-
 
 
 	
@@ -1023,11 +1013,10 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 	      folders[elem['dir']]['fcs'].append(elem)
 	    except:
 	      folders[elem['dir']]={"count":1,"fcs":[elem],"dir":elem['dir']}
-
 	i=1
 	buttons_frame=Frame(Main)
 	buttons_frame.grid(row=0)
-	Label(buttons_frame,font=("Sans",Main.f_normal),text="Found "+str(len(fcs))+":").grid(row=0,column=0)
+	Label(buttons_frame,font=("Sans",Main.f_normal,"bold"),text="Found "+str(len(fcs))+":").grid(row=0,column=0)
 	for dir in folders:
 	    b=Button(buttons_frame,bd=0,font=("Sans",Main.f_normal),text=str(folders[dir]['count'])+" in "+dir.split("/")[-1],command=lambda data=folders[dir]:display_mult_fcs(data["fcs"],title,folders))
 	    b.grid(row=0,column=i)
@@ -1041,7 +1030,13 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 	search_canvas.bind('<Button-4>', lambda event: event.widget.yview_scroll(-1, UNITS))
 	search_canvas.bind('<Button-5>', lambda event: event.widget.yview_scroll(1, UNITS)) 
 	Search_frame.update()
-	
+	#local function to display backside of fc on mouseover
+	def show_backside(button,tag,path,width=None,height=None):
+		back=IK.get_image(path,width,height)
+		button.config(image=back)
+		button.img=back
+		button.update()	
+
 	for res in iterator:
 		for colu in images_row:
 			if colu>images_row[0]:
@@ -1064,11 +1059,6 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 		Search_frame.update_idletasks()
 		search_canvas.config(scrollregion=search_canvas.bbox("all"),width=Main.winfo_width()-40,height=Main.winfo_height()-80)
 
-def show_backside(button,tag,path,width=None,height=None):
-	back=IK.get_image(path,width,height)
-	button.config(image=back)
-	button.img=back
-	button.update()
 
 
 def  disp_single_fc(image_path,tag,title=None):
@@ -1111,8 +1101,6 @@ def  disp_single_fc(image_path,tag,title=None):
 	c.back_b=back_b
 	create_comment_canvas(c,os.path.dirname(image_path)+"/../",tag,Settings['user'])
 
-	
-	
 	c.fc_row=3
 	c.tag_buttons=[]
 	q_b=create_image_button(win,".TexFlasher/pictures/question_fix.png",None,Main.b_normal)
@@ -1253,8 +1241,9 @@ def change_latex(file_path,fc_tag,content,theorem_type):
 	
 def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type):
 	content=edit_text.get('1.0', END)
-	#while content[-1]=="\n":
-	#	content=content[:-1]
+	while content[-1]=="\n":
+		content=content[:-1]
+	content+="\n"#last break needed!so newline at \end{..}
 	if os.path.isfile("./.TexFlasher/config.xml"):
 		#try:
 			tree = xml.parse("./.TexFlasher/config.xml")
