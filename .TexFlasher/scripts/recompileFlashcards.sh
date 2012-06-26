@@ -84,6 +84,13 @@ done
   
   echo "parsing ..." | tee  $folder/texFlasher.log
 	python "$WD/.TexFlasher/parse_tex.py" "$folder/Flashcards.tmp" "$folder/Details" | tee -a $folder/texFlasher.log
+	
+	Errors="`cat $folder/texFlasher.log | grep -rniE 'Fatal Error'`"
+	if [ ! "$Errors" == ""  ]; then
+		echo "Fatal error while parsing source file." >> $folder/texFlasher.log
+		exit 1
+	fi	
+	
 	cp $file $folder/Flashcards/$purefilebase.bak
   
   recompile="0"

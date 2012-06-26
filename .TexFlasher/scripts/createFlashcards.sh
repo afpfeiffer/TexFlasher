@@ -52,6 +52,7 @@ purefilebase=${filebase%\.*}
 # fi
 
 FILES="Makefile pdf2jpg_dummy.sh dvi2png_dummy.sh flashcards.cls"
+rm $folder/texFlasher.log
 
 # get current versions of files 
 for thing in $FILES; do
@@ -75,7 +76,6 @@ if [[ "`diff $folder/Flashcards/$purefilebase.bak $file`" == "" ]]; then
   echo "done"
 else 
 	cp $file $folder/Details/source.tex
-	rm $folder/texFlasher.log
 	cd $folder/Details
 	latex -halt-on-error $folder/Details/source.tex 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|No pages of output.|Emergency stop.' | tee -a $folder/texFlasher.log
 	Errors="`cat $folder/texFlasher.log | grep -rniE 'error|ERROR|Error|Missing|No pages of output.|Emergency stop.'`"
@@ -94,6 +94,13 @@ else
   
   echo "parsing ..." | tee  $folder/texFlasher.log
 	python "$WD/.TexFlasher/parse_tex.py" "$folder/Flashcards.tmp" "$folder/Details" | tee -a $folder/texFlasher.log
+	
+	Errors="`cat $folder/texFlasher.log | grep -rniE 'Fatal Error'`"
+	if [ ! "$Errors" == ""  ]; then
+		echo "Fatal error while parsing source file." >> $folder/texFlasher.log
+		exit 1
+	fi
+	
 	cp $file $folder/Flashcards/$purefilebase.bak
   
   recompile="0"
