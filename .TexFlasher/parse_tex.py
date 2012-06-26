@@ -140,7 +140,7 @@ def parse_tex(fcard_dir,source_path):
 	for line in source_tex:
 		if line.lstrip().startswith("%"):
 		    line=source_tex.next()		
-		matches=re.compile('^\\\\fc\{(\w+)\}\n').findall(line.lstrip())
+		matches=re.compile('^\\\\fc\{(.*?)\}\n').findall(line.lstrip())
 		try:#fails if no fc_marker in line!
 			fcard_title=matches[0]
 			element=doc.createElement(fcard_title)
@@ -153,7 +153,7 @@ def parse_tex(fcard_dir,source_path):
 		#check if we are in flashcard and not at the end
 		if ((fcard_title!="") and (not re.compile('^\\\\end{'+fcard_desc+'}').findall(line.lstrip()))):
 			if fcard_title not in fcards:		
-				matches=re.compile('^\\\\begin\{(\w+)\}\[(.*?)\]').findall(line.lstrip())
+				matches=re.compile('^\\\\begin\{(.*?)\}\[(.*?)\]').findall(line.lstrip())
 				try:
 					if len(matches[0][1])>0:
 						fc_meta=meta.getElementsByTagName(fcard_title)[0]
@@ -197,11 +197,7 @@ def parse_tex(fcard_dir,source_path):
 						print "Warning: flashcard_marker "+fcard_title+" has no valid title!"
 				except:
 					pass
-			else:
-				#if re.compile('ref\{(\w+)\}').findall(line):	
-				#	matches=re.compile('ref\{(\w+)\}').findall(line)
-				#	fcards[fcard_title]+=line.replace("\\ref{"+matches[0]+"}","\\link{"+matches[0]+"}")	
-				#else:			
+			else:		
 				fcards[fcard_title]+=line				
 		#check if we are at the end of a flashcard!
 		elif fcard_title!="" and re.compile('^\\\\end{'+fcard_desc+'}').findall(line.lstrip()):
