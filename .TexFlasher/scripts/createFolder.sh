@@ -42,7 +42,12 @@ if [ $2 ]; then
 		echo "Error: svn URL not valid!"
 		exit 1
 	fi
-	svn co $2 $1
+	svn co $2 $foldername
+	svn mkdir -vp $foldername/Flashcards
+	svn mkdir -vp $foldername/Users
+	svn mkdir -vp $foldername/Details
+	cp .TexFlasher/Example.tex -vp $foldername/Vorbereitung.tex
+	svn add $foldername/Vorbereitung.tex
 else
 	mkdir -vp $foldername/Flashcards
 	mkdir -vp $foldername/Users
