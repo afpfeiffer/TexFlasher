@@ -97,7 +97,7 @@ else
 	
 	Errors="`cat $folder/texFlasher.log | grep -rniE 'Fatal Error'`"
 	if [ ! "$Errors" == ""  ]; then
-		echo "Fatal error while parsing source file." >> $folder/texFlasher.log
+		echo "Fatal Error while parsing source file." >> $folder/texFlasher.log
 		exit 1
 	fi
 	
