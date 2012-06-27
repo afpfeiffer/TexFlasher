@@ -18,19 +18,18 @@
 #     You should have received a copy of the GNU General Public License
 #     along with TexFlasher  If not, see <http://www.gnu.org/licenses/>.
 
-global comp_list
-global c
-#global velocity,autorotate	
-#global xold,maximages,centerrec 
-
 
 global saveString 
-global Menu
 global Settings 
-
 global Main
+global comp_list
+
 
 import os
+from difflib import get_close_matches
+import itertools, collections
+import ConfigParser
+
 import subprocess
 import sys
 import re
@@ -41,24 +40,16 @@ from time import strftime, strptime, ctime, localtime, mktime
 from datetime import datetime, timedelta
 from math import *
 from codecs import open
-import random
-import socket
-
 
 from Tkinter import *
-import tkFont
 import tkMessageBox
 import Image, ImageTk
 import tkFileDialog
-from difflib import get_close_matches
-import itertools, collections
-import ConfigParser
 
 
 #locals
 from tagger import *
 from systemInterface import *
-from gallery import *
 from tooltip import *
 
  
@@ -103,8 +94,6 @@ def load_leitner_db(leitner_dir,user):
 				flashcard_element.setAttribute('created',strftime("%Y-%m-%d %H:%M:%S", localtime()))
 	xml_file = open(leitner_dir+"/Users/"+Settings["user"]+".xml", "w","utf-8")
 	ldb.writexml(xml_file)
-	#pretty_xml = ldb.toprettyxml()
-	#xml_file.writelines(pretty_xml)
 	xml_file.close()
 	return ldb
 
@@ -1079,9 +1068,7 @@ def  disp_single_fc(image_path,tag,title=None):
 	flashcard = ImageTk.PhotoImage(image)
 	c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard)	
 	c.img=flashcard
-	#c.bind("<Button-1>", lambda e: win.destroy())
 	edit_b=create_image_button(win,"./.TexFlasher/pictures/latex.png",None,Main.b_normal)
-#	edit_b.config(state=DISABLED)
 	edit_b.grid(row=1,column=1,sticky=N+E+W+S)
 
 	save_b=create_image_button(win,".TexFlasher/pictures/upload_now.png",None,Main.b_normal)
@@ -1151,9 +1138,7 @@ def  disp_single_fc(image_path,tag,title=None):
 	stat.width=stat_width
 	c.stat=stat	
 	drawCardHistory( ldb.getElementsByTagName(tag)[0], c.stat )
-	
-	#Label(win,height=1).grid(row=3,column=0)
-	#Label(win,text="Created: "+fc_info.getAttribute("created")+", Last Reviewed:"+fc_info.getAttribute("lastReviewed")).grid(row=0,columnspan=2)	
+
 
 
 ###############################################################  Edit fc ######################################################################
@@ -1248,7 +1233,6 @@ def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type):
 		content=content[:-1]
 	content+="\n"#last break needed!so newline at \end{..}
 	if os.path.isfile("./.TexFlasher/config.xml"):
-		#try:
 			tree = xml.parse("./.TexFlasher/config.xml")
 			config_xml = tree.getElementsByTagName('config')[0]
 			for elem in config_xml.childNodes:
@@ -1267,8 +1251,6 @@ def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type):
 	 					c.tag_lower("frontside","old")
 						cancel_edit(c,dir,fc_tag,frame)							
 					break
-		#except:
-		#	tkMessageBox.showerror("Error","Fatal error with %s! This is bad, because the card may have been deleted (not from latex) and we did not detect latex errors!"%fc_tag)
 	else:
 		tkMessageBox.showerror("Error","Fatal error while saving new content for %s: no config found!"%fc_tag)
 
@@ -1318,7 +1300,6 @@ class Flasher:
 		self.c.source = xml.parse(self.selected_dir+"/Details/source.xml")
 
 		#spacer
-		#Label(parent.master,height=1).grid(row=0,columnspan=5)
 		
 		#flashcard details
 		self.c.fc_det_row=1
@@ -1422,22 +1403,7 @@ class Flasher:
 		self.sort_b=Button(Main,image=self.pagesort_img,text="Sort by Pages",bd=BD,command=lambda:self.agenda_resort(False))
 		self.sort_b.grid(row=self.c.true_false_row,column=2,sticky=S)
 				
-		self.c.tag_buttons=[q_b,w_b,r_b,l_b,wiki_b]	
-		#gallery
-	#	flow_c=Canvas(top,height=90,width=600,bd=3)
-	#	flow_c.grid(row=c.true_false_row,column=1,columnspan=3)
-	#	flow=Flow(disp_single_fc,flow_c,)
-	#	c.flow=flow
-	#	pdict={}
-	#	i=0
-	#	for item in c.order.getElementsByTagName('order_db')[0].childNodes:
-	#	  pdict[int(item.getAttribute('position'))]={"path": selected_dir+"/Flashcards/"+item.tagName+"-1.png", "desc":"Page: 	"+c.source.getElementsByTagName(item.tagName)[0].getAttribute('page'), "tag":item.tagName}	
-	#	  i+=1
-	#	flow.show_gallery(flow_c,3, pdict)
-	
-		#footer
-		#Label(Main,font=("Helvetica",8),text="Copyright (c) 2012: Can Oezmen, Axel Pfeiffer",width=int(100.0*float(WIDTH/1000.))).grid(row=8,sticky=S,columnspan=5)
-	
+		self.c.tag_buttons=[q_b,w_b,r_b,l_b,wiki_b]		
 		self.reactAndInit(True , -1)
 			
 			
@@ -1511,8 +1477,6 @@ class Flasher:
 
 
 	def answer(self,flashcard_tag, listPosition):
-	  
-		#self.c.config(width=WIDTH,height=WIDTH*0.6)	# check if window size changed
 		image = Image.open(self.selected_dir+"/Flashcards/"+flashcard_tag+"-2.png")
 		image = image.resize((int(self.c.cget("width")),int(self.c.cget("height"))), Image.ANTIALIAS)
 		flashcard_image = ImageTk.PhotoImage(image)
@@ -1532,9 +1496,7 @@ class Flasher:
 		self.c.back_b.configure(state=NORMAL)
 		self.c.true_b.configure(state=NORMAL,command=lambda:self.reactAndInit(True, listPosition))
 		self.c.false_b.configure(state=NORMAL,command=lambda:self.reactAndInit(False, listPosition))
-	
-		#drawCardHistory( ldb.getElementsByTagName(flashcard_tag)[0], c.stat )
-		
+			
 		create_comment_canvas(self.c,self.selected_dir,flashcard_tag,Settings['user'])	
 	
 		for tag in self.c.tag_buttons:
@@ -1544,11 +1506,6 @@ class Flasher:
 		self.c.w_b.config(command=self.c.rect.watchout_tag)
 		self.c.q_b.config(command=self.c.rect.question_tag)
 		self.c.wiki_b.config(command=self.c.rect.wiki_tag)
-
-		#fc_pos=int(c.order.getElementsByTagName(flashcard_tag)[0].getAttribute('position'))
-		#c.flow.goto(fc_pos)
-		
-		#mainloop()
 	
 	
 		
@@ -1604,7 +1561,8 @@ def saveFiles(master):
 		
 def create_new():
 	file = tkFileDialog.askopenfilename(parent=Main,title='Choose LaTeX file',initialdir='./',defaultextension=".tex",filetypes=[("all files","*.tex")])
-	if file != None: #TODO: more specific checks!
+	if file != None and file!="":
+		print file
 		update_config(file)
 		menu()
 		
@@ -1767,8 +1725,6 @@ def menu():
 	Main.columnconfigure(4,weight=0)	
 	Main.master.title(Main._title_base+" "+Main._version+" - Menu") 
 
-		#self.rowconfigure( 1, weight = 2 )
-		#self.columnconfigure( 1, weight = 1 )	
 
 	global saveString 
 	saveString = ""
@@ -1783,14 +1739,11 @@ def menu():
 			if l.tagName=="FlashFolder" and l.getAttribute('filename')!="" and os.path.isfile(l.getAttribute('filename')):
 				todo=0;
 				length=0
-				#try:
 				ldb= load_leitner_db(os.path.dirname(l.getAttribute('filename')),Settings["user"])
 				today,new_cards=load_agenda(ldb,os.path.dirname(l.getAttribute('filename')))
 				todo=len(today)
 				new=len(new_cards)
 				length=len(ldb.childNodes)
-			#	except:
-			#		pass
 				start_column=0
 				log,window_type=get_log_status(os.path.dirname(l.getAttribute('filename')))
 				
@@ -1899,8 +1852,6 @@ def menu():
 				exec('Label(Main,height=1).grid(row='+str(row_start+1)+')')
 				row_start+=2	
 
-	#print saveString
-	#create button
 	toolbar=Frame(Main)
 	
 	create=create_image_button(toolbar,"./.TexFlasher/pictures/Flashcard_folder_add.png",None,Main.b_large)
@@ -1909,7 +1860,6 @@ def menu():
 	create_n=create_image_button(toolbar,"./.TexFlasher/pictures/Flashcard_folder_create.png",None,Main.b_large)
 	create_n.configure(command=create_folder)
 	ToolTip(create_n,"Create new flaschards folder")
-	#Label(Main,text=Quotes.get_quote(),wraplength=WIDTH-40,font=("Sans",Main.f_normal,"italic")).grid(row=1,columnspan=14)	
 
 	if row_start > 4:
 		toolbar.grid(row=2,column=0,columnspan=100,sticky=E+W+N+S)
@@ -1986,23 +1936,6 @@ IK=ImageKeeper()
 
 comp_list=()#create_completion_list()
 
-
-class quotes:
-	def __init__(self):
-		self.quotes_path=".TexFlasher/math_quotes.txt"
-		file=open(self.quotes_path,"r")
-		self.quotes=[]
-		for quote in file:
-			self.quotes.append(quote)
-		file.close()		
-		self.random=random.randint(0,len(self.quotes)-1)
-		self.random_quote=self.random_quote=self.quotes[self.random]
-		
-	def get_quote(self):
-		return self.random_quote
-
-
-#Quotes=quotes()
 
 iconbitmapLocation = "@./.TexFlasher/pictures/icon.xbm"
 
