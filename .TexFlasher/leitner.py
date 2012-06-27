@@ -476,7 +476,7 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     DAYS =[ 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun' ]
     tday=dayToday()   
            
-    global c
+    #global c
     c = Canvas(Stats, width=int(float(WIDTH)*0.4999), height=int(HEIGHT*0.5))  
     c.grid(row=0 , column=0, sticky=N+W+E)
     
