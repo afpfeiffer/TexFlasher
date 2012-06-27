@@ -61,6 +61,8 @@ from systemInterface import *
 from gallery import *
 from tooltip import *
 
+ 
+
 
 ######################################################################## leitner_db management ##############################################
 
@@ -1720,15 +1722,21 @@ class MyDialog:
         #print "value is", self.e.get()
         if self.e.get():
         	value=self.e.get().strip(" \n\r")
-        	repo=self.e1.get()
-        	#print repo
-        	os.system("bash .TexFlasher/scripts/createFolder.sh "+value+" "+repo)
-		dir=os.path.abspath("./"+value+"/")
+        	if not re.match("^[A-Za-z0-9]+$",value):
+		  tkMessageBox.showerror("Error","Flashfolder has an invalid name, please try again.")		
+		else:
+		  repo=self.e1.get()
+        	
+		  #print repo
+		  os.system("bash .TexFlasher/scripts/createFolder.sh "+value+" "+repo)
+		  dir=os.path.abspath("./"+value+"/")
 		#print dir
-		update_config(dir+"/Vorbereitung.tex")
-		menu()
-        self.Main.destroy()
-        
+		  update_config(dir+"/Vorbereitung.tex")
+		  menu()
+		  self.Main.destroy()
+	else:
+		self.Main.destroy()
+	  
 def create_folder():
 	d = MyDialog(Main)
 	Main.wait_window(d.Main)
@@ -2028,7 +2036,9 @@ class TexFlasher(Frame):
 		Frame.__init__( self)
 		global WIDTH, HEIGHT		
 		self.master.bind("<Configure>", self.resize)
-
+		self.master.tk.call('namespace', 'import', '::tk::dialog::file::')
+		#self.master.tk.call('set', '::tk::dialog::file::showHiddenBtn',  '1')
+		self.master.tk.call('set', '::tk::dialog::file::showHiddenVar',  '0') 
 
 		global Main
 		Main=self
