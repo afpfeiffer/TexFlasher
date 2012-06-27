@@ -1604,9 +1604,9 @@ def saveFiles(master):
 		
 def create_new():
 	file = tkFileDialog.askopenfilename(parent=Main,title='Choose LaTeX file',initialdir='./',defaultextension=".tex",filetypes=[("all files","*.tex")])
-	if file != None:
+	if file != None: #TODO: more specific checks!
 		update_config(file)
-		menu()
+		
 
 
 def get_flashfolder_path(dir):
