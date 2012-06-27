@@ -1658,6 +1658,7 @@ def get_log_status(filedir):
 				window_type="showerror"
 				message=l.replace("\n","\\n\\n")
 				l_count=0
+				break
 			else:
 				message+=l.replace("\n","\\n\\n")
 			l_count+=1

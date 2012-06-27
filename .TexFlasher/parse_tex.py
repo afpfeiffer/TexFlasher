@@ -68,7 +68,7 @@ def parse_dvi_dump(source_path):
 		if doc_start and re.compile("xxx: 'fc=(.*?)'").findall(l):#we got fc_tag
 		  matches=re.compile("xxx: 'fc=(.*?)'").findall(l)
 		  fc_tag=matches[0]
-		  if not re.match('^[A-Za-z]+$', fc_tag):
+		  if not re.match('^[A-Za-z]+$', fc_tag[0]) or not re.match('^[A-Za-z0-9]+$', fc_tag):
 		  	print "Fatal Error: Tag contains invalid letters: %s"%fc_tag
 		  	sys.exit() 				  
 		  theorems[fc_tag]={"page":None,"pagemarker":None,"number":None,"section_name":None,"section_number":None,"subsection_name":None,"subsection_number":None,"subsubsection_name":None,"subsubsection_number":None}
