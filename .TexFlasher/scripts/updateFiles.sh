@@ -33,18 +33,23 @@ folder=$1
 echo "processing: $folder"
 
 echo
-	
-svn info $folder &> /dev/null
 
-HAVESVN=$?
-if [ $HAVESVN -eq 0 ]; then
-	svn up $folder
-	echo
+ping -c 1 www.google.com>>/dev/null
+if [ $? -eq  0 ]; then
+	svn info $folder &> /dev/null
+
+	HAVESVN=$?
+	if [ $HAVESVN -eq 0 ]; then
+		svn up $folder
+		echo
+	else
+		echo "Folder not under svn control."
+		echo
+	fi
 else
-	echo "svn unavailable"
+	echo "Error: no internet connection available!"
 	echo
 fi
-
 exit 0
 
 

@@ -29,16 +29,19 @@ else
 		seperatedFiles="`echo $string | sed -e 's/###/ /g'`"
 		for thing in $seperatedFiles; do
 			if [ -f $thing ]; then
-				svn add $thing &> /dev/null  
-				svn info $thing &> /dev/null
-				HAVESVN=$?
-				if [ $HAVESVN -eq 0 ]; then
-	# 				echo "svn available for this file"
-					fulldiff="`svn diff $thing`" > /dev/null
-					if [ "$fulldiff" != "" ]; then
-						echo "Save"
-						touch SAVE
-						exit 0
+				ping -c 1 www.google.com>>/dev/null
+				if [ $? -eq  0 ]; then
+					svn add $thing &> /dev/null  
+					svn info $thing &> /dev/null
+					HAVESVN=$?
+					if [ $HAVESVN -eq 0 ]; then
+		# 				echo "svn available for this file"
+						fulldiff="`svn diff $thing`" > /dev/null
+						if [ "$fulldiff" != "" ]; then
+							echo "Save"
+							touch SAVE
+							exit 0
+						fi
 					fi
 				fi
 			fi
