@@ -132,7 +132,7 @@ else
 				
 				ts="`date +%s`"
 				echo "changed content: $purename" | tee -a $folder/texFlasher.log
-				latexdiff $folder/Flashcards/$name $folder/Flashcards.tmp/$name > $folder/Diffs/$name
+				latexdiff $folder/Flashcards/$name $folder/Flashcards.tmp/$name > $folder/Diffs/$name &> /dev/null
       fi
     fi
   done
