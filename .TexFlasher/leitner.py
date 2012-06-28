@@ -1811,14 +1811,14 @@ def menu():
 				l_length=check_tags(tag_xml_path,"link")
 				if l_length==None or l_length==0:
 				   l_b.config(state=DISABLED)	
-				l_b.config(command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):show_tagged('link',fcdir,fcdir,fcdir+"/Users/"+Settings['user']+"_comment.xml"))
+				l_b.config(command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):show_tagged('link',fcdir,fcdir+"/Users/"+Settings['user']+"_comment.xml"))
 
 				wiki_b=create_image_button(Main,".TexFlasher/pictures/wiki.png",None,Main.b_normal,0)
 				wiki_b.grid(row=row_start,column=start_column+6,sticky=N+W+E+S)
 				wiki_length=check_tags(tag_xml_path,"wiki")
 				if wiki_length==None or wiki_length==0:
 				   wiki_b.config(state=DISABLED)	
-				wiki_b.config(command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):show_tagged('wiki',fcdir,fcdir,fcdir+"/Users/"+Settings['user']+"_comment.xml"))
+				wiki_b.config(command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):show_tagged('wiki',fcdir,fcdir+"/Users/"+Settings['user']+"_comment.xml"))
 				start_column+=6
 				
 				#update
