@@ -212,6 +212,9 @@ def get_all_fcs(path=False):
 	return all_fcs	
 
 
+	
+	
+	
 
 ################################################ Statistics ################################################################
 
@@ -895,6 +898,8 @@ class Search(Entry):
 			else:
 				self.delete(0,END)
 				self.insert(0,"Nothing found!" )
+				self.bind("<Button-1>", self.clear_search)
+
 
 	
         def handle_keyrelease(self, event):      	
@@ -989,10 +994,14 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 	menu_button.configure(command=lambda:menu())
 	
 	menu_button.grid(row=1,columnspan=5,sticky=N+W+E+S)
-	vscrollbar = AutoScrollbar(Main)
+	
+	scrollframe=Frame(Main)
+	scrollframe.grid(row=3,column=0)
+	
+	vscrollbar = AutoScrollbar(scrollframe)
 	vscrollbar.grid(row=2, column=2, sticky=N+S)
 	
-	search_canvas = Canvas(Main,yscrollcommand=vscrollbar.set)
+	search_canvas = Canvas(scrollframe,yscrollcommand=vscrollbar.set)
 	search_canvas.grid(row=2, column=0, sticky=N+S+E+W)
 	vscrollbar.config(command=search_canvas.yview)
 	
@@ -1031,7 +1040,6 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 		back=IK.get_image(path,width,height)
 		button.config(image=back)
 		button.img=back
-		button.update()	
 
 	for res in iterator:
 		for colu in images_row:
@@ -1052,8 +1060,7 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 			setattr(search_canvas,res['tag']+res['dir'],button.img)
 			Search_frame.update()
 		i+=3
-
-		Search_frame.update_idletasks()
+		Search_frame.update()
 		search_canvas.config(scrollregion=search_canvas.bbox("all"),width=Main.winfo_width()-40,height=Main.winfo_height()-80)
 
 
@@ -1750,28 +1757,27 @@ def menu():
 				
 
 
-				button_status="NORMAL"
+				button_status=NORMAL
 				if length==0:
-					button_status="DISABLED"
-				new_status="NORMAL"					
+					button_status=DISABLED
+				new_status=NORMAL					
 				#open folder
 
 				if todo-new>0:
-					exec('button_' + str(row_start)+'_open =create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_red.png",None,'+str(Main.b_large)+')')
-					exec('button_' + str(row_start)+'_open.configure(state='+button_status+',command=lambda:Flasher("'+os.path.dirname(l.getAttribute('filename'))+'", True))')	
+					open_img_path="./.TexFlasher/pictures/Flashcard_folder_red.png"	
 				elif new >0:
-					exec('button_' + str(row_start)+'_open =create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder_yellow.png",None,'+str(Main.b_large)+')')
-					exec('button_' + str(row_start)+'_open.configure(state='+button_status+',command=lambda:Flasher("'+os.path.dirname(l.getAttribute('filename'))+'", True))')
+				  
+					open_img_path="./.TexFlasher/pictures/Flashcard_folder_yellow.png"
 				else:
-					exec('button_' + str(row_start)+'_open =create_image_button(Main,"./.TexFlasher/pictures/Flashcard_folder.png",None,'+str(Main.b_large)+')')
-					exec('button_' + str(row_start)+'_open.configure(state='+button_status+',command=lambda:Flasher("'+os.path.dirname(l.getAttribute('filename'))+'", False))')
-									
-				exec('button_' + str(row_start)+'_open.grid(row='+str(row_start)+',sticky=N+W+S+E,column='+str(start_column)+')')
+					open_img_path="./.TexFlasher/pictures/Flashcard_folder.png"
+				open_b=create_image_button(Main,open_img_path,None,Main.b_large)
+				open_b.configure(state=button_status,command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):Flasher(fcdir, True))									
+				open_b.grid(row=row_start,sticky=N+W+S+E,column=start_column)
 				#folder desc
 				Desc=Frame(Main)
 				Desc.grid(row=row_start, column=start_column+1,sticky=W)
 
-				Label(Desc,justify=LEFT,font=("Sans",Main.f_normal,"bold"),text=l.getAttribute('filename').split("/")[-2]).grid(row=0,column=0,sticky=W)
+				Button(Desc,bd=0,justify=LEFT,font=("Sans",Main.f_normal,"bold"),command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):display_mult_fcs(get_all_fcs(fcdir),fcdir),text=l.getAttribute('filename').split("/")[-2]).grid(row=0,column=0,sticky=W)
 				Label(Desc,justify=LEFT,font=("Sans",Main.f_normal),text='length: '+str(length)+', todo: '+str(todo-new)+', new: '+str(new)).grid(row=1,column=0,sticky=W)
 				Label(Desc,justify=LEFT,font=("Sans",Main.f_normal),text='updated: '+l.getAttribute('lastReviewed').rpartition(':')[0].partition('-')[2].replace('-','/')).grid(row=3,column=0,sticky=W)
 
@@ -1785,34 +1791,34 @@ def menu():
 				   q_b.config(state=DISABLED)
 				#else:
 				#   Label(Main,text=str(q_length)).grid(row=row_start,column=start_column+2,sticky=S)
-				exec("q_b.config(command=lambda:show_tagged('question','"+os.path.dirname(l.getAttribute('filename'))+"','"+tag_xml_path+"'))")
+				q_b.config(command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):show_tagged('question',fcdir,fcdir+"/Users/"+Settings['user']+"_comment.xml"))
 				w_b=create_image_button(Main,".TexFlasher/pictures/watchout_fix.png",None,Main.b_normal,0)
 				w_b.grid(row=row_start,column=start_column+3,sticky=N+S+E+W)
 				w_length=check_tags(tag_xml_path,"watchout")
 				if w_length==None or w_length==0:
 				   w_b.config(state=DISABLED)	
-				exec("w_b.config(command=lambda:show_tagged('watchout','"+os.path.dirname(l.getAttribute('filename'))+"','"+tag_xml_path+"'))")
+				w_b.config(command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):show_tagged('watchout',fcdir,fcdir+"/Users/"+Settings['user']+"_comment.xml"))
    
 				r_b=create_image_button(Main,".TexFlasher/pictures/repeat_fix.png",None,Main.b_normal,0)
 				r_b.grid(row=row_start,column=start_column+4,sticky=N+W+E+S)
 				r_length=check_tags(tag_xml_path,"repeat")
 				if r_length==None or r_length==0:
 				   r_b.config(state=DISABLED)	
-				exec("r_b.config(command=lambda:show_tagged('repeat','"+os.path.dirname(l.getAttribute('filename'))+"','"+tag_xml_path+"'))")
+				r_b.config(command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):show_tagged('repeat',fcdir,fcdir+"/Users/"+Settings['user']+"_comment.xml"))
 
 				l_b=create_image_button(Main,".TexFlasher/pictures/link_fix.png",None,Main.b_normal,0)
 				l_b.grid(row=row_start,column=start_column+5,sticky=N+W+E+S)
 				l_length=check_tags(tag_xml_path,"link")
 				if l_length==None or l_length==0:
 				   l_b.config(state=DISABLED)	
-				exec("l_b.config(command=lambda:show_tagged('link','"+os.path.dirname(l.getAttribute('filename'))+"','"+tag_xml_path+"'))")
+				l_b.config(command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):show_tagged('link',fcdir,fcdir,fcdir+"/Users/"+Settings['user']+"_comment.xml"))
 
 				wiki_b=create_image_button(Main,".TexFlasher/pictures/wiki.png",None,Main.b_normal,0)
 				wiki_b.grid(row=row_start,column=start_column+6,sticky=N+W+E+S)
 				wiki_length=check_tags(tag_xml_path,"wiki")
 				if wiki_length==None or wiki_length==0:
 				   wiki_b.config(state=DISABLED)	
-				exec("wiki_b.config(command=lambda:show_tagged('wiki','"+os.path.dirname(l.getAttribute('filename'))+"','"+tag_xml_path+"'))")
+				wiki_b.config(command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):show_tagged('wiki',fcdir,fcdir,fcdir+"/Users/"+Settings['user']+"_comment.xml"))
 				start_column+=6
 				
 				#update
@@ -1820,37 +1826,37 @@ def menu():
 					update_image="./.TexFlasher/pictures/update_now.png"
 				else:
 					update_image="./.TexFlasher/pictures/update.png"
+					
 				if l.getAttribute('lastReviewed')==l.getAttribute('created'):
-					exec('button_' + str(row_start)+'_update=create_image_button(Main,"./.TexFlasher/pictures/update_now.png",'+str(Main.b_normal)+','+str(Main.b_normal)+')')
-					exec('button_' + str(row_start)+'_update.configure(command=lambda:update_texfile("'+l.getAttribute('filename')+'", "'+Settings["user"]+'"))')
-					exec('button_' + str(row_start)+'_update.grid(row='+str(row_start)+',column='+str(start_column+2)+',sticky=W+N+S+E)')
-					new_status="DISABLED"
+					update=create_image_button(Main,"./.TexFlasher/pictures/update_now.png",Main.b_normal,Main.b_normal)
+					update.configure(command=lambda tex=l.getAttribute('filename'):update_texfile(tex,Settings["user"]))
+					new_status=DISABLED
 				else:
-					exec('button_' + str(row_start)+'_update=create_image_button(Main,"'+update_image+'",'+str(Main.b_normal)+','+str(Main.b_normal)+')')
-					exec('button_' + str(row_start)+'_update.configure(command=lambda:update_texfile("'+l.getAttribute('filename')+'","'+Settings["user"]+'"))')
-					exec('button_' + str(row_start)+'_update.grid(row='+str(row_start)+',column='+str(start_column+2)+',sticky=W+N+S+E)')		
+					update=create_image_button(Main,update_image,Main.b_normal,Main.b_normal)
+					update.configure(command=lambda tex=l.getAttribute('filename'):update_texfile(tex,Settings["user"]))
+				update.grid(row=row_start,column=start_column+2,sticky=W+N+S+E)
 
 				#stats	
-				exec('button_' + str(row_start)+'_stat=create_image_button(Main,"./.TexFlasher/pictures/stat.png",'+str(Main.b_normal)+','+str(Main.b_normal)+')')
-				exec('button_' + str(row_start)+'_stat.configure(state='+button_status+',command=lambda:statistics_nextWeek("'+os.path.dirname(l.getAttribute('filename'))+'"))')
-				exec('button_' + str(row_start)+'_stat.grid(row='+str(row_start)+',column='+str(start_column+3)+',sticky=N+S+W+E)')
+				stat=create_image_button(Main,"./.TexFlasher/pictures/stat.png",Main.b_normal,Main.b_normal)
+				stat.configure(state=button_status,command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):statistics_nextWeek(fcdir))
+				stat.grid(row=row_start,column=start_column+3,sticky=N+S+W+E)
 				#open tex file
-				exec('button_' + str(row_start)+'_tex =create_image_button(Main,"./.TexFlasher/pictures/latex.png",'+str(Main.b_normal)+','+str(Main.b_normal)+')')
-				exec('button_' + str(row_start)+'_tex.configure(command=lambda:open_tex("'+l.getAttribute('filename')+'"))')
-				exec('button_' + str(row_start)+'_tex.grid(row='+str(row_start)+',column='+str(start_column+4)+',sticky=W+N+S+E)')
+				tex =create_image_button(Main,"./.TexFlasher/pictures/latex.png",Main.b_normal,Main.b_normal)
+				tex.configure(command=lambda texfile=l.getAttribute('filename'):open_tex(texfile))
+				tex.grid(row=row_start,column=start_column+4,sticky=W+N+S+E)
 				#log
-				exec('button_' + str(row_start)+'_log=create_image_button(Main,"./.TexFlasher/pictures/'+window_type+'.png",'+str(Main.b_normal)+','+str(Main.b_normal)+')')
-				exec('button_' + str(row_start) + '_log.configure(state='+new_status+',command=lambda:show_log("'+os.path.dirname(l.getAttribute('filename'))+'"))')
-				exec('button_' + str(row_start)+'_log.grid(row='+str(row_start)+',column='+str(start_column+5)+',sticky=N+S+E+W)')
+				log=create_image_button(Main,"./.TexFlasher/pictures/"+window_type+".png",Main.b_normal,Main.b_normal)
+				log.configure(state=new_status,command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):show_log(fcdir))
+				log.grid(row=row_start,column=start_column+5,sticky=N+S+E+W)
 				#reset
-				exec('button_' + str(row_start)+'_res=create_image_button(Main,"./.TexFlasher/pictures/delete.png",'+str(Main.b_normal)+','+str(Main.b_normal)+')')
-				exec('button_' + str(row_start)+'_res.configure(command=lambda:reset_flash("'+l.getAttribute('filename')+'"))')
-				exec('button_' + str(row_start)+'_res.grid(row='+str(row_start)+',column='+str(start_column+7)+',sticky=N+S+E)')
+				res=create_image_button(Main,"./.TexFlasher/pictures/delete.png",Main.b_normal,Main.b_normal)
+				res.configure(command=lambda texfile=l.getAttribute('filename'):reset_flash(texfile))
+				res.grid(row=row_start,column=start_column+7,sticky=N+S+E)
 				saveString += " "+ os.path.dirname(l.getAttribute('filename'))+"/Users/"+Settings["user"]+".xml"
 				saveString += "###"+ os.path.dirname(l.getAttribute('filename'))+"/Users/"+Settings["user"]+"_comment.xml"
 				#saveString += "###"+ os.path.dirname(l.getAttribute('filename'))+"/Users/questions.xml"
 				saveString += "###"+ l.getAttribute('filename') 
-				exec('Label(Main,height=1).grid(row='+str(row_start+1)+')')
+				Label(Main,height=1).grid(row=row_start+1)
 				row_start+=2	
 
 	toolbar=Frame(Main)

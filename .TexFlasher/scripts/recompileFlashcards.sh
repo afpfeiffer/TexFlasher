@@ -36,9 +36,6 @@ filebase=$(basename $file)
 # get filename without extension
 purefilebase=${filebase%\.*}  
 
-# check if svn is available in subfolder
-svn info $file > /dev/null
-HAVESVN=$?
 
 rm $folder/texFlasher.log
  
@@ -122,11 +119,6 @@ done
 				ts="`date +%s`"
 				echo "changed content: $purename" | tee -a $folder/texFlasher.log
       fi
-    else 
-      # delete files, that are no longer used!
-      rm $folder/Flashcards/old_$purename*
-      rm $folder/Flashcards/$purename.*
-      rm $folder/Flashcards/$purename-*.png
     fi
   done
 

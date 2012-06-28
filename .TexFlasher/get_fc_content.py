@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/python
+# encoding: utf-8
+
 #     This file is part of TexFlasher.
 #     Copyright (c) 2012:
 #          Can Oezmen
@@ -17,38 +19,24 @@
 #     You should have received a copy of the GNU General Public License
 #     along with TexFlasher  If not, see <http://www.gnu.org/licenses/>.
 
+import os
+import sys
+import re
 
-#save files on server
-
-files=$*
-
-if [ -f SAVE ]; then
-	echo "Save"
-else
-	for string in $files; do
-		seperatedFiles="`echo $string | sed -e 's/###/ /g'`"
-		for thing in $seperatedFiles; do
-			if [ -f $thing ]; then
-				ping -c 1 www.google.com>>/dev/null
-				if [ $? -eq  0 ]; then
-					svn add $thing &> /dev/null  
-					svn info $thing &> /dev/null
-					HAVESVN=$?
-					if [ $HAVESVN -eq 0 ]; then
-		# 				echo "svn available for this file"
-						fulldiff="`svn diff $thing`" > /dev/null
-						if [ "$fulldiff" != "" ]; then
-							echo "Save"
-							touch SAVE
-							exit 0
-						fi
-					fi
-				fi
-			fi
-		done
-	# 	else
-	# 		echo "svn unavailable"
-	done
-fi
-	
-exit 0
+def get_content(fcard_tex):
+	try:
+		source_tex=open(fcard_tex,"r")
+	except:
+		print "Fatal Error: Cannot open file: "+fcard_tex+"!"
+		sys.exit()
+	content=False
+	for line in source_tex:
+		if line.lstrip().startswith("%"):
+		    line=source_tex.next()
+		if re.compile('^\\\\begin\{flashcard\}').findall(line.lstrip()) and not content:
+			content=True
+		if content:
+			print line
+		if re.compile('^\\\\end\{flashcard\}').findall(line.lstrip()) and content:
+			break	
+get_content(sys.argv[1])															

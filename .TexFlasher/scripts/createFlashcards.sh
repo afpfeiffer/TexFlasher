@@ -54,10 +54,11 @@ purefilebase=${filebase%\.*}
 FILES="Makefile pdf2jpg_dummy.sh dvi2png_dummy.sh flashcards.cls"
 rm $folder/texFlasher.log
 
+mkdir -p $folder/Diffs &> /dev/null
 # get current versions of files 
 for thing in $FILES; do
 	cp $WD/.TexFlasher/tools/$thing $folder/Flashcards/
-# 	cp $WD/.TexFlasher/tools/$thing $folder/Details/
+	cp $WD/.TexFlasher/tools/$thing $folder/Diffs/
 done
 
 
@@ -128,15 +129,22 @@ else
 					
       else
 				recompile=`echo $recompile + "1" | bc`
-				
 				ts="`date +%s`"
 				echo "changed content: $purename" | tee -a $folder/texFlasher.log
+				
+				python .TexFlasher/get_fc_content.py $folder/Flashcards.tmp/$name > FILEA
+				python .TexFlasher/get_fc_content.py $folder/Flashcards/$name > FILEB
+								
+				if [[ "`diff FILEA FILEB`" != "" ]]; then
+					if [ -f $folder/Diffs/$purename.txt ]; then
+						latexdiff $folder/Diffs/$purename.txt $folder/Flashcards.tmp/$name > $folder/Diffs/diff_$name 2> /dev/null
+					else
+						latexdiff $folder/Flashcards/$name $folder/Flashcards.tmp/$name > $folder/Diffs/diff_$name 2> /dev/null
+						cp $folder/Flashcards/$name $folder/Diffs/$purename.txt
+					fi
+				fi
+				rm FILEA FILEB
       fi
-    else 
-      # delete files, that are no longer used!
-      rm $folder/Flashcards/old_$purename*
-      rm $folder/Flashcards/$purename.*
-      rm $folder/Flashcards/$purename-*.png
     fi
   done
 
@@ -159,6 +167,8 @@ else
       procs="`/usr/sbin/system_profiler -detailLevel full SPHardwareDataType | grep -i 'number of cores' | awk '{ print $5 }'`"
     fi
   make -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|Emergency stop.' | tee -a $folder/texFlasher.log
+  cd $folder/Diffs
+  make -j$procs images 2>&1 < /dev/null &> \dev\null
   cd $WD
     
 #  cd $folder/Details
