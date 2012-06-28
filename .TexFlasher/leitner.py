@@ -1609,8 +1609,8 @@ def reset_flash(filename):
 
 def clear_window():
 	info=Main.grid_info()
-	Main.grid_remove()
-	Main.grid(row=info['row'],column=info['column'])
+	#Main.grid_remove()
+	#Main.grid(row=info['row'],column=info['column'])
 	for widget in Main.grid_slaves():
 		widget.grid_forget()
 
