@@ -989,10 +989,14 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 	menu_button.configure(command=lambda:menu())
 	
 	menu_button.grid(row=1,columnspan=5,sticky=N+W+E+S)
-	vscrollbar = AutoScrollbar(Main)
+	
+	scrollframe=Frame(Main)
+	scrollframe.grid(row=3,column=0)
+	
+	vscrollbar = AutoScrollbar(scrollframe)
 	vscrollbar.grid(row=2, column=2, sticky=N+S)
 	
-	search_canvas = Canvas(Main,yscrollcommand=vscrollbar.set)
+	search_canvas = Canvas(scrollframe,yscrollcommand=vscrollbar.set)
 	search_canvas.grid(row=2, column=0, sticky=N+S+E+W)
 	vscrollbar.config(command=search_canvas.yview)
 	
