@@ -45,6 +45,9 @@ from Tkinter import *
 import tkMessageBox
 import Image, ImageTk
 import tkFileDialog
+import urllib2
+
+
 
 
 #locals
@@ -766,6 +769,8 @@ def get_fc_section(dir,tag,source):
 		if re.compile('name').findall(attr) and not elem.getAttribute(attr)=="None":
 			section_string+=elem.getAttribute(attr)+" "
 	return section_string
+	
+	
 ############################################################### Search ###########################################
 tkinter_umlauts=['odiaeresis', 'adiaeresis', 'udiaeresis', 'Odiaeresis', 'Adiaeresis', 'Udiaeresis', 'ssharp']
 #http://tkinter.unpythonic.net/wiki/AutocompleteEntry
@@ -1515,10 +1520,6 @@ class Flasher:
 
 
 
-
-
-
-
 def update_texfile( fname, user ):	
 	executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+os.path.dirname(fname), True )
 	#executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+fname+" "+os.path.dirname(fname)+"/Users", True )
@@ -1533,32 +1534,32 @@ def update_texfile( fname, user ):
 	
 
 def saveFiles(master):
-	try:
-	  tree = xml.parse("./.TexFlasher/config.xml")
-	  try: 
-		size=tree.getElementsByTagName("size")[0]
-		size.setAttribute("width",str(WIDTH))
-		size.setAttribute("height",str(HEIGHT))
-	  except:
-		parent=tree.getElementsByTagName("config")[0]
-		size=tree.createElement("size")
-		parent.appendChild(size)
-		size.setAttribute("width",str(WIDTH))
-		size.setAttribute("height",str(HEIGHT))
-	  xml_file = open("./.TexFlasher/config.xml", "w","utf-8")
-	  tree.writexml(xml_file)
-	  xml_file.close()	  
-	except:
-	  pass
-	if checkIfNeedToSave( saveString ):
-		if tkMessageBox.askyesno("Save?", "Do you want to save your changes on the server?"):
-			executeCommand( "bash .TexFlasher/scripts/save.sh "+ saveString, True )
-			master.quit()
+		try:
+		  tree = xml.parse("./.TexFlasher/config.xml")
+		  try: 
+			size=tree.getElementsByTagName("size")[0]
+			size.setAttribute("width",str(WIDTH))
+			size.setAttribute("height",str(HEIGHT))
+		  except:
+			parent=tree.getElementsByTagName("config")[0]
+			size=tree.createElement("size")
+			parent.appendChild(size)
+			size.setAttribute("width",str(WIDTH))
+			size.setAttribute("height",str(HEIGHT))
+		  xml_file = open("./.TexFlasher/config.xml", "w","utf-8")
+		  tree.writexml(xml_file)
+		  xml_file.close()	  
+		except:
+		  pass
+		if checkIfNeedToSave( saveString ):
+			if tkMessageBox.askyesno("Save?", "Do you want to save your changes on the server?"):
+				executeCommand( "bash .TexFlasher/scripts/save.sh "+ saveString, True )
+				master.quit()
+			else:
+				master.quit()	
 		else:
-			master.quit()	
-	else:
-		master.quit()
-		
+			master.quit()
+			
 def create_new():
 	file = tkFileDialog.askopenfilename(parent=Main,title='Choose LaTeX file',initialdir='./',defaultextension=".tex",filetypes=[("all files","*.tex")])
 	if file != None and file!="":
