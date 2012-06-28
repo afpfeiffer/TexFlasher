@@ -68,47 +68,51 @@ texthb=$(tput dim) #half bright
 # tput sgr0 : Turn off all attributes (doesn’t work quite as expected)
 rm SAVE &> /dev/null
 
-for thing in $files; do
-# 	echo $thing
-		seperatedFiles="`echo $thing | sed -e 's/###/ /g'`"
-# 		echo $seperatedFiles
-# 		touch $seperatedFiles
- 		svn add $seperatedFiles &> /dev/null  
- 		
-
- 		folder=""
-		for files in $seperatedFiles; do
-			folder=$(dirname $files)
-		done
-
-		svn info $folder &> /dev/null
- 		
-		HAVESVN=$?
-		if [ $HAVESVN -eq 0 ]; then
-			echo "processing: "
-			for files in $seperatedFiles; do
-				fulldiff="`svn diff $files`" > /dev/null
-				if [ "$fulldiff" == "" ]; then			
-					echo "  -> ${texthb}$files ${txtrst}"
-				else
-					echo "  -> ${txtclr}${txtbld}$files ${txtrst} "
-				fi
-			done
+ping -c 1 www.google.com>>/dev/null
+if [ $? -eq  0 ]; then
+	for thing in $files; do
+	# 	echo $thing
+			seperatedFiles="`echo $thing | sed -e 's/###/ /g'`"
+	# 		echo $seperatedFiles
+	# 		touch $seperatedFiles
+			svn add $seperatedFiles &> /dev/null  
 			
-			for files in $seperatedFiles; do
-				fulldiff="`svn diff $files`" > /dev/null			
-			
-#	 				echo "svn available for this file"
-				if [ "$fulldiff" != "" ]; then
-					echo "${texthb}`svn up $files`${txtrst}"
-					echo "${txtclr}${txtbld}`svn commit $files -m 'save learning progress'`${txtrst}"
-# 				else
-# 					echo "$files unchanged"
 
-				fi	
+			folder=""
+			for files in $seperatedFiles; do
+				folder=$(dirname $files)
 			done
-		fi
-		echo
-done
-# sleep 20
+
+			svn info $folder &> /dev/null
+			
+			HAVESVN=$?
+			if [ $HAVESVN -eq 0 ]; then
+				echo "processing: "
+				for files in $seperatedFiles; do
+					fulldiff="`svn diff $files`" > /dev/null
+					if [ "$fulldiff" == "" ]; then			
+						echo "  -> ${texthb}$files ${txtrst}"
+					else
+						echo "  -> ${txtclr}${txtbld}$files ${txtrst} "
+					fi
+				done
+				
+				for files in $seperatedFiles; do
+					fulldiff="`svn diff $files`" > /dev/null			
+				
+	#	 				echo "svn available for this file"
+					if [ "$fulldiff" != "" ]; then
+						echo "${texthb}`svn up $files`${txtrst}"
+						echo "${txtclr}${txtbld}`svn commit $files -m 'save learning progress'`${txtrst}"
+	# 				else
+	# 					echo "$files unchanged"
+
+					fi	
+				done
+			fi
+			echo
+	done
+else
+	echo "Error: no internet connection available!"
+fi
 exit 0

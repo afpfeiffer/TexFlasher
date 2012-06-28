@@ -20,45 +20,46 @@
 
 files=$*
 
-for thing in $files; do
-	svn info $thing &> /dev/null
-	HAVESVN=$?
-	if [ $HAVESVN -eq 0 ]; then
-# 		echo "svn available for this file"
-		folder=$(dirname $thing)
-		filebase=$(basename $thing)
-		# get filename without extension
-		purefilebase=${filebase%\.*} 
+ping -c 1 www.google.com>>/dev/null
+if [ $? -eq  0 ]; then		
+	for thing in $files; do
+		svn info $thing &> /dev/null
+		HAVESVN=$?
+		if [ $HAVESVN -eq 0 ]; then
+	# 		echo "svn available for this file"
+			folder=$(dirname $thing)
+			filebase=$(basename $thing)
+			# get filename without extension
+			purefilebase=${filebase%\.*} 
 		
-		if [ ! -f $folder/Flashcards/UPDATE ]; then
-			if [[ ! -f $folder/Flashcards/$purefilebase.bak ]]; then
-				touch $folder/Flashcards/$purefilebase.bak
-				echo "" > $folder/Flashcards/UPDATE
-				exit 0
-			else
-				if [[ "`diff $folder/Flashcards/$purefilebase.bak $thing`" != "" ]]; then
+			if [ ! -f $folder/Flashcards/UPDATE ]; then
+				if [[ ! -f $folder/Flashcards/$purefilebase.bak ]]; then
+					touch $folder/Flashcards/$purefilebase.bak
 					echo "" > $folder/Flashcards/UPDATE
-# 					echo "`date`: files changed"
+					exit 0
+				else
+					if [[ "`diff $folder/Flashcards/$purefilebase.bak $thing`" != "" ]]; then
+						echo "" > $folder/Flashcards/UPDATE
+	# 					echo "`date`: files changed"
 
+						exit 0
+					fi
+				fi
+			
+				ownRev="`svn info $thing | grep Revision: | cut -d " " -f 2`"
+	#	 		echo $ownRev
+				server="`svn info $thing| grep 'URL' | cut -d " " -f 2`"
+				serverRev="`svn info $server | grep Revision: | cut -d " " -f 2`"
+	#	 		echo $serverRev
+				if [ "$serverRev" != "$ownRev" ]; then
+	# 				echo svn info $server | grep "Last Changed Author:" | cut -d ":" -f 2 | cut -d " " -f 2 > $folder/Flashcards/UPDATE
+	# 				echo "`date`: revisions differ: $serverRev, $ownRev"
+					echo "" > $folder/Flashcards/UPDATE
 					exit 0
 				fi
 			fi
-			
-			ownRev="`svn info $thing | grep Revision: | cut -d " " -f 2`"
-#	 		echo $ownRev
-			server="`svn info $thing| grep 'URL' | cut -d " " -f 2`"
-			serverRev="`svn info $server | grep Revision: | cut -d " " -f 2`"
-#	 		echo $serverRev
-			if [ "$serverRev" != "$ownRev" ]; then
-# 				echo svn info $server | grep "Last Changed Author:" | cut -d ":" -f 2 | cut -d " " -f 2 > $folder/Flashcards/UPDATE
-# 				echo "`date`: revisions differ: $serverRev, $ownRev"
-				echo "" > $folder/Flashcards/UPDATE
-				exit 0
-			fi
 		fi
-	fi
-# 	else
-# 		echo "svn unavailable"
-done
+	done
+fi
 
 exit 0

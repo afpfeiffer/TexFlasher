@@ -36,9 +36,6 @@ filebase=$(basename $file)
 # get filename without extension
 purefilebase=${filebase%\.*}  
 
-# check if svn is available in subfolder
-svn info $file > /dev/null
-HAVESVN=$?
 
 rm $folder/texFlasher.log
  
