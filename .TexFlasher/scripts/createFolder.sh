@@ -25,10 +25,6 @@ fi
 
 foldername=$1
 
-echo "IMPORTANT: The folder you are about to create will not be managed by svn."
-echo "           You will not have the possibility to share this folder with   "
-echo "           your friends or colleagues."
-echo 
 
 if [ -d "$foldername" ]; then 
 	echo "Error: $foldername already exists."
