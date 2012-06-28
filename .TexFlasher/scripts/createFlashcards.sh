@@ -129,11 +129,21 @@ else
 					
       else
 				recompile=`echo $recompile + "1" | bc`
-				
 				ts="`date +%s`"
 				echo "changed content: $purename" | tee -a $folder/texFlasher.log
-				latexdiff $folder/Flashcards/$name $folder/Flashcards.tmp/$name > $folder/Diffs/$name &> /dev/null
-
+				
+				python .TexFlasher/get_fc_content.py $folder/Flashcards.tmp/$name > FILEA
+				python .TexFlasher/get_fc_content.py $folder/Flashcards/$name > FILEB
+								
+				if [[ "`diff FILEA FILEB`" != "" ]]; then
+					if [ -f $folder/Diffs/$purename.txt ]; then
+						latexdiff $folder/Diffs/$purename.txt $folder/Flashcards.tmp/$name > $folder/Diffs/diff_$name 2> /dev/null
+					else
+						latexdiff $folder/Flashcards/$name $folder/Flashcards.tmp/$name > $folder/Diffs/diff_$name 2> /dev/null
+						cp $folder/Flashcards/$name $folder/Diffs/$purename.txt
+					fi
+				fi
+				rm FILEA FILEB
       fi
     fi
   done
