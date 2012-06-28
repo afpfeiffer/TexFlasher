@@ -122,11 +122,6 @@ done
 				ts="`date +%s`"
 				echo "changed content: $purename" | tee -a $folder/texFlasher.log
       fi
-    else 
-      # delete files, that are no longer used!
-      rm $folder/Flashcards/old_$purename*
-      rm $folder/Flashcards/$purename.*
-      rm $folder/Flashcards/$purename-*.png
     fi
   done
 
