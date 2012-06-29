@@ -163,7 +163,7 @@ else
     fi
   make -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|Emergency stop.' | tee -a $folder/texFlasher.log
   cd $folder/Diffs
-  make -j$procs images 2>&1 < /dev/null &> /dev/null
+  make -i -j$procs images 2>&1 < /dev/null &> /dev/null
   cp *.png Flashcards/
   cd $WD
     
