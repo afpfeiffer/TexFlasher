@@ -136,12 +136,7 @@ else
 				python .TexFlasher/get_fc_content.py $folder/Flashcards/$name > FILEB
 								
 				if [[ "`diff FILEA FILEB`" != "" ]]; then
-					if [ -f $folder/Diffs/$purename.txt ]; then
-						latexdiff $folder/Diffs/$purename.txt $folder/Flashcards.tmp/$name > $folder/Diffs/diff_$name 2> /dev/null
-					else
-						latexdiff $folder/Flashcards/$name $folder/Flashcards.tmp/$name > $folder/Diffs/diff_$name 2> /dev/null
-						cp $folder/Flashcards/$name $folder/Diffs/$purename.txt
-					fi
+					latexdiff $folder/Flashcards/$name $folder/Flashcards.tmp/$name > $folder/Diffs/diff_$name 2> /dev/null
 				fi
 				rm FILEA FILEB
       fi
