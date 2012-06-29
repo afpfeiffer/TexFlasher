@@ -52,7 +52,7 @@ purefilebase=${filebase%\.*}
 # fi
 
 FILES="Makefile pdf2jpg_dummy.sh dvi2png_dummy.sh flashcards.cls"
-rm $folder/texFlasher.log
+rm $folder/texFlasher.log &> /dev/null
 
 mkdir -p $folder/Diffs/Flashcards &> /dev/null
 # get current versions of files 
@@ -88,7 +88,7 @@ else
 	cd $WD
 	# create a temprorary folder for flashcards. make sure its empty
 	if [ -d "$folder/Flashcards.tmp" ]; then 
-		rm -rf $folder/Flashcards.tmp
+		rm -rf $folder/Flashcards.tmp &> /dev/null
 	fi
   
 	mkdir $folder/Flashcards.tmp
@@ -121,7 +121,7 @@ else
         # file has not changed, we don't want it to be overwritten
         # (not even by identical file) in order to preserve the timestamp
         # which is important for the Makefile
-        rm $folder/Flashcards.tmp/$name
+        rm $folder/Flashcards.tmp/$name &> /dev/null
         if [ ! -f $folder/Flashcards/$purename.dvi ]; then
 					compilenumber=`echo $compilenumber + "1" | bc`
 				fi
@@ -138,7 +138,7 @@ else
 				if [[ "`diff FILEA FILEB`" != "" ]]; then
 					latexdiff $folder/Flashcards/$name $folder/Flashcards.tmp/$name > $folder/Diffs/diff_$name 2> /dev/null
 				fi
-				rm FILEA FILEB
+				rm FILEA FILEB &> /dev/null
       fi
     fi
   done
@@ -148,7 +148,7 @@ else
   newnumber=`echo $compilenumber - $recompile | bc`
   
   cp $folder/Flashcards.tmp/* $folder/Flashcards/ 2> /dev/null
-  rm -r $folder/Flashcards.tmp
+  rm -r $folder/Flashcards.tmp &> /dev/null
   
   cd $folder/Flashcards
   echo "compiling card(s):" | tee -a $folder/texFlasher.log
