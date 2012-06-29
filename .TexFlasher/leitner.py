@@ -1022,6 +1022,8 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 	buttons_frame=Frame(Main)
 	buttons_frame.grid(row=0)
 	Label(buttons_frame,font=("Sans",Main.f_normal,"bold"),text="Found "+str(len(fcs))+":").grid(row=0,column=0)
+	diff_b=Button(buttons_frame,bd=0,font=("Sans",Main.f_normal),text="loading Diff(s)")
+	diff_b.grid(row=0,column=1)	
 	i=2
 	for dir in folders:
 	    b=Button(buttons_frame,bd=0,font=("Sans",Main.f_normal),text=str(folders[dir]['count'])+" in "+dir.split("/")[-1],command=lambda data=folders[dir]:display_mult_fcs(data["fcs"],title,folders))
@@ -1056,10 +1058,12 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 			button.bind('<Button-5>', lambda event: search_canvas.yview_scroll(1, UNITS))
 			button.bind('<Enter>',lambda event,data=res,b=button: show_backside(b,data['tag'],data['dir']+"/Flashcards/"+data['tag']+"-2.png",size,int(size*0.6)))
 			button.bind('<Leave>',lambda event,data=res,b=button: show_backside(b,data['tag'],data['dir']+"/Flashcards/"+data['tag']+"-1.png",size,int(size*0.6)))
-			if os.path.isfile(res['dir']+"/Flashcards/diff_"+res['tag']+"-1.png"):
-			  diff=res
+			if os.path.isfile(res['dir']+"/Diffs/Flashcards/diff_"+res['tag']+"-1.png"):
+			  diff=dict(res)
 			  diff['tag']="diff_"+diff['tag']
+			  diff['dir']=diff['dir']+"/Diffs"
 			  diffs.append(diff)
+			  
 			dist=Label(Search_frame,height=1).grid(row=str(i+2),column=colu)
 			setattr(search_canvas,res['tag']+res['dir'],button.img)
 			Search_frame.update()
@@ -1068,8 +1072,9 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 		search_canvas.config(scrollregion=search_canvas.bbox("all"),width=Main.winfo_width()-40,height=Main.winfo_height()-80)
 
 	if len(diffs)>0:
-	  Button(buttons_frame,bd=0,font=("Sans",Main.f_normal),text=str(len(diffs))+" Diff(s)",command=lambda:display_mult_fcs(diffs,title)).grid(row=0,column=1)
-
+	  diff_b.config(text=str(len(diffs))+" Diff(s)",command=lambda:display_mult_fcs(diffs,"Diff(s): "+title))
+	else:
+	  diff_b.grid_forget()
 	  
 def  disp_single_fc(image_path,tag,title=None):
 	# create child window
