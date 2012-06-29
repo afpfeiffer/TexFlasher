@@ -1018,10 +1018,11 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 	      folders[elem['dir']]['fcs'].append(elem)
 	    except:
 	      folders[elem['dir']]={"count":1,"fcs":[elem],"dir":elem['dir']}
-	i=1
+
 	buttons_frame=Frame(Main)
 	buttons_frame.grid(row=0)
 	Label(buttons_frame,font=("Sans",Main.f_normal,"bold"),text="Found "+str(len(fcs))+":").grid(row=0,column=0)
+	i=2
 	for dir in folders:
 	    b=Button(buttons_frame,bd=0,font=("Sans",Main.f_normal),text=str(folders[dir]['count'])+" in "+dir.split("/")[-1],command=lambda data=folders[dir]:display_mult_fcs(data["fcs"],title,folders))
 	    b.grid(row=0,column=i)
@@ -1040,7 +1041,7 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 		back=IK.get_image(path,width,height)
 		button.config(image=back)
 		button.img=back
-
+	diffs=[]
 	for res in iterator:
 		for colu in images_row:
 			if colu>images_row[0]:
@@ -1055,7 +1056,10 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 			button.bind('<Button-5>', lambda event: search_canvas.yview_scroll(1, UNITS))
 			button.bind('<Enter>',lambda event,data=res,b=button: show_backside(b,data['tag'],data['dir']+"/Flashcards/"+data['tag']+"-2.png",size,int(size*0.6)))
 			button.bind('<Leave>',lambda event,data=res,b=button: show_backside(b,data['tag'],data['dir']+"/Flashcards/"+data['tag']+"-1.png",size,int(size*0.6)))
-			
+			if os.path.isfile(res['dir']+"/Flashcards/diff_"+res['tag']+"-1.png"):
+			  diff=res
+			  diff['tag']="diff_"+diff['tag']
+			  diffs.append(diff)
 			dist=Label(Search_frame,height=1).grid(row=str(i+2),column=colu)
 			setattr(search_canvas,res['tag']+res['dir'],button.img)
 			Search_frame.update()
@@ -1063,8 +1067,10 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 		Search_frame.update()
 		search_canvas.config(scrollregion=search_canvas.bbox("all"),width=Main.winfo_width()-40,height=Main.winfo_height()-80)
 
+	if len(diffs)>0:
+	  Button(buttons_frame,bd=0,font=("Sans",Main.f_normal),text=str(len(diffs))+" Diff(s)",command=lambda:display_mult_fcs(diffs,title)).grid(row=0,column=1)
 
-
+	  
 def  disp_single_fc(image_path,tag,title=None):
 	# create child window
 	win = Toplevel()
@@ -1080,76 +1086,78 @@ def  disp_single_fc(image_path,tag,title=None):
 	flashcard = ImageTk.PhotoImage(image)
 	c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard)	
 	c.img=flashcard
-	edit_b=create_image_button(win,"./.TexFlasher/pictures/latex.png",None,Main.b_normal)
-	edit_b.grid(row=1,column=1,sticky=N+E+W+S)
+	if not tag.startswith("diff_"):
+	  edit_b=create_image_button(win,"./.TexFlasher/pictures/latex.png",None,Main.b_normal)
+	  edit_b.grid(row=1,column=1,sticky=N+E+W+S)
 
-	save_b=create_image_button(win,".TexFlasher/pictures/upload_now.png",None,Main.b_normal)
-	save_b.config(state=DISABLED)
-	save_b.grid(row=1, column=2,sticky=W+S+E+N)	
+	  save_b=create_image_button(win,".TexFlasher/pictures/upload_now.png",None,Main.b_normal)
+	  save_b.config(state=DISABLED)
+	  save_b.grid(row=1, column=2,sticky=W+S+E+N)	
 	
-	clear_b=create_image_button(win,".TexFlasher/pictures/clear.png",None,Main.b_normal)
-	clear_b.configure(state=DISABLED)
-	clear_b.grid(row=1, column=3,columnspan=2,sticky=E+S+W+N)		
+	  clear_b=create_image_button(win,".TexFlasher/pictures/clear.png",None,Main.b_normal)
+	  clear_b.configure(state=DISABLED)
+	  clear_b.grid(row=1, column=3,columnspan=2,sticky=E+S+W+N)		
 
-	edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,os.path.dirname(image_path).replace("/Flashcards",""),tag))
+	  edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,os.path.dirname(image_path).replace("/Flashcards",""),tag))
 	
-	back_b=create_image_button(win,".TexFlasher/pictures/back.png",None,Main.b_normal)
-	back_b.grid(row=1, column=0,sticky=W+N+E+S)		
-	back_b.config(command=lambda: win.destroy())
+	  back_b=create_image_button(win,".TexFlasher/pictures/back.png",None,Main.b_normal)
+	  back_b.grid(row=1, column=0,sticky=W+N+E+S)		
+	  back_b.config(command=lambda: win.destroy())
 	
-	c.save_b=save_b
-	c.clear_b=clear_b
-	c.edit_b=edit_b	
-	c.back_b=back_b
-	create_comment_canvas(c,os.path.dirname(image_path)+"/../",tag,Settings['user'])
+	  c.save_b=save_b
+	  c.clear_b=clear_b
+	  c.edit_b=edit_b	
+	  c.back_b=back_b
+	  create_comment_canvas(c,os.path.dirname(image_path)+"/../",tag,Settings['user'])
 
-	c.fc_row=3
-	c.tag_buttons=[]
-	q_b=create_image_button(win,".TexFlasher/pictures/question_fix.png",None,Main.b_normal)
-	q_b.grid(row=c.fc_row,column=4,sticky=N)
-	#q_b.grid_remove()
-	c.q_b=q_b
-	w_b=create_image_button(win,".TexFlasher/pictures/watchout_fix.png",None,Main.b_normal)
-	w_b.grid(row=c.fc_row+1,column=4)
-	#w_b.grid_remove()
-	c.w_b=w_b
-	r_b=create_image_button(win,".TexFlasher/pictures/repeat_fix.png",None,Main.b_normal)
+	  c.fc_row=3
+	  c.tag_buttons=[]
+	  q_b=create_image_button(win,".TexFlasher/pictures/question_fix.png",None,Main.b_normal)
+	  q_b.grid(row=c.fc_row,column=4,sticky=N)
+	  #q_b.grid_remove()
+	  c.q_b=q_b
+	  w_b=create_image_button(win,".TexFlasher/pictures/watchout_fix.png",None,Main.b_normal)
+	  w_b.grid(row=c.fc_row+1,column=4)
+	  #w_b.grid_remove()
+	  c.w_b=w_b
+	  r_b=create_image_button(win,".TexFlasher/pictures/repeat_fix.png",None,Main.b_normal)
 
-	r_b.grid(row=c.fc_row+2,column=4)
-	#r_b.grid_remove()
-	c.r_b=r_b
-	l_b=create_image_button(win,".TexFlasher/pictures/link_fix.png",None,Main.b_normal)
+	  r_b.grid(row=c.fc_row+2,column=4)
+	  #r_b.grid_remove()
+	  c.r_b=r_b
+	  l_b=create_image_button(win,".TexFlasher/pictures/link_fix.png",None,Main.b_normal)
 
-	l_b.grid(row=c.fc_row+3,column=4)		    
-	#l_b.grid_remove()
-	c.l_b=l_b
+	  l_b.grid(row=c.fc_row+3,column=4)		    
+	  #l_b.grid_remove()
+	  c.l_b=l_b
 
-	wi_b=create_image_button(win,".TexFlasher/pictures/wiki.png",None,Main.b_normal)
+	  wi_b=create_image_button(win,".TexFlasher/pictures/wiki.png",None,Main.b_normal)	
 
-	wi_b.grid(row=c.fc_row+4,column=4,sticky=S)		    
-	#l_b.grid_remove()
-	c.wi_b=wi_b	
+	  wi_b.grid(row=c.fc_row+4,column=4,sticky=S)		    
+	  #l_b.grid_remove()
+	  c.wi_b=wi_b	
 	
-	c.tag_buttons=[q_b,w_b,r_b,l_b,wi_b]	
+	  c.tag_buttons=[q_b,w_b,r_b,l_b,wi_b]	
 	
-	c.l_b.config(command=c.rect.link_tag)
-	c.r_b.config(command=c.rect.repeat_tag)
-	c.w_b.config(command=c.rect.watchout_tag)
-	c.q_b.config(command=c.rect.question_tag)
-	c.wi_b.config(command=c.rect.wiki_tag)
+	  c.l_b.config(command=c.rect.link_tag)
+	  c.r_b.config(command=c.rect.repeat_tag)
+	  c.w_b.config(command=c.rect.watchout_tag)
+	  c.q_b.config(command=c.rect.question_tag)
+	  c.wi_b.config(command=c.rect.wiki_tag)
 	
-	ldb=load_leitner_db(os.path.dirname(image_path)+"/../",Settings["user"])
-	fc_info=get_fc_info(os.path.dirname(image_path)+"/../",tag,ldb,None)
-	pagemarker=fc_info["source"].getAttribute("pagemarker")
-	Label(win,text="Page: "+pagemarker+", Created: "+fc_info["ldb"].getAttribute("created"),font=("Sans",Main.f_normal)).grid(row=c.fc_row+5,columnspan=5)
-	stat_height=Main.b_normal
-	stat_width=int(float(WIDTH)*0.95)
-	stat=Canvas(win,width=stat_width, height=stat_height)
-	stat.grid(row=2, columnspan=5)
-	stat.height=stat_height
-	stat.width=stat_width
-	c.stat=stat	
-	drawCardHistory( ldb.getElementsByTagName(tag)[0], c.stat )
+	  ldb=load_leitner_db(os.path.dirname(image_path)+"/../",Settings["user"])
+	  fc_info=get_fc_info(os.path.dirname(image_path)+"/../",tag,ldb,None)
+	  pagemarker=fc_info["source"].getAttribute("pagemarker")
+	  Label(win,text="Page: "+pagemarker+", Created: "+fc_info["ldb"].getAttribute("created"),font=("Sans",Main.f_normal)).grid(row=c.fc_row+5,columnspan=5)
+	  stat_height=Main.b_normal
+	  stat_width=int(float(WIDTH)*0.95)
+	  stat=Canvas(win,width=stat_width, height=stat_height)
+	  stat.grid(row=2, columnspan=5)
+	  stat.height=stat_height
+	  stat.width=stat_width
+	  c.stat=stat
+	
+	  drawCardHistory( ldb.getElementsByTagName(tag)[0], c.stat )
 
 
 
