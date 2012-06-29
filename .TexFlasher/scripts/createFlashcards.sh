@@ -54,11 +54,11 @@ purefilebase=${filebase%\.*}
 FILES="Makefile pdf2jpg_dummy.sh dvi2png_dummy.sh flashcards.cls"
 rm $folder/texFlasher.log
 
-mkdir -p $folder/Diffs &> /dev/null
+mkdir -p $folder/Diffs/Flashcards &> /dev/null
 # get current versions of files 
 for thing in $FILES; do
 	cp $WD/.TexFlasher/tools/$thing $folder/Flashcards/
-	cp $WD/.TexFlasher/tools/$thing $folder/Diffs/
+	cp $WD/.TexFlasher/tools/$thing $folder/Diffs/Flashcards/
 done
 
 
@@ -136,7 +136,7 @@ else
 				python .TexFlasher/get_fc_content.py $folder/Flashcards/$name > FILEB
 								
 				if [[ "`diff FILEA FILEB`" != "" ]]; then
-					latexdiff $folder/Flashcards/$name $folder/Flashcards.tmp/$name > $folder/Diffs/diff_$name 2> /dev/null
+					latexdiff $folder/Flashcards/$name $folder/Flashcards.tmp/$name > $folder/Diffs/Flashcards/diff_$name 2> /dev/null
 				fi
 				rm FILEA FILEB
       fi
@@ -162,9 +162,8 @@ else
       procs="`/usr/sbin/system_profiler -detailLevel full SPHardwareDataType | grep -i 'number of cores' | awk '{ print $5 }'`"
     fi
   make -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|Emergency stop.' | tee -a $folder/texFlasher.log
-  cd $folder/Diffs
-  make -j$procs images 2>&1 < /dev/null &> \dev\null
-  cp *.png ../Flashcards/
+  cd $folder/Diffs/Flashcards
+  make -j$procs images 2>&1 < /dev/null &> /dev/null
   cd $WD
     
 #  cd $folder/Details
