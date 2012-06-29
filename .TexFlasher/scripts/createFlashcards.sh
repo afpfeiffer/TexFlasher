@@ -137,9 +137,9 @@ else
 								
 				if [[ "`diff FILEA FILEB`" != "" ]]; then
 					if [ -f $folder/Diffs/$purename.txt ]; then
-						latexdiff $folder/Diffs/$purename.txt $folder/Flashcards.tmp/$name > $folder/Flashcards/diff_$name 2> /dev/null
+						latexdiff $folder/Diffs/$purename.txt $folder/Flashcards.tmp/$name > $folder/Diffs/diff_$name 2> /dev/null
 					else
-						latexdiff $folder/Flashcards/$name $folder/Flashcards.tmp/$name > $folder/Flashcards/diff_$name 2> /dev/null
+						latexdiff $folder/Flashcards/$name $folder/Flashcards.tmp/$name > $folder/Diffs/diff_$name 2> /dev/null
 						cp $folder/Flashcards/$name $folder/Diffs/$purename.txt
 					fi
 				fi
@@ -167,6 +167,9 @@ else
       procs="`/usr/sbin/system_profiler -detailLevel full SPHardwareDataType | grep -i 'number of cores' | awk '{ print $5 }'`"
     fi
   make -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|Emergency stop.' | tee -a $folder/texFlasher.log
+  cd $folder/Diffs
+  make -j$procs images 2>&1 < /dev/null &> \dev\null
+  cp *.png ../Flashcards/
   cd $WD
     
 #  cd $folder/Details
