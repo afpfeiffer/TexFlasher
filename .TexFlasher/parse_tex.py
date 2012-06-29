@@ -151,7 +151,7 @@ def parse_tex(fcard_dir,source_path):
 					sys.exit()			
 			except:
 				sys.exit()
-			element=doc.createElement(fcard_title)
+			order_element=doc.createElement(fcard_title)
 			order_db.appendChild(element)
 			#check for doubles
 			if fcard_title in fcards:
@@ -216,7 +216,7 @@ def parse_tex(fcard_dir,source_path):
 			fcards[fcard_title]+="%#end_content#%\n\end{flashcard}\n"
 			#check if flashcard is ok
 			if re.compile('\\\\begin{flashcard}').findall(fcards[fcard_title]) and re.compile('\\\\end{flashcard}').findall(fcards[fcard_title]):
-				element.setAttribute('position',str(counter))
+				order_element.setAttribute('position',str(counter))
 				counter+=1
 				fcard_title=""
 				fcard_desc=""
