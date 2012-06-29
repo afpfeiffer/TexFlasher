@@ -1498,7 +1498,8 @@ class Flasher:
 		pagemarker=self.c.source.getElementsByTagName(flashcard_name)[0].getAttribute('pagemarker') #PAGE IN ORIGINAL
 		if pagemarker==None:
 			pagemarker="unset"
-		fc_pos=int(self.c.order.getElementsByTagName(flashcard_name)[0].getAttribute('position'))
+		print self.c.order.getElementsByTagName(flashcard_name)[0].getAttribute("position")
+		fc_pos=1#int(self.c.order.getElementsByTagName(flashcard_name)[0].getAttribute('position'))
 	
 		self.c.fc_det_left.set("Flashcards (left / total): "+str(flashcardsTodo-listPosition)+" / "+str(totalNumberCards))	
 	   	self.c.fc_det_right.set("Tag: "+flashcard_name+", Nr.: "+str(fc_pos)+", Page: "+str(pagemarker))

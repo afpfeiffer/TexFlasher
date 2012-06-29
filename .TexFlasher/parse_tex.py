@@ -152,7 +152,7 @@ def parse_tex(fcard_dir,source_path):
 			except:
 				sys.exit()
 			order_element=doc.createElement(fcard_title)
-			order_db.appendChild(element)
+			order_db.appendChild(order_element)
 			#check for doubles
 			if fcard_title in fcards:
 				print "Fatal Error: flashcard_marker "+fcard_title+" used multiple times!"
@@ -197,9 +197,9 @@ def parse_tex(fcard_dir,source_path):
 						try:
 							fcards[fcard_title]="\\begin{flashcard}{"+fc_section+"\n\\begin{"+matches[0][0]+"}[\\textbf{"+matches[0][1]+"}]\\end{"+matches[0][0]+"}}\n\\flushleft\n\\footnotesize\n%#begin_content#%\n"
 							fcards_header[fcard_title]=fc_header
-							element.setAttribute('name',matches[0][1])
-							element.setAttribute('theorem_type',matches[0][0])							
-							element.setAttribute('theorem_name',theorems[matches[0][0]])							
+							order_element.setAttribute('name',matches[0][1])
+							order_element.setAttribute('theorem_type',matches[0][0])							
+							order_element.setAttribute('theorem_name',theorems[matches[0][0]])							
 						except:
 							print "Note: No theorem type found for flashcard_marker "+fcard_title
 							fcards[fcard_title]="\\begin{flashcard}{"+matches[0][1]+"}\n\\flushleft\n\\footnotesize\n%#begin_content#%\n"					
@@ -212,7 +212,7 @@ def parse_tex(fcard_dir,source_path):
 			else:		
 				fcards[fcard_title]+=line				
 		#check if we are at the end of a flashcard!
-		elif fcard_title!="" and re.compile('^\\\\end{'+fcard_desc+'}').findall(line.lstrip()):
+		elif fcard_title!="":
 			fcards[fcard_title]+="%#end_content#%\n\end{flashcard}\n"
 			#check if flashcard is ok
 			if re.compile('\\\\begin{flashcard}').findall(fcards[fcard_title]) and re.compile('\\\\end{flashcard}').findall(fcards[fcard_title]):
@@ -229,11 +229,6 @@ def parse_tex(fcard_dir,source_path):
 				fcard_desc=""
 	source_tex.close()
 
-	
-	#
-	
-	
-	
 	#create flashcard tex files
 	if len(fcards)>0:		
 		for fcard in fcards:
