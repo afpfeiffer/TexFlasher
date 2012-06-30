@@ -86,11 +86,11 @@ else
 	fi
 	python $WD/.TexFlasher/diviasm.py source.dvi > source.dump	
 	cd $WD
+
 	# create a temprorary folder for flashcards. make sure its empty
 	if [ -d "$folder/Flashcards.tmp" ]; then 
 		rm -rf $folder/Flashcards.tmp &> /dev/null
 	fi
-  
 	mkdir $folder/Flashcards.tmp
   
   echo "parsing ..." | tee  $folder/texFlasher.log
@@ -129,18 +129,20 @@ else
 					
       else
 				recompile=`echo $recompile + "1" | bc`
-				ts="`date +%s`"
-				echo "changed content: $purename" | tee -a $folder/texFlasher.log
 				
 				python .TexFlasher/get_fc_content.py $folder/Flashcards.tmp/$name > FILEA
 				python .TexFlasher/get_fc_content.py $folder/Flashcards/$name > FILEB
 								
 				if [[ "`diff FILEA FILEB`" != "" ]]; then
 					latexdiff $folder/Flashcards/$name $folder/Flashcards.tmp/$name > $folder/Diffs/diff_$name 2> /dev/null
+					echo "changed content: $purename" | tee -a $folder/texFlasher.log
 				fi
+				
 				rm FILEA FILEB &> /dev/null
       fi
-    fi
+    else
+			rm $folder/Flashcards/$purename* 2> /dev/null
+		fi
   done
 
   listnumber="`ls -1 $folder/Flashcards.tmp/ | wc -l`"
@@ -150,17 +152,20 @@ else
   cp $folder/Flashcards.tmp/* $folder/Flashcards/ 2> /dev/null
   rm -r $folder/Flashcards.tmp &> /dev/null
   
+  procs=1
+  if [ "`uname`" == "Linux" ] ; then
+    procs="`grep -c processor /proc/cpuinfo`"
+  elif [ "`uname`" == "Darwin" ] ; then
+    procs="`/usr/sbin/system_profiler -detailLevel full SPHardwareDataType | grep -i 'number of cores' | awk '{ print $5 }'`"
+  fi
+  
+  
   cd $folder/Flashcards
   echo "compiling card(s):" | tee -a $folder/texFlasher.log
-	echo "  -> $recompile card(s) with changed content" | tee -a $folder/texFlasher.log
+	echo "  -> $recompile card(s) with changed content/header" | tee -a $folder/texFlasher.log
 	echo "  -> $newnumber new card(s)" | tee -a $folder/texFlasher.log
-  echo "please wait, this can take several minutes..."
-	procs=1
-    if [ "`uname`" == "Linux" ] ; then
-      procs="`grep -c processor /proc/cpuinfo`"
-    elif [ "`uname`" == "Darwin" ] ; then
-      procs="`/usr/sbin/system_profiler -detailLevel full SPHardwareDataType | grep -i 'number of cores' | awk '{ print $5 }'`"
-    fi
+  echo "Starting compilation on $procs processor(s). Please wait, this can take several minutes..."
+	
   make -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|Emergency stop.' | tee -a $folder/texFlasher.log
   cd $folder/Diffs
   make -i -j$procs images 2>&1 < /dev/null &> /dev/null
