@@ -989,6 +989,53 @@ def create_image_button(window,path,width=None,height=None,border=None):
 	return button
 
 
+class display_multiple:
+	def __init__( self, fcs, title,folders ):
+		Frame.__init__( self)
+		self.fcs=fcs
+		self.title=title
+		self.folders=folders
+		self.images_per_row=3
+		self.fcs_size=Main.winfo_width()/len(self.images_per_row)-40
+		self.current_row=0
+		self.current_column=0
+		self.diffs=[]
+
+		Main.master.title(Main._title_base+" "+Main._version+" - "+title)
+		menu_button=create_image_button(Main,".TexFlasher/pictures/menu.png",None,Main.b_normal)
+		menu_button.configure(command=lambda:menu())
+		menu_button.grid(row=1,columnspan=5,sticky=N+W+E+S)
+		
+		scrollframe=Frame(self)
+		scrollframe.grid(row=3,column=0)	
+		vscrollbar = AutoScrollbar(scrollframe)
+		vscrollbar.grid(row=2, column=2, sticky=N+S)	
+		self.search_canvas = Canvas(scrollframe,yscrollcommand=vscrollbar.set)
+		self.search_canvas.grid(row=2, column=0, sticky=N+S+E+W)
+		vscrollbar.config(command=self.search_canvas.yview)	
+		self.Search_frame = Frame(self.search_canvas,border=10)
+		self.Search_frame.columnconfigure(0, weight=1)
+		self.Search_frame.grid(row=0,column=0)
+		Label(self.Search_frame,width=1).grid(column=2,rowspan=100)
+
+	def add(self,fc_tag,fc_dir):
+		button=create_image_button(self.Search_frame,fc_dir+"/Flashcards/"+fc_tag+"-1.png",self.fcs_size,int(self.fcs_size*0.6))
+		button.grid(row=self.current_row,column=self.current_column)
+		button.bind("<Button-1>", lambda event, data=res:disp_single_fc(fc_dir+"/Flashcards/"+fc_tag+"-2.png",fc_tag,fc_tag+' in '+fc_dir.split("/")[-1]))			
+		button.bind('<Button-4>', lambda event: self.search_canvas.yview_scroll(-1, UNITS))
+		button.bind('<Button-5>', lambda event: self.search_canvas.yview_scroll(1, UNITS))
+		button.bind('<Enter>',lambda event: show_backside(button,fc_tag,fc_dir+"/Flashcards/"+fc_tag+"-2.png",self.fcs_size,int(self.fcs_size*0.6)))
+		button.bind('<Leave>',lambda event: show_backside(button,fcs_tag,fcs_dir+"/Flashcards/"+fcs_tag+"-1.png",self.fcs_size,int(self.fcs_size*0.6)))
+		if os.path.isfile(fc_dir+"/Diffs/Flashcards/diff_"+fc_tag+"-1.png"):
+			diff={}
+			diff['tag']="diff_"+fc_tag
+			diff['dir']=fc_dir+"/Diffs"
+			self.diffs.append(diff)	
+		Label(self.Search_frame,height=1).grid(row=self.current_row,column=self.current_column)
+		setattr(self.search_canvas,fc_tag+fc_dir,button.img)
+		Search_frame.update()	
+
+
 	
 def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":fc_dir,"level":fc_level}, ...]
 	clear_window()
