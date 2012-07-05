@@ -20,11 +20,8 @@
 \newtheorem{prop}[sat]{Proposition}
 
 
-\newcommand{\TODO}[1]{\mbox{\fcolorbox{black}{red}{\textcolor{white}
-{\textbf{TODO: }}}\fcolorbox{black}{white}{\textcolor{red}{\textbf{#1}}}}}
-\let\Oldtodo\todo
-\newcommand{\inlinetodo}[1]{ \TODO{#1} }
-\renewcommand{\todo}[1]{\Oldtodo{#1} \\[0.2cm]}
+\renewcommand{\todo}[1]{\begin{center}\fbox{\parbox{300\unitlength}{\textcolor{red}{\textbf{#1}}}}\end{center}}
+
 
 
 \newcommand{\beachte}[1]{\parbox{300\unitlength}{\textbf{Beachte: }\textbf{#1}}}
