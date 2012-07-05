@@ -1953,7 +1953,7 @@ global WIDTH, HEIGHT
 
 BD=2
 
-RESTART_TIME=5 
+RESTART_TIME=7 # 2 o'clock
 
 IK=ImageKeeper()
 

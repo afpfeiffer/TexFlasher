@@ -37,6 +37,7 @@ import tkFileDialog
 from difflib import get_close_matches
 import itertools, collections
 import ConfigParser
+from codecs import open
 
 import webbrowser
 
@@ -500,8 +501,8 @@ def savefile(canvas,fc_tag,user,tagtype,item,content):
 				content=content[:-1]
 		except:
 			pass
-		flashcard_element.setAttribute('comment',content.encode('utf-8'))
-		xml_file = open(canvas.tagtypes[tagtype]['xml_path'], "w")
+		flashcard_element.setAttribute('comment',content)
+		xml_file = open(canvas.tagtypes[tagtype]['xml_path'], "w","utf-8")
 		parent.writexml(xml_file)
 		xml_file.close()
 
@@ -521,7 +522,7 @@ def delete_c_elem_from_xml(canvas,fc_tag,tags,tagtype,item):
 		  	  if item.getAttribute('created')==list(tags)[1]+" "+list(tags)[2]:
 		        	item.parentNode.removeChild(item)
 		        	break
-	  	  xml_file = open(canvas.tagtypes[tagtype]["xml_path"], "w")
+	  	  xml_file = open(canvas.tagtypes[tagtype]["xml_path"], "w","utf-8")
 	  	  doc.writexml(xml_file)
 	  	  xml_file.close()
 	  	  
