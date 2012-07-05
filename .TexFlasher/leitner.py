@@ -114,8 +114,13 @@ def futureCardNumber( database, offset, offset2, maxLevel ):
 		if lastReviewed!="":
 			lastReviewed_time=datetime(*(strptime(lastReviewed, "%Y-%m-%d %H:%M:%S")[0:6]))
 		        level=int(elem.getAttribute('level'))
-			dt_1 = lastReviewed_time + timedelta(days=(level - (offset + offset2)))		
-			dt_2 = lastReviewed_time + timedelta(days=(level - offset))		
+			if( level > 2 ):
+				newLevel=int(pow(level,1.2))
+			else:
+				newLevel = level
+				
+			dt_1 = lastReviewed_time + timedelta(days=(newLevel - (offset + offset2)))		
+			dt_2 = lastReviewed_time + timedelta(days=(newLevel - offset))		
 		
 			if (datetime.now() + timedelta(hours=int(24 - datetime.now().hour + RESTART_TIME)) < dt_1):
 				if datetime.now() + timedelta(hours=int(24 - datetime.now().hour + RESTART_TIME)) >= dt_2:
@@ -147,8 +152,12 @@ def load_agenda(ldb,dir,now=datetime.now(),PageSort=True):
 				new_fc[elem.tagName]=place
 			else:
 				lastReviewed_time=datetime(*(strptime(lastReviewed, "%Y-%m-%d %H:%M:%S")[0:6]))
-				level=elem.getAttribute('level')
-				dt = lastReviewed_time + timedelta(days=int(level))		
+				level=int(elem.getAttribute('level'))
+				if( level > 2 ):
+					newLevel=int(pow(level,1.2))
+				else:
+					newLevel = int(level)
+				dt = lastReviewed_time + timedelta(days=newLevel)		
 				if now + timedelta(hours=int(24 - now.hour + RESTART_TIME))>=dt:
 					diff=now-dt
 					local_agenda[elem.tagName]=diff.days * seconds_in_a_day + diff.seconds
@@ -2000,7 +2009,7 @@ global WIDTH, HEIGHT
 
 BD=2
 
-RESTART_TIME=5 
+RESTART_TIME=7 # 2 o'clock
 
 IK=ImageKeeper()
 
