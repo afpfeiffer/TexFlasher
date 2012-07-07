@@ -885,21 +885,21 @@ class Search(Entry):
 
 			i=0
 			for res in search_in:
-				patterns_front = res["query"]["front"].lower().strip().split()
-				patterns_content = res["query"]["content"].lower().strip().split()				
+				patterns_front = res["query"]["front"].lower().replace("-"," ").strip().split()
+				patterns_content = res["query"]["content"].lower().replace("-"," ").strip().split()				
 				
 				match_count=0
-				for w in search_query.lower().strip().split():	
+				for w in search_query.lower().replace("-"," ").strip().split():	
 					if len(get_close_matches(w,patterns_front,cutoff=thresh))>0:
 						match_count+=1
-				if match_count>=len(search_query.lower().strip().split()):
+				if match_count>=len(search_query.lower().replace("-"," ").strip().split()):
 					search_front_results.append(res)
 				else:
 					match_count=0				
-					for w in search_query.lower().strip().split():	
+					for w in search_query.lower().replace("-"," ").strip().split():	
 						if len(get_close_matches(w,patterns_front,cutoff=thresh))>0:
 							match_count+=1
-					if match_count>=len(search_query.lower().strip().split()):
+					if match_count>=len(search_query.lower().replace("-"," ").strip().split()):
 						search_content_results.append(res)					
 					
 			search_results=search_front_results+search_content_results					
