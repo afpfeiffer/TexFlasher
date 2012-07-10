@@ -79,13 +79,8 @@ def load_leitner_db(leitner_dir,user):
 	for flashcard_file in flashcards_dir:
 		if flashcard_file.split(".")[-1]=="dvi":
 			flashcard_name=flashcard_file.split(".")[0]
-			#mod_sec=os.stat(leitner_dir+"/Flashcards/"+flashcard_file).st_mtime
-			#mod_date=datetime(*(strptime(strftime("%Y-%m-%d %H:%M:%S",localtime(mod_sec)), "%Y-%m-%d %H:%M:%S")[0:6]))
-
 			try: 
 				flashcard_element=old_ldb.getElementsByTagName(flashcard_name)[0] #raises if old_ldb does not exist or not found
-			#		lastReviewed_date=datetime(*(strptime(flashcard_element.getAttribute('lastReviewed'), "%Y-%m-%d %H:%M:%S")[0:6])) #this raises if not reviewed yet	#		if mod_date>lastReviewed_date: 
-			#			changed.append(flashcard_element.tagName)
 				ldb.appendChild(flashcard_element)
 			except:
 				#create new flashcard node
@@ -116,7 +111,7 @@ def futureCardNumber( database, offset, offset2, maxLevel ):
 		        level=int(elem.getAttribute('level'))
 			if( level > 2 ):
 				newLevel=int(pow(level,1.2))
-			else:
+			elif level>=0:
 				newLevel = level
 				
 			dt_1 = lastReviewed_time + timedelta(days=(newLevel - (offset + offset2)))		
@@ -126,7 +121,7 @@ def futureCardNumber( database, offset, offset2, maxLevel ):
 				if datetime.now() + timedelta(hours=int(24 - datetime.now().hour + RESTART_TIME)) >= dt_2:
 					number += 1
 					LEVELS[level] +=1
-		else:
+		elif int(elem.getAttribute('level'))>=0:
 			if offset == 0:
 				number += 1	
 				LEVELS[int(elem.getAttribute('level'))] += 1
@@ -145,22 +140,22 @@ def load_agenda(ldb,dir,now=datetime.now(),PageSort=True):
 			name=elem.tagName
 			lastReviewed=elem.getAttribute('lastReviewed')
 			if lastReviewed=="":
-				try:
+				if not int(elem.getAttribute('level'))<0:
 				  place=int(order.getElementsByTagName(elem.tagName)[0].getAttribute("position"))
-				except:
-				  place=0
-				new_fc[elem.tagName]=place
+				  new_fc[elem.tagName]=place
 			else:
 				lastReviewed_time=datetime(*(strptime(lastReviewed, "%Y-%m-%d %H:%M:%S")[0:6]))
 				level=int(elem.getAttribute('level'))
-				if( level > 2 ):
+					
+				if level > 2 :
 					newLevel=int(pow(level,1.2))
 				else:
-					newLevel = int(level)
-				dt = lastReviewed_time + timedelta(days=newLevel)		
-				if now + timedelta(hours=int(24 - now.hour + RESTART_TIME))>=dt:
-					diff=now-dt
-					local_agenda[elem.tagName]=diff.days * seconds_in_a_day + diff.seconds
+					newLevel = level
+				if level>=0:
+					dt = lastReviewed_time + timedelta(days=newLevel)		
+					if now + timedelta(hours=int(24 - now.hour + RESTART_TIME))>=dt:
+					    diff=now-dt
+					    local_agenda[elem.tagName]=diff.days * seconds_in_a_day + diff.seconds
 	except:
 		pass
 	if PageSort:
@@ -197,6 +192,19 @@ def update_flashcard(fc_tag,ldb,selected_dir,attr_name,attr_value,lastReviewed=s
 	except:
 		print "Error while updating "+fc_tag+" attribute "+attr_name+" to "+str(attr_value)
 
+		
+def set_fc_attribute(fc_tag,fc_dir,attr_name,attr_value,ldb=False):
+  if tkMessageBox.askyesno("Reset", "Do you really want to hide this flashcard?"):  
+    if not ldb:
+	ldb=load_leitner_db(fc_dir,Settings['user'])
+    flashcard_element=ldb.getElementsByTagName(fc_tag)[0]
+    flashcard_element.setAttribute(str(attr_name), str(attr_value))
+    xml_file = open(fc_dir+"/Users/"+Settings["user"]+".xml", "w","utf-8")
+    ldb.writexml(xml_file)
+    xml_file.close()
+    
+		
+		
 def get_all_fcs(path=False):
 	all_fcs = []
 	if os.path.isfile("./.TexFlasher/config.xml"):
@@ -1103,6 +1111,7 @@ def  disp_single_fc(image_path,tag,title=None):
 	flashcard = ImageTk.PhotoImage(image)
 	c.create_image(int(WIDTH/2), int(WIDTH*0.3), image=flashcard)	
 	c.img=flashcard
+	
 	if not tag.startswith("diff_"):
 	  edit_b=create_image_button(win,"./.TexFlasher/pictures/latex.png",None,Main.b_normal)
 	  edit_b.grid(row=1,column=1,sticky=N+E+W+S)
@@ -1113,7 +1122,7 @@ def  disp_single_fc(image_path,tag,title=None):
 	
 	  clear_b=create_image_button(win,".TexFlasher/pictures/clear.png",None,Main.b_normal)
 	  clear_b.configure(state=DISABLED)
-	  clear_b.grid(row=1, column=3,columnspan=2,sticky=E+S+W+N)		
+	  clear_b.grid(row=1, column=3,columnspan=1,sticky=E+S+W+N)		
 
 	  edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,os.path.dirname(image_path).replace("/Flashcards",""),tag))
 	
@@ -1121,10 +1130,16 @@ def  disp_single_fc(image_path,tag,title=None):
 	  back_b.grid(row=1, column=0,sticky=W+N+E+S)		
 	  back_b.config(command=lambda: win.destroy())
 	
+	  hide_b=create_image_button(win,".TexFlasher/pictures/remove.png",None,Main.b_normal)
+	  hide_b.configure(state=DISABLED)
+	  hide_b.grid(row=1, column=4,columnspan=1,sticky=E+S+W+N)
+	
 	  c.save_b=save_b
 	  c.clear_b=clear_b
 	  c.edit_b=edit_b	
 	  c.back_b=back_b
+	  c.hide_b=hide_b
+	  
 	  create_comment_canvas(c,os.path.dirname(image_path)+"/../",tag,Settings['user'])
 
 	  c.fc_row=3
@@ -1164,8 +1179,16 @@ def  disp_single_fc(image_path,tag,title=None):
 	
 	  ldb=load_leitner_db(os.path.dirname(image_path)+"/../",Settings["user"])
 	  fc_info=get_fc_info(os.path.dirname(image_path)+"/../",tag,ldb,None)
+	  
+	  if fc_info["ldb"].getAttribute("level")=="-1":
+	    hide_b.config(command=lambda:set_fc_attribute(tag,os.path.dirname(image_path)+"/../","level",0,ldb),state=NORMAL)
+	    hide_status="Status=HIDDEN, "
+	  else:
+	    hide_b.config(command=lambda:set_fc_attribute(tag,os.path.dirname(image_path)+"/../","level",-1,ldb),state=NORMAL)
+	    hide_status=""
+	    
 	  pagemarker=fc_info["source"].getAttribute("pagemarker")
-	  Label(win,text="Page: "+pagemarker+", Created: "+fc_info["ldb"].getAttribute("created"),font=("Sans",Main.f_normal)).grid(row=c.fc_row+5,columnspan=5)
+	  Label(win,text=hide_status+"Page: "+pagemarker+", Created: "+fc_info["ldb"].getAttribute("created"),font=("Sans",Main.f_normal)).grid(row=c.fc_row+5,columnspan=5)
 	  stat_height=Main.b_normal
 	  stat_width=int(float(WIDTH)*0.95)
 	  stat=Canvas(win,width=stat_width, height=stat_height)
@@ -1187,6 +1210,7 @@ def edit_fc(c,dir,fc_tag):
 	fc_name,theorem_name,theorem_type,content=get_fc_desc(dir,fc_tag)
 	c.edit_b.config(state=DISABLED)
 	c.back_b.config(state=DISABLED)
+	c.hide_b.config(state=DISABLED)
 	try:
 	  c.true_b.config(state=DISABLED)
 	  c.false_b.config(state=DISABLED)
@@ -1216,6 +1240,8 @@ def cancel_edit(c,dir,fc_tag,frame):
 	c.save_b.config(state=DISABLED)
 	c.edit_b.config(state=NORMAL)
 	c.back_b.config(state=NORMAL)
+	c.hide_b.config(state=NORMAL)
+	
 	try:
 	  c.true_b.config(state=NORMAL)
 	  c.false_b.config(state=NORMAL)
@@ -1307,6 +1333,8 @@ class Flasher:
 			self.sort_b.config(image=self.pagesort_img,command=lambda:self.agenda_resort(False),text="Sort By Page")	
 
 			
+
+		
 	def __init__(self,selected_dir,stuffToDo=True):
 		global Main
 
@@ -1320,7 +1348,7 @@ class Flasher:
 			date = datetime.now()+timedelta(days=1000)
 		self.date=date
 		self.selected_dir=selected_dir
-		Main.columnconfigure(0,weight=1)
+		Main.columnconfigure(0,weight=1)		
 		Main.columnconfigure(1,weight=1)
 		Main.columnconfigure(2,weight=1)
 		Main.columnconfigure(3,weight=1)
@@ -1328,7 +1356,7 @@ class Flasher:
 								
 		self.ldb=load_leitner_db(self.selected_dir,Settings["user"])
 						
-		self.agenda,self.new_cards=load_agenda(self.ldb,self.selected_dir, date)
+		self.agenda,self.new_cards=load_agenda(self.ldb,self.selected_dir, self.date)
 		
 		
 		self.c=Canvas(Main,width=WIDTH,height=Main.winfo_height()-4*Main.b_large)
@@ -1352,28 +1380,38 @@ class Flasher:
 	
 		# menubar
 		self.c.menu_row=2
-		back_b=create_image_button(Main,".TexFlasher/pictures/back.png",None,Main.b_normal)
-		back_b.grid(row=self.c.menu_row, column=0,sticky=W+E)	
+		menubar_frame=Frame(Main)
+		menubar_frame.grid(row=self.c.menu_row,column=0,columnspan=8)
 		
-		menu_button=create_image_button(Main,"./.TexFlasher/pictures/menu.png",None,Main.b_normal)
+		
+		back_b=create_image_button(menubar_frame,".TexFlasher/pictures/back.png",None,Main.b_normal)
+		back_b.grid(row=0, column=0,sticky=W+E)	
+		
+		menu_button=create_image_button(menubar_frame,"./.TexFlasher/pictures/menu.png",None,Main.b_normal)
 		menu_button.configure(text="Menu",command=lambda:menu())
-		menu_button.grid(row=self.c.menu_row,column=1,sticky=W+E)
+		menu_button.grid(row=0,column=1,sticky=W+E)
 		
-		edit_b=create_image_button(Main,"./.TexFlasher/pictures/latex.png",None,Main.b_normal)
+		edit_b=create_image_button(menubar_frame,"./.TexFlasher/pictures/latex.png",None,Main.b_normal)
 		edit_b.config(state=DISABLED)
-		edit_b.grid(row=self.c.menu_row,column=2,sticky=W+E)
+		edit_b.grid(row=0,column=2,sticky=W+E)
 	
-		save_b=create_image_button(Main,".TexFlasher/pictures/upload_now.png",None,Main.b_normal)
+		save_b=create_image_button(menubar_frame,".TexFlasher/pictures/upload_now.png",None,Main.b_normal)
 		save_b.config(state=DISABLED)
-		save_b.grid(row=self.c.menu_row, column=3,sticky=W+E)	
+		save_b.grid(row=0, column=3,sticky=W+E)	
 	
-		clear_b=create_image_button(Main,".TexFlasher/pictures/clear.png",None,Main.b_normal)
+		clear_b=create_image_button(menubar_frame,".TexFlasher/pictures/clear.png",None,Main.b_normal)
 		clear_b.configure(state=DISABLED)
-		clear_b.grid(row=self.c.menu_row, column=4,sticky=W+E)		
+		clear_b.grid(row=0, column=4,sticky=W+E)	
+		
+		hide_b=create_image_button(menubar_frame,".TexFlasher/pictures/remove.png",None,Main.b_normal)
+		hide_b.configure(state=DISABLED)
+		hide_b.grid(row=0, column=5,sticky=W+E)	
+		
 		self.c.save_b=save_b
 		self.c.clear_b=clear_b
 		self.c.back_b=back_b
 		self.c.edit_b=edit_b
+		self.c.hide_b=hide_b
 		
 		#stats	
 		stat_height=Main.b_normal
@@ -1489,6 +1527,7 @@ class Flasher:
 		self.c.clear_b.config(state=DISABLED)
 		self.c.back_b.config(state=DISABLED)
 		self.c.back_b.config(state=DISABLED,command=lambda:self.reactAndInit( True , listPosition-1,False))
+		self.c.hide_b.config(state=DISABLED)
 	
 		
 		self.c.true_b.configure(state=DISABLED)
@@ -1512,6 +1551,11 @@ class Flasher:
 		self.c.fc_det_left.set("Flashcards (left / total): "+str(flashcardsTodo-listPosition)+" / "+str(totalNumberCards))	
 	   	self.c.fc_det_right.set("Tag: "+flashcard_name+", Nr.: "+str(fc_pos)+", Page: "+str(pagemarker))
 
+	def hide_fc(self, fc_tag):		
+		set_fc_attribute(fc_tag,self.selected_dir,"level",-1,self.ldb)	
+		self.ldb=load_leitner_db(self.selected_dir,Settings["user"])					
+		self.agenda,self.new_cards=load_agenda(self.ldb,self.selected_dir, self.date)		
+		self.reactAndInit(True , -1)
 
 	def answer(self,flashcard_tag, listPosition):
 		image = Image.open(self.selected_dir+"/Flashcards/"+flashcard_tag+"-2.png")
@@ -1533,6 +1577,8 @@ class Flasher:
 		self.c.back_b.configure(state=NORMAL)
 		self.c.true_b.configure(state=NORMAL,command=lambda:self.reactAndInit(True, listPosition))
 		self.c.false_b.configure(state=NORMAL,command=lambda:self.reactAndInit(False, listPosition))
+
+		self.c.hide_b.configure(state=NORMAL,command=lambda:self.hide_fc(flashcard_tag))
 			
 		create_comment_canvas(self.c,self.selected_dir,flashcard_tag,Settings['user'])	
 	
@@ -1836,14 +1882,14 @@ def menu():
 				l_length=check_tags(tag_xml_path,"link")
 				if l_length==None or l_length==0:
 				   l_b.config(state=DISABLED)	
-				l_b.config(command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):show_tagged('link',fcdir,fcdir,fcdir+"/Users/"+Settings['user']+"_comment.xml"))
+				l_b.config(command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):show_tagged('link',fcdir,fcdir+"/Users/"+Settings['user']+"_comment.xml"))
 
 				wiki_b=create_image_button(Main,".TexFlasher/pictures/wiki.png",None,Main.b_normal,0)
 				wiki_b.grid(row=row_start,column=start_column+6,sticky=N+W+E+S)
 				wiki_length=check_tags(tag_xml_path,"wiki")
 				if wiki_length==None or wiki_length==0:
 				   wiki_b.config(state=DISABLED)	
-				wiki_b.config(command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):show_tagged('wiki',fcdir,fcdir,fcdir+"/Users/"+Settings['user']+"_comment.xml"))
+				wiki_b.config(command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):show_tagged('wiki',fcdir,fcdir+"/Users/"+Settings['user']+"_comment.xml"))
 				start_column+=6
 				
 				#update
@@ -1960,7 +2006,7 @@ global WIDTH, HEIGHT
 
 
 
-BD=2
+BD=1
 
 RESTART_TIME=7 # 2 o'clock
 
