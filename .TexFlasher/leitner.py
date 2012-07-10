@@ -99,7 +99,7 @@ def load_leitner_db(leitner_dir,user):
 def futureCardNumber( database, offset, offset2, maxLevel ):
 	LEVELS=[]
 	
-	for i in range(maxLevel+1):
+	for i in range(-1,maxLevel+1):
 		LEVELS.append(0)
 	number=0
 	seconds_in_a_day = 60 * 60 * 24
@@ -194,7 +194,11 @@ def update_flashcard(fc_tag,ldb,selected_dir,attr_name,attr_value,lastReviewed=s
 
 		
 def set_fc_attribute(fc_tag,fc_dir,attr_name,attr_value,ldb=False):
-  if tkMessageBox.askyesno("Reset", "Do you really want to hide this flashcard?"):  
+  if str(attr_value)=="-1":
+  	text="Do you really want to hide this flashcard?"
+  else:
+  	text="Do you really want to unhide this flashcard?"
+  if tkMessageBox.askyesno("Hide", text):  
     if not ldb:
 	ldb=load_leitner_db(fc_dir,Settings['user'])
     flashcard_element=ldb.getElementsByTagName(fc_tag)[0]
@@ -489,11 +493,14 @@ def graph_points(ldb, dataSetC, dataSetB, numCards,dir):
     DX=WIDTH*0.00125
     DY=HEIGHT*0.001221
     #print DY
-
-
-    menu_button=create_image_button(Main,"./.TexFlasher/pictures/menu.png",40,40)
+    menubar_frame=Frame(Main)
+    menubar_frame.grid(row=0,columnspan=7)
+    
+    menu_button=create_image_button(menubar_frame,"./.TexFlasher/pictures/menu.png",40,40)
     menu_button.configure(text="Menu",command=lambda:menu())
-    menu_button.grid(row=0,columnspan=7,sticky=N+W+S+E)
+    menu_button.grid(row=0,column=0,sticky=N+W+S+E)
+
+    
     #Balloon = Pmw.Balloon(top)
     #Balloon.bind(menu_button, "Return to Menu") 
     Stats=Frame(Main,border=10)
@@ -1054,13 +1061,13 @@ class display_multiple:
 
 
 	
-def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":fc_dir,"level":fc_level}, ...]
+def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":fc_dir, ...]
 	clear_window()
 	Main.master.title(Main._title_base+" "+Main._version+" - "+title)
 	menu_button=create_image_button(Main,".TexFlasher/pictures/menu.png",None,Main.b_normal)
 	menu_button.configure(command=lambda:menu())
 	
-	menu_button.grid(row=1,columnspan=5,sticky=N+W+E+S)
+	menu_button.grid(row=1,columnspan=5)
 	
 	scrollframe=Frame(Main)
 	scrollframe.grid(row=3,column=0)
@@ -1092,8 +1099,8 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 	diff_b=Button(buttons_frame,bd=0,font=("Sans",Main.f_normal),text="loading Diff(s)")
 	diff_b.grid(row=0,column=1)	
 	i=2
-	for dir in folders:
-	    b=Button(buttons_frame,bd=0,font=("Sans",Main.f_normal),text=str(folders[dir]['count'])+" in "+dir.split("/")[-1],command=lambda data=folders[dir]:display_mult_fcs(data["fcs"],title,folders))
+	for Dir in folders:
+	    b=Button(buttons_frame,bd=0,font=("Sans",Main.f_normal),text=str(folders[Dir]['count'])+" in "+Dir.split("/")[-1],command=lambda data=folders[Dir]:display_mult_fcs(data["fcs"],title,folders))
 	    b.grid(row=0,column=i)
 	    i+=1
 	iterator=fcs.__iter__()
@@ -1120,7 +1127,7 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 					break
 			button=create_image_button(Search_frame,res['dir']+"/Flashcards/"+res['tag']+"-1.png",size,int(size*0.6))
 			button.grid(row=str(i+1),column=colu)
-			button.bind("<Button-1>", lambda event, data=res:disp_single_fc(data['dir']+"/Flashcards/"+data['tag']+"-2.png",data['tag'],data['tag']+' in '+data['dir'].split("/")[-1]+' level '+data['level']))			
+			button.bind("<Button-1>", lambda event, data=res:disp_single_fc(data['dir']+"/Flashcards/"+data['tag']+"-2.png",data['tag'],data['tag']+' in '+data['dir'].split("/")[-1]))			
 			button.bind('<Button-4>', lambda event: search_canvas.yview_scroll(-1, UNITS))
 			button.bind('<Button-5>', lambda event: search_canvas.yview_scroll(1, UNITS))
 			button.bind('<Enter>',lambda event,data=res,b=button: show_backside(b,data['tag'],data['dir']+"/Flashcards/"+data['tag']+"-2.png",size,int(size*0.6)))
@@ -1160,26 +1167,28 @@ def  disp_single_fc(image_path,tag,title=None):
 	c.img=flashcard
 	
 	if not tag.startswith("diff_"):
-	  edit_b=create_image_button(win,"./.TexFlasher/pictures/latex.png",None,Main.b_normal)
-	  edit_b.grid(row=1,column=1,sticky=N+E+W+S)
+	  menubar=Frame(win)
+	  menubar.grid(row=1,columnspan=10)
+	  
+	  edit_b=create_image_button(menubar,"./.TexFlasher/pictures/latex.png",None,Main.b_normal)
+	  edit_b.grid(row=0,column=1,sticky=N+E+W+S)
+	  edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,os.path.dirname(image_path).replace("/Flashcards",""),tag))	  
 
-	  save_b=create_image_button(win,".TexFlasher/pictures/upload_now.png",None,Main.b_normal)
+	  save_b=create_image_button(menubar,".TexFlasher/pictures/upload_now.png",None,Main.b_normal)
 	  save_b.config(state=DISABLED)
-	  save_b.grid(row=1, column=2,sticky=W+S+E+N)	
+	  save_b.grid(row=0, column=2,sticky=W+S+E+N)	
 	
-	  clear_b=create_image_button(win,".TexFlasher/pictures/clear.png",None,Main.b_normal)
+	  clear_b=create_image_button(menubar,".TexFlasher/pictures/clear.png",None,Main.b_normal)
 	  clear_b.configure(state=DISABLED)
-	  clear_b.grid(row=1, column=3,columnspan=1,sticky=E+S+W+N)		
-
-	  edit_b.configure(state=NORMAL,command=lambda:edit_fc(c,os.path.dirname(image_path).replace("/Flashcards",""),tag))
+	  clear_b.grid(row=0, column=3,sticky=E+S+W+N)		
 	
-	  back_b=create_image_button(win,".TexFlasher/pictures/back.png",None,Main.b_normal)
-	  back_b.grid(row=1, column=0,sticky=W+N+E+S)		
+	  back_b=create_image_button(menubar,".TexFlasher/pictures/back.png",None,Main.b_normal)
+	  back_b.grid(row=0, column=0,sticky=W+N+E+S)		
 	  back_b.config(command=lambda: win.destroy())
 	
-	  hide_b=create_image_button(win,".TexFlasher/pictures/remove.png",None,Main.b_normal)
+	  hide_b=create_image_button(menubar,".TexFlasher/pictures/remove.png",None,Main.b_normal)
 	  hide_b.configure(state=DISABLED)
-	  hide_b.grid(row=1, column=4,columnspan=1,sticky=E+S+W+N)
+	  hide_b.grid(row=0, column=4,sticky=E+S+W+N)
 	
 	  c.save_b=save_b
 	  c.clear_b=clear_b
@@ -1191,28 +1200,30 @@ def  disp_single_fc(image_path,tag,title=None):
 
 	  c.fc_row=3
 	  c.tag_buttons=[]
-	  q_b=create_image_button(win,".TexFlasher/pictures/question_fix.png",None,Main.b_normal)
-	  q_b.grid(row=c.fc_row,column=4,sticky=N)
+	  tagbar=Frame(win)
+	  tagbar.grid(row=3,column=4,rowspan=2,sticky=N+S)
+	  q_b=create_image_button(tagbar,".TexFlasher/pictures/question_fix.png",None,Main.b_normal)
+	  q_b.grid(row=0)
 	  #q_b.grid_remove()
 	  c.q_b=q_b
-	  w_b=create_image_button(win,".TexFlasher/pictures/watchout_fix.png",None,Main.b_normal)
-	  w_b.grid(row=c.fc_row+1,column=4)
+	  w_b=create_image_button(tagbar,".TexFlasher/pictures/watchout_fix.png",None,Main.b_normal)
+	  w_b.grid(row=1)
 	  #w_b.grid_remove()
 	  c.w_b=w_b
-	  r_b=create_image_button(win,".TexFlasher/pictures/repeat_fix.png",None,Main.b_normal)
+	  r_b=create_image_button(tagbar,".TexFlasher/pictures/repeat_fix.png",None,Main.b_normal)
 
-	  r_b.grid(row=c.fc_row+2,column=4)
+	  r_b.grid(row=2)
 	  #r_b.grid_remove()
 	  c.r_b=r_b
-	  l_b=create_image_button(win,".TexFlasher/pictures/link_fix.png",None,Main.b_normal)
+	  l_b=create_image_button(tagbar,".TexFlasher/pictures/link_fix.png",None,Main.b_normal)
 
-	  l_b.grid(row=c.fc_row+3,column=4)		    
+	  l_b.grid(row=3)		    
 	  #l_b.grid_remove()
 	  c.l_b=l_b
 
-	  wi_b=create_image_button(win,".TexFlasher/pictures/wiki.png",None,Main.b_normal)	
+	  wi_b=create_image_button(tagbar,".TexFlasher/pictures/wiki.png",None,Main.b_normal)	
 
-	  wi_b.grid(row=c.fc_row+4,column=4,sticky=S)		    
+	  wi_b.grid(row=4)		    
 	  #l_b.grid_remove()
 	  c.wi_b=wi_b	
 	
@@ -1228,14 +1239,12 @@ def  disp_single_fc(image_path,tag,title=None):
 	  fc_info=get_fc_info(os.path.dirname(image_path)+"/../",tag,ldb,None)
 	  
 	  if fc_info["ldb"].getAttribute("level")=="-1":
-	    hide_b.config(command=lambda:set_fc_attribute(tag,os.path.dirname(image_path)+"/../","level",0,ldb),state=NORMAL)
-	    hide_status="Status=HIDDEN, "
+	    hide_b.config(bg="red",command=lambda:set_fc_attribute(tag,os.path.dirname(image_path)+"/../","level",0,ldb),state=NORMAL)
 	  else:
 	    hide_b.config(command=lambda:set_fc_attribute(tag,os.path.dirname(image_path)+"/../","level",-1,ldb),state=NORMAL)
-	    hide_status=""
 	    
 	  pagemarker=fc_info["source"].getAttribute("pagemarker")
-	  Label(win,text=hide_status+"Page: "+pagemarker+", Created: "+fc_info["ldb"].getAttribute("created"),font=("Sans",Main.f_normal)).grid(row=c.fc_row+5,columnspan=5)
+	  Label(win,text="Page: "+pagemarker+", Created: "+fc_info["ldb"].getAttribute("created"),font=("Sans",Main.f_normal)).grid(row=c.fc_row+5,columnspan=5)
 	  stat_height=Main.b_normal
 	  stat_width=int(float(WIDTH)*0.95)
 	  stat=Canvas(win,width=stat_width, height=stat_height)
@@ -1895,11 +1904,27 @@ def menu():
 				Desc=Frame(Main)
 				Desc.grid(row=row_start, column=start_column+1,sticky=W)
 
-				Button(Desc,bd=0,justify=LEFT,font=("Sans",Main.f_normal,"bold"),command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):display_mult_fcs(get_all_fcs(fcdir),fcdir),text=l.getAttribute('filename').split("/")[-2]).grid(row=0,column=0,sticky=W)
-				Label(Desc,justify=LEFT,font=("Sans",Main.f_normal),text='length: '+str(length)+', todo: '+str(todo-new)+', new: '+str(new)).grid(row=1,column=0,sticky=W)
-				Label(Desc,justify=LEFT,font=("Sans",Main.f_normal),text='updated: '+l.getAttribute('lastReviewed').rpartition(':')[0].partition('-')[2].replace('-','/')).grid(row=3,column=0,sticky=W)
-
-
+				Button(Desc,bd=0,justify=LEFT,font=("Sans",Main.f_normal,"bold"),command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):display_mult_fcs(get_all_fcs(fcdir),fcdir),text=l.getAttribute('filename').split("/")[-2]+" ("+str(length)+")").grid(row=0,column=0,sticky=W)
+				info_frame=Frame(Desc)
+				info_frame.grid(row=1,column=0,sticky=W)
+				
+				Label(info_frame,justify=LEFT,font=("Sans",Main.f_normal),text='todo: '+str(todo-new)+'  new: '+str(new)).grid(row=0,column=0,sticky=W)
+				
+    				hide_button=Button(info_frame,justify=LEFT,bd=0,font=("Sans",Main.f_normal))
+    				hide_button.grid(row=0,column=1)    
+    				hidden_fcs=[]
+    				
+    				for elem in ldb.childNodes:
+    					if elem.getAttribute('level')=="-1":
+						hidden_fcs.append({"dir":os.path.dirname(l.getAttribute('filename')),"tag":elem.tagName})    		
+    				if len(hidden_fcs)>0:
+    					hide_button.config(state=NORMAL,command=lambda data=hidden_fcs,fcdir=os.path.dirname(l.getAttribute('filename')):display_mult_fcs(data,"%s flashcard(s) are hidden in %s"%(str(len(data)),fcdir)))
+					hide_button.config(text="hidden: "+str(len(hidden_fcs)))
+				else:
+					hide_button.grid_forget()	
+				#Label(Desc,justify=LEFT,font=("Sans",Main.f_normal),text='updated: '+l.getAttribute('lastReviewed').rpartition(':')[0].partition('-')[2].replace('-','/')).grid(row=2,column=0,sticky=W)
+				
+								
 				#tags
 				tag_xml_path=os.path.dirname(l.getAttribute('filename'))+"/Users/"+Settings['user']+"_comment.xml"
 				q_b=create_image_button(Main,".TexFlasher/pictures/question_fix.png",None,Main.b_normal,0)
@@ -1970,9 +1995,9 @@ def menu():
 				res=create_image_button(Main,"./.TexFlasher/pictures/delete.png",Main.b_normal,Main.b_normal)
 				res.configure(command=lambda texfile=l.getAttribute('filename'):reset_flash(texfile))
 				res.grid(row=row_start,column=start_column+7,sticky=N+S+E)
+				
 				saveString += " "+ os.path.dirname(l.getAttribute('filename'))+"/Users/"+Settings["user"]+".xml"
 				saveString += "###"+ os.path.dirname(l.getAttribute('filename'))+"/Users/"+Settings["user"]+"_comment.xml"
-				#saveString += "###"+ os.path.dirname(l.getAttribute('filename'))+"/Users/questions.xml"
 				saveString += "###"+ l.getAttribute('filename') 
 				Label(Main,height=1).grid(row=row_start+1)
 				row_start+=2	
