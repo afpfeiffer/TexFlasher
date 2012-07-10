@@ -1381,7 +1381,7 @@ class Flasher:
 		# menubar
 		self.c.menu_row=2
 		menubar_frame=Frame(Main)
-		menubar_frame.grid(row=self.c.menu_row, column=0,columnspan=8)
+		menubar_frame.grid(row=self.c.menu_row,column=0,columnspan=8)
 		
 		
 		back_b=create_image_button(menubar_frame,".TexFlasher/pictures/back.png",None,Main.b_normal)
@@ -2006,7 +2006,7 @@ global WIDTH, HEIGHT
 
 
 
-BD=2
+BD=1
 
 RESTART_TIME=7 # 2 o'clock
 
