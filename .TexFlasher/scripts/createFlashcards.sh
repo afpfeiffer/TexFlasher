@@ -167,20 +167,12 @@ else
   cp $folder/Flashcards.tmp/* $folder/Flashcards/ 2> /dev/null
   rm -r $folder/Flashcards.tmp &> /dev/null
   
-  procs=1
-  if [ "`uname`" == "Linux" ] ; then
-    procs="`grep -c processor /proc/cpuinfo`"
-  elif [ "`uname`" == "Darwin" ] ; then
-    procs="`/usr/sbin/system_profiler -detailLevel full SPHardwareDataType | grep -i 'number of cores' | awk '{ print $5 }'`"
-  fi
-  
-  
-  cd $folder/Flashcards
+ 
   echo "compiling card(s):" | tee -a $folder/texFlasher.log
 	echo "  -> $newnumber new card(s)" | tee -a $folder/texFlasher.log
   echo "  -> $changedContent card(s) with changed content" | tee -a $folder/texFlasher.log
 	echo "  -> $changedHeader card(s) with changed header" | tee -a $folder/texFlasher.log
-  echo "Starting compilation on $procs processor(s). Please wait, this can take several minutes..."
+  echo "Starting compilation, please wait, this can take several minutes..."
 	
 
 	buildCounter="0"
@@ -193,14 +185,20 @@ else
 		percent=`echo "($buildCounter.0 * $pBase)/1" | bc`
 		ceol=`tput el`
 		if [ $HAVETIMEESTIMATE -eq 1 ]; then
-			echo -ne "\r${ceol}progress: $percent%  ---  $tLeft remaining"
+			echo -ne "\r${ceol}[ "
+			equals=`echo "$percent / 5" | bc `
+			for i in $(seq $equals); do echo -n '='; done
+			echo -n '>'
+			for i in $(seq `echo "50 - $equals" | bc`); do echo -n ' '; done
+			echo -n " ] progress: $percent%,  $tLeft remaining"
 		else
-			echo -ne "\r${ceol}progress: $percent%"
+			echo -ne "\r${ceol}[ >                                                  ] progress: $percent%"
 		fi
 		
-		
+		cd $folder/Flashcards
 		make $target 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|Emergency stop.' | tee -a $folder/texFlasher.log
-		
+		cd $folder/Diffs
+		make -i $target 2>&1 < /dev/null &> /dev/null
 		
 		buildCounter=`echo $buildCounter + "1" | bc`
 		
@@ -211,16 +209,14 @@ else
 		S=$tLeft
 		((m=S%3600/60))
 		((s=S%60))
-		tLeft="`printf "%d:%ds\n" $m $s`"
+		tLeft="`printf "%dm:%ds\n" $m $s`"
 		
 		HAVETIMEESTIMATE=1
 	done
 	ceol=`tput el`
-	echo -ne "\r${ceol}100%\n"
+	echo -ne "\r${ceol}[ ================================================== ] progress 100%\n"
 	
-
-  cd $folder/Diffs
-  make -i -j$procs images 2>&1 < /dev/null &> /dev/null
+	cd $folder/Diffs
   cp *.png Flashcards/
   cd $WD
     
