@@ -193,19 +193,26 @@ else
 		percent=`echo "($buildCounter.0 * $pBase)/1" | bc`
 		ceol=`tput el`
 		if [ $HAVETIMEESTIMATE -eq 1 ]; then
-			echo -ne "progress: \r${ceol}$percent%  ---  $tLeft seconds remaining"
+			echo -ne "\r${ceol}progress: $percent%  ---  $tLeft remaining"
 		else
-			echo -ne "progress: \r${ceol}$percent%"
+			echo -ne "\r${ceol}progress: $percent%"
 		fi
 		
 		
-		make -j$procs $target 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|Emergency stop.' | tee -a $folder/texFlasher.log
+		make $target 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|Emergency stop.' | tee -a $folder/texFlasher.log
 		
 		
 		buildCounter=`echo $buildCounter + "1" | bc`
 		
 		res2=$(date +%s.%N)
-		tLeft=`echo "scale=2;(( ( $res2 - $res1 ) / $buildCounter ) * ($compilenumber.0 - $buildCounter))/1" | bc`
+		tLeft=`echo "scale=2;(( ( $res2 - $res1 ) / $buildCounter ) * ($compilenumber.0 - $buildCounter))" | bc`
+		tLeft=`echo "($tLeft)/1" | bc`
+		
+		S=$tLeft
+		((m=S%3600/60))
+		((s=S%60))
+		tLeft="`printf "%d:%ds\n" $m $s`"
+		
 		HAVETIMEESTIMATE=1
 	done
 	ceol=`tput el`
