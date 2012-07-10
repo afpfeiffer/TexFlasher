@@ -185,7 +185,6 @@ else
 
 	buildCounter="0"
 	pBase=`echo "scale=2; 100.0 / $compilenumber.0" | bc`
-	echo $pBase
 	for target in $TARGETS; do
 # 		echo "building target $target ..."
 		# get percentage
