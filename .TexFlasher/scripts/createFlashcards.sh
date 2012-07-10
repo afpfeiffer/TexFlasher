@@ -185,18 +185,31 @@ else
 
 	buildCounter="0"
 	pBase=`echo "scale=2; 100.0 / $compilenumber.0" | bc`
+	HAVETIMEESTIMATE=0
+	res1=$(date +%s.%N)
 	for target in $TARGETS; do
 # 		echo "building target $target ..."
 		# get percentage
-		percent=`echo "$buildCounter.0 * $pBase" | bc`
-		percent=`echo "1* $percent * 1" | bc`
+		percent=`echo "($buildCounter.0 * $pBase)/1" | bc`
 		ceol=`tput el`
-		echo -ne "\r${ceol}$percent%"
+		if [ $HAVETIMEESTIMATE -eq 1 ]; then
+			echo -ne "progress: \r${ceol}$percent%  ---  $tLeft seconds remaining"
+		else
+			echo -ne "progress: \r${ceol}$percent%"
+		fi
+		
 		
 		make -j$procs $target 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|Emergency stop.' | tee -a $folder/texFlasher.log
+		
+		
 		buildCounter=`echo $buildCounter + "1" | bc`
+		
+		res2=$(date +%s.%N)
+		tLeft=`echo "scale=2;(( ( $res2 - $res1 ) / $buildCounter ) * ($compilenumber.0 - $buildCounter))/1" | bc`
+		HAVETIMEESTIMATE=1
 	done
-	echo -n "100%"
+	ceol=`tput el`
+	echo -ne "\r${ceol}100%\n"
 	
 
   cd $folder/Diffs
