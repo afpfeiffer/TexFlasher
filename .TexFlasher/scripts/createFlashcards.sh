@@ -172,7 +172,6 @@ else
 	echo "  -> $newnumber new card(s)" | tee -a $folder/texFlasher.log
   echo "  -> $changedContent card(s) with changed content" | tee -a $folder/texFlasher.log
 	echo "  -> $changedHeader card(s) with changed header" | tee -a $folder/texFlasher.log
-  echo "Starting compilation, please wait, this can take several minutes..."
 	
 
 	buildCounter="0"
@@ -186,10 +185,10 @@ else
 		ceol=`tput el`
 		if [ $HAVETIMEESTIMATE -eq 1 ]; then
 			echo -ne "\r${ceol}[ "
-			equals=`echo "$percent / 5" | bc `
+			equals=`echo "$percent / 2" | bc `
 			for i in $(seq $equals); do echo -n '='; done
 			echo -n '>'
-			for i in $(seq `echo "50 - $equals" | bc`); do echo -n ' '; done
+			for i in $(seq `echo "49 - $equals" | bc`); do echo -n ' '; done
 			echo -n " ] progress: $percent%,  $tLeft remaining"
 		else
 			echo -ne "\r${ceol}[ >                                                  ] progress: $percent%"
