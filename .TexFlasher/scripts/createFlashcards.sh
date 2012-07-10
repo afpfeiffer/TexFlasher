@@ -106,7 +106,9 @@ else
   
   recompile="0"
 	compilenumber="0"
+	changedContent="0"
 	newnumber="0"
+  TARGETS=""
 	# buffer old flash cards
 	OLDFLASHCARDS="`ls $folder/Flashcards/*.tex`" 2>/dev/null
 	for oldflashcard in $OLDFLASHCARDS; do
@@ -124,18 +126,20 @@ else
         rm $folder/Flashcards.tmp/$name &> /dev/null
         if [ ! -f $folder/Flashcards/$purename.dvi ]; then
 					compilenumber=`echo $compilenumber + "1" | bc`
+					TARGETS="$TARGETS $purename.dvi"
 				fi
 
 					
       else
 				recompile=`echo $recompile + "1" | bc`
-				
+			
 				python .TexFlasher/get_fc_content.py $folder/Flashcards.tmp/$name > FILEA
 				python .TexFlasher/get_fc_content.py $folder/Flashcards/$name > FILEB
 								
 				if [[ "`diff FILEA FILEB`" != "" ]]; then
 					latexdiff $folder/Flashcards/$name $folder/Flashcards.tmp/$name > $folder/Diffs/diff_$name 2> /dev/null
 					echo "changed content: $purename" | tee -a $folder/texFlasher.log
+					changedContent=`echo $changedContent + "1" | bc`
 				fi
 				
 				rm FILEA FILEB &> /dev/null
@@ -148,27 +152,70 @@ else
   listnumber="`ls -1 $folder/Flashcards.tmp/ | wc -l`"
   compilenumber=`echo $compilenumber + $listnumber | bc`
   newnumber=`echo $compilenumber - $recompile | bc`
+  changedHeader=`echo $recompile - $changedContent | bc`
+  
+
+  NEWFLASHCARDS="`ls $folder/Flashcards.tmp/*.tex`" 2>/dev/null
+  for newflashcard in $NEWFLASHCARDS; do
+    # get filename with extension
+    name=$(basename $newflashcard)
+    # get filename without extension
+    purename=${name%\.*}
+    TARGETS="$TARGETS $purename.dvi"
+   done
   
   cp $folder/Flashcards.tmp/* $folder/Flashcards/ 2> /dev/null
   rm -r $folder/Flashcards.tmp &> /dev/null
   
-  procs=1
-  if [ "`uname`" == "Linux" ] ; then
-    procs="`grep -c processor /proc/cpuinfo`"
-  elif [ "`uname`" == "Darwin" ] ; then
-    procs="`/usr/sbin/system_profiler -detailLevel full SPHardwareDataType | grep -i 'number of cores' | awk '{ print $5 }'`"
-  fi
-  
-  
-  cd $folder/Flashcards
+ 
   echo "compiling card(s):" | tee -a $folder/texFlasher.log
-	echo "  -> $recompile card(s) with changed content/header" | tee -a $folder/texFlasher.log
 	echo "  -> $newnumber new card(s)" | tee -a $folder/texFlasher.log
-  echo "Starting compilation on $procs processor(s). Please wait, this can take several minutes..."
+  echo "  -> $changedContent card(s) with changed content" | tee -a $folder/texFlasher.log
+	echo "  -> $changedHeader card(s) with changed header" | tee -a $folder/texFlasher.log
 	
-  make -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|Emergency stop.' | tee -a $folder/texFlasher.log
-  cd $folder/Diffs
-  make -i -j$procs images 2>&1 < /dev/null &> /dev/null
+
+	buildCounter="0"
+	pBase=`echo "scale=2; 100.0 / $compilenumber.0" | bc`
+	HAVETIMEESTIMATE=0
+	res1=$(date +%s.%N)
+	for target in $TARGETS; do
+# 		echo "building target $target ..."
+		# get percentage
+		percent=`echo "($buildCounter.0 * $pBase)/1" | bc`
+		ceol=`tput el`
+		if [ $HAVETIMEESTIMATE -eq 1 ]; then
+			echo -ne "\r${ceol}[ "
+			equals=`echo "$percent / 2" | bc `
+			for i in $(seq $equals); do echo -n '='; done
+			echo -n '>'
+			for i in $(seq `echo "49 - $equals" | bc`); do echo -n ' '; done
+			echo -n " ] progress: $percent%,  $tLeft remaining"
+		else
+			echo -ne "\r${ceol}[ >                                                  ] progress: $percent%"
+		fi
+		
+		cd $folder/Flashcards
+		make $target 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|Emergency stop.' | tee -a $folder/texFlasher.log
+		cd $folder/Diffs
+		make -i $target 2>&1 < /dev/null &> /dev/null
+		
+		buildCounter=`echo $buildCounter + "1" | bc`
+		
+		res2=$(date +%s.%N)
+		tLeft=`echo "scale=2;(( ( $res2 - $res1 ) / $buildCounter ) * ($compilenumber.0 - $buildCounter))" | bc`
+		tLeft=`echo "($tLeft)/1" | bc`
+		
+		S=$tLeft
+		((m=S%3600/60))
+		((s=S%60))
+		tLeft="`printf "%dm:%ds\n" $m $s`"
+		
+		HAVETIMEESTIMATE=1
+	done
+	ceol=`tput el`
+	echo -ne "\r${ceol}[ ================================================== ] progress 100%\n"
+	
+	cd $folder/Diffs
   cp *.png Flashcards/
   cd $WD
     
@@ -179,5 +226,8 @@ else
 
 
 fi  
+
+# better be save than sorry
+make -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|Emergency stop.' | tee -a $folder/texFlasher.log
 
 exit 0
