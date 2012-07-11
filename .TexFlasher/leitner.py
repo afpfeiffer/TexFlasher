@@ -805,6 +805,42 @@ def get_fc_section(dir,tag,source):
 tkinter_umlauts=['odiaeresis', 'adiaeresis', 'udiaeresis', 'Odiaeresis', 'Adiaeresis', 'Udiaeresis', 'ssharp']
 #http://tkinter.unpythonic.net/wiki/AutocompleteEntry
 
+def create_index():
+			current_dir=""
+			front_index={}
+			back_index={}
+			all_fcs=get_all_fcs()
+			for fc_elem in all_fcs:
+				if not fc_elem['dir']==current_dir: #load files needed for get_... funktions to speed up search
+					current_dir=fc_elem['dir']
+					current_source_xml=xml.parse(fc_elem['dir']+"/Details/source.xml")
+					tex_file_path=get_flashfolder_path(fc_elem['dir'])
+					current_tex_file=open(tex_file_path,"r", "utf-8")
+					current_order_xml=xml.parse(fc_elem['dir']+"/Flashcards/order.xml")
+					
+				fc_name,theorem_name,theorem_type,fc_content=get_fc_desc(fc_elem['dir'],fc_elem['tag'],current_tex_file,current_order_xml)
+				fc_sections=get_fc_section(fc_elem['dir'],fc_elem['tag'],current_source_xml)	
+				try:
+					fc_elem['query']={"front":fc_name+" "+theorem_name+" "+fc_elem['tag']+" "+fc_sections,"content":sanatize(fc_content)}
+				except:
+					pass
+					#TODO: Sometimes encoding error!
+				for w in fc_elem['query']['front'].lower().replace("-"," ").strip().split(" "):
+					try:
+						if fc_elem['tag']+"###"+fc_elem['dir'] not in front_index[w]:
+							front_index[w].append(fc_elem['tag']+"###"+fc_elem['dir'])
+					except:
+						front_index[w]=[fc_elem['tag']+"###"+fc_elem['dir']]						
+				for w in fc_elem['query']['content'].lower().replace("-"," ").strip().split(" "):
+					try:
+						if fc_elem['tag']+"###"+fc_elem['dir'] not in back_index[w]:					
+							back_index[w].append(fc_elem['tag']+"###"+fc_elem['dir'])
+					except:
+						back_index[w]=[fc_elem['tag']+"###"+fc_elem['dir']]
+																						  
+			return front_index,back_index
+
+
 class Search(Entry):
         """
         Subclass of Tkinter.Entry that features autocompletion.
@@ -864,7 +900,9 @@ class Search(Entry):
                         self.delete(0,END)
                         self.insert(0,self._hits[self._hit_index])
                         self.select_range(self.position,END)
-                       
+                        
+
+						           
         def search_flashcard(self):
 		search_query=self.get()
 		self._def_value.set("searching, please wait...") 
@@ -873,54 +911,30 @@ class Search(Entry):
 		self.update()
 		# set similarity sensitivity
 		thresh=0.7 
-		current_dir=""
 		current_source_xml=None
 		current_tex_file=None
 		current_order_xml=None
-		if len(search_query)>0 and not search_query=="Search ...":		
-			search_in=[]
-			all_fcs=get_all_fcs()
-			for fc_elem in all_fcs:
-				if not fc_elem['dir']==current_dir: #load files needed for get_... funktions to speed up search
-					current_dir=fc_elem['dir']
-					current_source_xml=xml.parse(fc_elem['dir']+"/Details/source.xml")
-					tex_file_path=get_flashfolder_path(fc_elem['dir'])
-					current_tex_file=open(tex_file_path,"r", "utf-8")
-					current_order_xml=xml.parse(fc_elem['dir']+"/Flashcards/order.xml")
-				fc_name,theorem_name,theorem_type,fc_content=get_fc_desc(fc_elem['dir'],fc_elem['tag'],current_tex_file,current_order_xml)
-				fc_sections=get_fc_section(fc_elem['dir'],fc_elem['tag'],current_source_xml)	
-				try:
-					fc_elem['query']={"front":fc_name+" "+theorem_name+" "+fc_elem['tag']+" "+fc_sections,"content":sanatize(fc_content)}
-					search_in.append(fc_elem)
-				except:
-					pass
-					#TODO: Sometimes encoding error!
-			search_front_results=[]
-			search_content_results=[]
-
-			i=0
-			for res in search_in:
-				patterns_front = res["query"]["front"].lower().replace("-"," ").strip().split()
-				patterns_content = res["query"]["content"].lower().replace("-"," ").strip().split()				
-				
-				match_count=0
-				for w in search_query.lower().replace("-"," ").strip().split():	
-					if len(get_close_matches(w,patterns_front,cutoff=thresh))>0:
-						match_count+=1
-				if match_count>=len(search_query.lower().replace("-"," ").strip().split()):
-					search_front_results.append(res)
-				else:
-					match_count=0				
-					for w in search_query.lower().replace("-"," ").strip().split():	
-						if len(get_close_matches(w,patterns_front,cutoff=thresh))>0:
-							match_count+=1
-					if match_count>=len(search_query.lower().replace("-"," ").strip().split()):
-						search_content_results.append(res)					
-					
-			search_results=search_front_results+search_content_results					
+		if len(search_query)>0 and not search_query=="Search ...":
+			front_results=set([])
+			back_results=set([])
+			results=[]
+			for w in search_query.lower().replace("-"," ").strip().split():	
+				if w in front_index:
+					if len(front_results)>0:
+						front_results=front_results.intersection(set(front_index[w]))					
+					else:
+						front_results=set(front_index[w])
+				if w in back_index:				
+					if len(back_results)>0:
+						back_results=back_results.intersection(set(front_index[w]))				
+					else:
+						back_results=set(back_index[w])										
+			search_results=list(front_results)+list(back_results)	
+			for fc in search_results:
+				results.append({"tag":fc.split("###")[0],"dir":fc.split("###")[1]})				
 			## display search results
-			if len(search_results)>0:
-				display_mult_fcs(search_results,"Search results for \""+search_query+"\"")
+			if len(results)>0:
+				display_mult_fcs(results,"Search results for \""+search_query+"\"")
 				#self.add_search_query(search_query,search_results)
 			else:
 				self.delete(0,END)
@@ -1660,10 +1674,11 @@ def update_texfile( fname, user ):
 	#executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+os.path.dirname(fname)+"/Users/"+user+".xml "+os.path.dirname(fname)+"/Users/"+user+"_comment.xml "+fname, True )
 	os.system("rm "+os.path.dirname(fname)+"/Flashcards/UPDATE 2>/dev/null")
 	create_flashcards( fname )
-	comp_list=create_completion_list()
  	message,window_type=get_log_status(os.path.dirname(fname))
  	if window_type=="showerror":
 		exec('tkMessageBox.'+window_type+'( "Parse LaTex Logfile","%s")'%message)	
+	else:
+		front_index,back_index=create_index()	
 	menu()
 	
 
@@ -2085,7 +2100,9 @@ RESTART_TIME=7 # 2 o'clock
 IK=ImageKeeper()
 
 comp_list=()#create_completion_list()
+global front_index,back_index
 
+front_index,back_index=create_index()
 
 iconbitmapLocation = "@./.TexFlasher/pictures/icon.xbm"
 

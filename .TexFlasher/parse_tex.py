@@ -29,8 +29,8 @@ def parse_dvi_dump(source_path):
   	doc=xml.Document()
 	fc_meta = doc.createElement('fc_meta_info')
 	try:
-		source_dump=open(source_path+"/source.dump","r")
-		source_aux=open(source_path+"/source.aux","r")
+		source_dump=open(source_path+"/source.dump","r","utf-8")
+		source_aux=open(source_path+"/source.aux","r","utf-8")
 	except:
 		print "Fatal Error: Cannot open file: "+source_path+"/source.aux or source.dump!"
 		sys.exit()
@@ -86,7 +86,7 @@ def parse_dvi_dump(source_path):
 		for entry in theorems[fc_tag]:
 		  element.setAttribute(entry,str(theorems[fc_tag][entry]))
 
-	xml_file = open(source_path+"/source.xml", "w")
+	xml_file = open(source_path+"/source.xml", "w","utf-8")
 	fc_meta.writexml(xml_file)	    
 	xml_file.close()
 	return fc_meta
@@ -100,9 +100,6 @@ def parse_tex(fcard_dir,source_path):
 	except:
 		print "Fatal Error: Cannot open file: "+source_path+"/source.tex!"
 		sys.exit()
-		
-		
-		
 	theorems={}
 	tex_header=""
 	tex_end="\end{document}\n"
@@ -167,10 +164,9 @@ def parse_tex(fcard_dir,source_path):
 			fcard_title=matches[0]
 			try:
 				if len(meta.getElementsByTagName(fcard_title))==0:
-					print "Fatal Error: flashcard_marker not in source.dvi file!"
+					print "tag not in source.xml"
 					sys.exit()			
 			except:
-				print "Fatal Error: flashcard_marker not in source.xml file!"
 				sys.exit()
 			order_element=doc.createElement(fcard_title)
 			order_db.appendChild(order_element)
