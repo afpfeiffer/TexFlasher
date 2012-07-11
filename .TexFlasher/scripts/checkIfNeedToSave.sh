@@ -25,12 +25,12 @@ files=$*
 if [ -f SAVE ]; then
 	echo "Save"
 else
-	for string in $files; do
-		seperatedFiles="`echo $string | sed -e 's/###/ /g'`"
-		for thing in $seperatedFiles; do
-			if [ -f $thing ]; then
-				ping -c 1 www.google.com>>/dev/null
-				if [ $? -eq  0 ]; then
+	ping -c 1 www.google.com>>/dev/null
+	if [ $? -eq  0 ]; then	
+		for string in $files; do
+			seperatedFiles="`echo $string | sed -e 's/###/ /g'`"
+			for thing in $seperatedFiles; do
+				if [ -f $thing ]; then
 					svn add $thing &> /dev/null  
 					svn info $thing &> /dev/null
 					HAVESVN=$?
@@ -44,11 +44,9 @@ else
 						fi
 					fi
 				fi
-			fi
+			done
 		done
-	# 	else
-	# 		echo "svn unavailable"
-	done
+	fi
 fi
 	
 exit 0
