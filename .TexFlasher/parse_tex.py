@@ -23,7 +23,6 @@ import os
 import sys
 import re
 import xml.dom.minidom as xml
-from codecs import open
 
 def parse_dvi_dump(source_path):
   	doc=xml.Document()
@@ -96,7 +95,7 @@ def parse_dvi_dump(source_path):
 def parse_tex(fcard_dir,source_path):
 	meta=parse_dvi_dump(source_path)		
 	try:
-		source_tex=open(source_path+"/source.tex","r","utf-8")
+		source_tex=open(source_path+"/source.tex","r")
 	except:
 		print "Fatal Error: Cannot open file: "+source_path+"/source.tex!"
 		sys.exit()
@@ -135,23 +134,21 @@ def parse_tex(fcard_dir,source_path):
 	if not end_header_marker_status=="found":
 		print "Fatal Error: No end_tex_header_marker \begin{document} found!" 
 		sys.exit()
-
-	# check for needed packages
+	#search for card marker
+	# needed packages
 	needed_packages=['\usepackage{sectsty}','\usepackage{hyperref}','\usepackage{color}']
 	for package in needed_packages:
 		if not re.compile(re.escape(package)).findall(tex_header):
 			print "Fatal Error: Package missing: %s"%(package)
 			sys.exit()
-	#search for card marker
+
 	fcards={}
 	fcards_header={}
 	fcard_title=""
 	fcard_desc=""
 	for line in source_tex:
 		if line.lstrip().startswith("%"):
-		    line=source_tex.next()
-		    
-		#replace weird latex breaks    	
+		    line=source_tex.next()	
 		elif line.startswith("\\\\"):
 			line="\ "+line
 		line=line.replace("\\\\ \\\\","\\\\ \\ \\\\")
@@ -162,15 +159,12 @@ def parse_tex(fcard_dir,source_path):
 		line=line.replace("\\\\      \\\\","\\\\ \\ \\\\")
 	
 		matches=re.compile('^\\\\fc\{(.*?)\}').findall(line.lstrip())
-		
 		try:#fails if no fc_marker in line!
 			fcard_title=matches[0]
 			try:
 				if len(meta.getElementsByTagName(fcard_title))==0:
-					print "Fatal Error: flashcard_marker not in source.dvi file!"
 					sys.exit()			
 			except:
-				print "Fatal Error: flashcard_marker not in source.xml file!"
 				sys.exit()
 			order_element=doc.createElement(fcard_title)
 			order_db.appendChild(order_element)
@@ -251,10 +245,9 @@ def parse_tex(fcard_dir,source_path):
 	source_tex.close()
 
 	#create flashcard tex files
-	if len(fcards)>0:	
-		#create latex files	
+	if len(fcards)>0:		
 		for fcard in fcards:
-			fcard_file=open(fcard_dir+"/"+fcard+".tex","w",'utf-8')
+			fcard_file=open(fcard_dir+"/"+fcard+".tex","w")
 			fcard_file.writelines(notice)
 			fcard_file.writelines(tex_header)
 			fcard_file.writelines(fcards_header[fcard])
@@ -265,7 +258,7 @@ def parse_tex(fcard_dir,source_path):
 			fcard_file.writelines(tex_end)
 			fcard_file.close()
 		#success
-		xml_file = open(source_path+"/../Flashcards/order.xml", "w","utf-8")
+		xml_file = open(source_path+"/../Flashcards/order.xml", 'w')
 		order_db.writexml(xml_file)	    
 		xml_file.close()		
 		print "Created "+str(len(fcards))+" flashcard LaTex file(s)"

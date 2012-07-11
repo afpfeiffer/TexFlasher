@@ -77,6 +77,8 @@ FILES="Makefile pdf2jpg_dummy.sh dvi2png_dummy.sh flashcards.cls"
 rm $folder/texFlasher.log &> /dev/null
 
 mkdir -p $folder/Diffs/Flashcards &> /dev/null
+mkdir -p $folder/Diffs/Details &> /dev/null
+
 # get current versions of files 
 for thing in $FILES; do
 	cp $WD/.TexFlasher/tools/$thing $folder/Flashcards/
@@ -200,18 +202,24 @@ else
 	pBase=`echo "scale=2; 100.0 / $compilenumber.0" | bc`
 	HAVETIMEESTIMATE=0
 	res1=$(date +%s.%N)
+	printTime=$res1
 	for target in $TARGETS; do
 # 		echo "building target $target ..."
 		# get percentage
 		percent=`echo "($buildCounter.0 * $pBase)/1" | bc`
 		ceol=`tput el`
 		if [ $HAVETIMEESTIMATE -eq 1 ]; then
-			echo -ne "\r${ceol}  "
-			equals=`echo "$percent / 2" | bc `
-			for i in $(seq $equals); do echo -n "${txtbgg} "; done
-			echo -n "${txtbgr} "
-			for i in $(seq `echo "49 - $equals" | bc`); do echo -n ' '; done
-			echo -n "${txtrst} progress: $percent%,  $tLeft remaining"
+			tnow=$(date +%s.%N)
+			elapsed=`echo "($tnow - $printTime)/1" | bc`
+			if [[ "$elapsed" -ge 2 ]]; then
+				printTime=$tnow
+				echo -ne "\r${ceol}  "
+				equals=`echo "$percent / 2" | bc `
+				for i in $(seq $equals); do echo -n "${txtbgg} "; done
+				echo -n "${txtbgr} "
+				for i in $(seq `echo "49 - $equals" | bc`); do echo -n ' '; done
+				echo -n "${txtrst} progress: $percent%,  $tLeft remaining"
+			fi
 		else
 			echo -ne "\r${ceol}  ${txtbgr}                                                  ${txtrst} progress: $percent%"
 		fi
