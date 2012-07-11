@@ -136,6 +136,13 @@ def parse_tex(fcard_dir,source_path):
 		print "Fatal Error: No end_tex_header_marker "+end_header_marker+" found!" 
 		sys.exit()
 	#search for card marker
+	# needed packages
+	needed_packages=['\usepackage{sectsty}','\usepackage{hyperref}','\usepackage{color}']
+	for package in needed_packages:
+		if not re.compile(re.escape(package)).findall(tex_header):
+			print "Fatal Error: Package missing: %s"%(package)
+			sys.exit()
+
 	fcards={}
 	fcards_header={}
 	fcard_title=""
@@ -143,7 +150,7 @@ def parse_tex(fcard_dir,source_path):
 	for line in source_tex:
 		if line.lstrip().startswith("%"):
 		    line=source_tex.next()		
-		matches=re.compile('^\\\\fc\{(.*?)\}\n').findall(line.lstrip())
+		matches=re.compile('^\\\\fc\{(.*?)\}').findall(line.lstrip())
 		try:#fails if no fc_marker in line!
 			fcard_title=matches[0]
 			try:
