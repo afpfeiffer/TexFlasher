@@ -213,7 +213,7 @@ else
 			for i in $(seq `echo "49 - $equals" | bc`); do echo -n ' '; done
 			echo -n "${txtrst} progress: $percent%,  $tLeft remaining"
 		else
-			echo -ne "\r${ceol}  ${txtbgr}>                                                 ${txtrst} progress: $percent%"
+			echo -ne "\r${ceol}  ${txtbgr}                                                  ${txtrst} progress: $percent%"
 		fi
 		
 		cd $folder/Flashcards
