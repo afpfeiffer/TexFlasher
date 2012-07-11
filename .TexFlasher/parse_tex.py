@@ -124,14 +124,14 @@ def parse_tex(fcard_dir,source_path):
 			theorems[matches[0][0]]=matches[0][1]
 			tex_header+="\\newtheorem{"+matches[0][0]+"}{"+matches[0][1]+"}[section]\n"
 
-		elif re.compile('^\\\\begin\{document\}').findall(line.lstrip()):
+		elif line==end_header_marker:
 			tex_header+=line
 		  
 			end_header_marker_status="found"
 			break
 		elif not line=="\n" or len(line)==0: #only appen if line not emty!
 			tex_header+=line
-			print line
+	
 	if not end_header_marker_status=="found":
 		print "Fatal Error: No end_tex_header_marker "+end_header_marker+" found!" 
 		sys.exit()
