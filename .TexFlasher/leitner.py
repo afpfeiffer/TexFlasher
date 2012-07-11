@@ -1078,10 +1078,15 @@ class display_multiple:
 def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":fc_dir, ...]
 	clear_window()
 	Main.master.title(Main._title_base+" "+Main._version+" - "+title)
-	menu_button=create_image_button(Main,".TexFlasher/pictures/menu.png",None,Main.b_normal)
+	toolbar=Frame(Main)
+	toolbar.grid(row=1,column=0)
+	menu_button=create_image_button(toolbar,".TexFlasher/pictures/menu.png",None,Main.b_normal)
 	menu_button.configure(command=lambda:menu())
 	
-	menu_button.grid(row=1,columnspan=5)
+	menu_button.grid(row=0,column=0)
+	query=Search(toolbar)
+	query.set_completion_list(comp_list)
+	query.grid(row=0,column=1,sticky=E+W+N+S)	
 	
 	scrollframe=Frame(Main)
 	scrollframe.grid(row=3,column=0)
