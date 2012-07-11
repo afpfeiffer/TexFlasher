@@ -149,11 +149,14 @@ def parse_tex(fcard_dir,source_path):
 	for line in source_tex:
 		if line.lstrip().startswith("%"):
 		    line=source_tex.next()	
-		elif line.startswith("\\"):
+		elif line.startswith("\\\\"):
 			line="\ "+line
-		line=line.replace("\\ \\","\\ \ \\")
-		line=line.replace("\\  \\","\\ \ \\")
-		line=line.replace("\\   \\","\\ \ \\")
+		line=line.replace("\\\\ \\\\","\\\\ \\ \\\\")
+		line=line.replace("\\\\  \\\\","\\\\ \\ \\\\")
+		line=line.replace("\\\\   \\\\","\\\\ \\ \\\\")
+		line=line.replace("\\\\    \\\\","\\\\ \\ \\\\")
+		line=line.replace("\\\\     \\\\","\\\\ \\ \\\\")
+		line=line.replace("\\\\      \\\\","\\\\ \\ \\\\")
 	
 		matches=re.compile('^\\\\fc\{(.*?)\}').findall(line.lstrip())
 		try:#fails if no fc_marker in line!
