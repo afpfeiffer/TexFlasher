@@ -27,6 +27,28 @@ echo
 echo "(Re-)Compiling flashcards."
 echo
 
+txtrst=$(tput sgr0) # Text reset
+txtclr=$(tput setaf 2) 
+txtbgw=$(tput setb 7) #white background
+txtbgg=$(tput setab 2) #green background
+txtbgr=$(tput setab 1) #red background
+txtbld=$(tput bold) #bold
+texthb=$(tput dim) #half bright
+
+# Other variables you can define as follows:
+# txtgrn=$(tput setaf 2) # Green
+# txtylw=$(tput setaf 3) # Yellow
+# txtblu=$(tput setaf 4) # Blue
+# txtpur=$(tput setaf 5) # Purple
+# txtcyn=$(tput setaf 6) # Cyan
+# txtwht=$(tput setaf 7) # White
+# txtrst=$(tput sgr0) # Text reset
+# Following are the tput details further:
+# tput setab [1-7] : Set a background colour using ANSI escape
+# tput setb [1-7] : Set a background colour
+# tput setaf [1-7] : Set a foreground colour using ANSI escape
+# tput setf [1-7] : Set a foreground colour
+
 WD=$PWD
 
 file=$1
@@ -172,7 +194,7 @@ else
 	echo "  -> $newnumber new card(s)" | tee -a $folder/texFlasher.log
   echo "  -> $changedContent card(s) with changed content" | tee -a $folder/texFlasher.log
 	echo "  -> $changedHeader card(s) with changed header" | tee -a $folder/texFlasher.log
-	
+	echo ""
 
 	buildCounter="0"
 	pBase=`echo "scale=2; 100.0 / $compilenumber.0" | bc`
@@ -184,14 +206,14 @@ else
 		percent=`echo "($buildCounter.0 * $pBase)/1" | bc`
 		ceol=`tput el`
 		if [ $HAVETIMEESTIMATE -eq 1 ]; then
-			echo -ne "\r${ceol}[ "
+			echo -ne "\r${ceol}  "
 			equals=`echo "$percent / 2" | bc `
-			for i in $(seq $equals); do echo -n '='; done
-			echo -n '>'
+			for i in $(seq $equals); do echo -n "${txtbgg} "; done
+			echo -n "${txtbgr} "
 			for i in $(seq `echo "49 - $equals" | bc`); do echo -n ' '; done
-			echo -n " ] progress: $percent%,  $tLeft remaining"
+			echo -n "${txtrst} progress: $percent%,  $tLeft remaining"
 		else
-			echo -ne "\r${ceol}[ >                                                  ] progress: $percent%"
+			echo -ne "\r${ceol}  ${txtbgr}>                                                 ${txtrst} progress: $percent%"
 		fi
 		
 		cd $folder/Flashcards
@@ -213,7 +235,7 @@ else
 		HAVETIMEESTIMATE=1
 	done
 	ceol=`tput el`
-	echo -ne "\r${ceol}[ ================================================== ] progress 100%\n"
+	echo -ne "\r${ceol}  ${txtbgg}==================================================${txtrst} progress 100%\n"
 	
 	cd $folder/Diffs
   cp *.png Flashcards/
