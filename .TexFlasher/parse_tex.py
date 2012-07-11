@@ -104,7 +104,6 @@ def parse_tex(fcard_dir,source_path):
 		
 	theorems={}
 	tex_header=""
-	end_header_marker="\\begin{document}\n"
 	tex_end="\end{document}\n"
 	notice="%NOTICE: This file is generated automatically changes will be overwritten and wont have any effect unless you compile it yourself!\n"
 	
@@ -133,7 +132,7 @@ def parse_tex(fcard_dir,source_path):
 			tex_header+=line
 			#print line
 	if not end_header_marker_status=="found":
-		print "Fatal Error: No end_tex_header_marker "+end_header_marker+" found!" 
+		print "Fatal Error: No end_tex_header_marker \begin{document} found!" 
 		sys.exit()
 	#search for card marker
 	# needed packages
@@ -149,7 +148,13 @@ def parse_tex(fcard_dir,source_path):
 	fcard_desc=""
 	for line in source_tex:
 		if line.lstrip().startswith("%"):
-		    line=source_tex.next()		
+		    line=source_tex.next()	
+		elif line.startswith("\\"):
+			line="\ "+line
+		line=line.replace("\\ \\","\\ \ \\")
+		line=line.replace("\\  \\","\\ \ \\")
+		line=line.replace("\\   \\","\\ \ \\")
+	
 		matches=re.compile('^\\\\fc\{(.*?)\}').findall(line.lstrip())
 		try:#fails if no fc_marker in line!
 			fcard_title=matches[0]
