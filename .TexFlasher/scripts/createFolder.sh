@@ -41,11 +41,21 @@ if [ $? -eq  0 ]; then
 			exit 1
 		fi
 		svn co $2 $foldername
-		svn mkdir -vp $foldername/Flashcards
-		svn mkdir -vp $foldername/Users
-		svn mkdir -vp $foldername/Details
-		cp .TexFlasher/Example.tex -vp $foldername/Vorbereitung.tex
+		if [ ! -d $foldername/Flashcards ]; then
+			svn mkdir -vp $foldername/Flashcards
+		fi
+		if [ ! -d $foldername/Users ]; then
+			svn mkdir -vp $foldername/Users
+		fi
+		if [ ! -d $foldername/Details ]; then
+			svn mkdir -vp $foldername/Details
+		fi
+		if [ ! -f $foldername/Vorbereitung.tex ]; then
+			cp .TexFlasher/Example.tex -vp $foldername/Vorbereitung.tex
+		fi
+		
 		svn add $foldername/Vorbereitung.tex
+		svn commit $foldername -m "initial commit"
 	else
 		mkdir -vp $foldername/Flashcards
 		mkdir -vp $foldername/Users
