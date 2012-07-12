@@ -65,6 +65,12 @@ def load_leitner_db(leitner_dir,user):
 	if not os.path.isdir(leitner_dir+"/Flashcards"):
 		print "No directory named 'Flashcards' found in "+leitner_dir
 		sys.exit()
+	if not os.path.isdir(leitner_dir+"/Details"):
+		print "No directory named 'Details' found in "+leitner_dir
+		sys.exit()
+	if not os.path.isdir(leitner_dir+"/Users"):
+		print "No directory named 'Users' found in "+leitner_dir
+		sys.exit()		
 	#load old flashcards
 	try:
 		doc= xml.parse(leitner_dir+"/Users/"+Settings["user"]+".xml")

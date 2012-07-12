@@ -243,7 +243,7 @@ else
 		HAVETIMEESTIMATE=1
 	done
 	ceol=`tput el`
-	echo -ne "\r${ceol}  ${txtbgg}==================================================${txtrst} progress 100%\n"
+	echo -ne "\r${ceol}  ${txtbgg}                                                  ${txtrst} progress 100%\n"
 	
 	cd $folder/Diffs
   cp *.png Flashcards/
