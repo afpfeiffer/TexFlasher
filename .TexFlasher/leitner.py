@@ -2091,19 +2091,19 @@ def menu():
 
 	toolbar=Frame(Main)
 	
-	create=create_image_button(toolbar,"./.TexFlasher/pictures/Flashcard_folder_add.png",None,Main.b_large)
+	create=create_image_button(toolbar,"./.TexFlasher/pictures/Flashcard_folder_add.png",None,Main.b_normal)
 	create.configure(command=create_new) 
 	ToolTip(create,"Open flaschcards script")
-	create_n=create_image_button(toolbar,"./.TexFlasher/pictures/Flashcard_folder_create.png",None,Main.b_large)
+	create_n=create_image_button(toolbar,"./.TexFlasher/pictures/Flashcard_folder_create.png",None,Main.b_normal)
 	create_n.configure(command=create_folder)
 	ToolTip(create_n,"Create new flaschards folder")
 
 	if row_start > 4:
-		toolbar.grid(row=2,column=0,columnspan=100,sticky=E+W+N+S)
-		toolbar.rowconfigure(0,weight=1)
-		toolbar.columnconfigure(0,weight=1)
-		toolbar.columnconfigure(1,weight=1)
-		toolbar.columnconfigure(2,weight=1)
+		toolbar.grid(row=2,columnspan=20)
+		#toolbar.rowconfigure(0,weight=1)
+		#toolbar.columnconfigure(0,weight=1)
+		#toolbar.columnconfigure(1,weight=1)
+		#toolbar.columnconfigure(2,weight=1)
 		create.grid(row=0,column=0,sticky=E+W+N+S)
 		#search field
 		query=Search(toolbar)
@@ -2114,10 +2114,10 @@ def menu():
 
 		Label(Main,height=1).grid(sticky=E+W,row=3,columnspan=10)
 	else:
-		toolbar.grid(row=2,column=0,columnspan=10,sticky=E+W+N+S)
-		toolbar.rowconfigure(0,weight=1)
-		toolbar.columnconfigure(0,weight=1)
-		toolbar.columnconfigure(1,weight=1)
+		toolbar.grid(row=2,columnspan=20)
+		#toolbar.rowconfigure(0,weight=1)
+		#toolbar.columnconfigure(0,weight=1)
+		#toolbar.columnconfigure(1,weight=1)
 		create_n.grid(row=0,column=0,sticky=E+W+N+S)			
 		create.grid(row=0,column=1,sticky=E+W+N+S)
 	#footer
