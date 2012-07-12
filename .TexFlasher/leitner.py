@@ -989,7 +989,7 @@ class Search(Entry):
 					back_all=back_all.intersection(back_results)
 			      else:
 					back_all=back_results					
-			search_results=list(front_all)+list(back_all)
+			search_results=list(front_all)+list(back_all.difference(front_all))
 						
 			for fc in search_results:
 				results.append({"tag":fc.split("###")[0],"dir":fc.split("###")[1]})				
