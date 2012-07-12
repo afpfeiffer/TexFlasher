@@ -963,23 +963,33 @@ class Search(Entry):
 		current_tex_file=None
 		current_order_xml=None
 		if len(search_query)>0 and not search_query=="Search ...":
-			front_results=set([])
-			back_results=set([])
+			front_all=set([])
+			back_all=set([])
 			results=[]
 			for w in search_query.lower().replace("-"," ").strip().split():
+			      front_results=set([])
+			      back_results=set([])			  
 			      front_matches=get_close_matches(w,front_index.keys())
 			      back_matches=get_close_matches(w,back_index.keys())
 			      for key in front_matches:
 					if len(front_results)>0:
-						front_results=front_results.intersection(set(front_index[key]))					
+						front_results=front_results.union(set(front_index[key]))					
 					else:
 						front_results=set(front_index[key])
 			      for key in back_matches:	
 					if len(back_results)>0:
-						back_results=back_results.intersection(set(back_index[key]))				
+						back_results=back_results.union(set(back_index[key]))				
 					else:
 						back_results=set(back_index[key])
-			search_results=list(front_results)+list(back_results)
+			      if len(front_all)>0:
+					front_all=front_all.intersection(front_results)
+			      else:
+					front_all=front_results
+			      if len(back_all)>0:
+					back_all=back_all.intersection(back_results)
+			      else:
+					back_all=back_results					
+			search_results=list(front_all)+list(back_all)
 						
 			for fc in search_results:
 				results.append({"tag":fc.split("###")[0],"dir":fc.split("###")[1]})				
@@ -1734,6 +1744,7 @@ def update_texfile( fname, user ):
  	if window_type=="showerror":
 		exec('tkMessageBox.'+window_type+'( "Parse LaTex Logfile","%s")'%message)	
 	else:
+		global front_index,back_index
 		front_index,back_index=create_index(True)	
 	menu()
 	
