@@ -1529,19 +1529,24 @@ class Flasher:
 		
 		edit_b=create_image_button(menubar_frame,"./.TexFlasher/pictures/latex.png",None,Main.b_normal)
 		edit_b.config(state=DISABLED)
-		edit_b.grid(row=0,column=2,sticky=W+E)
+		edit_b.grid(row=0,column=4,sticky=W+E)
 	
 		save_b=create_image_button(menubar_frame,".TexFlasher/pictures/upload_now.png",None,Main.b_normal)
 		save_b.config(state=DISABLED)
-		save_b.grid(row=0, column=3,sticky=W+E)	
+		save_b.grid(row=0, column=5,sticky=W+E)	
 	
 		clear_b=create_image_button(menubar_frame,".TexFlasher/pictures/clear.png",None,Main.b_normal)
 		clear_b.configure(state=DISABLED)
-		clear_b.grid(row=0, column=4,sticky=W+E)	
+		clear_b.grid(row=0, column=6,sticky=W+E)	
 		
 		hide_b=create_image_button(menubar_frame,".TexFlasher/pictures/remove.png",None,Main.b_normal)
 		hide_b.configure(state=DISABLED)
-		hide_b.grid(row=0, column=5,sticky=W+E)	
+		hide_b.grid(row=0, column=2,sticky=W+E)	
+
+		query=Search(menubar_frame)
+		query.set_completion_list(comp_list)
+		query.grid(row=0,column=3,sticky=E+W)
+		
 		
 		self.c.save_b=save_b
 		self.c.clear_b=clear_b
