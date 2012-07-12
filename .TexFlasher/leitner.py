@@ -805,11 +805,22 @@ def get_fc_section(dir,tag,source):
 tkinter_umlauts=['odiaeresis', 'adiaeresis', 'udiaeresis', 'Odiaeresis', 'Adiaeresis', 'Udiaeresis', 'ssharp']
 #http://tkinter.unpythonic.net/wiki/AutocompleteEntry
 
-def create_index():
-			current_dir=""
-			front_index={}
-			back_index={}
-			all_fcs=get_all_fcs()
+def create_hash(string):
+  chars={"-":"z","0":"a","1":"b","2":"c","3":"d","4":"e","5":"f","6":"g","7":"h","8":"i","9":"j"}
+  newhash=""
+  for n in str(hash(string)):
+    newhash+=chars[n]
+  return newhash
+
+
+
+
+def create_index(refresh=False):
+		current_dir=""
+		front_index={}
+		back_index={}
+		all_fcs=get_all_fcs()
+		if not os.path.isfile(".TexFlasher/search_words.xml") or refresh:
 			for fc_elem in all_fcs:
 				if not fc_elem['dir']==current_dir: #load files needed for get_... funktions to speed up search
 					current_dir=fc_elem['dir']
@@ -817,7 +828,6 @@ def create_index():
 					tex_file_path=get_flashfolder_path(fc_elem['dir'])
 					current_tex_file=open(tex_file_path,"r", "utf-8")
 					current_order_xml=xml.parse(fc_elem['dir']+"/Flashcards/order.xml")
-					
 				fc_name,theorem_name,theorem_type,fc_content=get_fc_desc(fc_elem['dir'],fc_elem['tag'],current_tex_file,current_order_xml)
 				fc_sections=get_fc_section(fc_elem['dir'],fc_elem['tag'],current_source_xml)	
 				try:
@@ -837,8 +847,40 @@ def create_index():
 							back_index[w].append(fc_elem['tag']+"###"+fc_elem['dir'])
 					except:
 						back_index[w]=[fc_elem['tag']+"###"+fc_elem['dir']]
-																						  
-			return front_index,back_index
+			if len(front_index)>0 or len(back_index)>0:				
+			  doc=xml.Document()
+			  index = doc.createElement('index')
+			  front=doc.createElement('front')
+			  index.appendChild(front)
+			
+			  for w in front_index:
+			    elem=doc.createElement(create_hash(w))
+			    front.appendChild(elem)
+			    elem.setAttribute("key",w)
+			    fcs=""
+			    for fc in front_index[w]:
+			      fcs+=fc+"|||"
+			    elem.setAttribute("fcs",fcs)
+			  back = doc.createElement('back')
+			  index.appendChild(back)
+			  for w in back_index:
+			    elem=doc.createElement(create_hash(w))
+			    back.appendChild(elem)
+			    elem.setAttribute("key",w)
+			    fcs=""
+			    for fc in back_index[w]:
+			      fcs+=fc+"|||"
+			    elem.setAttribute("fcs",fcs)			  
+			  xml_file = open(".TexFlasher/search_words.xml", "w","utf-8")
+			  index.writexml(xml_file)
+			  xml_file.close()
+		else:
+			doc= xml.parse(".TexFlasher/search_words.xml")
+			for fcs in doc.getElementsByTagName('front')[0].childNodes:
+			      front_index[fcs.getAttribute('key')]=fcs.getAttribute('fcs').split('|||')[:-1]
+			for fcs in doc.getElementsByTagName('back')[0].childNodes:
+			      back_index[fcs.getAttribute('key')]=fcs.getAttribute('fcs').split('|||')[:-1]			      
+		return front_index,back_index
 
 
 class Search(Entry):
@@ -918,18 +960,21 @@ class Search(Entry):
 			front_results=set([])
 			back_results=set([])
 			results=[]
-			for w in search_query.lower().replace("-"," ").strip().split():	
-				if w in front_index:
+			for w in search_query.lower().replace("-"," ").strip().split():
+			      front_matches=get_close_matches(w,front_index.keys())
+			      back_matches=get_close_matches(w,back_index.keys())
+			      for key in front_matches:
 					if len(front_results)>0:
-						front_results=front_results.intersection(set(front_index[w]))					
+						front_results=front_results.intersection(set(front_index[key]))					
 					else:
-						front_results=set(front_index[w])
-				if w in back_index:				
+						front_results=set(front_index[key])
+			      for key in back_matches:	
 					if len(back_results)>0:
-						back_results=back_results.intersection(set(front_index[w]))				
+						back_results=back_results.intersection(set(back_index[key]))				
 					else:
-						back_results=set(back_index[w])										
-			search_results=list(front_results)+list(back_results)	
+						back_results=set(back_index[key])
+			search_results=list(front_results)+list(back_results)
+						
 			for fc in search_results:
 				results.append({"tag":fc.split("###")[0],"dir":fc.split("###")[1]})				
 			## display search results
@@ -1683,7 +1728,7 @@ def update_texfile( fname, user ):
  	if window_type=="showerror":
 		exec('tkMessageBox.'+window_type+'( "Parse LaTex Logfile","%s")'%message)	
 	else:
-		front_index,back_index=create_index()	
+		front_index,back_index=create_index(True)	
 	menu()
 	
 
