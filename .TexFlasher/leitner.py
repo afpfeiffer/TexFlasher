@@ -822,6 +822,7 @@ def create_hash(string):
 
 
 def create_index(refresh=False):
+		min_word_len=4
 		current_dir=""
 		front_index={}
 		back_index={}
@@ -834,20 +835,24 @@ def create_index(refresh=False):
 					tex_file_path=get_flashfolder_path(fc_elem['dir'])
 					current_tex_file=open(tex_file_path,"r", "utf-8")
 					current_order_xml=xml.parse(fc_elem['dir']+"/Flashcards/order.xml")
-				fc_name,theorem_name,theorem_type,fc_content=get_fc_desc(fc_elem['dir'],fc_elem['tag'],current_tex_file,current_order_xml)
-				fc_sections=get_fc_section(fc_elem['dir'],fc_elem['tag'],current_source_xml)	
-				try:
+				try:	
+					fc_name,theorem_name,theorem_type,fc_content=get_fc_desc(fc_elem['dir'],fc_elem['tag'],current_tex_file,current_order_xml)
+					fc_sections=get_fc_section(fc_elem['dir'],fc_elem['tag'],current_source_xml)	
+				
 					fc_elem['query']={"front":fc_name+" "+theorem_name+" "+fc_elem['tag']+" "+fc_sections,"content":sanatize(fc_content)}
 				except:
 					pass
 					#TODO: Sometimes encoding error!
-				for w in fc_elem['query']['front'].lower().replace("-"," ").strip().split(" "):
+					
+				for w in fc_elem['query']['front'].lower().replace("-"," ").replace("{"," ").replace("}"," ").strip().split(" "):
+				  if len(w)>=min_word_len:
 					try:
 						if fc_elem['tag']+"###"+fc_elem['dir'] not in front_index[w]:
 							front_index[w].append(fc_elem['tag']+"###"+fc_elem['dir'])
 					except:
 						front_index[w]=[fc_elem['tag']+"###"+fc_elem['dir']]						
-				for w in fc_elem['query']['content'].lower().replace("-"," ").strip().split(" "):
+				for w in fc_elem['query']['content'].lower().replace("-"," ").replace("{"," ").replace("}"," ").strip().split(" "):
+				  if len(w)>=min_word_len:
 					try:
 						if fc_elem['tag']+"###"+fc_elem['dir'] not in back_index[w]:					
 							back_index[w].append(fc_elem['tag']+"###"+fc_elem['dir'])
