@@ -180,7 +180,11 @@ else
   
 
   NEWFLASHCARDS="`ls $folder/Flashcards.tmp/*.tex`" 2>/dev/null
+  rm $folder/Flashcards/changed.texflasher
+#   cat $folder/Flashcards/recompile.texflasher >> rm $folder/Flashcards/changed.texflasher
+#   rm $folder/Flashcards/recompile.texflasher 
   for newflashcard in $NEWFLASHCARDS; do
+		echo "$target" >> $folder/Flashcards/changed.texflasher		
     # get filename with extension
     name=$(basename $newflashcard)
     # get filename without extension
@@ -203,6 +207,7 @@ else
 	HAVETIMEESTIMATE=0
 	res1=$(date +%s.%N)
 	printTime=$res1
+	
 	for target in $TARGETS; do
 # 		echo "building target $target ..."
 		# get percentage

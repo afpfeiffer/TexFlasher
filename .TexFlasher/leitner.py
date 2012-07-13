@@ -1754,8 +1754,9 @@ def update_texfile( fname, user ):
  	if window_type=="showerror":
 		exec('tkMessageBox.'+window_type+'( "Parse LaTex Logfile","%s")'%message)	
 	else:
-		global front_index,back_index
-		front_index,back_index=create_index(True)	
+		if os.path.isfile(os.path.dirname(fname)+"/Flashcards/changed.texflasher"):
+			global front_index,back_index
+			front_index,back_index=create_index(True)	
 	menu()
 	
 
