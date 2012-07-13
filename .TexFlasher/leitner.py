@@ -796,6 +796,7 @@ def get_fc_desc(fc_dir,tag,tex_file=False,xml_file=False):
 			content_=True
 
 	
+	#print title,theorem_name,theorem_type,content
 	return title,theorem_name,theorem_type,content
 	
 def get_fc_section(dir,tag,source):	

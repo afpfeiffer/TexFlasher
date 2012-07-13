@@ -180,7 +180,7 @@ else
   
 
   NEWFLASHCARDS="`ls $folder/Flashcards.tmp/*.tex`" 2>/dev/null
-  rm $folder/Flashcards/changed.texflasher
+  rm $folder/Flashcards/changed.texflasher 2>/dev/null
 #   cat $folder/Flashcards/recompile.texflasher >> rm $folder/Flashcards/changed.texflasher
 #   rm $folder/Flashcards/recompile.texflasher 
   for newflashcard in $NEWFLASHCARDS; do
