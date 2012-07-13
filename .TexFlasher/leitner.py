@@ -784,15 +784,15 @@ def get_fc_desc(fc_dir,tag,tex_file=False,xml_file=False):
 	tag_=False
 	content=""	
 	for l in tex_file:
-		if content_ and re.compile("\\\\end\{"+theorem_type+"\}").findall(l):
+		if content_ and re.compile("^\\\\end\{"+theorem_type+"\}").findall(l.lstrip()):
 			content_=False
 			tag_=False
 			break
 		if tag_ and content_:
 			content+=l
-		if not tag_ and re.compile("\\\\fc\{"+tag+"\}").findall(l):
+		if not tag_ and re.compile("^\\\\fc\{"+tag+"\}").findall(l.lstrip()):
 			tag_=True
-		if tag_ and re.compile("\\\\begin\{"+theorem_type+"\}").findall(l):			
+		if tag_ and re.compile("^\\\\begin\{"+theorem_type+"\}").findall(l.lstrip()):			
 			content_=True
 
 	
@@ -840,24 +840,25 @@ def create_index(refresh=False):
 					fc_sections=get_fc_section(fc_elem['dir'],fc_elem['tag'],current_source_xml)	
 				
 					fc_elem['query']={"front":fc_name+" "+theorem_name+" "+fc_elem['tag']+" "+fc_sections,"content":sanatize(fc_content)}
+
+					
+					for w in fc_elem['query']['front'].lower().replace("-"," ").replace("{"," ").replace("}"," ").strip().split(" "):
+						if len(w)>=min_word_len:
+							try:
+								if fc_elem['tag']+"###"+fc_elem['dir'] not in front_index[w]:
+									front_index[w].append(fc_elem['tag']+"###"+fc_elem['dir'])
+							except:
+								front_index[w]=[fc_elem['tag']+"###"+fc_elem['dir']]						
+					for w in fc_elem['query']['content'].lower().replace("-"," ").replace("{"," ").replace("}"," ").strip().split(" "):
+						if len(w)>=min_word_len:
+							try:
+								if fc_elem['tag']+"###"+fc_elem['dir'] not in back_index[w]:					
+									back_index[w].append(fc_elem['tag']+"###"+fc_elem['dir'])
+							except:
+								back_index[w]=[fc_elem['tag']+"###"+fc_elem['dir']]
 				except:
 					pass
-					#TODO: Sometimes encoding error!
-					
-				for w in fc_elem['query']['front'].lower().replace("-"," ").replace("{"," ").replace("}"," ").strip().split(" "):
-				  if len(w)>=min_word_len:
-					try:
-						if fc_elem['tag']+"###"+fc_elem['dir'] not in front_index[w]:
-							front_index[w].append(fc_elem['tag']+"###"+fc_elem['dir'])
-					except:
-						front_index[w]=[fc_elem['tag']+"###"+fc_elem['dir']]						
-				for w in fc_elem['query']['content'].lower().replace("-"," ").replace("{"," ").replace("}"," ").strip().split(" "):
-				  if len(w)>=min_word_len:
-					try:
-						if fc_elem['tag']+"###"+fc_elem['dir'] not in back_index[w]:					
-							back_index[w].append(fc_elem['tag']+"###"+fc_elem['dir'])
-					except:
-						back_index[w]=[fc_elem['tag']+"###"+fc_elem['dir']]
+					#TODO: Sometimes encoding error!						
 			if len(front_index)>0 or len(back_index)>0:				
 			  doc=xml.Document()
 			  index = doc.createElement('index')

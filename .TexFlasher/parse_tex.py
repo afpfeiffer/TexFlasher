@@ -168,8 +168,7 @@ def parse_tex(fcard_dir,source_path):
 					sys.exit()			
 			except:
 				sys.exit()
-			order_element=doc.createElement(fcard_title)
-			order_db.appendChild(order_element)
+
 			#check for doubles
 			if fcard_title in fcards:
 				print "Fatal Error: flashcard_marker "+fcard_title+" used multiple times!"
@@ -184,7 +183,8 @@ def parse_tex(fcard_dir,source_path):
 			if fcard_title not in fcards:		
 				matches=re.compile('^\\\\begin\{(.*?)\}\[(.*?)\]').findall(line.lstrip())
 				try:
-					if len(matches[0][1])>0:
+					
+					if len(matches[0])>0:
 						fc_meta=meta.getElementsByTagName(fcard_title)[0]
 						fc_page=fc_meta.getAttribute('page')
 						fc_header=""
@@ -214,6 +214,8 @@ def parse_tex(fcard_dir,source_path):
 						try:
 							fcards[fcard_title]="\\begin{flashcard}{"+fc_section+"\n\\begin{"+matches[0][0]+"}[\\textbf{"+matches[0][1]+"}]\\end{"+matches[0][0]+"}}\n\\flushleft\n\\footnotesize\n%#begin_content#%\n"
 							fcards_header[fcard_title]=fc_header
+							order_element=doc.createElement(fcard_title)
+							order_db.appendChild(order_element)							
 							order_element.setAttribute('name',matches[0][1])
 							order_element.setAttribute('theorem_type',matches[0][0])							
 							order_element.setAttribute('theorem_name',theorems[matches[0][0]])							
