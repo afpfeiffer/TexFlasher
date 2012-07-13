@@ -40,17 +40,19 @@ import ConfigParser
 
 
 def checkForUpdate(user):
-	files=""
-	if os.path.isfile("./.TexFlasher/config.xml"):
-		tree = xml.parse("./.TexFlasher/config.xml")
-		config_xml = tree.getElementsByTagName('config')[0]
-		for elem in config_xml.childNodes:
-			if elem.tagName=="FlashFolder" and not elem.getAttribute('filename')=="":
-				files += str(elem.getAttribute('filename')) + " "
-				#files += str(os.path.dirname(elem.getAttribute('filename'))+"/Users/"+user+".xml ")
-				#files += str(os.path.dirname(elem.getAttribute('filename'))+"/Users/"+user+"_comment.xml ")
-				#files += str(os.path.dirname(elem.getAttribute('filename'))+"/Users/questions.xml ")
-	os.system( "bash .TexFlasher/scripts/checkForUpdate.sh "+ files + "&")
+	return
+	
+	#files=""
+	#if os.path.isfile("./.TexFlasher/config.xml"):
+		#tree = xml.parse("./.TexFlasher/config.xml")
+		#config_xml = tree.getElementsByTagName('config')[0]
+		#for elem in config_xml.childNodes:
+			#if elem.tagName=="FlashFolder" and not elem.getAttribute('filename')=="":
+				#files += str(elem.getAttribute('filename')) + " "
+				##files += str(os.path.dirname(elem.getAttribute('filename'))+"/Users/"+user+".xml ")
+				##files += str(os.path.dirname(elem.getAttribute('filename'))+"/Users/"+user+"_comment.xml ")
+				##files += str(os.path.dirname(elem.getAttribute('filename'))+"/Users/questions.xml ")
+	#os.system( "bash .TexFlasher/scripts/checkForUpdate.sh "+ files + "&")
 	
 
 def checkIfNeedToSave( files ):

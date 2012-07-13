@@ -250,7 +250,7 @@ def get_all_fcs(path=False):
 
 
 def statistics_nextWeek(ldir):
-		checkForUpdate(Settings["user"])
+		#checkForUpdate(Settings["user"])
 		database = load_leitner_db(ldir, Settings["user"])
 		DAYS=[]
 		LEVELS=[]
