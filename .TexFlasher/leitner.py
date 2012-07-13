@@ -1509,20 +1509,10 @@ class Flasher:
 
 		#spacer
 		
-		#flashcard details
-		self.c.fc_det_row=1
-		fc_det_left = StringVar()
-		fc_det_right = StringVar()
-		Label(Main,anchor=W,textvariable=fc_det_left,font=("Sans",Main.f_normal)).grid(row=self.c.fc_det_row,column=0, columnspan=2,sticky=W)
 
-		
-		
-		Label(Main,anchor=E,textvariable=fc_det_right,font=("Sans",Main.f_normal)).grid(row=self.c.fc_det_row, column=3,columnspan=2,sticky=E)
-		self.c.fc_det_left=fc_det_left
-		self.c.fc_det_right=fc_det_right
 	
 		# menubar
-		self.c.menu_row=2
+		self.c.menu_row=1
 		menubar_frame=Frame(Main)
 		menubar_frame.grid(row=self.c.menu_row,column=0,columnspan=8)
 		
@@ -1560,7 +1550,17 @@ class Flasher:
 		self.c.back_b=back_b
 		self.c.edit_b=edit_b
 		self.c.hide_b=hide_b
+		#flashcard details
+		self.c.fc_det_row=2
+		fc_det_left = StringVar()
+		fc_det_right = StringVar()
+		Label(Main,anchor=W,textvariable=fc_det_left,font=("Sans",Main.f_normal)).grid(row=self.c.fc_det_row,column=0, columnspan=2,sticky=W)
+
 		
+		
+		Label(Main,anchor=E,textvariable=fc_det_right,font=("Sans",Main.f_normal)).grid(row=self.c.fc_det_row, column=3,columnspan=2,sticky=E)
+		self.c.fc_det_left=fc_det_left
+		self.c.fc_det_right=fc_det_right		
 		#stats	
 		stat_height=Main.b_normal
 		stat_width=int(float(WIDTH)*0.95)
