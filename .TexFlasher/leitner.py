@@ -119,6 +119,8 @@ def futureCardNumber( database, offset, offset2, maxLevel ):
 				newLevel=int(pow(level,1.2))
 			elif level>=0:
 				newLevel = level
+			else: 
+				newLevel = 200000
 				
 			dt_1 = lastReviewed_time + timedelta(days=(newLevel - (offset + offset2)))		
 			dt_2 = lastReviewed_time + timedelta(days=(newLevel - offset))		
