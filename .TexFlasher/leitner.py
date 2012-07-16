@@ -1446,7 +1446,7 @@ def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type):
 			for elem in config_xml.childNodes:
 				if os.path.dirname(elem.getAttribute('filename'))==dir:
 					change_latex(elem.getAttribute('filename'),fc_tag,content,theorem_type)				
-					executeCommand("bash .TexFlasher/scripts/recompileFlashcards.sh "+elem.getAttribute('filename'), True)
+					executeCommand("bash .TexFlasher/scripts/createFlashcards.sh "+elem.getAttribute('filename'), True)
  					message,window_type=get_log_status(dir)
  					if window_type=="showerror":
 						exec('tkMessageBox.'+window_type+'( "Parse LaTex Logfile","%s")'%message)
