@@ -116,7 +116,7 @@ def futureCardNumber( database, offset, offset2, maxLevel ):
 			lastReviewed_time=datetime(*(strptime(lastReviewed, "%Y-%m-%d %H:%M:%S")[0:6]))
 		        level=int(elem.getAttribute('level'))
 			if( level > 2 ):
-				newLevel=int(pow(level,1.2))
+				newLevel=int(pow(level,1.3))
 			elif level>=0:
 				newLevel = level
 			else: 
@@ -156,7 +156,7 @@ def load_agenda(ldb,dir,now=datetime.now(),PageSort=True):
 				level=int(elem.getAttribute('level'))
 					
 				if level > 2 :
-					newLevel=int(pow(level,1.2))
+					newLevel=int(pow(level,1.3))
 				else:
 					newLevel = level
 				if level>=0:
