@@ -894,7 +894,7 @@ def create_index(refresh=False):
 			    for fc in back_index[w]:
 			      fcs+=fc+"|||"
 			    elem.setAttribute("fcs",fcs)			  
-			  xml_file = open(".TexFlasher/search_words.xml", "w","utf-8")
+			  xml_file = open(".TexFlasher/search_words_detex.xml", "w","utf-8")
 			  index.writexml(xml_file)
 			  xml_file.close()
 		else:
