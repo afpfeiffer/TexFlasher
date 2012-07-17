@@ -102,8 +102,8 @@ if [[ "`diff $folder/Flashcards/$purefilebase.bak $file`" == "" ]]; then
 else 
 	cp $file $folder/Details/source.tex
 	cd $folder/Details
-	latex -halt-on-error $folder/Details/source.tex 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|No pages of output.|Emergency stop.' | tee -a $folder/texFlasher.log
-	Errors="`cat $folder/texFlasher.log | grep -rniE 'error|ERROR|Error|Missing|No pages of output.|Emergency stop.'`"
+	latex -halt-on-error $folder/Details/source.tex 2>&1 < /dev/null | grep -rniE 'Undefined control sequence|compiled flashcard|error|ERROR|Error|Missing|No pages of output.|Emergency stop.' | tee -a $folder/texFlasher.log
+	Errors="`cat $folder/texFlasher.log | grep -rniE 'error|ERROR|Error|Missing|No pages of output.|Emergency stop.|Undefined control sequence'`"
 	if [ ! "$Errors" == ""  ]; then
 		echo "Fatal latex error in source file." >> $folder/texFlasher.log
 		exit 1
@@ -230,7 +230,7 @@ else
 		fi
 		
 		cd $folder/Flashcards
-		make $target 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|Emergency stop.' | tee -a $folder/texFlasher.log
+		make $target 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|Emergency stop.|Undefined control sequence' | tee -a $folder/texFlasher.log
 		cd $folder/Diffs
 		make -i $target 2>&1 < /dev/null &> /dev/null
 		
@@ -263,6 +263,6 @@ else
 fi  
 
 # better be save than sorry
-make -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|Emergency stop.' | tee -a $folder/texFlasher.log
+make -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|Emergency stop.|Undefined control sequence' | tee -a $folder/texFlasher.log
 
 exit 0
