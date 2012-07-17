@@ -1586,6 +1586,12 @@ class Flasher:
 		Label(Main,height=1).grid(row=6,columnspan=5)	
 	
 		#true false
+		self.c.brain_true=Label(Main)
+		self.c.brain_true.grid(row=self.c.true_false_row, column=0)
+
+		self.c.brain_false=Label(Main)
+		self.c.brain_false.grid(row=self.c.true_false_row, column=4)		
+		
 		self.c.true_false_row=7
 		true_b=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_correct.png",None,Main.b_large)
 		false_b=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_wrong.png",None,Main.b_large)
@@ -1681,7 +1687,8 @@ class Flasher:
 		self.c.back_b.config(state=DISABLED)
 		self.c.back_b.config(state=DISABLED,command=lambda:self.reactAndInit( True , listPosition-1,False))
 		self.c.hide_b.config(state=DISABLED)
-	
+		self.c.brain_true.config(text="")
+		self.c.brain_false.config(text="")		
 		
 		self.c.true_b.configure(state=DISABLED)
 		self.c.false_b.configure(state=DISABLED)
@@ -1734,7 +1741,10 @@ class Flasher:
 		self.c.hide_b.configure(state=NORMAL,command=lambda:self.hide_fc(flashcard_tag))
 			
 		create_comment_canvas(self.c,self.selected_dir,flashcard_tag,Settings['user'])	
-	
+
+		self.c.brain_true.config(text=brainPowerExponent(self.ldb.getElementsByTagName(flashcard_tag)[0].getAttribute('level')))
+		self.c.brain_false.config(text="review tomorrow")
+		
 		for tag in self.c.tag_buttons:
 			tag.grid()
 		self.c.l_b.config(command=self.c.rect.link_tag)
