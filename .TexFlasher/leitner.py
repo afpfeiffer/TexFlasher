@@ -101,6 +101,9 @@ def load_leitner_db(leitner_dir,user):
 	xml_file.close()
 	return ldb
 
+def brainPowerExponent:
+	return int(pow(level,1.3))
+	
 
 def futureCardNumber( database, offset, offset2, maxLevel ):
 	LEVELS=[]
@@ -116,7 +119,7 @@ def futureCardNumber( database, offset, offset2, maxLevel ):
 			lastReviewed_time=datetime(*(strptime(lastReviewed, "%Y-%m-%d %H:%M:%S")[0:6]))
 		        level=int(elem.getAttribute('level'))
 			if( level > 2 ):
-				newLevel=int(pow(level,1.3))
+				newLevel=brainPowerExponent()
 			elif level>=0:
 				newLevel = level
 			else: 
@@ -156,7 +159,7 @@ def load_agenda(ldb,dir,now=datetime.now(),PageSort=True):
 				level=int(elem.getAttribute('level'))
 					
 				if level > 2 :
-					newLevel=int(pow(level,1.3))
+					newLevel=brainPowerExponent()
 				else:
 					newLevel = level
 				if level>=0:
@@ -1746,6 +1749,19 @@ class Flasher:
 
 ############################################################## Menu ####################################################################
 
+def update_all( fnames, user ):
+	
+	for fname in fnames:
+		executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+os.path.dirname(fname), True )
+		os.system("rm "+os.path.dirname(fname)+"/Flashcards/UPDATE 2>/dev/null")
+		create_flashcards( fname )
+		message,window_type=get_log_status(os.path.dirname(fname))
+	 	if window_type=="showerror":
+			exec('tkMessageBox.'+window_type+'( "Parse LaTex Logfile","%s")'%message)	
+	
+	global front_index,back_index
+	front_index,back_index=create_index(True)	
+	menu()
 
 
 def update_texfile( fname, user ):	
