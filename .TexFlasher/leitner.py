@@ -843,10 +843,11 @@ def create_index(refresh=False):
 					current_order_xml=xml.parse(fc_elem['dir']+"/Flashcards/order.xml")
 				try:	
 				
-					fc_name=current_order_xml.getElementsByTagName(fc_elem['name'])
+					fc_name=current_order_xml.getElementsByTagName(fc_elem['tag'])[0].getAttribute('name')
 					
-					theorem_name=current_order_xml.getElementsByTagName(fc_elem['theorem_name'])
-					fc_content=open(fc_elem['dir']+"/Flashcards/"+fc_elem['tag']+".detex","r").read()
+					theorem_name=current_order_xml.getElementsByTagName(fc_elem['tag'])[0].getAttribute('theorem_name')
+					
+					fc_content=open(fc_elem['dir']+"/Flashcards/"+fc_elem['tag']+".detex","r","utf-8").read()
 					fc_sections=get_fc_section(fc_elem['dir'],fc_elem['tag'],current_source_xml)	
 				
 					fc_elem['query']={"front":fc_name+" "+theorem_name+" "+fc_elem['tag']+" "+fc_sections,"content":fc_content}
@@ -868,7 +869,7 @@ def create_index(refresh=False):
 								back_index[w]=[fc_elem['tag']+"###"+fc_elem['dir']]
 				except:
 					pass
-					#TODO: Sometimes encoding error!						
+					#TODO: Sometimes encoding error!
 			if len(front_index)>0 or len(back_index)>0:				
 			  doc=xml.Document()
 			  index = doc.createElement('index')
