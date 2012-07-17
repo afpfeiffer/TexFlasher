@@ -2128,8 +2128,8 @@ def menu():
 	save_all=create_image_button(toolbar,"./.TexFlasher/pictures/upload.png",None,Main.b_normal)
 	save_all.configure(command=lambda:executeCommand( "bash .TexFlasher/scripts/save.sh "+ saveString, True )) 
 	
-	update_all=create_image_button(toolbar,"./.TexFlasher/pictures/update.png",None,Main.b_normal)
-	update_all.configure(command=lambda:update_all(filenames)) 	
+	update_all_b=create_image_button(toolbar,"./.TexFlasher/pictures/update.png",None,Main.b_normal)
+	update_all_b.configure(command=lambda:update_all(filenames)) 	
 	
 	
 	
@@ -2149,7 +2149,7 @@ def menu():
 		query.set_completion_list(comp_list)
 		query.grid(row=0,column=2,sticky=E+W+N+S)
 		
-		update_all.grid(row=0,column=3,sticky=E+W+N+S)
+		update_all_b.grid(row=0,column=3,sticky=E+W+N+S)
 		save_all.grid(row=0,column=4,sticky=E+W+N+S)
 		Label(Main,height=1).grid(sticky=E+W,row=3,columnspan=10)
 	else:
