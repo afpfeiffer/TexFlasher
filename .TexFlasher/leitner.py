@@ -846,10 +846,10 @@ def create_index(refresh=False):
 					fc_name=current_order_xml.getElementsByTagName(fc_elem['name'])
 					
 					theorem_name=current_order_xml.getElementsByTagName(fc_elem['theorem_name'])
-					fc_content=open(fc_elem['dir']+"/Flashcards/"+fc_elem['tag']+".detex")
+					fc_content=open(fc_elem['dir']+"/Flashcards/"+fc_elem['tag']+".detex","r").read()
 					fc_sections=get_fc_section(fc_elem['dir'],fc_elem['tag'],current_source_xml)	
 				
-					fc_elem['query']={"front":fc_name+" "+theorem_name+" "+fc_elem['tag']+" "+fc_sections,"content":sanatize(fc_content)}
+					fc_elem['query']={"front":fc_name+" "+theorem_name+" "+fc_elem['tag']+" "+fc_sections,"content":fc_content}
 
 					
 					for w in fc_elem['query']['front'].lower().replace("-"," ").replace("{"," ").replace("}"," ").strip().split(" "):
