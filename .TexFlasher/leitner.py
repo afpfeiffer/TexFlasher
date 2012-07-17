@@ -1743,7 +1743,13 @@ class Flasher:
 			
 		create_comment_canvas(self.c,self.selected_dir,flashcard_tag,Settings['user'])	
 
-		self.c.brain_true.config(text="review in %s days"%brainPowerExponent(self.ldb.getElementsByTagName(flashcard_tag)[0].getAttribute('level')))
+		level=self.ldb.getElementsByTagName(flashcard_tag)[0].getAttribute('level')
+
+		if int(level) > 0:
+			self.c.brain_true.config(text="review in "+str(brainPowerExponent(int(level) + 1))+" days")
+		else:
+			self.c.brain_true.config(text="review in 2 days")
+			
 		self.c.brain_false.config(text="review tomorrow")
 		
 		for tag in self.c.tag_buttons:
