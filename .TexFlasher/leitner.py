@@ -1960,7 +1960,7 @@ def menu():
 
 	global saveString 
 	saveString = ""
-
+	filenames=[]
 	row_start=4
 	if os.path.isfile("./.TexFlasher/config.xml"):
 		tree = xml.parse("./.TexFlasher/config.xml")
@@ -1969,6 +1969,7 @@ def menu():
 
 			Widgets={}
 			if l.tagName=="FlashFolder" and l.getAttribute('filename')!="" and os.path.isfile(l.getAttribute('filename')):
+				filenames.append(l.getAttribute('filename'))
 				todo=0;
 				length=0
 				ldb= load_leitner_db(os.path.dirname(l.getAttribute('filename')),Settings["user"])
@@ -2107,21 +2108,33 @@ def menu():
 	create_n=create_image_button(toolbar,"./.TexFlasher/pictures/Flashcard_folder_create.png",None,Main.b_normal)
 	create_n.configure(command=create_folder)
 	ToolTip(create_n,"Create new flaschards folder")
-
+	
+	save_all=create_image_button(toolbar,"./.TexFlasher/pictures/upload.png",None,Main.b_normal)
+	save_all.configure(command=lambda:executeCommand( "bash .TexFlasher/scripts/save.sh "+ saveString, True )) 
+	
+	update_all=create_image_button(toolbar,"./.TexFlasher/pictures/update.png",None,Main.b_normal)
+	update_all.configure(command=lambda:update_all(filenames)) 	
+	
+	
+	
 	if row_start > 4:
 		toolbar.grid(row=2,columnspan=20)
 		#toolbar.rowconfigure(0,weight=1)
 		#toolbar.columnconfigure(0,weight=1)
 		#toolbar.columnconfigure(1,weight=1)
 		#toolbar.columnconfigure(2,weight=1)
-		create.grid(row=0,column=0,sticky=E+W+N+S)
 		#search field
+
+
+		create.grid(row=0,column=0,sticky=E+W+N+S)
+			
+		create_n.grid(row=0,column=1,sticky=E+W+N+S)		
 		query=Search(toolbar)
 		query.set_completion_list(comp_list)
-		query.grid(row=0,column=1,sticky=E+W+N+S)
-			
-		create_n.grid(row=0,column=2,sticky=E+W+N+S)		
-
+		query.grid(row=0,column=2,sticky=E+W+N+S)
+		
+		update_all.grid(row=0,column=3,sticky=E+W+N+S)
+		save_all.grid(row=0,column=4,sticky=E+W+N+S)
 		Label(Main,height=1).grid(sticky=E+W,row=3,columnspan=10)
 	else:
 		toolbar.grid(row=2,columnspan=20)
