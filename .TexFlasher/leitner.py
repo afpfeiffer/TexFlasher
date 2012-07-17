@@ -833,7 +833,7 @@ def create_index(refresh=False):
 		front_index={}
 		back_index={}
 		all_fcs=get_all_fcs()
-		if not os.path.isfile(".TexFlasher/search_words.xml") or refresh:
+		if not os.path.isfile(".TexFlasher/search_words_detex.xml") or refresh:
 			for fc_elem in all_fcs:
 				if not fc_elem['dir']==current_dir: #load files needed for get_... funktions to speed up search
 					current_dir=fc_elem['dir']
@@ -842,7 +842,11 @@ def create_index(refresh=False):
 					current_tex_file=open(tex_file_path,"r", "utf-8")
 					current_order_xml=xml.parse(fc_elem['dir']+"/Flashcards/order.xml")
 				try:	
-					fc_name,theorem_name,theorem_type,fc_content=get_fc_desc(fc_elem['dir'],fc_elem['tag'],current_tex_file,current_order_xml)
+				
+					fc_name=current_order_xml.getElementsByTagName(fc_elem['name'])
+					
+					theorem_name=current_order_xml.getElementsByTagName(fc_elem['theorem_name'])
+					fc_content=open(fc_elem['dir']+"/Flashcards/"+fc_elem['tag']+".detex")
 					fc_sections=get_fc_section(fc_elem['dir'],fc_elem['tag'],current_source_xml)	
 				
 					fc_elem['query']={"front":fc_name+" "+theorem_name+" "+fc_elem['tag']+" "+fc_sections,"content":sanatize(fc_content)}
