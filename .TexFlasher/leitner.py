@@ -102,7 +102,14 @@ def load_leitner_db(leitner_dir,user):
 	return ldb
 
 def brainPowerExponent(level):
-	return int(pow(int(level),1.3))
+	if( level > 2 ):
+		return int(pow(int(level),1.3))
+	elif level>=0:
+		return level
+	else: 
+		return 200000	
+	
+	
 	
 
 def futureCardNumber( database, offset, offset2, maxLevel ):
@@ -118,13 +125,8 @@ def futureCardNumber( database, offset, offset2, maxLevel ):
 		if lastReviewed!="":
 			lastReviewed_time=datetime(*(strptime(lastReviewed, "%Y-%m-%d %H:%M:%S")[0:6]))
 		        level=int(elem.getAttribute('level'))
-			if( level > 2 ):
-				newLevel=brainPowerExponent(level)
-			elif level>=0:
-				newLevel = level
-			else: 
-				newLevel = 200000
-				
+
+			newLevel = brainPowerExponent(level)
 			dt_1 = lastReviewed_time + timedelta(days=(newLevel - (offset + offset2)))		
 			dt_2 = lastReviewed_time + timedelta(days=(newLevel - offset))		
 		
@@ -158,10 +160,8 @@ def load_agenda(ldb,dir,now=datetime.now(),PageSort=True):
 				lastReviewed_time=datetime(*(strptime(lastReviewed, "%Y-%m-%d %H:%M:%S")[0:6]))
 				level=int(elem.getAttribute('level'))
 					
-				if level > 2 :
-					newLevel=brainPowerExponent(level)
-				else:
-					newLevel = level
+				newLevel = brainPowerExponent(level)
+
 				if level>=0:
 					dt = lastReviewed_time + timedelta(days=newLevel)		
 					if now + timedelta(hours=int(24 - now.hour + RESTART_TIME))>=dt:
