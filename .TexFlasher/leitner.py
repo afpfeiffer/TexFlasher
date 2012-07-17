@@ -102,7 +102,7 @@ def load_leitner_db(leitner_dir,user):
 	return ldb
 
 def brainPowerExponent(level):
-	return int(pow(level,1.3))
+	return int(pow(int(level),1.3))
 	
 
 def futureCardNumber( database, offset, offset2, maxLevel ):
