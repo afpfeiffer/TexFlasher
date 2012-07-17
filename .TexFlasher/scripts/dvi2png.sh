@@ -22,4 +22,5 @@ echo "compiled $FILEBASE"
 
 #-p firstpage -l lastpage.
 dvipng --noghostscript* -T tight -x 1900 -z 9 $FILENAME.dvi -o $FILENAME-%d.png
+detex $FILENAME.tex > $FILENAME.detex
 #convert $FILENAME-1.png -quality 100 -resize 360x216 $FILENAME-thumb360x216.png
