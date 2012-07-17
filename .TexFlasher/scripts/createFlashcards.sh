@@ -23,9 +23,6 @@ echo "                      O   OOO    O     OOO  O    OOOOO OOOO OOOO OOO  OOOO
 echo "                      O   O     O O    O    O    O   O    O O  O O    O O"
 echo "                      O   OOOO O   O   O    OOOO O   O OOOO O  O OOOO O  O"
 echo
-echo
-echo "(Re-)Compiling flashcards."
-echo
 
 txtrst=$(tput sgr0) # Text reset
 txtclr=$(tput setaf 2) 
@@ -51,218 +48,236 @@ texthb=$(tput dim) #half bright
 
 WD=$PWD
 
-file=$1
-   
-folder=$(dirname $file)
-filebase=$(basename $file)
-# get filename without extension
-purefilebase=${filebase%\.*}  
+# echo "$*"
 
-# check if svn is available in subfolder
-# svn info $file > /dev/null
-# HAVESVN=$?
- 
-# # check if Flashcards - folder exists, otherwise create it
-# if [ ! -d "$folder/Flashcards" ]; then
-#   echo "creating subfolder Flashcards"
-#   svn mkdir $folder/Flashcards
-#   svn propset svn:ignore -F .TexFlasher/svnignore $folder/Flashcards/
-#   svn commit $folder/Flashcards -m  "new folder created"
-#   if [ ! -d "$folder/Flashcards" ]; then
-#     echo "error: folder could not be created"
-#   fi
-# fi
+for fname in $*; do 
 
-FILES="Makefile pdf2jpg_dummy.sh dvi2png_dummy.sh flashcards.cls"
-rm $folder/texFlasher.log &> /dev/null
-
-mkdir -p $folder/Diffs/Flashcards &> /dev/null
-mkdir -p $folder/Diffs/Details &> /dev/null
-
-# get current versions of files 
-for thing in $FILES; do
-	cp $WD/.TexFlasher/tools/$thing $folder/Flashcards/
-	cp $WD/.TexFlasher/tools/$thing $folder/Diffs/
-done
-
-
-# get latest version of file (if file is under revision control)
-# if [ $HAVESVN -eq 0 ]; then
-# 	svn up $file
-# fi
-
-if [[ ! -f $folder/Flashcards/$purefilebase.bak ]]; then
-   touch $folder/Flashcards/$purefilebase.bak
-fi
-# create all new flashcards in temporary folder
-# echo "$folder/Flashcards/$purefilebase.bak $file"
-if [[ "`diff $folder/Flashcards/$purefilebase.bak $file`" == "" ]]; then
-  echo "flashcards up to date" 
-  echo "done"
-else 
-	cp $file $folder/Details/source.tex
-	cd $folder/Details
-	latex -halt-on-error $folder/Details/source.tex 2>&1 < /dev/null | grep -rniE 'Undefined control sequence|compiled flashcard|error|ERROR|Error|Missing|No pages of output.|Emergency stop.' | tee -a $folder/texFlasher.log
-	Errors="`cat $folder/texFlasher.log | grep -rniE 'error|ERROR|Error|Missing|No pages of output.|Emergency stop.|Undefined control sequence'`"
-	if [ ! "$Errors" == ""  ]; then
-		echo "Fatal latex error in source file." >> $folder/texFlasher.log
-		exit 1
-	fi
-	python $WD/.TexFlasher/diviasm.py source.dvi > source.dump	
-	cd $WD
-
-	# create a temprorary folder for flashcards. make sure its empty
-	if [ -d "$folder/Flashcards.tmp" ]; then 
-		rm -rf $folder/Flashcards.tmp &> /dev/null
-	fi
-	mkdir $folder/Flashcards.tmp
-  
-  echo "parsing ..." | tee  $folder/texFlasher.log
-	python "$WD/.TexFlasher/parse_tex.py" "$folder/Flashcards.tmp" "$folder/Details" | tee -a $folder/texFlasher.log
+echo
+echo "(Re-)Compiling flashcards for $fname"
+echo
 	
-	Errors="`cat $folder/texFlasher.log | grep -rniE 'Fatal Error'`"
-	if [ ! "$Errors" == ""  ]; then
-		echo "Fatal Error while parsing source file." >> $folder/texFlasher.log
-		exit 1
-	fi
 	
-	cp $file $folder/Flashcards/$purefilebase.bak
-  
-  recompile="0"
-	compilenumber="0"
-	changedContent="0"
-	newnumber="0"
-  TARGETS=""
-	# buffer old flash cards
-	OLDFLASHCARDS="`ls $folder/Flashcards/*.tex`" 2>/dev/null
-	for oldflashcard in $OLDFLASHCARDS; do
-    # get filename with extension
-    name=$(basename $oldflashcard)
-    # get filename without extension
-    purename=${name%\.*}
-
+	file=$fname
 		
-    if [ -f $folder/Flashcards.tmp/$name ]; then
-      if [[ "`diff $folder/Flashcards.tmp/$name $folder/Flashcards/$name`" == "" ]]; then
-        # file has not changed, we don't want it to be overwritten
-        # (not even by identical file) in order to preserve the timestamp
-        # which is important for the Makefile
-        rm $folder/Flashcards.tmp/$name &> /dev/null
-        if [ ! -f $folder/Flashcards/$purename.dvi ]; then
-					compilenumber=`echo $compilenumber + "1" | bc`
-					TARGETS="$TARGETS $purename.dvi"
-				fi
+	folder=$(dirname $file)
+	filebase=$(basename $file)
+	# get filename without extension
+	purefilebase=${filebase%\.*}  
 
-					
-      else
-				recompile=`echo $recompile + "1" | bc`
+	# check if svn is available in subfolder
+	# svn info $file > /dev/null
+	# HAVESVN=$?
+	
+	# # check if Flashcards - folder exists, otherwise create it
+	# if [ ! -d "$folder/Flashcards" ]; then
+	#   echo "creating subfolder Flashcards"
+	#   svn mkdir $folder/Flashcards
+	#   svn propset svn:ignore -F .TexFlasher/svnignore $folder/Flashcards/
+	#   svn commit $folder/Flashcards -m  "new folder created"
+	#   if [ ! -d "$folder/Flashcards" ]; then
+	#     echo "error: folder could not be created"
+	#   fi
+	# fi
+
+	FILES="Makefile pdf2jpg_dummy.sh dvi2png_dummy.sh flashcards.cls"
+	rm $folder/texFlasher.log &> /dev/null
+
+	mkdir -p $folder/Diffs/Flashcards &> /dev/null
+	mkdir -p $folder/Diffs/Details &> /dev/null
+
+	# get current versions of files 
+	for thing in $FILES; do
+		cp $WD/.TexFlasher/tools/$thing $folder/Flashcards/
+		cp $WD/.TexFlasher/tools/$thing $folder/Diffs/
+	done
+
+
+	# get latest version of file (if file is under revision control)
+	# if [ $HAVESVN -eq 0 ]; then
+	# 	svn up $file
+	# fi
+
+	if [[ ! -f $folder/Flashcards/$purefilebase.bak ]]; then
+		touch $folder/Flashcards/$purefilebase.bak
+	fi
+	# create all new flashcards in temporary folder
+	# echo "$folder/Flashcards/$purefilebase.bak $file"
+	if [[ "`diff $folder/Flashcards/$purefilebase.bak $file`" == "" ]]; then
+		echo "flashcards up to date" 
+		echo "done"
+	else 
+		cp $file $folder/Details/source.tex
+		cd $folder/Details
+		latex -halt-on-error $folder/Details/source.tex 2>&1 < /dev/null | grep -rniE 'Undefined control sequence|compiled flashcard|error|ERROR|Error|Missing|No pages of output.|Emergency stop.' | tee -a $folder/texFlasher.log
+		Errors="`cat $folder/texFlasher.log | grep -rniE 'error|ERROR|Error|Missing|No pages of output.|Emergency stop.|Undefined control sequence'`"
+		if [ ! "$Errors" == ""  ]; then
+			echo "Fatal latex error in source file." >> $folder/texFlasher.log
+			exit 1
+		fi
+		python $WD/.TexFlasher/diviasm.py source.dvi > source.dump	
+		cd $WD
+
+		# create a temprorary folder for flashcards. make sure its empty
+		if [ -d "$folder/Flashcards.tmp" ]; then 
+			rm -rf $folder/Flashcards.tmp &> /dev/null
+		fi
+		mkdir $folder/Flashcards.tmp
+		
+		echo "parsing ..." | tee  $folder/texFlasher.log
+		python "$WD/.TexFlasher/parse_tex.py" "$folder/Flashcards.tmp" "$folder/Details" | tee -a $folder/texFlasher.log
+		
+		Errors="`cat $folder/texFlasher.log | grep -rniE 'Fatal Error'`"
+		if [ ! "$Errors" == ""  ]; then
+			echo "Fatal Error while parsing source file." >> $folder/texFlasher.log
+			exit 1
+		fi
+		
+		cp $file $folder/Flashcards/$purefilebase.bak
+		
+		recompile="0"
+		compilenumber="0"
+		changedContent="0"
+		newnumber="0"
+		TARGETS=""
+		# buffer old flash cards
+		OLDFLASHCARDS="`ls $folder/Flashcards/*.tex`" 2>/dev/null
+		for oldflashcard in $OLDFLASHCARDS; do
+			# get filename with extension
+			name=$(basename $oldflashcard)
+			# get filename without extension
+			purename=${name%\.*}
+
 			
-				python .TexFlasher/get_fc_content.py $folder/Flashcards.tmp/$name > FILEA
-				python .TexFlasher/get_fc_content.py $folder/Flashcards/$name > FILEB
-								
-				if [[ "`diff FILEA FILEB`" != "" ]]; then
-					latexdiff $folder/Flashcards/$name $folder/Flashcards.tmp/$name > $folder/Diffs/diff_$name 2> /dev/null
-					echo "changed content: $purename" | tee -a $folder/texFlasher.log
-					changedContent=`echo $changedContent + "1" | bc`
-				fi
+			if [ -f $folder/Flashcards.tmp/$name ]; then
+				if [[ "`diff $folder/Flashcards.tmp/$name $folder/Flashcards/$name`" == "" ]]; then
+					# file has not changed, we don't want it to be overwritten
+					# (not even by identical file) in order to preserve the timestamp
+					# which is important for the Makefile
+					rm $folder/Flashcards.tmp/$name &> /dev/null
+					if [ ! -f $folder/Flashcards/$purename.dvi ]; then
+						compilenumber=`echo $compilenumber + "1" | bc`
+						TARGETS="$TARGETS $purename.dvi"
+					fi
+
+						
+				else
+					recompile=`echo $recompile + "1" | bc`
 				
-				rm FILEA FILEB &> /dev/null
-      fi
-    else
-			rm $folder/Flashcards/$purename* 2> /dev/null
-		fi
-  done
-
-  listnumber="`ls -1 $folder/Flashcards.tmp/ | wc -l`"
-  compilenumber=`echo $compilenumber + $listnumber | bc`
-  newnumber=`echo $compilenumber - $recompile | bc`
-  changedHeader=`echo $recompile - $changedContent | bc`
-  
-
-  NEWFLASHCARDS="`ls $folder/Flashcards.tmp/*.tex`" 2>/dev/null
-  rm $folder/Flashcards/changed.texflasher 2>/dev/null
-#   cat $folder/Flashcards/recompile.texflasher >> rm $folder/Flashcards/changed.texflasher
-#   rm $folder/Flashcards/recompile.texflasher 
-  for newflashcard in $NEWFLASHCARDS; do
-		echo "$target" >> $folder/Flashcards/changed.texflasher		
-    # get filename with extension
-    name=$(basename $newflashcard)
-    # get filename without extension
-    purename=${name%\.*}
-    TARGETS="$TARGETS $purename.dvi"
-   done
-  
-  cp $folder/Flashcards.tmp/* $folder/Flashcards/ 2> /dev/null
-  rm -r $folder/Flashcards.tmp &> /dev/null
-  
- 
-  echo "compiling card(s):" | tee -a $folder/texFlasher.log
-	echo "  -> $newnumber new card(s)" | tee -a $folder/texFlasher.log
-  echo "  -> $changedContent card(s) with changed content" | tee -a $folder/texFlasher.log
-	echo "  -> $changedHeader card(s) with changed header" | tee -a $folder/texFlasher.log
-	echo ""
-
-	buildCounter="0"
-	pBase=`echo "scale=2; 100.0 / $compilenumber.0" | bc`
-	HAVETIMEESTIMATE=0
-	res1=$(date +%s.%N)
-	printTime=$res1
-	
-	for target in $TARGETS; do
-# 		echo "building target $target ..."
-		# get percentage
-		percent=`echo "($buildCounter.0 * $pBase)/1" | bc`
-		ceol=`tput el`
-		if [ $HAVETIMEESTIMATE -eq 1 ]; then
-			tnow=$(date +%s.%N)
-			elapsed=`echo "($tnow - $printTime)/1" | bc`
-			if [[ "$elapsed" -ge 2 ]]; then
-				printTime=$tnow
-				echo -ne "\r${ceol}  "
-				equals=`echo "$percent / 2" | bc `
-				for i in $(seq $equals); do echo -n "${txtbgg} "; done
-				echo -n "${txtbgr} "
-				for i in $(seq `echo "49 - $equals" | bc`); do echo -n ' '; done
-				echo -n "${txtrst} progress: $percent%,  $tLeft remaining"
+					python .TexFlasher/get_fc_content.py $folder/Flashcards.tmp/$name > FILEA
+					python .TexFlasher/get_fc_content.py $folder/Flashcards/$name > FILEB
+									
+					if [[ "`diff FILEA FILEB`" != "" ]]; then
+						latexdiff $folder/Flashcards/$name $folder/Flashcards.tmp/$name > $folder/Diffs/diff_$name 2> /dev/null
+						echo "changed content: $purename" | tee -a $folder/texFlasher.log
+						changedContent=`echo $changedContent + "1" | bc`
+					fi
+					
+					rm FILEA FILEB &> /dev/null
+				fi
+			else
+				rm $folder/Flashcards/$purename* 2> /dev/null
 			fi
-		else
-			echo -ne "\r${ceol}  ${txtbgr}                                                  ${txtrst} progress: $percent%"
-		fi
+		done
+
+		listnumber="`ls -1 $folder/Flashcards.tmp/ | wc -l`"
+		compilenumber=`echo $compilenumber + $listnumber | bc`
+		newnumber=`echo $compilenumber - $recompile | bc`
+		changedHeader=`echo $recompile - $changedContent | bc`
 		
-		cd $folder/Flashcards
-		make $target 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|Emergency stop.|Undefined control sequence' | tee -a $folder/texFlasher.log
-		cd $folder/Diffs
-		make -i $target 2>&1 < /dev/null &> /dev/null
+
+		NEWFLASHCARDS="`ls $folder/Flashcards.tmp/*.tex`" 2>/dev/null
+		rm $folder/Flashcards/changed.texflasher 2>/dev/null
+	#   cat $folder/Flashcards/recompile.texflasher >> rm $folder/Flashcards/changed.texflasher
+	#   rm $folder/Flashcards/recompile.texflasher 
+		for newflashcard in $NEWFLASHCARDS; do
+			echo "$target" >> $folder/Flashcards/changed.texflasher		
+			# get filename with extension
+			name=$(basename $newflashcard)
+			# get filename without extension
+			purename=${name%\.*}
+			TARGETS="$TARGETS $purename.dvi"
+		done
 		
-		buildCounter=`echo $buildCounter + "1" | bc`
+		cp $folder/Flashcards.tmp/* $folder/Flashcards/ 2> /dev/null
+		rm -r $folder/Flashcards.tmp &> /dev/null
 		
+	
+		echo "compiling card(s):" | tee -a $folder/texFlasher.log
+		echo "  -> $newnumber new card(s)" | tee -a $folder/texFlasher.log
+		echo "  -> $changedContent card(s) with changed content" | tee -a $folder/texFlasher.log
+		echo "  -> $changedHeader card(s) with changed header" | tee -a $folder/texFlasher.log
+		echo ""
+
+		buildCounter="0"
+		pBase=`echo "scale=2; 100.0 / $compilenumber.0" | bc`
+		HAVETIMEESTIMATE=0
+		res1=$(date +%s.%N)
+		printTime=$res1
+		
+		for target in $TARGETS; do
+	# 		echo "building target $target ..."
+			# get percentage
+			percent=`echo "($buildCounter.0 * $pBase)/1" | bc`
+			ceol=`tput el`
+			if [ $HAVETIMEESTIMATE -eq 1 ]; then
+				tnow=$(date +%s.%N)
+				elapsed=`echo "($tnow - $printTime)/1" | bc`
+				if [[ "$elapsed" -ge 2 ]]; then
+					printTime=$tnow
+					echo -ne "\r${ceol}  "
+					equals=`echo "$percent / 2" | bc `
+					for i in $(seq $equals); do echo -n "${txtbgg} "; done
+					echo -n "${txtbgr} "
+					for i in $(seq `echo "49 - $equals" | bc`); do echo -n ' '; done
+					echo -n "${txtrst} progress: $percent%,  $tLeft remaining"
+				fi
+			else
+				echo -ne "\r${ceol}  ${txtbgr}                                                  ${txtrst} progress: $percent%"
+			fi
+			
+			cd $folder/Flashcards
+			make $target 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|Emergency stop.|Undefined control sequence' | tee -a $folder/texFlasher.log
+			cd $folder/Diffs
+			make -i $target 2>&1 < /dev/null &> /dev/null
+			
+			buildCounter=`echo $buildCounter + "1" | bc`
+			
+			res2=$(date +%s.%N)
+			tLeft=`echo "scale=2;(( ( $res2 - $res1 ) / $buildCounter ) * ($compilenumber.0 - $buildCounter))" | bc`
+			tLeft=`echo "($tLeft)/1" | bc`
+			
+			S=$tLeft
+			((m=S%3600/60))
+			((s=S%60))
+			tLeft="`printf "%dm:%ds\n" $m $s`"
+			
+			HAVETIMEESTIMATE=1
+		done
+		ceol=`tput el`
 		res2=$(date +%s.%N)
 		tLeft=`echo "scale=2;(( ( $res2 - $res1 ) / $buildCounter ) * ($compilenumber.0 - $buildCounter))" | bc`
 		tLeft=`echo "($tLeft)/1" | bc`
-		
+			
 		S=$tLeft
 		((m=S%3600/60))
 		((s=S%60))
-		tLeft="`printf "%dm:%ds\n" $m $s`"
+		tLeft="`printf "%dm:%ds\n" $m $s`"		
+		echo -ne "\r${ceol}  ${txtbgg}                                                  ${txtrst} progress 100%, $tLeft\n"
 		
-		HAVETIMEESTIMATE=1
-	done
-	ceol=`tput el`
-	echo -ne "\r${ceol}  ${txtbgg}                                                  ${txtrst} progress 100%\n"
+		cd $folder/Diffs
+		cp *.png Flashcards/
+		cd $WD
+			
+	#  cd $folder/Details
+	#  latex $folder/Details/source.tex
+	#   make -j$procs pdf 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log    
+		echo "done"
+
+
+	fi  
+
+	# better be save than sorry
+	make -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|Emergency stop.|Undefined control sequence' | tee -a $folder/texFlasher.log
+done
 	
-	cd $folder/Diffs
-  cp *.png Flashcards/
-  cd $WD
-    
-#  cd $folder/Details
-#  latex $folder/Details/source.tex
-#   make -j$procs pdf 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log    
-  echo "done"
-
-
-fi  
-
-# better be save than sorry
-make -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|Emergency stop.|Undefined control sequence' | tee -a $folder/texFlasher.log
-
 exit 0

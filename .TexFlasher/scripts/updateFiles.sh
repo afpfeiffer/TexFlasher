@@ -28,28 +28,34 @@ echo "Updating files."
 echo
 
 
-folder=$1
+folders=$*
 
-echo "processing: $folder"
+# echo "$folders"
 
 echo
 
 ping -c 1 www.google.com>>/dev/null
 if [ $? -eq  0 ]; then
-	svn info $folder &> /dev/null
+	
+	for folder in $folders; do 
+		echo "processing: $folder"
+		svn info $folder &> /dev/null
 
-	HAVESVN=$?
-	if [ $HAVESVN -eq 0 ]; then
-		svn up $folder
-		echo
-	else
-		echo "Folder not under svn control."
-		echo
-	fi
+	
+		HAVESVN=$?
+		if [ $HAVESVN -eq 0 ]; then
+			svn up $folder
+			echo
+		else
+			echo "Folder not under svn control."
+			echo
+		fi
+	done
 else
 	echo "Error: no internet connection available!"
 	echo
 fi
+
 exit 0
 
 

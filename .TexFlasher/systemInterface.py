@@ -121,10 +121,19 @@ def create_completion_list():
 
 
 
-def create_flashcards( filename ):
-	update_config(filename)
-	#os.system("bash .TexFlasher/scripts/createFlashcards.sh "+ filename)
-	executeCommand("bash .TexFlasher/scripts/createFlashcards.sh "+ filename, True)
+def create_flashcards( filename , single=True ):
+	if single:
+		update_config(filename)
+		#os.system("bash .TexFlasher/scripts/createFlashcards.sh "+ filename)
+		executeCommand("bash .TexFlasher/scripts/createFlashcards.sh "+ filename, True)
+	else:
+		namestring=""
+		for fname in filename:
+			update_config(fname)
+			namestring+=str(fname+" ")
+		
+			
+		executeCommand(str("bash .TexFlasher/scripts/createFlashcards.sh "+ namestring), True)
 
 
 def update_config(filename):

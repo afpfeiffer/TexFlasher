@@ -1767,11 +1767,17 @@ class Flasher:
 ############################################################## Menu ####################################################################
 
 def update_all( fnames ):
-	
+
+	folderstring=""
 	for fname in fnames:
-		executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+os.path.dirname(fname), True )
+		folderstring += str(os.path.dirname(fname)+" ")
 		os.system("rm "+os.path.dirname(fname)+"/Flashcards/UPDATE 2>/dev/null")
-		create_flashcards( fname )
+		
+	#print folderstring
+	executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+str(folderstring), True )
+	create_flashcards( fnames, False )
+		
+	for fname in fnames:
 		message,window_type=get_log_status(os.path.dirname(fname))
 	 	if window_type=="showerror":
 			exec('tkMessageBox.'+window_type+'( "Parse LaTex Logfile","%s")'%message)	
