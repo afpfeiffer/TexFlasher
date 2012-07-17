@@ -101,7 +101,7 @@ def load_leitner_db(leitner_dir,user):
 	xml_file.close()
 	return ldb
 
-def brainPowerExponent():
+def brainPowerExponent(level):
 	return int(pow(level,1.3))
 	
 
