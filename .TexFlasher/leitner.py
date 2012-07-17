@@ -1586,13 +1586,14 @@ class Flasher:
 		Label(Main,height=1).grid(row=6,columnspan=5)	
 	
 		#true false
-		self.c.brain_true=Label(Main)
-		self.c.brain_true.grid(row=self.c.true_false_row, column=0)
-
-		self.c.brain_false=Label(Main)
-		self.c.brain_false.grid(row=self.c.true_false_row, column=4)		
+		self.c.true_false_row=8
 		
-		self.c.true_false_row=7
+		self.c.brain_true=Label(Main,font=("Sans",Main.f_normal))
+		self.c.brain_true.grid(row=self.c.true_false_row-1, column=0)
+
+		self.c.brain_false=Label(Main,font=("Sans",Main.f_normal))
+		self.c.brain_false.grid(row=self.c.true_false_row-1, column=4)		
+		
 		true_b=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_correct.png",None,Main.b_large)
 		false_b=create_image_button(Main,"./.TexFlasher/pictures/Flashcard_wrong.png",None,Main.b_large)
 		true_b.grid(row=self.c.true_false_row, column=0, sticky=E+W )
@@ -1742,7 +1743,7 @@ class Flasher:
 			
 		create_comment_canvas(self.c,self.selected_dir,flashcard_tag,Settings['user'])	
 
-		self.c.brain_true.config(text=brainPowerExponent(self.ldb.getElementsByTagName(flashcard_tag)[0].getAttribute('level')))
+		self.c.brain_true.config(text="review in %s days"%brainPowerExponent(self.ldb.getElementsByTagName(flashcard_tag)[0].getAttribute('level')))
 		self.c.brain_false.config(text="review tomorrow")
 		
 		for tag in self.c.tag_buttons:
