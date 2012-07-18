@@ -1788,7 +1788,7 @@ def update_all( fnames ):
 	 	if window_type=="showerror":
 			exec('tkMessageBox.'+window_type+'( "Parse LaTex Logfile","%s")'%message)	
 	
-	global front_index#,back_index
+	#global front_index#,back_index
 	front_index=create_index(True)	
 	menu()
 
@@ -1804,7 +1804,7 @@ def update_texfile( fname, user ):
 		exec('tkMessageBox.'+window_type+'( "Parse LaTex Logfile","%s")'%message)	
 	else:
 		if os.path.isfile(os.path.dirname(fname)+"/Flashcards/changed.texflasher"):
-			global front_index
+			#global front_index
 			front_index=create_index(True)	
 	menu()
 	
@@ -2240,7 +2240,6 @@ RESTART_TIME=7 # 2 o'clock
 IK=ImageKeeper()
 
 comp_list=()#create_completion_list()
-global front_index
 
 front_index=create_index()
 
