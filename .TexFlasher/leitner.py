@@ -2229,9 +2229,8 @@ def readSettings( Settings ):
 	
 	
 global Settings 
-Settings = { 'user':'',
-						'editor':''
-	}	
+Settings = { 'user':''
+						}	
 readSettings( Settings )
 
 global WIDTH, HEIGHT

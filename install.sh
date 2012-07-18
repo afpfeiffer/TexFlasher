@@ -33,39 +33,7 @@ fi
 
 echo "Installation ..."
 echo
-# check for default editor
-TEXEDITOR="none"
-which kile > /dev/null
-if [ $? -eq 0 ]; then
-	TEXEDITOR="`which kile`"
-fi
-echo "Default latex editor: $TEXEDITOR"
-while [ 1 -eq 1 ]; do
-	echo -n "Press <Return> to accept or enter name of latex editor: "
-	read ANSWER
-	if [ "$ANSWER" == "" ]; then
-		TEXEDITOR=$TEXEDITOR
-		break
-	elif [ "$ANSWER" == "vi" ]; then
-		echo "Warning: vi not supported."
-	elif [ "$ANSWER" == "vim" ]; then
-		echo "Warning: vim not supported."
-	else
-		TEXEDITOR=$ANSWER
-		break
-	fi
-done
 
-echo "Latex editor: $TEXEDITOR "
-
-which $TEXEDITOR > /dev/null
-if [ ! $? -eq 0 ]; then
-	echo
-	echo "#####################################################"
-	echo "          warning: .tex editor was not found."
-	echo "#####################################################"
-fi
-echo
 
 echo "#!/bin/bash" >> run-TexFlasher.sh
 echo "#This file was created automatically by the script 'install.sh'. Changes will be overwritten." >> run-TexFlasher.sh
@@ -169,7 +137,6 @@ echo "Writing settings to HD"
 echo "#This file was created automatically by 'install.sh'." >> settings
 echo "[TexFlasher]" >> settings
 echo "user: $USERNAME" >> settings
-echo "editor: $TEXEDITOR" >> settings
 echo
 
 if [ ! -f .TexFlasher/config.xml ]; then
