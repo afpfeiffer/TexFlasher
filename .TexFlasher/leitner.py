@@ -848,9 +848,10 @@ def create_index(refresh=False):
 					theorem_name=current_order_xml.getElementsByTagName(fc_elem['tag'])[0].getAttribute('theorem_name')
 					
 					fc_content=open(fc_elem['dir']+"/Flashcards/"+fc_elem['tag']+".detex","r","utf-8").read()
+					
 					fc_sections=get_fc_section(fc_elem['dir'],fc_elem['tag'],current_source_xml)	
 				
-					fc_elem['query']={"front":fc_name+" "+theorem_name+" "+fc_elem['tag']+" "+fc_sections,"content":fc_content}
+					fc_elem['query']={"front":fc_name+" "+theorem_name+" "+fc_elem['tag']+" "+fc_sections,"content":fc_content+" "+fc_name+" "+theorem_name+" "+fc_elem['tag']+" "+fc_sections}
 
 					
 					for w in fc_elem['query']['front'].lower().replace("-"," ").replace("{"," ").replace("}"," ").strip().split(" "):
@@ -898,7 +899,7 @@ def create_index(refresh=False):
 			  index.writexml(xml_file)
 			  xml_file.close()
 		else:
-			doc= xml.parse(".TexFlasher/search_words.xml")
+			doc= xml.parse(".TexFlasher/search_words_detex.xml")
 			for fcs in doc.getElementsByTagName('front')[0].childNodes:
 			      front_index[fcs.getAttribute('key')]=fcs.getAttribute('fcs').split('|||')[:-1]
 			for fcs in doc.getElementsByTagName('back')[0].childNodes:
@@ -998,6 +999,7 @@ class Search(Entry):
 						back_results=back_results.union(set(back_index[key]))				
 					else:
 						back_results=set(back_index[key])
+						
 			      if len(front_all)>0:
 					front_all=front_all.intersection(front_results)
 			      else:
