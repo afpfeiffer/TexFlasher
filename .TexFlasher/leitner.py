@@ -831,7 +831,7 @@ def create_index(refresh=False):
 		min_word_len=4
 		current_dir=""
 		front_index={}
-		back_index={}
+		#back_index={}
 		all_fcs=get_all_fcs()
 		if not os.path.isfile(".TexFlasher/search_words_detex.xml") or refresh:
 			for fc_elem in all_fcs:
@@ -851,7 +851,7 @@ def create_index(refresh=False):
 					
 					fc_sections=get_fc_section(fc_elem['dir'],fc_elem['tag'],current_source_xml)	
 				
-					fc_elem['query']={"front":fc_name+" "+theorem_name+" "+fc_elem['tag']+" "+fc_sections,"content":fc_content}
+					fc_elem['query']={"front":fc_name+" "+theorem_name+" "+fc_elem['tag']+" "+fc_sections+" "+fc_content,"content":""}
 					
 					for w in fc_elem['query']['front'].lower().replace("-"," ").replace("{"," ").replace("}"," ").strip().split(" "):
 						if len(w)>=min_word_len:
@@ -860,17 +860,17 @@ def create_index(refresh=False):
 									front_index[w].append(fc_elem['tag']+"###"+fc_elem['dir'])
 							except:
 								front_index[w]=[fc_elem['tag']+"###"+fc_elem['dir']]						
-					for w in fc_elem['query']['content'].lower().replace("-"," ").replace("{"," ").replace("}"," ").strip().split(" "):
-						if len(w)>=min_word_len:
-							try:
-								if fc_elem['tag']+"###"+fc_elem['dir'] not in back_index[w]:					
-									back_index[w].append(fc_elem['tag']+"###"+fc_elem['dir'])
-							except:
-								back_index[w]=[fc_elem['tag']+"###"+fc_elem['dir']]
+					#for w in fc_elem['query']['content'].lower().replace("-"," ").replace("{"," ").replace("}"," ").strip().split(" "):
+						#if len(w)>=min_word_len:
+							#try:
+								#if fc_elem['tag']+"###"+fc_elem['dir'] not in back_index[w]:					
+									#back_index[w].append(fc_elem['tag']+"###"+fc_elem['dir'])
+							#except:
+								#back_index[w]=[fc_elem['tag']+"###"+fc_elem['dir']]
 				except:
 					pass
 					#TODO: Sometimes encoding error!
-			if len(front_index)>0 or len(back_index)>0:				
+			if len(front_index)>0:# or len(back_index)>0:				
 			  doc=xml.Document()
 			  index = doc.createElement('index')
 			  front=doc.createElement('front')
@@ -884,16 +884,16 @@ def create_index(refresh=False):
 			    for fc in front_index[w]:
 			      fcs+=fc+"|||"
 			    elem.setAttribute("fcs",fcs)
-			  back = doc.createElement('back')
-			  index.appendChild(back)
-			  for w in back_index:
-			    elem=doc.createElement(create_hash(w))
-			    back.appendChild(elem)
-			    elem.setAttribute("key",w)
-			    fcs=""
-			    for fc in back_index[w]:
-			      fcs+=fc+"|||"
-			    elem.setAttribute("fcs",fcs)			  
+			  #back = doc.createElement('back')
+			  #index.appendChild(back)
+			  #for w in back_index:
+			    #elem=doc.createElement(create_hash(w))
+			    #back.appendChild(elem)
+			    #elem.setAttribute("key",w)
+			    #fcs=""
+			    #for fc in back_index[w]:
+			      #fcs+=fc+"|||"
+			    #elem.setAttribute("fcs",fcs)			  
 			  xml_file = open(".TexFlasher/search_words_detex.xml", "w","utf-8")
 			  index.writexml(xml_file)
 			  xml_file.close()
@@ -901,9 +901,9 @@ def create_index(refresh=False):
 			doc= xml.parse(".TexFlasher/search_words_detex.xml")
 			for fcs in doc.getElementsByTagName('front')[0].childNodes:
 			      front_index[fcs.getAttribute('key')]=fcs.getAttribute('fcs').split('|||')[:-1]
-			for fcs in doc.getElementsByTagName('back')[0].childNodes:
-			      back_index[fcs.getAttribute('key')]=fcs.getAttribute('fcs').split('|||')[:-1]			      
-		return front_index,back_index
+			#for fcs in doc.getElementsByTagName('back')[0].childNodes:
+			      #back_index[fcs.getAttribute('key')]=fcs.getAttribute('fcs').split('|||')[:-1]			      
+		return front_index#,back_index
 
 
 class Search(Entry):
@@ -985,29 +985,29 @@ class Search(Entry):
 			results=[]
 			for w in search_query.lower().replace("-"," ").strip().split():
 			      front_results=set([])
-			      back_results=set([])			  
+			      #back_results=set([])			  
 			      front_matches=get_close_matches(w,front_index.keys())
-			      back_matches=get_close_matches(w,back_index.keys())
+			      #back_matches=get_close_matches(w,back_index.keys())
 			      for key in front_matches:
 					if len(front_results)>0:
 						front_results=front_results.union(set(front_index[key]))					
 					else:
 						front_results=set(front_index[key])
-			      for key in back_matches:	
-					if len(back_results)>0:
-						back_results=back_results.union(set(back_index[key]))				
-					else:
-						back_results=set(back_index[key])
+			      #for key in back_matches:	
+					#if len(back_results)>0:
+						#back_results=back_results.union(set(back_index[key]))				
+					#else:
+						#back_results=set(back_index[key])
 						
 			      if len(front_all)>0:
 					front_all=front_all.intersection(front_results)
 			      else:
 					front_all=front_results
-			      if len(back_all)>0:
-					back_all=back_all.intersection(back_results)
-			      else:
-					back_all=back_results					
-			search_results=list(front_all)+list(back_all.difference(front_all))
+			      #if len(back_all)>0:
+					#back_all=back_all.intersection(back_results)
+			      #else:
+					#back_all=back_results					
+			search_results=list(front_all)#+list(back_all.difference(front_all))
 						
 			for fc in search_results:
 				results.append({"tag":fc.split("###")[0],"dir":fc.split("###")[1]})				
@@ -1788,8 +1788,8 @@ def update_all( fnames ):
 	 	if window_type=="showerror":
 			exec('tkMessageBox.'+window_type+'( "Parse LaTex Logfile","%s")'%message)	
 	
-	global front_index,back_index
-	front_index,back_index=create_index(True)	
+	global front_index#,back_index
+	front_index=create_index(True)	
 	menu()
 
 
@@ -1804,8 +1804,8 @@ def update_texfile( fname, user ):
 		exec('tkMessageBox.'+window_type+'( "Parse LaTex Logfile","%s")'%message)	
 	else:
 		if os.path.isfile(os.path.dirname(fname)+"/Flashcards/changed.texflasher"):
-			global front_index,back_index
-			front_index,back_index=create_index(True)	
+			global front_index
+			front_index=create_index(True)	
 	menu()
 	
 
@@ -2240,9 +2240,9 @@ RESTART_TIME=7 # 2 o'clock
 IK=ImageKeeper()
 
 comp_list=()#create_completion_list()
-global front_index,back_index
+global front_index
 
-front_index,back_index=create_index()
+front_index=create_index()
 
 iconbitmapLocation = "@./.TexFlasher/pictures/icon.xbm"
 
