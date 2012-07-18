@@ -40,6 +40,8 @@ from time import strftime, strptime, ctime, localtime, mktime
 from datetime import datetime, timedelta
 from math import *
 from codecs import open
+import webbrowser
+
 
 from Tkinter import *
 import tkMessageBox
@@ -1931,10 +1933,15 @@ def show_tagged(tagtype,dir,tag_path):
 
 def open_tex(filepath):
 	try:
-		os.system("(nohup "+Settings["editor"]+" "+filepath+" > /dev/null &) 2> /dev/null")
+		webbrowser.open(filepath)
 	except:
-		tkMessageBox.showerror( "LaTeX Editor Variable","Please check, if your LaTeX Editor is set correctly in run-TexFlasher.sh")
+		tkMessageBox.showerror( "LaTeX Editor missing!","Please check, if you have a LaTeX Editor installed and try again!")
 
+def open_dvi(filepath):
+	try:
+		webbrowser.open(filepath)
+	except:
+		tkMessageBox.showerror( ".DVI Viewer missing!","Please check, if you have .DVI Viewer installed and try again!")
 
 
 
@@ -2132,10 +2139,14 @@ def menu():
 				tex =create_image_button(Main,"./.TexFlasher/pictures/latex.png",Main.b_normal,Main.b_normal)
 				tex.configure(command=lambda texfile=l.getAttribute('filename'):open_tex(texfile))
 				tex.grid(row=row_start,column=start_column+4,sticky=W+N+S+E)
+				#open dvi file
+				tex =create_image_button(Main,"./.TexFlasher/pictures/dvi.png",Main.b_normal,Main.b_normal)
+				tex.configure(command=lambda texfile=os.path.dirname(l.getAttribute('filename'))+"/Details/source.dvi":open_dvi(texfile))
+				tex.grid(row=row_start,column=start_column+5,sticky=W+N+S+E)				
 				#log
 				log=create_image_button(Main,"./.TexFlasher/pictures/"+window_type+".png",Main.b_normal,Main.b_normal)
 				log.configure(state=new_status,command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):show_log(fcdir))
-				log.grid(row=row_start,column=start_column+5,sticky=N+S+E+W)
+				log.grid(row=row_start,column=start_column+6,sticky=N+S+E+W)
 				#reset
 				res=create_image_button(Main,"./.TexFlasher/pictures/delete.png",Main.b_normal,Main.b_normal)
 				res.configure(command=lambda texfile=l.getAttribute('filename'):reset_flash(texfile))
