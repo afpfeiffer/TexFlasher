@@ -238,7 +238,7 @@ echo
 			cd $folder/Flashcards
 			make $target 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|Emergency stop.|Undefined control sequence' | tee -a $folder/texFlasher.log
 			cd $folder/Diffs
-			make -i $target 2>&1 < /dev/null &> /dev/null
+			make -i diff_$target 2>&1 < /dev/null &> /dev/null
 			
 			buildCounter=`echo $buildCounter + "1" | bc`
 			
@@ -282,7 +282,7 @@ echo
 	make -i -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|Emergency stop.|Undefined control sequence' | tee -a $folder/texFlasher.log
 	
 	cd $folder/Diffs
-	make -i -j$procs images 2>&1 < /dev/null 
+	make -i -j$procs images 2>&1 < /dev/null &> /dev/null
 done
 	
 exit 0
