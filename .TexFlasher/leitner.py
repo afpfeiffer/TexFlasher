@@ -1174,7 +1174,7 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 	scrollframe=Frame(Main)
 	scrollframe.grid(row=3,column=0)
 	
-	vscrollbar = AutoScrollbar(scrollframe)
+	vscrollbar = AutoScrollbar(scrollframe,bg="red")
 	vscrollbar.grid(row=2, column=2, sticky=N+S)
 	
 	search_canvas = Canvas(scrollframe,yscrollcommand=vscrollbar.set)
@@ -1251,7 +1251,7 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 	  diff_b.config(text=str(len(diffs))+" Diff(s)",command=lambda:display_mult_fcs(diffs,"Diff(s): "+title))
 	else:
 	  diff_b.grid_forget()
-	  
+	vscrollbar.config(bg="grey")
 def  disp_single_fc(image_path,tag,title=None):
 	# create child window
 	win = Toplevel()
