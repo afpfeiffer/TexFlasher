@@ -851,8 +851,7 @@ def create_index(refresh=False):
 					
 					fc_sections=get_fc_section(fc_elem['dir'],fc_elem['tag'],current_source_xml)	
 				
-					fc_elem['query']={"front":fc_name+" "+theorem_name+" "+fc_elem['tag']+" "+fc_sections,"content":fc_content+" "+fc_name+" "+theorem_name+" "+fc_elem['tag']+" "+fc_sections}
-
+					fc_elem['query']={"front":fc_name+" "+theorem_name+" "+fc_elem['tag']+" "+fc_sections,"content":fc_content}
 					
 					for w in fc_elem['query']['front'].lower().replace("-"," ").replace("{"," ").replace("}"," ").strip().split(" "):
 						if len(w)>=min_word_len:
