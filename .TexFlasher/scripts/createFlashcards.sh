@@ -276,8 +276,10 @@ echo
 
 	fi  
 
+	cd $folder/Diffs
 	# better be save than sorry
 	make -j$procs images 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error|Missing|Emergency stop.|Undefined control sequence' | tee -a $folder/texFlasher.log
+	cd $WD
 done
 	
 exit 0
