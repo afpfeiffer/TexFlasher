@@ -1978,6 +1978,8 @@ def check_tags(xml_path,tagtype):
 			return 	len(xml.parse(xml_path).getElementsByTagName(tagtype)[0].childNodes) 
 		except:
 			return 0
+	else:
+		return 0
     
 def bpe(filepath,b_=False):
 	tree = xml.parse("./.TexFlasher/config.xml")
