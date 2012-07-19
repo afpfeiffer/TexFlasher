@@ -1851,7 +1851,7 @@ def hide_FlashFolder(filename):
 	xml_file = open("./.TexFlasher/config.xml", "w", "utf-8")
 	config_xml.writexml(xml_file)
 	xml_file.close()
-	menu()
+	#menu()
 
 
 def reset_flash(filename):
@@ -1862,7 +1862,8 @@ def reset_flash(filename):
 		except:
 			pass
 		hide_FlashFolder(filename)
-	menu()
+		Indexer.create()	
+		menu()
 
 
 def clear_window():
