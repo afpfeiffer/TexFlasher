@@ -959,6 +959,7 @@ class Search(Entry):
 
 						           
         def search_flashcard(self):
+        	Indexer.load()
 		search_query=self.get()
 		self._def_value.set("searching, please wait...") 
 		self.configure(fg="gray")
@@ -976,13 +977,13 @@ class Search(Entry):
 			for w in search_query.lower().replace("-"," ").strip().split():
 			      front_results=set([])
 			      #back_results=set([])			  
-			      front_matches=get_close_matches(w,Index.keys())
+			      front_matches=get_close_matches(w,Indexer.front_index.keys())
 			      #back_matches=get_close_matches(w,back_index.keys())
 			      for key in front_matches:
 					if len(front_results)>0:
-						front_results=front_results.union(set(Index[key]))					
+						front_results=front_results.union(set(Indexer.front_index[key]))					
 					else:
-						front_results=set(Index[key])
+						front_results=set(Indexer.front_index[key])
 			      #for key in back_matches:	
 					#if len(back_results)>0:
 						#back_results=back_results.union(set(back_index[key]))				
@@ -1778,7 +1779,7 @@ def update_all( fnames ):
 	 	if window_type=="showerror":
 			exec('tkMessageBox.'+window_type+'( "Parse LaTex Logfile","%s")'%message)	
 	
-	Index=Indexer.create()	
+	Indexer.create()	
 	menu()
 
 
@@ -1793,7 +1794,7 @@ def update_texfile( fname, user ):
 		exec('tkMessageBox.'+window_type+'( "Parse LaTex Logfile","%s")'%message)	
 	else:
 		if os.path.isfile(os.path.dirname(fname)+"/Flashcards/changed.texflasher"):
-			Index=Indexer.create()	
+			Indexer.create()	
 	menu()
 	
 
@@ -2268,9 +2269,11 @@ IK=ImageKeeper()
 
 comp_list=()#create_completion_list()
 
-Indexer=create_index()
 
-Index=Indexer.load()
+
+Indexer=create_index()
+#Indexer.load()
+
 
 iconbitmapLocation = "@./.TexFlasher/pictures/icon.xbm"
 
