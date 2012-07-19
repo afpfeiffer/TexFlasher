@@ -103,9 +103,10 @@ def load_leitner_db(leitner_dir,user):
 	xml_file.close()
 	return ldb
 
-def brainPowerExponent(level):
+def brainPowerExponent(filepath,level):
 	if( level > 2 ):
-		return int(pow(int(level),Main.bpe))
+		b=bpe(filepath)
+		return int(pow(int(level),b))
 	elif level>=0:
 		return level
 	else: 
@@ -114,7 +115,7 @@ def brainPowerExponent(level):
 	
 	
 
-def futureCardNumber( database, offset, offset2, maxLevel ):
+def futureCardNumber(ldir, database, offset, offset2, maxLevel ):
 	LEVELS=[]
 	
 	for i in range(-1,maxLevel+1):
@@ -128,7 +129,7 @@ def futureCardNumber( database, offset, offset2, maxLevel ):
 			lastReviewed_time=datetime(*(strptime(lastReviewed, "%Y-%m-%d %H:%M:%S")[0:6]))
 		        level=int(elem.getAttribute('level'))
 
-			newLevel = brainPowerExponent(level)
+			newLevel = brainPowerExponent(ldir,level)
 			dt_1 = lastReviewed_time + timedelta(days=(newLevel - (offset + offset2)))		
 			dt_2 = lastReviewed_time + timedelta(days=(newLevel - offset))		
 		
@@ -162,7 +163,7 @@ def load_agenda(ldb,dir,now=datetime.now(),PageSort=True):
 				lastReviewed_time=datetime(*(strptime(lastReviewed, "%Y-%m-%d %H:%M:%S")[0:6]))
 				level=int(elem.getAttribute('level'))
 					
-				newLevel = brainPowerExponent(level)
+				newLevel = brainPowerExponent(dir,level)
 
 				if level>=0:
 					dt = lastReviewed_time + timedelta(days=newLevel)		
@@ -275,13 +276,13 @@ def statistics_nextWeek(ldir):
 		
 			
 		for day in range(7):
-			number, listOfLevels = futureCardNumber( database, day , -1 , maxLevel)
+			number, listOfLevels = futureCardNumber(ldir, database, day , -1 , maxLevel)
 			DAYS.append( number )
 			DATASET.append( [ number, list(listOfLevels)  ] )
 		
 		#print DATASET
 		# fix for day=0
-		number1, listOfLevels1 = futureCardNumber( database, 0, -1000000, maxLevel )
+		number1, listOfLevels1 = futureCardNumber(ldir, database, 0, -1000000, maxLevel )
 		DAYS[0] = number1
 		DATASET[0] = [number1, list(listOfLevels1)]
 		
@@ -1756,7 +1757,7 @@ class Flasher:
 		level=self.ldb.getElementsByTagName(flashcard_tag)[0].getAttribute('level')
 
 		if int(level) > 0:
-			self.c.brain_true.config(text="review in "+str(brainPowerExponent(int(level) + 1))+" days")
+			self.c.brain_true.config(text="review in "+str(brainPowerExponent(self.selected_dir,int(level) + 1))+" days")
 		else:
 			self.c.brain_true.config(text="review in 2 days")
 			
@@ -1995,8 +1996,26 @@ def check_tags(xml_path,tagtype):
 		except:
 			return None
     
-	
-
+def bpe(filepath,b_=False):
+	tree = xml.parse("./.TexFlasher/config.xml")
+	config_xml = tree.getElementsByTagName('config')[0]  
+	for elem in config_xml.childNodes:
+		if elem.getAttribute('filename').startswith(filepath):
+		  bpe=elem.getAttribute('bpe')
+		  if bpe=="":
+		    bpe=Main.bpe
+		    elem.setAttribute('bpe',str(bpe))	
+		    xml_file = open("./.TexFlasher/config.xml", "w","utf-8")
+		    tree.writexml(xml_file)
+		    xml_file.close()
+		  elif b_:
+		    bpe=b_.get()
+		    elem.setAttribute('bpe',str(bpe))	
+		    xml_file = open("./.TexFlasher/config.xml", "w","utf-8")
+		    tree.writexml(xml_file)
+		    xml_file.close()
+		  break
+	return float(bpe)
 
 def menu():
 	global Main
@@ -2075,12 +2094,16 @@ def menu():
 				else:
 					hide_button.grid_forget()	
 				#Label(Desc,justify=LEFT,font=("Sans",Main.f_normal),text='updated: '+l.getAttribute('lastReviewed').rpartition(':')[0].partition('-')[2].replace('-','/')).grid(row=2,column=0,sticky=W)
-				
+				#bpe
+				bpe_s = Scale(Main, from_=1, to=2,length=2*Main.b_normal ,orient=HORIZONTAL,resolution=0.01)
+				bpe_s.config(command=lambda e,b_=bpe_s,d_=l.getAttribute('filename'): bpe(d_,b_))
+				bpe_s.set(bpe(l.getAttribute('filename')))
+				bpe_s.grid(row=row_start,column=start_column+2)				
 								
 				#tags
 				tag_xml_path=os.path.dirname(l.getAttribute('filename'))+"/Users/"+Settings['user']+"_comment.xml"
 				q_b=create_image_button(Main,".TexFlasher/pictures/question_fix.png",None,Main.b_normal,0)
-				q_b.grid(row=row_start,column=start_column+2,sticky=N+W+E+S)
+				q_b.grid(row=row_start,column=start_column+3,sticky=N+W+E+S)
 				q_length=check_tags(tag_xml_path,"question")
 				if q_length==None or q_length==0:
 				   q_b.config(state=DISABLED)
@@ -2088,28 +2111,28 @@ def menu():
 				#   Label(Main,text=str(q_length)).grid(row=row_start,column=start_column+2,sticky=S)
 				q_b.config(command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):show_tagged('question',fcdir,fcdir+"/Users/"+Settings['user']+"_comment.xml"))
 				w_b=create_image_button(Main,".TexFlasher/pictures/watchout_fix.png",None,Main.b_normal,0)
-				w_b.grid(row=row_start,column=start_column+3,sticky=N+S+E+W)
+				w_b.grid(row=row_start,column=start_column+4,sticky=N+S+E+W)
 				w_length=check_tags(tag_xml_path,"watchout")
 				if w_length==None or w_length==0:
 				   w_b.config(state=DISABLED)	
 				w_b.config(command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):show_tagged('watchout',fcdir,fcdir+"/Users/"+Settings['user']+"_comment.xml"))
    
 				r_b=create_image_button(Main,".TexFlasher/pictures/repeat_fix.png",None,Main.b_normal,0)
-				r_b.grid(row=row_start,column=start_column+4,sticky=N+W+E+S)
+				r_b.grid(row=row_start,column=start_column+5,sticky=N+W+E+S)
 				r_length=check_tags(tag_xml_path,"repeat")
 				if r_length==None or r_length==0:
 				   r_b.config(state=DISABLED)	
 				r_b.config(command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):show_tagged('repeat',fcdir,fcdir+"/Users/"+Settings['user']+"_comment.xml"))
 
 				l_b=create_image_button(Main,".TexFlasher/pictures/link_fix.png",None,Main.b_normal,0)
-				l_b.grid(row=row_start,column=start_column+5,sticky=N+W+E+S)
+				l_b.grid(row=row_start,column=start_column+6,sticky=N+W+E+S)
 				l_length=check_tags(tag_xml_path,"link")
 				if l_length==None or l_length==0:
 				   l_b.config(state=DISABLED)	
 				l_b.config(command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):show_tagged('link',fcdir,fcdir+"/Users/"+Settings['user']+"_comment.xml"))
 
 				wiki_b=create_image_button(Main,".TexFlasher/pictures/wiki.png",None,Main.b_normal,0)
-				wiki_b.grid(row=row_start,column=start_column+6,sticky=N+W+E+S)
+				wiki_b.grid(row=row_start,column=start_column+7,sticky=N+W+E+S)
 				wiki_length=check_tags(tag_xml_path,"wiki")
 				if wiki_length==None or wiki_length==0:
 				   wiki_b.config(state=DISABLED)	
@@ -2283,8 +2306,7 @@ class TexFlasher(Frame):
 		self.f_tiny=int(0.17*self.b_normal)
 		self.f_normal=int(0.3*self.b_normal)
 		self.f_large=int(0.5*self.b_normal)
-	def set_bpe(self):
-		self.bpe=self.bpe_s.get()
+
 	def __init__( self ):
 		Frame.__init__( self)
 		global WIDTH, HEIGHT		
@@ -2353,9 +2375,7 @@ class TexFlasher(Frame):
 		self.Logo=Label(Header)
 		self.Logo.configure(text="TeXFlasher based on Leitner-Method",justify=CENTER,font=("Sans",int(0.3*logo_height),"bold"))
 		self.bpe=1.3
-		self.bpe_s = Scale(Header, from_=1, to=2, orient=HORIZONTAL,resolution=0.01,command=lambda e: self.set_bpe())
-		self.bpe_s.set(self.bpe)
-		self.bpe_s.grid(row=1)
+
 		#self.Logo.img=logo
 		self.Logo.grid(row=0,sticky=E+W+N)		
 		Footer=Frame(self.master).grid(row=2,sticky=S+E+W)
