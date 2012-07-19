@@ -1994,7 +1994,7 @@ def check_tags(xml_path,tagtype):
 		try:
 			return 	len(xml.parse(xml_path).getElementsByTagName(tagtype)[0].childNodes) 
 		except:
-			return None
+			return 0
     
 def bpe(filepath,b_=False):
 	tree = xml.parse("./.TexFlasher/config.xml")
@@ -2095,7 +2095,7 @@ def menu():
 					hide_button.grid_forget()	
 				#Label(Desc,justify=LEFT,font=("Sans",Main.f_normal),text='updated: '+l.getAttribute('lastReviewed').rpartition(':')[0].partition('-')[2].replace('-','/')).grid(row=2,column=0,sticky=W)
 				#bpe
-				bpe_s = Scale(Main, from_=1, to=2,length=2*Main.b_normal ,orient=HORIZONTAL,resolution=0.01)
+				bpe_s = Scale(Main, from_=1, to=2,length=2*Main.b_normal ,font=("Sans",Main.f_normal),sliderlength=int(0.5*Main.b_normal),orient=HORIZONTAL,resolution=0.01)
 				bpe_s.config(command=lambda e,b_=bpe_s,d_=l.getAttribute('filename'): bpe(d_,b_))
 				bpe_s.set(bpe(l.getAttribute('filename')))
 				bpe_s.grid(row=row_start,column=start_column+2)				
@@ -2107,6 +2107,8 @@ def menu():
 				q_length=check_tags(tag_xml_path,"question")
 				if q_length==None or q_length==0:
 				   q_b.config(state=DISABLED)
+				Label(Main,font=("Sans",Main.f_normal),text=str(q_length)).grid(row=row_start,column=start_column+3,sticky=S)
+				   
 				#else:
 				#   Label(Main,text=str(q_length)).grid(row=row_start,column=start_column+2,sticky=S)
 				q_b.config(command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):show_tagged('question',fcdir,fcdir+"/Users/"+Settings['user']+"_comment.xml"))
@@ -2116,13 +2118,15 @@ def menu():
 				if w_length==None or w_length==0:
 				   w_b.config(state=DISABLED)	
 				w_b.config(command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):show_tagged('watchout',fcdir,fcdir+"/Users/"+Settings['user']+"_comment.xml"))
-   
+				Label(Main,font=("Sans",Main.f_normal),text=str(w_length)).grid(row=row_start,column=start_column+4,sticky=S)
+				
 				r_b=create_image_button(Main,".TexFlasher/pictures/repeat_fix.png",None,Main.b_normal,0)
 				r_b.grid(row=row_start,column=start_column+5,sticky=N+W+E+S)
 				r_length=check_tags(tag_xml_path,"repeat")
 				if r_length==None or r_length==0:
 				   r_b.config(state=DISABLED)	
 				r_b.config(command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):show_tagged('repeat',fcdir,fcdir+"/Users/"+Settings['user']+"_comment.xml"))
+				Label(Main,font=("Sans",Main.f_normal),text=str(r_length)).grid(row=row_start,column=start_column+5,sticky=S)
 
 				l_b=create_image_button(Main,".TexFlasher/pictures/link_fix.png",None,Main.b_normal,0)
 				l_b.grid(row=row_start,column=start_column+6,sticky=N+W+E+S)
@@ -2130,6 +2134,7 @@ def menu():
 				if l_length==None or l_length==0:
 				   l_b.config(state=DISABLED)	
 				l_b.config(command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):show_tagged('link',fcdir,fcdir+"/Users/"+Settings['user']+"_comment.xml"))
+				Label(Main,font=("Sans",Main.f_normal),text=str(l_length)).grid(row=row_start,column=start_column+6,sticky=S)
 
 				wiki_b=create_image_button(Main,".TexFlasher/pictures/wiki.png",None,Main.b_normal,0)
 				wiki_b.grid(row=row_start,column=start_column+7,sticky=N+W+E+S)
@@ -2137,6 +2142,8 @@ def menu():
 				if wiki_length==None or wiki_length==0:
 				   wiki_b.config(state=DISABLED)	
 				wiki_b.config(command=lambda fcdir=os.path.dirname(l.getAttribute('filename')):show_tagged('wiki',fcdir,fcdir+"/Users/"+Settings['user']+"_comment.xml"))
+				Label(Main,font=("Sans",Main.f_normal),text=str(wiki_length)).grid(row=row_start,column=start_column+7,sticky=S)
+
 				start_column+=6
 				
 				#update
@@ -2190,14 +2197,7 @@ def menu():
 	create_n.configure(command=create_folder)
 	ToolTip(create_n,"Create new flaschards folder")
 	
-	save_all=create_image_button(toolbar,"./.TexFlasher/pictures/upload.png",None,Main.b_normal)
-	save_all.configure(command=lambda:executeCommand( "bash .TexFlasher/scripts/save.sh "+ saveString, True )) 
-	
-	update_all_b=create_image_button(toolbar,"./.TexFlasher/pictures/update.png",None,Main.b_normal)
-	update_all_b.configure(command=lambda:update_all(filenames)) 	
-	
-	
-	
+
 	if row_start > 4:
 		toolbar.grid(row=2,columnspan=20)
 		#toolbar.rowconfigure(0,weight=1)
@@ -2206,7 +2206,14 @@ def menu():
 		#toolbar.columnconfigure(2,weight=1)
 		#search field
 
-
+		save_all=create_image_button(toolbar,"./.TexFlasher/pictures/upload.png",None,Main.b_normal)
+		save_all.configure(command=lambda:executeCommand( "bash .TexFlasher/scripts/save.sh "+ saveString, True )) 
+	
+		update_all_b=create_image_button(toolbar,"./.TexFlasher/pictures/update.png",None,Main.b_normal)
+		update_all_b.configure(command=lambda:update_all(filenames)) 	
+	
+	
+	
 		create.grid(row=0,column=0,sticky=E+W+N+S)
 			
 		create_n.grid(row=0,column=1,sticky=E+W+N+S)		
