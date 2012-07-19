@@ -105,7 +105,7 @@ def load_leitner_db(leitner_dir,user):
 
 def brainPowerExponent(level):
 	if( level > 2 ):
-		return int(pow(int(level),1.3))
+		return int(pow(int(level),Main.bpe))
 	elif level>=0:
 		return level
 	else: 
@@ -2283,7 +2283,8 @@ class TexFlasher(Frame):
 		self.f_tiny=int(0.17*self.b_normal)
 		self.f_normal=int(0.3*self.b_normal)
 		self.f_large=int(0.5*self.b_normal)
-	
+	def set_bpe(self):
+		self.bpe=self.bpe_s.get()
 	def __init__( self ):
 		Frame.__init__( self)
 		global WIDTH, HEIGHT		
@@ -2351,7 +2352,10 @@ class TexFlasher(Frame):
 		#logo=IK.get_image(".TexFlasher/pictures/logo.png",None,logo_height)
 		self.Logo=Label(Header)
 		self.Logo.configure(text="TeXFlasher based on Leitner-Method",justify=CENTER,font=("Sans",int(0.3*logo_height),"bold"))
-			
+		self.bpe=1.3
+		self.bpe_s = Scale(Header, from_=1, to=2, orient=HORIZONTAL,resolution=0.01,command=lambda e: self.set_bpe())
+		self.bpe_s.set(self.bpe)
+		self.bpe_s.grid(row=1)
 		#self.Logo.img=logo
 		self.Logo.grid(row=0,sticky=E+W+N)		
 		Footer=Frame(self.master).grid(row=2,sticky=S+E+W)
