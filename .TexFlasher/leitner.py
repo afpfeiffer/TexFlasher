@@ -965,7 +965,8 @@ class Search(Entry):
 		
 		self.update()
 		# set similarity sensitivity
-		thresh=0.7 
+		thresh=0.8
+		max_res=10
 		current_source_xml=None
 		current_tex_file=None
 		current_order_xml=None
@@ -975,8 +976,10 @@ class Search(Entry):
 			results=[]
 			for w in search_query.lower().replace("-"," ").strip().split():
 			      front_results=set([])
-			      #back_results=set([])			  
-			      front_matches=get_close_matches(w,Indexer.front_index.keys())
+			      #back_results=set([])
+			      front_matches=[]
+
+			      front_matches+=get_close_matches(w,Indexer.front_index.keys(),cutoff=thresh)
 			      #back_matches=get_close_matches(w,back_index.keys())
 			      for key in front_matches:
 					if len(front_results)>0:
