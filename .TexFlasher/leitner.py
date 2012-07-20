@@ -22,7 +22,6 @@
 global saveString 
 global Settings 
 global Main
-global comp_list
 
 
 import os
@@ -832,6 +831,7 @@ class create_index:
 	def __init__(self):  
 		self.min_word_len=4
 		self.front_index={}
+		self.completion_list={}		
 	def create(self):
 		self.front_index={}
 		current_dir=""
@@ -857,7 +857,7 @@ class create_index:
 				fc_sections=get_fc_section(fc_elem['dir'],fc_elem['tag'],current_source_xml)				
 				fc_elem['query']={"front":fc_name+" "+theorem_name+" "+fc_elem['tag']+" "+fc_sections+" "+fc_content,"content":""}
 					
-				for w in fc_elem['query']['front'].lower().replace("-"," ").replace("{"," ").replace("}"," ").strip().split(" "):
+				for w in re.sub("[\W\d]", " ", fc_elem['query']['front'].lower().strip()).split(" "):
 						if len(w)>=self.min_word_len:
 							try:
 								if fc_elem['tag']+"###"+fc_elem['dir'] not in self.front_index[w]:
@@ -881,6 +881,7 @@ class create_index:
 			  xml_file = open(".TexFlasher/search_words_detex.xml", "w","utf-8")
 			  index.writexml(xml_file)
 			  xml_file.close()
+		self.completion_list=tuple(sorted(self.front_index.keys()))  
 	      
 		return self.front_index#,back_index
 		
@@ -892,6 +893,7 @@ class create_index:
 		      self.front_index[fcs.getAttribute('key')]=fcs.getAttribute('fcs').split('|||')[:-1]			
 		except:
 		  self.create()
+		self.completion_list=tuple(sorted(self.front_index.keys()))  
 		return self.front_index
 
 
@@ -920,40 +922,37 @@ class Search(Entry):
 		self._hit_index = 0
 		self.position = 0
 		self.bind('<KeyRelease>', self.handle_keyrelease)		  	
-      	
-      	
-        def set_completion_list(self, completion_list):             	    
-                self._completion_list = completion_list                
-
-                
-                
-        def add_search_query(self,se_query,results):
-        	global comp_list
-        	if not unicode(se_query.lower()) in list(comp_list):							        		
-			comp_list+=(unicode(se_query.lower()),)
+		Indexer.load()
+                self._completion_list = Indexer.completion_list      
 
         def autocomplete(self, delta=0):
-                """autocomplete the Entry, delta may be 0/1/-1 to cycle through possible hits"""
-                if delta: # need to delete selection otherwise we would fix the current position
+	    """autocomplete the Entry, delta may be 0/1/-1 to cycle through possible hits"""
+	    if delta: # need to delete selection otherwise we would fix the current position
                         self.delete(self.position, Tkinter.END)
-                else: # set position to end so selection starts where textentry ended
+	    else: # set position to end so selection starts where textentry ended
                         self.position = len(self.get())
+	    if not self._hits or not self._hits[0].startswith(self.get()):
+                        
                 # collect hits
                 _hits = []
+                
                 for element in self._completion_list:
-                        if element.startswith(self.get().lower()):
+                        if element.startswith(self.get().split(" ")[-1].lower()):
                                 _hits.append(element)
+                                break
                 # if we have a new hit list, keep this in mind
                 if _hits != self._hits:
-                        self._hit_index = 0
+                        self._hit_index =0
                         self._hits=_hits
                 # only allow cycling if we are in a known hit list
                 if _hits == self._hits and self._hits:
                         self._hit_index = (self._hit_index + delta) % len(self._hits)
                 # now finally perform the auto completion
-                if self._hits:
-                        self.delete(0,END)
-                        self.insert(0,self._hits[self._hit_index])
+            
+	      
+            if self._hits:
+                        self.delete( len(self.get())-len(self.get().split(" ")[-1]),END)
+                        self.insert( len(self.get())-len(self.get().split(" ")[-1]),self._hits[self._hit_index])
                         self.select_range(self.position,END)
                         
 
@@ -1155,7 +1154,6 @@ def display_mult_fcs(fcs,title,folders=None): #Syntax: fcs=[{"tag":fc_tag,"dir":
 	
 	menu_button.grid(row=0,column=0)
 	query=Search(toolbar)
-	query.set_completion_list(comp_list)
 	query.grid(row=0,column=1,sticky=E+W+N+S)	
 	
 	scrollframe=Frame(Main)
@@ -1543,7 +1541,6 @@ class Flasher:
 		hide_b.grid(row=0, column=2,sticky=W+E)	
 
 		query=Search(menubar_frame)
-		query.set_completion_list(comp_list)
 		query.grid(row=0,column=3,sticky=E+W)
 		
 		
@@ -2205,7 +2202,6 @@ def menu():
 			
 		create_n.grid(row=0,column=1,sticky=E+W+N+S)		
 		query=Search(toolbar)
-		query.set_completion_list(comp_list)
 		query.grid(row=0,column=2,sticky=E+W+N+S)
 		
 		update_all_b.grid(row=0,column=3,sticky=E+W+N+S)
@@ -2268,12 +2264,7 @@ RESTART_TIME=7 # 2 o'clock
 
 IK=ImageKeeper()
 
-comp_list=()#create_completion_list()
-
-
-
 Indexer=create_index()
-#Indexer.load()
 
 
 iconbitmapLocation = "@./.TexFlasher/pictures/icon.xbm"
