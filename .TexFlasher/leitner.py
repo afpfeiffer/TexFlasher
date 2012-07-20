@@ -1763,6 +1763,7 @@ class Flasher:
 ############################################################## Menu ####################################################################
 
 def update_all( fnames ):
+	working("Updateing all Latex files ...")
 
 	folderstring=""
 	for fname in fnames:
@@ -1782,7 +1783,8 @@ def update_all( fnames ):
 	menu()
 
 
-def update_texfile( fname, user ):	
+def update_texfile( fname, user ):
+	working("Updating Latex file ...")
 	executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+os.path.dirname(fname), True )
 	#executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+fname+" "+os.path.dirname(fname)+"/Users", True )
 	#executeCommand( "bash .TexFlasher/scripts/updateFiles.sh "+os.path.dirname(fname)+"/Users/"+user+".xml "+os.path.dirname(fname)+"/Users/"+user+"_comment.xml "+fname, True )
@@ -1798,6 +1800,7 @@ def update_texfile( fname, user ):
 	
 
 def saveFiles(master):
+		working("Checking for changes ...")
 		try:
 		  tree = xml.parse("./.TexFlasher/config.xml")
 		  try: 
@@ -1832,6 +1835,10 @@ def create_new():
 		menu()
 		
 
+def working(text):
+	clear_window()
+	Label(Main,font=("Sans",Main.f_normal,"bold"),text=text).grid(rowspan=20,columnspan=20)
+	Main.update()
 
 def get_flashfolder_path(dir):
 	tree = xml.parse("./.TexFlasher/config.xml")
