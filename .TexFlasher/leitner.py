@@ -966,7 +966,6 @@ class Search(Entry):
 		self.update()
 		# set similarity sensitivity
 		thresh=0.8
-		max_res=10
 		current_source_xml=None
 		current_tex_file=None
 		current_order_xml=None
@@ -1668,7 +1667,6 @@ class Flasher:
 		self.c.stat.delete("all")
 		self.c.delete("info_win")		
 
-		drawCardHistory( self.ldb.getElementsByTagName(flashcard_name)[0], self.c.stat )
 		image = Image.open(self.selected_dir+"/Flashcards/"+flashcard_name+"-1.png")
 		image = image.resize((int(self.c.cget("width")),int(self.c.cget("height"))), Image.ANTIALIAS)
 		
@@ -1726,6 +1724,7 @@ class Flasher:
 			self.c.delete(item)
 		for item in self.c.find_withtag('elem'):#first clear possible rects from canvas
 			self.c.delete(item)	
+		drawCardHistory( self.ldb.getElementsByTagName(flashcard_tag)[0], self.c.stat )
 		
 		self.c.create_image(int(flashcard_image.width()/2), int(flashcard_image.height()/2), image=flashcard_image,tags=("backside",flashcard_tag))	
 		self.c.img=flashcard_image			
