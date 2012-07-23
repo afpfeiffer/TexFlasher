@@ -923,8 +923,9 @@ class Search(Entry):
 		self.position = 0
 		self.bind('<KeyRelease>', self.handle_keyrelease)		  	
 		Indexer.load()
-                self._completion_list = Indexer.completion_list      
-
+		self._completion_list = Indexer.completion_list   
+		self.thresh=0.8
+		
         def autocomplete(self, delta=0):
 	    """autocomplete the Entry, delta may be 0/1/-1 to cycle through possible hits"""
 	    if delta: # need to delete selection otherwise we would fix the current position
@@ -939,7 +940,8 @@ class Search(Entry):
                 for element in self._completion_list:
                         if element.startswith(self.get().split(" ")[-1].lower()):
                                 _hits.append(element)
-                                break
+
+
                 # if we have a new hit list, keep this in mind
                 if _hits != self._hits:
                         self._hit_index =0
@@ -950,10 +952,15 @@ class Search(Entry):
                 # now finally perform the auto completion
             
 	      
-            if self._hits:
+            if len(self._hits)==1:
+                        self.config(fg="green")            
                         self.delete( len(self.get())-len(self.get().split(" ")[-1]),END)
                         self.insert( len(self.get())-len(self.get().split(" ")[-1]),self._hits[self._hit_index])
                         self.select_range(self.position,END)
+            if len(self._hits)>1:
+                        self.config(fg="green")
+            if len(self._hits)==0:
+                        self.config(fg="black")                                    		
                         
 
 						           
@@ -965,7 +972,7 @@ class Search(Entry):
 		
 		self.update()
 		# set similarity sensitivity
-		thresh=0.8
+
 		current_source_xml=None
 		current_tex_file=None
 		current_order_xml=None
@@ -978,35 +985,23 @@ class Search(Entry):
 			      #back_results=set([])
 			      front_matches=[]
 
-			      front_matches+=get_close_matches(w,Indexer.front_index.keys(),cutoff=thresh)
-			      #back_matches=get_close_matches(w,back_index.keys())
+			      front_matches+=get_close_matches(w,Indexer.front_index.keys(),cutoff=self.thresh)
 			      for key in front_matches:
 					if len(front_results)>0:
 						front_results=front_results.union(set(Indexer.front_index[key]))					
 					else:
-						front_results=set(Indexer.front_index[key])
-			      #for key in back_matches:	
-					#if len(back_results)>0:
-						#back_results=back_results.union(set(back_index[key]))				
-					#else:
-						#back_results=set(back_index[key])
-						
+						front_results=set(Indexer.front_index[key])						
 			      if len(front_all)>0:
 					front_all=front_all.intersection(front_results)
 			      else:
-					front_all=front_results
-			      #if len(back_all)>0:
-					#back_all=back_all.intersection(back_results)
-			      #else:
-					#back_all=back_results					
-			search_results=list(front_all)#+list(back_all.difference(front_all))
+					front_all=front_results					
+			search_results=list(front_all)
 						
 			for fc in search_results:
 				results.append({"tag":fc.split("###")[0],"dir":fc.split("###")[1]})				
 			## display search results
 			if len(results)>0:
 				display_mult_fcs(results,"Search results for \""+search_query+"\"")
-				#self.add_search_query(search_query,search_results)
 			else:
 				self.delete(0,END)
 				self.insert(0,"Nothing found!" )
@@ -1873,7 +1868,7 @@ def reset_flash(filename):
 
 
 def clear_window():
-	info=Main.grid_info()
+	#info=Main.grid_info()
 	#Main.grid_remove()
 	#Main.grid(row=info['row'],column=info['column'])
 	for widget in Main.grid_slaves():
