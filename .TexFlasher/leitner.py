@@ -844,26 +844,28 @@ class create_index:
 					tex_file_path=get_flashfolder_path(fc_elem['dir'])
 					current_tex_file=open(tex_file_path,"r", "utf-8")
 					current_order_xml=xml.parse(fc_elem['dir']+"/Flashcards/order.xml")
-				#try:	
+				try:	
 				
-				fc_name=current_order_xml.getElementsByTagName(fc_elem['tag'])[0].getAttribute('name')	
-				theorem_name=current_order_xml.getElementsByTagName(fc_elem['tag'])[0].getAttribute('theorem_name')	
-				try:			
-					fc_content=open(fc_elem['dir']+"/Flashcards/"+fc_elem['tag']+".detex","r","utf-8").read()				
-				except:
-					os.system("detex "+fc_elem['dir']+"/Flashcards/"+fc_elem['tag']+".tex > "+fc_elem['dir']+"/Flashcards/"+fc_elem['tag']+".detex")	
-				fc_content=open(fc_elem['dir']+"/Flashcards/"+fc_elem['tag']+".detex","r","utf-8").read()
+				  fc_name=current_order_xml.getElementsByTagName(fc_elem['tag'])[0].getAttribute('name')	
+				  theorem_name=current_order_xml.getElementsByTagName(fc_elem['tag'])[0].getAttribute('theorem_name')	
+				  try:			
+				    fc_content=open(fc_elem['dir']+"/Flashcards/"+fc_elem['tag']+".detex","r","utf-8").read()				
+				  except:
+				    os.system("detex "+fc_elem['dir']+"/Flashcards/"+fc_elem['tag']+".tex > "+fc_elem['dir']+"/Flashcards/"+fc_elem['tag']+".detex")	
+				  fc_content=open(fc_elem['dir']+"/Flashcards/"+fc_elem['tag']+".detex","r","utf-8").read()
 													
-				fc_sections=get_fc_section(fc_elem['dir'],fc_elem['tag'],current_source_xml)				
-				fc_elem['query']={"front":fc_name+" "+theorem_name+" "+fc_elem['tag']+" "+fc_sections+" "+fc_content,"content":""}
+				  fc_sections=get_fc_section(fc_elem['dir'],fc_elem['tag'],current_source_xml)				
+				  fc_elem['query']={"front":fc_name+" "+theorem_name+" "+fc_elem['tag']+" "+fc_sections+" "+fc_content,"content":""}
 					
-				for w in re.sub("[\W\d]", " ", fc_elem['query']['front'].lower().strip()).split(" "):
+				  for w in re.sub("[\W\d]", " ", fc_elem['query']['front'].lower().strip()).split(" "):
 						if len(w)>=self.min_word_len:
 							try:
 								if fc_elem['tag']+"###"+fc_elem['dir'] not in self.front_index[w]:
 									self.front_index[w].append(fc_elem['tag']+"###"+fc_elem['dir'])
 							except:
-								self.front_index[w]=[fc_elem['tag']+"###"+fc_elem['dir']]						
+								self.front_index[w]=[fc_elem['tag']+"###"+fc_elem['dir']]
+				except:
+				    pass
 		if len(self.front_index)>0:# or len(back_index)>0:				
 			  doc=xml.Document()
 			  index = doc.createElement('index')
