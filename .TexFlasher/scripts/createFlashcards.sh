@@ -139,6 +139,7 @@ echo
 		changedContent="0"
 		newnumber="0"
 		TARGETS=""
+		deleted="0"
 		# buffer old flash cards
 		OLDFLASHCARDS="`ls $folder/Flashcards/*.tex`" 2>/dev/null
 		for oldflashcard in $OLDFLASHCARDS; do
@@ -168,7 +169,7 @@ echo
 									
 					if [[ "`diff FILEA FILEB`" != "" ]]; then
 						latexdiff $folder/Flashcards/$name $folder/Flashcards.tmp/$name > $folder/Diffs/diff_$name 2> /dev/null
-						echo "changed content: $purename" | tee -a $folder/texFlasher.log
+						echo "changed content: $purename" >> $folder/texFlasher.log
 						changedContent=`echo $changedContent + "1" | bc`
 					fi
 					
@@ -176,6 +177,7 @@ echo
 				fi
 			else
 				rm $folder/Flashcards/$purename* 2> /dev/null
+				deleted=`echo $deleted + "1" | bc`
 			fi
 		done
 
@@ -206,6 +208,7 @@ echo
 		echo "  -> $newnumber new card(s)" | tee -a $folder/texFlasher.log
 		echo "  -> $changedContent card(s) with changed content" | tee -a $folder/texFlasher.log
 		echo "  -> $changedHeader card(s) with changed header" | tee -a $folder/texFlasher.log
+		echo "  -> $deleted card(s) deleted" | tee -a $folder/texFlasher.log
 		echo ""
 
 		buildCounter="0"
