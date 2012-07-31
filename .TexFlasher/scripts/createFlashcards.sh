@@ -33,8 +33,9 @@ txtbld=$(tput bold) #bold
 texthb=$(tput dim) #half bright
 
 # Other variables you can define as follows:
-# txtgrn=$(tput setaf 2) # Green
-# txtylw=$(tput setaf 3) # Yellow
+txtfgg=$(tput setaf 2) # Green
+txtyel=$(tput setaf 3) # Yellow
+txtfgr=$(tput setaf 1) # Yellow
 # txtblu=$(tput setaf 4) # Blue
 # txtpur=$(tput setaf 5) # Purple
 # txtcyn=$(tput setaf 6) # Cyan
@@ -204,12 +205,14 @@ echo
 		rm -r $folder/Flashcards.tmp &> /dev/null
 		
 	
-		echo "compiling card(s):" | tee -a $folder/texFlasher.log
-		echo "  -> $newnumber new card(s)" | tee -a $folder/texFlasher.log
-		echo "  -> $changedContent card(s) with changed content" | tee -a $folder/texFlasher.log
+		echo
+		echo "compiling card(s):${txtrst}" | tee -a $folder/texFlasher.log
+		echo "  -> ${txtyel}$newnumber new card(s)${txtrst}" | tee -a $folder/texFlasher.log
+		echo "  -> ${txtfgg}$changedContent card(s) with changed content${txtrst}" | tee -a $folder/texFlasher.log
 		echo "  -> $changedHeader card(s) with changed header" | tee -a $folder/texFlasher.log
-		echo "  -> $deleted card(s) deleted" | tee -a $folder/texFlasher.log
+		echo "  -> ${txtfgr}$deleted card(s) deleted${txtrst}" | tee -a $folder/texFlasher.log
 		echo ""
+		echo
 
 		buildCounter="0"
 		pBase=`echo "scale=2; 100.0 / $compilenumber.0" | bc`
