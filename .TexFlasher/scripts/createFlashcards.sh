@@ -207,10 +207,18 @@ echo
 	
 		echo
 		echo "compiling card(s):${txtrst}" | tee -a $folder/texFlasher.log
-		echo "  -> ${txtyel}$newnumber new card(s)${txtrst}" | tee -a $folder/texFlasher.log
-		echo "  -> ${txtfgg}$changedContent card(s) with changed content${txtrst}" | tee -a $folder/texFlasher.log
-		echo "  -> $changedHeader card(s) with changed header" | tee -a $folder/texFlasher.log
-		echo "  -> ${txtfgr}$deleted card(s) deleted${txtrst}" | tee -a $folder/texFlasher.log
+		if [ $newnumber -gt 0 ]; then
+			echo "  -> ${txtyel}$newnumber new card(s)${txtrst}" | tee -a $folder/texFlasher.log
+		fi
+		if [ $changedContent -gt 0 ]; then
+			echo "  -> ${txtfgg}$changedContent card(s) with changed content${txtrst}" | tee -a $folder/texFlasher.log
+		fi
+		if [ $changedHeader -gt 0 ]; then
+			echo "  -> $changedHeader card(s) with changed header" | tee -a $folder/texFlasher.log
+		fi
+		if [ $deleted -gt 0 ]; then
+			echo "  -> ${txtfgr}$deleted card(s) deleted${txtrst}" | tee -a $folder/texFlasher.log
+		fi
 		echo ""
 		echo
 
