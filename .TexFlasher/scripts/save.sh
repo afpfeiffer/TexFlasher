@@ -86,6 +86,7 @@ if [ $? -eq  0 ]; then
 			svn info $folder &> /dev/null
 			
 			HAVESVN=$?
+			NEEDSAVE=0
 			if [ $HAVESVN -eq 0 ]; then
 				echo "processing: "
 				for files in $seperatedFiles; do
@@ -94,21 +95,27 @@ if [ $? -eq  0 ]; then
 						echo "  -> ${texthb}$files ${txtrst}"
 					else
 						echo "  -> ${txtclr}${txtbld}$files ${txtrst} "
+						NEEDSAVE=1
 					fi
 				done
 				
-				for files in $seperatedFiles; do
-					fulldiff="`svn diff $files`" > /dev/null			
+				if [ $NEEDSAVE -eq 1 ]; then
+					svn up $folder
+					svn commit $folder -m "save learning progress"
+				fi
 				
-	#	 				echo "svn available for this file"
-					if [ "$fulldiff" != "" ]; then
-						echo "${texthb}`svn up $files`${txtrst}"
-						echo "${txtclr}${txtbld}`svn commit $files -m 'save learning progress'`${txtrst}"
-	# 				else
-	# 					echo "$files unchanged"
-
-					fi	
-				done
+# 				for files in $seperatedFiles; do
+# 					fulldiff="`svn diff $files`" > /dev/null			
+# 				
+# 	#	 				echo "svn available for this file"
+# 					if [ "$fulldiff" != "" ]; then
+# 						echo "${texthb}`svn up $files`${txtrst}"
+# 						echo "${txtclr}${txtbld}`svn commit $files -m 'save learning progress'`${txtrst}"
+# 	# 				else
+# 	# 					echo "$files unchanged"
+# 
+# 					fi	
+# 				done
 			fi
 			echo
 	done
