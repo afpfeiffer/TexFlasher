@@ -831,7 +831,11 @@ class create_index:
 	def __init__(self):  
 		self.min_word_len=4
 		self.front_index={}
-		self.completion_list={}		
+		self.completion_list={}	
+	
+	def replace_uml(self,string):
+		return string.replace("ö","oe").replace("ä","ae").replace("ü","ue").replace("ß","ss")
+	
 	def create(self):
 		self.front_index={}
 		current_dir=""
@@ -865,7 +869,8 @@ class create_index:
 							except:
 								self.front_index[w]=[fc_elem['tag']+"###"+fc_elem['dir']]
 				except:
-				    pass
+				    if Settings['user']=="can":
+					print fc_elem['tag']
 		if len(self.front_index)>0:# or len(back_index)>0:				
 			  doc=xml.Document()
 			  index = doc.createElement('index')
@@ -924,9 +929,8 @@ class Search(Entry):
 		self._hit_index = 0
 		self.position = 0
 		self.bind('<KeyRelease>', self.handle_keyrelease)		  	
-		Indexer.load()
 		self._completion_list = Indexer.completion_list   
-		self.thresh=0.8
+		self.thresh=0.7
 		
         def autocomplete(self, delta=0):
 	    """autocomplete the Entry, delta may be 0/1/-1 to cycle through possible hits"""
@@ -967,7 +971,6 @@ class Search(Entry):
 
 						           
         def search_flashcard(self):
-        	Indexer.load()
 		search_query=self.get()
 		self._def_value.set("searching, please wait...") 
 		self.configure(fg="gray")
@@ -1548,20 +1551,26 @@ class Flasher:
 		self.c.back_b=back_b
 		self.c.edit_b=edit_b
 		self.c.hide_b=hide_b
+		
 		#flashcard details
 		self.c.fc_det_row=2
 		fc_det_left = StringVar()
 		fc_det_right = StringVar()
-		Label(Main,anchor=W,textvariable=fc_det_left,font=("Sans",Main.f_normal)).grid(row=self.c.fc_det_row,column=0, columnspan=2,sticky=W)
-
+		desc_frame=Frame(Main,width=int(Main.winfo_width()))
+		desc_frame.grid(row=self.c.fc_det_row,columnspan=100,sticky=E+W)
+		desc_frame.rowconfigure(0,weight=1)
 		
+		desc_frame.columnconfigure(0,weight=1)
+		desc_frame.columnconfigure(1,weight=1)
 		
-		Label(Main,anchor=E,textvariable=fc_det_right,font=("Sans",Main.f_normal)).grid(row=self.c.fc_det_row, column=3,columnspan=2,sticky=E)
+		Label(desc_frame,anchor=W,textvariable=fc_det_left,font=("Sans",Main.f_normal)).grid(row=0,column=0,sticky=W)		
+		Label(desc_frame,anchor=E,textvariable=fc_det_right,font=("Sans",Main.f_normal)).grid(row=0, column=1,sticky=E)
 		self.c.fc_det_left=fc_det_left
-		self.c.fc_det_right=fc_det_right		
+		self.c.fc_det_right=fc_det_right
+		
 		#stats	
 		stat_height=Main.b_normal
-		stat_width=int(float(WIDTH)*0.95)
+		stat_width=int(Main.winfo_width())
 		stat=Canvas(Main,width=stat_width, height=stat_height)
 		stat.grid(row=4, columnspan=5)
 		stat.height=stat_height
@@ -1834,8 +1843,10 @@ def create_new():
 
 def working(text):
 	clear_window()
-	Label(Main,font=("Sans",Main.f_normal,"bold"),text=text).grid(rowspan=20,columnspan=20)
+	loader=Label(Main,font=("Sans",Main.f_normal,"bold"),text=text)
+	loader.grid(rowspan=20,columnspan=20)
 	Main.update()
+	return loader
 
 def get_flashfolder_path(dir):
 	tree = xml.parse("./.TexFlasher/config.xml")
@@ -1870,9 +1881,6 @@ def reset_flash(filename):
 
 
 def clear_window():
-	#info=Main.grid_info()
-	#Main.grid_remove()
-	#Main.grid(row=info['row'],column=info['column'])
 	for widget in Main.grid_slaves():
 		widget.grid_forget()
 
@@ -2010,8 +2018,7 @@ def bpe(filepath,b_=False):
 def menu():
 	global Main
 	bordersize=2
-	clear_window()
-	Main.update()
+	
 			
 	Main.columnconfigure(0,weight=0)
 	Main.columnconfigure(1,weight=1)
@@ -2021,10 +2028,15 @@ def menu():
 	Main.master.title(Main._title_base+" "+Main._version+" - Menu") 
 
 
-	global saveString 
+	global saveString
+	
 	saveString = ""
 	filenames=[]
 	row_start=4
+	
+	loader_text="Loading Flashfolders ..."
+	loader=working(loader_text)
+	
 	if os.path.isfile("./.TexFlasher/config.xml"):
 		tree = xml.parse("./.TexFlasher/config.xml")
 		config_xml = tree.getElementsByTagName('config')[0]		
@@ -2221,6 +2233,7 @@ def menu():
 		create_n.grid(row=0,column=0,sticky=E+W+N+S)			
 		create.grid(row=0,column=1,sticky=E+W+N+S)
 	#footer
+	loader.grid_forget()
 
 def readSettings( Settings ):
 	Config = ConfigParser.ConfigParser()
@@ -2271,6 +2284,7 @@ RESTART_TIME=7 # 2 o'clock
 IK=ImageKeeper()
 
 Indexer=create_index()
+Indexer.create()	
 
 
 iconbitmapLocation = "@./.TexFlasher/pictures/icon.xbm"
