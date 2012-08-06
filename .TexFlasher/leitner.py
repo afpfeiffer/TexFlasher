@@ -1570,7 +1570,7 @@ class Flasher:
 		
 		#stats	
 		stat_height=Main.b_normal
-		stat_width=int(Main.winfo_width())
+		stat_width=int(Main.winfo_width()*0.95)
 		stat=Canvas(Main,width=stat_width, height=stat_height)
 		stat.grid(row=4, columnspan=5)
 		stat.height=stat_height
