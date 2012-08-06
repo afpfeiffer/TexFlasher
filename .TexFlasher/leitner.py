@@ -1504,7 +1504,7 @@ class Flasher:
 		self.agenda,self.new_cards=load_agenda(self.ldb,self.selected_dir, self.date)
 		
 		
-		self.c=Canvas(Main,width=WIDTH,height=Main.winfo_height()-4*Main.b_large)
+		self.c=Canvas(Main,width=Main.winfo_width(),height=Main.winfo_height()-4*Main.b_large)
 
 		self.c.order = xml.parse(self.selected_dir+"/Flashcards/order.xml")
 		self.c.source = xml.parse(self.selected_dir+"/Details/source.xml")
