@@ -266,7 +266,7 @@ def parse_tex(fcard_dir,source_path):
 		xml_file = open(source_path+"/../Flashcards/order.xml", "w","utf-8")
 		order_db.writexml(xml_file)	    
 		xml_file.close()		
-		print "Created "+str(len(fcards))+" flashcard LaTex file(s)"
+		print "    Created "+str(len(fcards))+" flashcard LaTex file(s)"
 	else:
 		print "Fatal Error: No flashcard_markers  found!"
 		sys.exit()

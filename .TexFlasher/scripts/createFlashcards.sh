@@ -54,7 +54,8 @@ WD=$PWD
 for fname in $*; do 
 
 echo
-echo "(Re-)Compiling flashcards for $fname"
+echo
+echo "(Re-)Compiling flashcards for source $fname"
 echo
 	
 	
@@ -104,15 +105,14 @@ echo
 	# create all new flashcards in temporary folder
 	# echo "$folder/Flashcards/$purefilebase.bak $file"
 	if [[ "`diff $folder/Flashcards/$purefilebase.bak $file`" == "" ]]; then
-		echo "flashcards up to date" 
-		echo "done"
+		echo "    flashcards up to date" 
 	else 
 		cp $file $folder/Details/source.tex
 		cd $folder/Details
 		latex -halt-on-error $folder/Details/source.tex 2>&1 < /dev/null | grep -rniE 'Undefined control sequence|compiled flashcard|error|ERROR|Error|Missing|No pages of output.|Emergency stop.' | tee -a $folder/texFlasher.log
 		Errors="`cat $folder/texFlasher.log | grep -rniE 'error|ERROR|Error|Missing|No pages of output.|Emergency stop.|Undefined control sequence'`"
 		if [ ! "$Errors" == ""  ]; then
-			echo "Fatal latex error in source file." >> $folder/texFlasher.log
+			echo "    Fatal latex error in source file." >> $folder/texFlasher.log
 			exit 1
 		fi
 		python $WD/.TexFlasher/diviasm.py source.dvi > source.dump	
@@ -124,7 +124,7 @@ echo
 		fi
 		mkdir $folder/Flashcards.tmp
 		
-		echo "parsing ..." | tee  $folder/texFlasher.log
+		echo "    parsing ..." | tee  $folder/texFlasher.log
 		python "$WD/.TexFlasher/parse_tex.py" "$folder/Flashcards.tmp" "$folder/Details" | tee -a $folder/texFlasher.log
 		
 		Errors="`cat $folder/texFlasher.log | grep -rniE 'Fatal Error'`"
@@ -205,19 +205,18 @@ echo
 		rm -r $folder/Flashcards.tmp &> /dev/null
 		
 	
-		echo
-		echo "compiling card(s):${txtrst}" | tee -a $folder/texFlasher.log
+		echo "    compiling card(s):${txtrst}" | tee -a $folder/texFlasher.log
 		if [ $newnumber -gt 0 ]; then
-			echo "  -> ${txtyel}$newnumber new card(s)${txtrst}" | tee -a $folder/texFlasher.log
+			echo "      -> ${txtyel}$newnumber new card(s)${txtrst}" | tee -a $folder/texFlasher.log
 		fi
 		if [ $changedContent -gt 0 ]; then
-			echo "  -> ${txtfgg}$changedContent card(s) with changed content${txtrst}" | tee -a $folder/texFlasher.log
+			echo "      -> ${txtfgg}$changedContent card(s) with changed content${txtrst}" | tee -a $folder/texFlasher.log
 		fi
 		if [ $changedHeader -gt 0 ]; then
-			echo "  -> $changedHeader card(s) with changed header" | tee -a $folder/texFlasher.log
+			echo "      -> $changedHeader card(s) with changed header" | tee -a $folder/texFlasher.log
 		fi
 		if [ $deleted -gt 0 ]; then
-			echo "  -> ${txtfgr}$deleted card(s) deleted${txtrst}" | tee -a $folder/texFlasher.log
+			echo "      -> ${txtfgr}$deleted card(s) deleted${txtrst}" | tee -a $folder/texFlasher.log
 		fi
 		echo ""
 		echo
@@ -238,7 +237,7 @@ echo
 				elapsed=`echo "($tnow - $printTime)/1" | bc`
 				if [[ "$elapsed" -ge 2 ]]; then
 					printTime=$tnow
-					echo -ne "\r${ceol}  "
+					echo -ne "\r${ceol}      "
 					equals=`echo "$percent / 2" | bc `
 					for i in $(seq $equals); do echo -n "${txtbgg} "; done
 					echo -n "${txtbgr} "
@@ -246,7 +245,7 @@ echo
 					echo -n "${txtrst} progress: $percent%,  $tLeft remaining"
 				fi
 			else
-				echo -ne "\r${ceol}  ${txtbgr}                                                  ${txtrst} progress: $percent%"
+				echo -ne "\r${ceol}      ${txtbgr}                                                  ${txtrst} progress: $percent%"
 			fi
 			
 			cd $folder/Flashcards
@@ -276,7 +275,7 @@ echo
 		((m=S%3600/60))
 		((s=S%60))
 		tLeft="`printf "%dm:%ds\n" $m $s`"		
-		echo -ne "\r${ceol}  ${txtbgg}                                                  ${txtrst} progress 100%, $tLeft\n"
+		echo -ne "\r${ceol}      ${txtbgg}                                                  ${txtrst} progress 100%, $tLeft\n"
 		
 		cd $folder/Diffs
 		cp *.png Flashcards/
@@ -285,7 +284,6 @@ echo
 	#  cd $folder/Details
 	#  latex $folder/Details/source.tex
 	#   make -j$procs pdf 2>&1 < /dev/null | grep -rniE 'compiled flashcard|error|ERROR|Error' | tee -a $folder/texFlasher.log    
-		echo "done"
 
 
 	fi  
@@ -298,5 +296,5 @@ echo
 	cd $folder/Diffs
 # 	make -i  images 2>&1 < /dev/null &> /dev/null
 done
-	
+
 exit 0
