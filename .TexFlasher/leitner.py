@@ -1469,15 +1469,26 @@ def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type):
 
 class Flasher:
 	def agenda_resort(self,sort):
-		self.agenda,self.new_cards=load_agenda(self.ldb,self.selected_dir, self.date,sort)
-		self.reactAndInit(True , -1)
-		if sort==False:			
-			self.sort_b.config(image=self.datesort_img,command=lambda:self.agenda_resort(True),text="Sort by Date")
+		
+		if sort=="pagesort":		
+			self.agenda,self.new_cards=load_agenda(self.ldb,self.selected_dir,self.date,True)		
+			self.c.sort_b.config(image=self.pagesort_img,command=lambda:self.agenda_resort("datesort"))
 
-		else:
-			self.sort_b.config(image=self.pagesort_img,command=lambda:self.agenda_resort(False),text="Sort By Page")	
-
+		if sort=="datesort":
+			self.agenda,self.new_cards=load_agenda(self.ldb,self.selected_dir,self.date,False)		  
+			self.c.sort_b.config(image=self.datesort_img,command=lambda:self.agenda_resort("newsort"))	
+		
+		if sort=="newsort":
+			self.agenda,self.new_cards=load_agenda(self.ldb,self.selected_dir,self.date-timedelta(days=1000),True)
+			if len(self.agenda)==0:
+			    sort="pagesort"
+			self.c.sort_b.config(image=self.newsort_img,command=lambda:self.agenda_resort("pagesort"))
 			
+		if sort=="pagesort":		
+			self.agenda,self.new_cards=load_agenda(self.ldb,self.selected_dir,self.date,True)		
+			self.c.sort_b.config(image=self.pagesort_img,command=lambda:self.agenda_resort("datesort"))
+			
+		self.reactAndInit(True , -1)			
 
 		
 	def __init__(self,selected_dir,stuffToDo=True):
@@ -1540,10 +1551,22 @@ class Flasher:
 		
 		hide_b=create_image_button(menubar_frame,".TexFlasher/pictures/remove.png",None,Main.b_normal)
 		hide_b.configure(state=DISABLED)
-		hide_b.grid(row=0, column=2,sticky=W+E)	
+		hide_b.grid(row=0, column=7,sticky=W+E)	
 
 		query=Search(menubar_frame)
 		query.grid(row=0,column=3,sticky=E+W)
+		
+		img = IK.get_image(".TexFlasher/pictures/datesort.png",None,Main.b_normal)		
+		self.datesort_img=img
+		
+		img = IK.get_image(".TexFlasher/pictures/pagesort.png",None,Main.b_normal)	
+		self.pagesort_img=img
+
+		img = IK.get_image(".TexFlasher/pictures/newsort.png",None,Main.b_normal)	
+		self.newsort_img=img		
+					
+		self.c.sort_b=Button(menubar_frame,image=self.pagesort_img,text="Sort by Pages",bd=BD,command=lambda:self.agenda_resort("datesort"))
+		self.c.sort_b.grid(row=0,column=2,sticky=W+E)
 		
 		
 		self.c.save_b=save_b
@@ -1585,7 +1608,7 @@ class Flasher:
 	
 	
 		#spacer
-		Label(Main,height=1).grid(row=6,columnspan=5)	
+		#Label(Main,height=1).grid(row=6,columnspan=5)	
 	
 		#true false
 		self.c.true_false_row=8
@@ -1604,41 +1627,41 @@ class Flasher:
 		self.c.false_b=false_b
 	
 		self.c.tag_buttons=[]
+		tagframe=Frame(Main)
+		tagframe.grid(row=self.c.true_false_row,column=1,columnspan=3,sticky=E+W)
+		tagframe.columnconfigure(0,weight=1)
+		tagframe.columnconfigure(1,weight=1)
+		tagframe.columnconfigure(2,weight=1)
+		tagframe.columnconfigure(3,weight=1)
+		tagframe.columnconfigure(4,weight=1)
 		
-		q_b=create_image_button(Main,".TexFlasher/pictures/question_fix.png",None,Main.b_tiny)
-		q_b.grid(row=self.c.true_false_row,column=1,sticky=N+E)
+		q_b=create_image_button(tagframe,".TexFlasher/pictures/question_fix.png",None,Main.b_normal,0)
+		q_b.grid(column=0)
 		q_b.grid_remove()
 		self.c.q_b=q_b
 		
-		w_b=create_image_button(Main,".TexFlasher/pictures/watchout_fix.png",None,Main.b_tiny)
-		w_b.grid(row=self.c.true_false_row,column=1,sticky=S+E)
+		w_b=create_image_button(tagframe,".TexFlasher/pictures/watchout_fix.png",None,Main.b_normal,0)
+		w_b.grid(column=1)
 		w_b.grid_remove()
 		self.c.w_b=w_b
 		
-		r_b=create_image_button(Main,".TexFlasher/pictures/repeat_fix.png",None,Main.b_tiny)
-		r_b.grid(row=self.c.true_false_row,column=3,sticky=N+W)
+		r_b=create_image_button(tagframe,".TexFlasher/pictures/repeat_fix.png",None,Main.b_normal,0)
+		r_b.grid(column=2)
 		r_b.grid_remove()
 		self.c.r_b=r_b
 		
-		l_b=create_image_button(Main,".TexFlasher/pictures/link_fix.png",None,Main.b_tiny)
-		l_b.grid(row=self.c.true_false_row,column=3,sticky=S+W)		    
+		l_b=create_image_button(tagframe,".TexFlasher/pictures/link_fix.png",None,Main.b_normal,0)
+		l_b.grid(column=3)		    
 		l_b.grid_remove()
 		self.c.l_b=l_b
 		
-		wiki_b=create_image_button(Main,".TexFlasher/pictures/wiki.png",None,Main.b_tiny)
-		wiki_b.grid(row=self.c.true_false_row,column=2,sticky=N)		    
+		wiki_b=create_image_button(tagframe,".TexFlasher/pictures/wiki.png",None,Main.b_normal,0)
+		wiki_b.grid(column=4)		    
 		wiki_b.grid_remove()
 		self.c.wiki_b=wiki_b
 				
 		
-		img = IK.get_image(".TexFlasher/pictures/datesort.png",None,Main.b_tiny)		
-		self.datesort_img=img
-		
-		img = IK.get_image(".TexFlasher/pictures/pagesort.png",None,Main.b_tiny)	
-		self.pagesort_img=img
-					
-		self.sort_b=Button(Main,image=self.pagesort_img,text="Sort by Pages",bd=BD,command=lambda:self.agenda_resort(False))
-		self.sort_b.grid(row=self.c.true_false_row,column=2,sticky=S)
+
 				
 		self.c.tag_buttons=[q_b,w_b,r_b,l_b,wiki_b]		
 		self.reactAndInit(True , -1)
@@ -1678,7 +1701,7 @@ class Flasher:
 		
 		flashcard_image = ImageTk.PhotoImage(image)
 		
-		self.c.create_image(int(flashcard_image.width()/2), int(flashcard_image.height()/2), image=flashcard_image,tags=("frontside",flashcard_name))
+		self.c.create_image(int(float(self.c.cget("width"))/2), int(float(self.c.cget("height"))/2), image=flashcard_image,tags=("frontside",flashcard_name))
 		self.c.img=flashcard_image
 		self.c.bind("<Button-1>", lambda e:self.answer(flashcard_name, listPosition))
 		self.c.unbind("<Motion>")
@@ -1692,8 +1715,8 @@ class Flasher:
 		self.c.brain_true.config(text="")
 		self.c.brain_false.config(text="")		
 		
-		self.c.true_b.configure(state=DISABLED)
-		self.c.false_b.configure(state=DISABLED)
+		self.c.true_b.grid_remove()
+		self.c.false_b.grid_remove()
 
 		for tag in self.c.tag_buttons:
 			tag.grid_remove()
@@ -1738,6 +1761,8 @@ class Flasher:
 		self.c.unbind("<Button-1>")
 		self.c.edit_b.configure(state=NORMAL,command=lambda:edit_fc(self.c,self.selected_dir,flashcard_tag))
 		self.c.back_b.configure(state=NORMAL)
+		self.c.true_b.grid()
+		self.c.false_b.grid()
 		self.c.true_b.configure(state=NORMAL,command=lambda:self.reactAndInit(True, listPosition))
 		self.c.false_b.configure(state=NORMAL,command=lambda:self.reactAndInit(False, listPosition))
 
