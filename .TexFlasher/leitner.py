@@ -1515,7 +1515,7 @@ class Flasher:
 		self.agenda,self.new_cards=load_agenda(self.ldb,self.selected_dir, self.date)
 		
 		
-		self.c=Canvas(Main,width=Main.winfo_width(),height=Main.winfo_height()-4*Main.b_large)
+		self.c=Canvas(Main,width=Main.winfo_width()*0.98,height=Main.winfo_height()-4*Main.b_large)
 
 		self.c.order = xml.parse(self.selected_dir+"/Flashcards/order.xml")
 		self.c.source = xml.parse(self.selected_dir+"/Details/source.xml")
@@ -1701,7 +1701,7 @@ class Flasher:
 		
 		flashcard_image = ImageTk.PhotoImage(image)
 		
-		self.c.create_image(int(float(self.c.cget("width"))/2), int(float(self.c.cget("height"))/2), image=flashcard_image,tags=("frontside",flashcard_name))
+		self.c.create_image(int(float(self.c.cget("width"))/2.0), int(float(self.c.cget("height"))/2.0), image=flashcard_image,tags=("frontside",flashcard_name))
 		self.c.img=flashcard_image
 		self.c.bind("<Button-1>", lambda e:self.answer(flashcard_name, listPosition))
 		self.c.unbind("<Motion>")
