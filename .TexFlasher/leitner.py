@@ -1911,29 +1911,40 @@ def clear_window():
 
 	
 def get_log_status(filedir):
-	message=""
+	log_text=""
+	message=[]
 	window_type="showinfo"
 	if os.path.isfile(filedir+"/texFlasher.log"):
 		log_time=ctime(os.path.getmtime(filedir+"/texFlasher.log"))
-		message="Log from %s\\n\\n"%log_time
+		message_header="Log from %s\\n\\n"%log_time
+		message.append(message_header)
+		errors=["ERROR(S):\\n"]
+		warnings=["WARNING(S):\\n"]
 		log=open(filedir+"/texFlasher.log","r")
 		l_count=0
 		for l in log:
 			if re.compile('error:').findall(l.lower()):
 				window_type="showerror"
-				message=l.replace("\n","\\n\\n")
-				l_count=0
-				break
+				errors.append(l.replace("\n","\\n"))
 			elif re.compile('warning').findall(l.lower()): 
 				window_type="showerror"
+				warnings.append(l.replace("\n","\\n"))
 			else:
-				message+=l.replace("\n","\\n\\n")
-			l_count+=1
-			if l_count>10:
-				break
+				message.append(l.replace("\n","\\n"))
 	else:
-		message="No logfile found!"	
-	return message,window_type
+		message.append("No logfile found!")	
+	if len(errors)>1:
+		for i in range(0,len(errors)):
+			message.insert(i+1,errors[i])	
+		message.insert(len(errors)+1,"\\n\\n")		
+	if len(warnings)>1:
+		for i in range(len(errors),len(warnings)+len(errors)):
+			message.insert(i,warnings[i-len(errors)])
+		message.insert(len(errors)+len(warnings),"\\n\\n")					
+	for line in message:
+		if not line.startswith(" "):
+			log_text+=line						
+	return log_text,window_type
 
 
 def show_log(filedir):
