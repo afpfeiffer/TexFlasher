@@ -161,6 +161,7 @@ def parse_tex(fcard_dir,source_path):
 		matches=re.compile('^\\\\fc\{(.*?)\}').findall(line.lstrip())
 		
 		try:#fails if no fc_marker in line!
+			last_fc=fcard_title
 			fcard_title=matches[0]
 			try:
 				if len(meta.getElementsByTagName(fcard_title))==0:
@@ -168,11 +169,13 @@ def parse_tex(fcard_dir,source_path):
 					sys.exit()			
 			except:
 				sys.exit()
-
+			if not last_fc=="" and last_fc not in fcards:
+				print "Warning: No Flashcard created for Tag: "+last_fc
 			#check for doubles
 			if fcard_title in fcards:
 				print "Fatal Error: flashcard_marker "+fcard_title+" used multiple times!"
 				sys.exit()
+			 
 		except SystemExit:
 			print "Fatal Error: Marker error: %s"%(fcard_title) 	
 			sys.exit()				
@@ -243,7 +246,7 @@ def parse_tex(fcard_dir,source_path):
 			else:
 				# delete malicious fcard
 				fcards.pop(fcard_title)
-				print "Error: flashcard_marker "+fcard_title+" had no valid syntax and could not be created!"
+				print "Warning: flashcard_marker "+fcard_title+" had no valid syntax and could not be created!"
 				fcard_title=""
 				fcard_desc=""
 	source_tex.close()
