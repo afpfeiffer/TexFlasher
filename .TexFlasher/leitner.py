@@ -1468,9 +1468,10 @@ def save_edit(c,frame,edit_text,dir,fc_tag,theorem_type):
 
 
 class Flasher:
+
 	def agenda_resort(self,sort):
-		
-		if sort=="pagesort":		
+		self.sorttype=str(sort)			
+		if sort=="pagesort":	
 			self.agenda,self.new_cards=load_agenda(self.ldb,self.selected_dir,self.date,True)		
 			self.c.sort_b.config(image=self.pagesort_img,command=lambda:self.agenda_resort("datesort"))
 
@@ -1737,10 +1738,8 @@ class Flasher:
 	   	self.c.fc_det_right.set("Tag: "+flashcard_name+", Nr.: "+str(fc_pos)+", Page: "+str(pagemarker))
 
 	def hide_fc(self, fc_tag):		
-		set_fc_attribute(fc_tag,self.selected_dir,"level",-1,self.ldb)	
-		self.ldb=load_leitner_db(self.selected_dir,Settings["user"])					
-		self.agenda,self.new_cards=load_agenda(self.ldb,self.selected_dir, self.date)		
-		self.reactAndInit(True , -1)
+		set_fc_attribute(fc_tag,self.selected_dir,"level",-1,self.ldb)
+		self.agenda_resort(self.sorttype)			
 
 	def answer(self,flashcard_tag, listPosition):
 		image = Image.open(self.selected_dir+"/Flashcards/"+flashcard_tag+"-2.png")
