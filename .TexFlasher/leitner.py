@@ -1494,7 +1494,7 @@ class Flasher:
 		
 	def __init__(self,selected_dir,stuffToDo=True):
 		global Main
-
+		self.sorttype="pagesort"
 		
 		clear_window()#clear main window
 
