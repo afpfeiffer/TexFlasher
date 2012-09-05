@@ -1494,7 +1494,7 @@ class Flasher:
 		
 	def __init__(self,selected_dir,stuffToDo=True):
 		global Main
-		self.sorttype="pagesort"
+
 		
 		clear_window()#clear main window
 
@@ -1509,22 +1509,12 @@ class Flasher:
 		Main.columnconfigure(1,weight=1)
 		Main.columnconfigure(2,weight=1)
 		Main.columnconfigure(3,weight=1)
-		Main.columnconfigure(4,weight=1)
-								
-		self.ldb=load_leitner_db(self.selected_dir,Settings["user"])
-						
-		self.agenda,self.new_cards=load_agenda(self.ldb,self.selected_dir, self.date)
-		
+		Main.columnconfigure(4,weight=1)		
 		
 		self.c=Canvas(Main,width=Main.winfo_width()*0.98,height=Main.winfo_height()-4*Main.b_large)
-
 		self.c.order = xml.parse(self.selected_dir+"/Flashcards/order.xml")
 		self.c.source = xml.parse(self.selected_dir+"/Details/source.xml")
 
-		#spacer
-		
-
-	
 		# menubar
 		self.c.menu_row=1
 		menubar_frame=Frame(Main)
@@ -1598,18 +1588,13 @@ class Flasher:
 		stat=Canvas(Main,width=stat_width, height=stat_height)
 		stat.grid(row=4, columnspan=5)
 		stat.height=stat_height
-		stat.width=stat_width
-		
+		stat.width=stat_width		
 		self.c.stat=stat
 	
 	
 		#fc_content
 		self.c.fc_row=5
-		self.c.grid(row=self.c.fc_row,columnspan=5,sticky=N+E+W+S)
-	
-	
-		#spacer
-		#Label(Main,height=1).grid(row=6,columnspan=5)	
+		self.c.grid(row=self.c.fc_row,columnspan=5,sticky=N+E+W+S)	
 	
 		#true false
 		self.c.true_false_row=8
@@ -1661,10 +1646,13 @@ class Flasher:
 		wiki_b.grid_remove()
 		self.c.wiki_b=wiki_b
 				
-		
-
-				
 		self.c.tag_buttons=[q_b,w_b,r_b,l_b,wiki_b]		
+
+		#start with sorttype:
+		self.sorttype="pagesort"											
+		self.ldb=load_leitner_db(self.selected_dir,Settings["user"])	
+		self.agenda_resort(self.sorttype)	
+
 		self.reactAndInit(True , -1)
 			
 			
