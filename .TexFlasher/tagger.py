@@ -343,8 +343,16 @@ class RectTracker:
 							coords=p2c(self.canvas.cget("width"),self.canvas.cget("height"),data)
 						else:
 							coords=p2c(self.canvas.cget("width"),self.canvas.cget("height"),c2p(800,480,data))
-							
-						self.canvas.create_rectangle(int(coords[0]),int(coords[1]),int(coords[2]),int(coords[3]),dash=[4,4], tags=tags,outline="red",fill="", width=2)
+		  				color="red"
+						try:
+			  				content=tag.getAttribute('comment')
+			  				if len(content)>0:
+			  					color="green"
+			  					
+						except:
+			  				pass
+													
+						self.canvas.create_rectangle(int(coords[0]),int(coords[1]),int(coords[2]),int(coords[3]),dash=[4,4], tags=tags,outline=color,fill="", width=2)
 						
 					if self.canvas.tagtypes[tagtype]['type']=="image":
 						data=[tag.getAttribute("startx"),tag.getAttribute("starty")]
